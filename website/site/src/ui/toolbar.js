@@ -26,6 +26,11 @@ import { flashDone } from '../vendor/stellar/fx.js';
 const norm = (s) => String(s ?? '').toLowerCase().replace(/\s+/g, '');
 const MAX_VENDOR_CHIPS = 6;
 
+// 模型范围：全部 / 御三家（OpenAI、Anthropic、Google）/ 美国模型 / 国产模型（models.json 的 region）
+export const SCOPES = ['all', 'big3', 'us', 'cn'];
+const BIG3 = new Set(['OpenAI', 'Anthropic', 'Google']);
+export const inScope = (model, scope) => scope === 'all' || (scope === 'big3' ? BIG3.has(model.vendor) : model.region === scope);
+
 /**
  * Options:
  *   data        loadData() result (required)
@@ -40,7 +45,7 @@ const MAX_VENDOR_CHIPS = 6;
  */
 export function createToolbar({ data, vendors = true, search = true, compare = true, download = null, wrap = false } = {}) {
   const events = new EventTarget();
-  const state = { vendors: new Set(), query: '' };
+  const state = { vendors: new Set(), query: '', scope: 'all' };
   const emit = (type, detail) => events.dispatchEvent(new CustomEvent(type, { detail }));
 
   const top = h('div.tb-top');
@@ -160,6 +165,7 @@ export function createToolbar({ data, vendors = true, search = true, compare = t
     matches(m) {
       const model = typeof m === 'string' ? data.model(m) : m;
       if (!model) return false;
+      if (!inScope(model, state.scope)) return false;
       if (state.vendors.size && !state.vendors.has(model.vendor)) return false;
       const q = norm(state.query);
       if (!q) return true;
@@ -176,6 +182,12 @@ export function createToolbar({ data, vendors = true, search = true, compare = t
       if (input) input.value = q;
       emit('change', { ...state });
     },
+    setScope(s) {
+      state.scope = s;
+      emit('change', { ...state });
+    },
+    /** How many models each scope holds (for the scope switch). */
+    scopeCount: (s) => data.models.filter((m) => inScope(m, s)).length,
     clear() {
       state.vendors.clear();
       state.query = '';

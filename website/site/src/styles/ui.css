@@ -196,17 +196,18 @@
   margin: 1.5rem 0;
   color: var(--st-ink-2);
 }
-/* test cost (cost: true): two more columns right of the score, each one line, vertically centred like the
-   score: 测试开销 (the amount, then its small basis mark ○ 按订阅折算 / ◆ 按 API 标价折算 / 暂无数据) and Token
-   (the 13-task total). Same row height, no stacked lines. */
+/* resource columns (cost: true): three more columns right of the score, each one line, vertically centred like the
+   score: 测试开销 (the amount, then its small basis mark ○ 按订阅折算 / ◆ 按 API 标价折算 / 暂无数据), Token 消耗
+   (the 13-task total) and TPS (the estimated output speed). Same row height, no stacked lines. */
 .mrow.has-cost {
-  grid-template-columns: 2rem 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem);
+  grid-template-columns: 2rem 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem) var(--mrow-tps-w, 3.75rem);
 }
 .mrow.has-cost.no-check {
-  grid-template-columns: 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem);
+  grid-template-columns: 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem) var(--mrow-tps-w, 3.75rem);
 }
 .mrow-cost,
-.mrow-tok {
+.mrow-tok,
+.mrow-tps {
   display: flex;
   align-items: baseline;
   gap: 0.35rem;
@@ -214,8 +215,13 @@
   white-space: nowrap;
 }
 .mrow-cost,
-.mrow-tok {
+.mrow-tok,
+.mrow-tps {
   justify-content: flex-end;
+}
+.mrow-tps.is-none .mrow-tok-v {
+  color: var(--st-ink-2);
+  font-weight: 500;
 }
 .mrow-cost {
   padding-left: 0.9rem;
@@ -276,10 +282,10 @@
   white-space: nowrap;
 }
 
-.mrow-head :is(.mrow-cost, .mrow-tok) {
+.mrow-head :is(.mrow-cost, .mrow-tok, .mrow-tps) {
   display: block;
 }
-.mrow-head :is(.mrow-cost, .mrow-tok) {
+.mrow-head :is(.mrow-cost, .mrow-tok, .mrow-tps) {
   text-align: right;
 }
 /* the cost tooltip: the amount line, then plan, tokens and the notes */

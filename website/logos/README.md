@@ -18,9 +18,13 @@
 | `hunyuan` | 腾讯混元 | 蓝 | 腾讯混元 |
 | `kimi` | Kimi（月之暗面） | 黑底圆角方块上白字蓝点（按 lobehub `Kimi.Avatar`：#000 底、图形占 60%），深浅底都能看清 | KIMI |
 | `zhipu` | 智谱，GLM 系列 | 蓝 | 智谱·AI |
-| `zai` | Z.ai，智谱的国际品牌，GLM 系列 | 无 | Z.ai |
+| `zai` | Z.ai，智谱的国际品牌，GLM 系列（当前 GLM 型号用它） | 黑底圆角方块上白色 Z（同 Kimi 做法：#000 底、图形占 60%） | Z.ai |
+| `stepfun` | 阶跃星辰，Step 系列 | 无（按用户要求只用黑白单色版） | StepFun |
+| `longcat` | 美团 LongCat 系列 | 品牌色 | LongCat |
+| `dots` | 小红书 Dots Studio，dots 系列（图标库无此品牌，自制：三个圆点） | 小红书红 #FF2442 圆角方块上三个白点 | dots |
 | `doubao` | 豆包（字节跳动） | 蓝绿紫 | 豆包大模型 |
 | `minimax` | MiniMax | 粉橙 | MINIMAX |
+| `wenxin` | 文心（百度），ERNIE 系列 | 蓝紫渐变 | 文心 |
 
 ## 用法
 

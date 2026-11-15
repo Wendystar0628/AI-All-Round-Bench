@@ -4,8 +4,9 @@ python website/tools/export_data.py                              refresh site/da
 python website/tools/export_data.py --scores-only                grading refresh; initialize static files if missing
 python website/tools/export_data.py --confirmed --out <folder>   formal build input, used by publish.py
 
-Local final task scores come from grading.py; incomplete totals/ranks remain null. Formal data comes only from
-confirmed-scores.json and is still filtered by current registration/audit. Cost privacy and anonymous anomaly
+Local final task scores come from grading.py; incomplete totals/ranks remain null. Formal scores come only from
+confirmed-scores.json and are still filtered by current registration/audit; the resource stats (test cost, tokens,
+TPS) are not frozen there and always follow the current usage ledger and pricing. Cost privacy and anonymous anomaly
 projection apply to both. Imports retain complete-only defaults for other consumers such as video tools.
 No grading, usage, answer or video records are modified. Requires pypinyin==0.53.0.
 """
@@ -77,7 +78,7 @@ def load_registry(include_private=False):
     models = read_json(TOOLS / 'models.json')
     seen_id, seen_key = set(), set()
     for m in models:
-        for field in ('id', 'key', 'name', 'short', 'vendor', 'logo', 'agent', 'effort'):
+        for field in ('id', 'key', 'name', 'short', 'vendor', 'region', 'logo', 'agent', 'effort'):
             if not m.get(field):
                 raise SystemExit(f'models.json：{m.get("key") or m} 缺少 {field}')
         if not re.fullmatch(r'[a-z0-9]+(-[a-z0-9]+)*', m['id']):
@@ -180,7 +181,7 @@ def public_fields(data, fields):
 
 
 def public_cost(cost):
-    out = public_fields(cost, ('cny', 'basis', 'tokens', 'method', 'api_usd', 'hours'))
+    out = public_fields(cost, ('cny', 'basis', 'tokens', 'method', 'api_usd', 'api_cny', 'hours', 'tps', 'tps_replies'))
     if 'plan' in cost:
         out['plan'] = (public_fields(cost['plan'], ('name', 'name_en', 'price', 'currency', 'period', 'credits'))
                        if isinstance(cost['plan'], dict) else None)
@@ -614,16 +615,19 @@ def confirmed_data(categories):
     if not CONFIRMED.is_file():
         raise SystemExit('缺少已确认成绩快照，不能正式发布')
     snapshot = read_json(CONFIRMED)
-    allowed = {m['id'] for m in load_registry()}
-    models = [m for m in snapshot['models'] if m['id'] in allowed]
+    region = {m['id']: m['region'] for m in load_registry()}  # 地区是型号的固定属性，跟随登记表
+    models = [m | {'region': region[m['id']]} for m in snapshot['models'] if m['id'] in region]
     task_keys = [t['key'] for c in categories for t in c['tasks']]
     scores = copy.deepcopy(snapshot['scores'])
     scores['scores'] = {m['id']: scores['scores'][m['id']] for m in models}
     if not all(grading.complete_score_record(r, task_keys) for r in scores['scores'].values()):
         raise SystemExit('已确认快照含未完成全套的模型')
-    scores['cost_source'] = public_fields(scores.get('cost_source'), ('name', 'name_en', 'url', 'fetched', 'usd_cny'))
-    for record in scores['scores'].values():
-        record['cost'] = public_cost(record.get('cost', {}))
+    # 快照只冻结成绩；测试开销、Token、TPS 是用量统计，始终按当前台账与计价重算
+    cost_source, model_costs = costs.load([m['key'] for m in models])
+    scores['cost_source'] = public_fields(cost_source, ('name', 'name_en', 'url', 'fetched', 'usd_cny'))
+    for m in models:
+        record = scores['scores'][m['id']]
+        record['cost'] = public_cost(model_costs.get(m['key'], {}))
         for info in record.get('task_info', {}).values():
             if 'anomaly' in info:
                 info['anomaly'] = [{'text': a['text']} for a in info['anomaly']]
@@ -642,12 +646,11 @@ def confirm_model(key):
         raise SystemExit('确认正式成绩需要全套 13 题完整且无评分缺口：' + key)
     snapshot = read_json(CONFIRMED)
     tested = model.get('tested') or latest_session_date(key)
-    public_model = {k: model[k] for k in ('id', 'key', 'name', 'short', 'vendor', 'logo', 'agent', 'effort')}
+    public_model = {k: model[k] for k in ('id', 'key', 'name', 'short', 'vendor', 'region', 'logo', 'agent', 'effort')}
     public_model.update(aliases=model.get('aliases', []), tested=tested)
     snapshot['models'] = [m for m in snapshot['models'] if m['id'] != model['id']] + [public_model]
-    snapshot['scores']['scores'][model['id']] = fresh['scores'][model['id']]
+    snapshot['scores']['scores'][model['id']] = {k: v for k, v in fresh['scores'][model['id']].items() if k != 'cost'}
     snapshot['scores']['updated'] = fresh['updated'] or snapshot['scores']['updated']
-    snapshot['scores']['cost_source'] = fresh['cost_source']
     snapshot['scores']['order'] = rank_records(snapshot['scores']['scores'], categories)
     write_json(CONFIRMED, snapshot)
     registry = read_json(TOOLS / 'models.json')
@@ -687,7 +690,7 @@ def main(argv=()):
         for m in registry:
             tested = m.get('tested') or latest_session_date(m['key'])
             models.append({k: m[k] for k in ('id', 'key', 'name', 'short') if k in m} |
-                          {'aliases': m.get('aliases', []), 'vendor': m['vendor'], 'logo': m['logo'], 'agent': m['agent'],
+                          {'aliases': m.get('aliases', []), 'vendor': m['vendor'], 'region': m['region'], 'logo': m['logo'], 'agent': m['agent'],
                            'effort': m['effort'], 'tested': tested})
     if notice:
         models = []

@@ -234,6 +234,17 @@ export function routePlugin({ root, dataDir: customDataDir }) {
       };
       server.watcher.on('change', onChange);
       server.watcher.on('add', onChange);
+      // The colour-logo list is baked in through `define` when the server starts; a *-color.svg added or removed
+      // later needs a restart, or the page keeps drawing that vendor as a single-colour mask.
+      const logoDir = join(root, 'public', 'logos', 'mark');
+      server.watcher.add(logoDir);
+      const onLogo = (file) => {
+        if (!file.replace(/\\/g, '/').endsWith('-color.svg')) return;
+        const next = colorLogos(root).join(',');
+        if (next !== [...colorSet].join(',')) server.restart();
+      };
+      server.watcher.on('add', onLogo);
+      server.watcher.on('unlink', onLogo);
 
       server.middlewares.use(async (req, res, next) => {
         try {

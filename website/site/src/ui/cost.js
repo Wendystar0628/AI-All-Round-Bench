@@ -25,7 +25,21 @@ import { modelLabel } from '../core/names.js';
 /** The project repository (same as reading/rich.js REPO): tasks and their isolated environments, for re-testing. */
 export const REPO = 'https://github.com/Wendystar0628/AI-High-Pressure-Challenge';
 
-export const costOf = (data, id) => data.score(id)?.cost ?? null;
+// 两种口径：'plan' 按订阅折算（没有订阅的按 API 标价）；'api' 一律按官方 API 标价（cost.api_cny）。页面启动时按地址参数设定。
+export const COST_MODES = ['plan', 'api'];
+let costMode = 'plan';
+export const getCostMode = () => costMode;
+export const setCostMode = (m) => (costMode = m);
+
+/** The cost object under the current basis, or null. */
+export function costOf(data, id) {
+  const cost = data.score(id)?.cost ?? null;
+  if (!cost || costMode === 'plan') return cost;
+  return { ...cost, cny: cost.api_cny ?? null, basis: 'api', method: 'api_price', plan: null };
+}
+
+/** Does any model carry a pure-API amount (the switch only shows then)? */
+export const hasApiCosts = (data) => Object.values(data.scores ?? {}).some((s) => s?.cost?.api_cny != null);
 
 /** True when the export wrote costs (cost_source or any scores.<id>.cost). */
 export const hasCosts = (data) => !!data.costSource || Object.values(data.scores ?? {}).some((s) => s && s.cost);
@@ -100,9 +114,17 @@ export function fillTokens(cell, cost) {
   cell.replaceChildren(h('span.mrow-tok-v.num', none ? t('common.cost.basis.none') : fmtTokenValue(cost.tokens)));
 }
 
+/** A model row's TPS cell (.mrow-tps): the estimated output speed in tokens per second; no estimate: 暂无数据. */
+export function fillTps(cell, cost) {
+  const none = cost?.tps == null;
+  cell.classList.toggle('is-none', none);
+  cell.title = none ? '' : t('common.cost.tpsTitle', { v: Math.round(cost.tps), n: cost.tps_replies });
+  cell.replaceChildren(h('span.mrow-tok-v.num', none ? DASH : String(Math.round(cost.tps))));
+}
+
 /** The marks explained once: ○ 按订阅折算  ◆ 按 API 标价折算 (only the marks the data uses). */
 export function costLegend(data, tag = 'p.cost-legend') {
-  const costs = Object.values(data.scores ?? {}).map((s) => s?.cost).filter(Boolean);
+  const costs = Object.keys(data.scores ?? {}).map((id) => costOf(data, id)).filter(Boolean);
   const keys = new Set(costs.map(costKey));
   const item = (mark, text) => h('span.cost-legend-item', mark, text);
   return h(
@@ -128,6 +150,7 @@ export function costFacts(data, id) {
   const plan = planText(cost?.plan);
   if (plan) out.push(t(`common.cost.plan.${key === 'api' ? 'api' : 'subscription'}`, { plan }));
   out.push(cost?.tokens == null ? t('common.cost.tokensNone') : t('common.cost.tokens', { n: data.tasks.length, v: fmtTokens(cost.tokens) }));
+  if (cost?.tps != null) out.push(t('common.cost.tpsTitle', { v: Math.round(cost.tps), n: cost.tps_replies }));
   return out;
 }
 
@@ -140,6 +163,7 @@ export function costNotes(data, id) {
   else if (cost.method === 'api_price') out.push(cost.api_usd == null ? t('common.cost.noteApiPrice') : t('common.cost.noteApiPriceUsd', { usd: fmtUSD(cost.api_usd) }));
   else if (cost.method === 'credits') out.push(t('common.cost.noteCredits'));
   else if (cost.method === 'quota') out.push(t('common.cost.noteQuota'));
+  else if (cost.method === 'quota_usage') out.push(t('common.cost.noteQuotaUsage'));
   return out;
 }
 

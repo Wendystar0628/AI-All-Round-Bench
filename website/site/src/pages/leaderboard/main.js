@@ -12,11 +12,11 @@
 import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
 import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, modelLabel, iconURL, DASH } from '../../core/index.js';
-import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, costTip, costSourceNote, costLegend, fmtCNY } from '../../ui/index.js';
+import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, SCOPES, COST_MODES, getCostMode, setCostMode } from '../../ui/index.js';
 import { exportButton, rowsToSVG } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
-import { VIEWS, PASS, compute, officialWeights, isOfficial, parseWeights, formatWeights, sortKeys, headFigures, isCostSort, isPartSort, isTop } from './model.js';
+import { VIEWS, PASS, RESOURCES, DIRS, compute, officialWeights, isOfficial, parseWeights, formatWeights, sortKeys, headFigures, isResourceSort, isPartSort, defaultDir, isTop } from './model.js';
 import { createRows, axisChanges } from './rows.js';
 import { createAxis } from './axis.js';
 import { createCompare } from './compare.js';
@@ -38,13 +38,17 @@ boot(async ({ data }) => {
   }
 
   // ---------------- state (from the address) ----------------
+  const withApi = hasApiCosts(data);
+  if (withApi && COST_MODES.includes(getParam('cost'))) setCostMode(getParam('cost'));
   const sorts = sortKeys(data);
   const view0 = VIEWS.includes(getParam('view')) ? getParam('view') : 'total';
   const w0 = parseWeights(data, getParam('w'));
+  const sort0 = sorts.includes(getParam('sort')) ? getParam('sort') : 'total';
   const state = {
     view: view0,
     lastRowView: view0 === 'compare' ? 'total' : view0,
-    sort: sorts.includes(getParam('sort')) ? getParam('sort') : 'total',
+    sort: sort0,
+    dir: DIRS.includes(getParam('dir')) ? getParam('dir') : defaultDir(sort0),
     cols: getParam('cols') === 'task' ? 'task' : 'category',
     sliders: w0 ?? officialWeights(data),
     custom: !!w0 && !isOfficial(data, w0),
@@ -56,7 +60,8 @@ boot(async ({ data }) => {
 
   const withCost = hasCosts(data);
   const sortName = (k) =>
-    k === 'total' ? t('common.score.total') : k === 'standard' || k === 'design' ? t(`common.kind.${k}`) : isCostSort(k) ? t(`leaderboard.sort.${k === 'cost' ? 'cost' : 'costDesc'}`) : pick(data.category(k), 'name');
+    k === 'total' ? t('common.score.total') : k === 'standard' || k === 'design' ? t(`common.kind.${k}`) : isResourceSort(k) ? t(`leaderboard.sort.${k}`) : pick(data.category(k), 'name');
+  const arrow = (dir) => (dir === 'asc' ? '↑' : '↓');
   const viewName = (v) => t(`leaderboard.views.${v}`);
   // the short name in the score column head: 主动设计题, 数学推理 …
   const sortShort = (k) => pick(data.category(k) ?? {}, 'short') || sortName(k);
@@ -108,7 +113,9 @@ boot(async ({ data }) => {
     sorts.map((k) => h('option', { value: k, selected: k === state.sort }, sortName(k))),
   );
   sortSel.addEventListener('change', () => setSort(sortSel.value));
-  const sortBox = h('label.lb-sort', h('span.lb-sort-lab', t('leaderboard.sort.label')), h('span.lb-sort-box', sortSel));
+  // the direction of the sort: one button that flips it (the column heads flip it too)
+  const dirBtn = h('button.st-btn.small.lb-dir', { type: 'button', onclick: () => setSort(state.sort, state.dir === 'asc' ? 'desc' : 'asc') });
+  const sortBox = h('div.lb-sort', h('label.lb-sort-pick', h('span.lb-sort-lab', t('leaderboard.sort.label')), h('span.lb-sort-box', sortSel)), dirBtn);
   tb.slots.top.append(seg, sortBox);
 
   const wBtn = h(
@@ -137,19 +144,50 @@ boot(async ({ data }) => {
     title: () => [t('leaderboard.title'), viewName(state.view), state.custom ? t('common.score.custom') : ''].filter(Boolean).join(' │ '),
     filename: () => `ai-decathlon-leaderboard-${state.view}${state.custom ? '-custom' : ''}`,
   });
-  // the cost marks explained once, above the board's columns (ui/cost.js costLegend)
-  const legend = withCost ? costLegend(data, 'p.cost-legend.lb-cost-legend') : null;
-  const boardHead = h('div.lb-board-head', h('h2.lb-board-title#lb-board-title', h('span.st-pair', eyebrow, vTitle), question), h('div.lb-board-tools', legend, colsSeg, exportBtn));
+  // board head: the title left; right, two labelled switches (模型范围, 开销口径), the grain switch and 存为图片
+  const ctl = (name, label, keys, current, text, onPick) =>
+    h(
+      'div.lb-ctl',
+      h('span.lb-ctl-lab', label),
+      h(
+        'div.st-seg.lb-ctl-seg',
+        { role: 'radiogroup', 'aria-label': label },
+        keys.map((k) => h('label', { title: t(`leaderboard.${name}.title.${k}`) }, h('input', { type: 'radio', name: `lb-${name}`, value: k, checked: k === current, onchange: () => onPick(k) }), h('span', text(k)))),
+      ),
+    );
+  const scope0 = SCOPES.includes(getParam('scope')) ? getParam('scope') : 'all';
+  tb.state.scope = scope0;
+  const scopeCtl = ctl('scope', t('leaderboard.scope.label'), SCOPES, scope0, (k) => [t(`leaderboard.scope.${k}`), h('small.lb-ctl-n', String(tb.scopeCount(k)))], (k) => {
+    setParams({ scope: k === 'all' ? null : k });
+    tb.setScope(k);
+  });
+  const costCtl = withCost && withApi ? ctl('costMode', t('leaderboard.costMode.label'), COST_MODES, getCostMode(), (k) => t(`leaderboard.costMode.${k}`), (k) => setCost(k)) : null;
+  const boardHead = h('div.lb-board-head', h('h2.lb-board-title#lb-board-title', h('span.st-pair', eyebrow, vTitle), question), h('div.lb-board-tools', scopeCtl, costCtl, colsSeg, exportBtn));
+  // the cost marks (○ 订阅折算 ◆ API 标价) explained under the board, repainted when the basis changes
+  const legendSlot = withCost ? h('div.lb-cost-legend-slot') : null;
+  const paintLegend = () => legendSlot?.replaceChildren(costLegend(data, 'p.cost-legend.lb-cost-legend'));
+  paintLegend();
 
   const axis = createAxis({ data, state, computed, onFocus: (k) => state.view === 'parts' && rows.setFocus(k) });
   const hRank = h('span.mrow-rank.lb-h-rank');
   const hName = h('span.mrow-name.lb-h-name');
-  const hScore = h('span.mrow-score.lb-h-score');
-  // the cost column head sorts by cost: cheapest first, a second click dearest first (linked with the sort select)
-  const hCostBtn = withCost ? h('button.lb-h-sort', { type: 'button', onclick: () => setSort(state.sort === 'cost' ? 'cost-desc' : 'cost') }) : null;
-  const hCost = withCost ? h('span.mrow-cost.lb-h-cost', hCostBtn) : null;
-  const hTok = withCost ? h('span.mrow-tok.lb-h-cost', t('common.cost.tokensHead')) : null;
-  const headRow = h('div.mrow.mrow-head.lb-axisrow', { class: withCost ? 'has-cost' : null }, h('span.mrow-check'), hRank, h('span.mrow-icon'), hName, h('span.mrow-plot.lb-h-plot', axis.svg), hScore, hCost, hTok);
+  // sortable column heads (the score and the resource columns): a click sorts by that column; on the column sorted
+  // by, it flips the direction. Every head carries an arrow: ↓ / ↑ on the sorted one, a faint ↕ on the others.
+  const sortHeads = [];
+  const sortHead = (key, cellCls) => {
+    const lab = h('span.lb-h-lab');
+    const mark = h('span.lb-h-arrow', { 'aria-hidden': 'true' });
+    const btn = h('button.lb-h-sort', { type: 'button', dataset: { key } }, lab, mark);
+    btn.addEventListener('click', () => setSort(btn.dataset.key, btn.dataset.key === state.sort ? (state.dir === 'asc' ? 'desc' : 'asc') : defaultDir(btn.dataset.key)));
+    sortHeads.push({ btn, lab, mark });
+    return h(`span.${cellCls}`, btn);
+  };
+  const RES_CELL = { cost: 'mrow-cost.lb-h-res', tokens: 'mrow-tok.lb-h-res', tps: 'mrow-tps.lb-h-res' };
+  const hScore = sortHead('total', 'mrow-score.lb-h-score');
+  const scoreHead = sortHeads[0];
+  const resHeads = withCost ? Object.keys(RESOURCES).map((k) => sortHead(k, RES_CELL[k])) : [];
+  for (const sh of sortHeads.slice(1)) sh.lab.textContent = t(`common.cost.head.${sh.btn.dataset.key}`);
+  const headRow = h('div.mrow.mrow-head.lb-axisrow', { class: withCost ? 'has-cost' : null }, h('span.mrow-check'), hRank, h('span.mrow-icon'), hName, h('span.mrow-plot.lb-h-plot', axis.svg), hScore, ...resHeads);
 
   const sandbox = createSandbox({
     data,
@@ -163,7 +201,7 @@ boot(async ({ data }) => {
   const compare = createCompare({ data, state, width: () => rows.width, onBack: () => switchView(state.lastRowView || 'total') });
   // the matrix for screen readers: a real table (the cells on screen are drawn, aria-hidden)
   const srMatrix = h('div.sr-only.lb-sr-matrix');
-  const board = h('section.st-panel.lb-board', { class: withCost ? 'has-cost' : null, 'aria-labelledby': 'lb-board-title', dataset: { view: state.view } }, boardHead, sticky, ol, srMatrix, compare.el);
+  const board = h('section.st-panel.lb-board', { class: withCost ? 'has-cost' : null, 'aria-labelledby': 'lb-board-title', dataset: { view: state.view } }, boardHead, sticky, ol, legendSlot, srMatrix, compare.el);
   const foot = h('p.lb-foot.st-field', h('a', { href: links.about('scoring-1') }, t('leaderboard.foot', { n: data.categories.length })));
   // how the test costs are converted (ModelDial weekly quotas, the dollar rate, the date of the quota data)
   const costFoot = withCost ? costSourceNote(data, 'div.lb-foot.cost-note.st-field') : null;
@@ -210,8 +248,8 @@ boot(async ({ data }) => {
     });
   }
 
-  // rank cell (the shared rank hook): the rank by the chosen sort, with the custom-weights move beside it (sorted by the total);
-  // sorted by a part, the score cell gets the total in small grey before the part's score
+  // rank cell (the shared rank hook): the place in the current order (sort and direction); sorted by the total from the
+  // top, the custom-weights move beside it. Sorted by a part, the score cell gets the total in small grey before it.
   function paintRow(li, entry, ctx) {
     const src = frozen ?? C;
     const it = src.info.get(entry.id);
@@ -220,48 +258,35 @@ boot(async ({ data }) => {
     const rankCell = li.querySelector('.mrow-rank');
     const sr = li.querySelector('.mrow-sr');
     const name = modelLabel(it.model);
-    let rank;
-    let sub = '';
-    let cls = '';
-    if (state.sort === 'total') {
-      rank = it.totalRank;
-      if (state.custom && rank != null && it.delta) {
-        sub = `${it.delta > 0 ? '▲' : '▼'}${Math.abs(it.delta)}`;
-        cls = it.delta > 0 ? 'is-up' : 'is-down';
-      }
-    } else rank = it.sortRank;
-    const costSort = isCostSort(state.sort);
+    const rank = it.sortRank;
+    const byTotal = state.sort === 'total' && state.dir === 'desc';
+    const sub = byTotal && state.custom && rank != null && it.delta ? `${it.delta > 0 ? '▲' : '▼'}${Math.abs(it.delta)}` : '';
     if (isPartSort(state.sort)) li.querySelector('.mrow-score')?.prepend(h('small.lb-tot', fmtScore(now.total)));
-    if (rank == null && costSort && it.status === 'ranked') {
-      // by cost, a model without an amount (数据暂缺) has no rank: a dash, after the priced ones
-      rankCell.replaceChildren(h('b.lb-rank-n', DASH));
-      li.dataset.sub = '';
-    } else if (rank != null) {
+    if (rank != null) {
       const before = li.dataset.sub ?? '';
-      const small = sub ? h('small.lb-rank-sub', { class: cls || null }, sub) : null;
+      const small = sub ? h('small.lb-rank-sub', { class: it.delta > 0 ? 'is-up' : 'is-down' }, sub) : null;
       rankCell.replaceChildren(...[h('b.lb-rank-n', fmtRank(rank)), small].filter(Boolean));
-      if (small && before !== sub && !ctx.first && state.sort === 'total' && !reduced()) small.classList.add('st-in-wipe');
+      if (small && before !== sub && !ctx.first && !reduced()) small.classList.add('st-in-wipe');
       li.dataset.sub = sub;
     } else {
-      rankCell.replaceChildren(h('span.st-state.is-draft', t('common.score.pending')));
+      // no value by this sort: a dash for a fully scored model, 评测中 for one still being tested
+      rankCell.replaceChildren(it.status === 'ranked' ? h('b.lb-rank-n', DASH) : h('span.st-state.is-draft', t('common.score.pending')));
       li.dataset.sub = '';
     }
     // what a screen reader hears for the row
     const score = fmtScore(now.total);
-    if (now.total == null && state.sort === 'total') return;
-    if (state.sort === 'total') sr.textContent = t('leaderboard.row.aria', { rank: it.totalRank, name, label: totalName(), score });
-    else if (costSort)
-      sr.textContent = rank == null ? t('leaderboard.row.ariaCostNone', { name, label: totalName(), score }) : t('leaderboard.row.ariaCost', { by: sortName(state.sort), rank, name, value: fmtCNY(it.sortValue), label: totalName(), score });
-    else
-      sr.textContent =
-        rank == null
-          ? t('leaderboard.row.ariaSortNone', { by: sortName(state.sort), name, label: totalName(), score })
-          : t('leaderboard.row.ariaSort', { by: sortName(state.sort), rank, name, value: fmtScore(it.sortValue), label: totalName(), score });
+    const by = sortName(state.sort);
+    const label = totalName();
+    if (state.sort === 'total') {
+      if (rank != null) sr.textContent = t('leaderboard.row.aria', { rank, name, label, score });
+    } else if (rank == null) sr.textContent = t('leaderboard.row.ariaSortNone', { by, name, label, score });
+    else if (isResourceSort(state.sort)) sr.textContent = t('leaderboard.row.ariaMetric', { by, rank, name, value: RESOURCES[state.sort].fmt(it.sortValue), label, score });
+    else sr.textContent = t('leaderboard.row.ariaSort', { by, rank, name, value: fmtScore(it.sortValue), label, score });
   }
 
   // ---------------- measuring ----------------
   // the probe has a name line and a cost cell like a real row: at phone width they sit above and below the plot and take its height
-  const probe = h('li.mrow', { class: withCost ? 'has-cost' : null }, h('span.mrow-check'), h('span.mrow-rank'), h('span.mrow-icon'), h('span.mrow-name', h('a.mrow-open', '\u00a0')), h('span.mrow-plot'), h('span.mrow-score'), withCost ? h('span.mrow-cost', h('b.mrow-cost-v', '\u00a0')) : null, withCost ? h('span.mrow-tok') : null);
+  const probe = h('li.mrow', { class: withCost ? 'has-cost' : null }, h('span.mrow-check'), h('span.mrow-rank'), h('span.mrow-icon'), h('span.mrow-name', h('a.mrow-open', '\u00a0')), h('span.mrow-plot'), h('span.mrow-score'), withCost ? h('span.mrow-cost', h('b.mrow-cost-v', '\u00a0')) : null, withCost ? h('span.mrow-tok') : null, withCost ? h('span.mrow-tps') : null);
   function measure() {
     ol.append(probe);
     const hh = probe.querySelector('.mrow-plot').clientHeight;
@@ -278,29 +303,41 @@ boot(async ({ data }) => {
     vTitle.textContent = viewName(v);
     question.textContent = t(`leaderboard.viewQ.${v}`);
     colsSeg.hidden = !(v === 'matrix' || v === 'compare');
-    sortSel.disabled = v === 'compare';
-    sortBox.title = v === 'compare' ? t('leaderboard.sort.compareOff') : '';
-    if (v === 'compare') {
+    if (costCtl) costCtl.hidden = v === 'compare';
+    const cmp = v === 'compare';
+    sortSel.disabled = cmp;
+    dirBtn.disabled = cmp;
+    sortBox.title = cmp ? t('leaderboard.sort.compareOff') : '';
+    const dirName = t(`leaderboard.sort.dir.${state.dir}`);
+    dirBtn.textContent = `${arrow(state.dir)} ${dirName}`;
+    dirBtn.title = t('leaderboard.sort.dirTitle', { dir: dirName });
+    // the score head sorts by what the big numbers show: the part sorted by, else the total
+    scoreHead.btn.dataset.key = isPartSort(state.sort) ? state.sort : 'total';
+    if (cmp) {
       hRank.replaceChildren();
       hName.textContent = t('leaderboard.head.item');
-      hScore.textContent = t('leaderboard.compare.diffHead');
+      scoreHead.lab.textContent = t('leaderboard.compare.diffHead');
     } else {
-      const by = isCostSort(state.sort) ? t(`leaderboard.sort.${state.sort === 'cost' ? 'costBy' : 'costByDesc'}`) : pick(data.category(state.sort) ?? {}, 'short') || sortName(state.sort);
-      hRank.replaceChildren(...[h('span', t('leaderboard.head.rank')), state.sort !== 'total' ? h('small.lb-h-by', by) : null].filter(Boolean));
+      const by = `${sortShort(state.sort)} ${arrow(state.dir)}`;
+      const sorted = state.sort !== 'total' || state.dir !== defaultDir('total');
+      hRank.replaceChildren(...[h('span', t('leaderboard.head.rank')), sorted ? h('small.lb-h-by', by) : null].filter(Boolean));
       hName.textContent = t('leaderboard.head.model');
       // sorted by a part: its name over the big numbers, the total over the small grey ones
-      if (isPartSort(state.sort)) hScore.replaceChildren(h('small.lb-tot', totalName()), h('span.lb-h-part', sortShort(state.sort)));
-      else hScore.textContent = totalName();
+      if (isPartSort(state.sort)) scoreHead.lab.replaceChildren(h('small.lb-tot', totalName()), h('span.lb-h-part', sortShort(state.sort)));
+      else scoreHead.lab.textContent = totalName();
+    }
+    for (const sh of sortHeads) {
+      const key = sh.btn.dataset.key;
+      const on = !cmp && key === state.sort;
+      sh.btn.disabled = cmp;
+      sh.btn.classList.toggle('is-on', on);
+      sh.btn.setAttribute('aria-pressed', String(on));
+      sh.mark.textContent = cmp ? '' : on ? arrow(state.dir) : '↕';
+      const title = t('leaderboard.sort.headTitle', { name: sortName(key) });
+      sh.btn.title = key === 'tps' ? `${title}\n${t('common.cost.tpsHeadTitle')}` : title;
     }
     board.dataset.view = v;
     board.classList.toggle('is-by-part', isPartSort(state.sort));
-    if (hCostBtn) {
-      const on = isCostSort(state.sort);
-      hCostBtn.textContent = on ? t(`leaderboard.sort.${state.sort === 'cost' ? 'costBy' : 'costByDesc'}`) : t('common.cost.label');
-      hCostBtn.classList.toggle('is-on', on);
-      hCostBtn.title = t(state.sort === 'cost' ? 'leaderboard.sort.costHeadDesc' : 'leaderboard.sort.costHeadAsc');
-      hCostBtn.setAttribute('aria-pressed', String(on));
-    }
   }
 
   function syncSeg({ animate = true } = {}) {
@@ -372,11 +409,13 @@ boot(async ({ data }) => {
     );
   }
 
-  function setSort(k) {
-    if (!sorts.includes(k) || k === state.sort) return;
+  // sort = key + direction; a new key starts in its own direction (scores high first, the cost cheapest first)
+  function setSort(k, dir = k === state.sort ? state.dir : defaultDir(k)) {
+    if (!sorts.includes(k) || (k === state.sort && dir === state.dir)) return;
     state.sort = k;
+    state.dir = dir;
     sortSel.value = k;
-    setParams({ sort: k === 'total' ? null : k });
+    setParams({ sort: k === 'total' ? null : k, dir: dir === defaultDir(k) ? null : dir });
     C = compute(data, state);
     // the score column widens for the grey total (or narrows back): measure the plot first, so the bars morph on the new width
     paintHeads();
@@ -399,6 +438,18 @@ boot(async ({ data }) => {
       rows.redrawAll('switch', { from: 'matrix' });
       paintSrMatrix();
     } else if (state.view === 'compare') compare.render({ animate: true });
+  }
+
+  // 开销口径：订阅折算 / 纯 API 标价（the amounts, the cost sort and the legend follow)
+  function setCost(k) {
+    if (k === getCostMode()) return;
+    setCostMode(k);
+    setParams({ cost: k === 'plan' ? null : k });
+    C = compute(data, state);
+    paintLegend();
+    paintHeads();
+    if (state.view !== 'compare') axis.render(state.view, { animate: true });
+    refresh();
   }
 
   let viewToken = 0;
@@ -478,7 +529,7 @@ boot(async ({ data }) => {
 
   // ---------------- weights ----------------
   // the weights only change the total: moving them goes back to sorting by the total
-  const toTotal = () => state.sort !== 'total' && setSort('total');
+  const toTotal = () => setSort('total', defaultDir('total'));
   function weightsInput() {
     toTotal();
     if (!state.dragging) {
@@ -555,7 +606,7 @@ boot(async ({ data }) => {
   ol.addEventListener('pointermove', (e) => {
     const li = e.target.closest('li.mrow');
     // the cost and token cells: plan, token total, conversion basis note (ui/cost.js)
-    if (li && e.target.closest('.mrow-cost, .mrow-tok')) {
+    if (li && e.target.closest('.mrow-cost, .mrow-tok, .mrow-tps')) {
       if (state.view === 'parts') rows.setFocus(null);
       showTip(costTip(data, li.dataset.id), { x: e.clientX, y: e.clientY - 8 });
       return;

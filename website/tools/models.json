@@ -9,6 +9,7 @@
       "Opus 5.5"
     ],
     "vendor": "Anthropic",
+    "region": "us",
     "logo": "claude",
     "agent": "Claude Code",
     "effort": "xhigh",
@@ -28,6 +29,7 @@
       "Sonnet 5.5"
     ],
     "vendor": "Anthropic",
+    "region": "us",
     "logo": "claude",
     "agent": "Claude Code",
     "effort": "xhigh",
@@ -43,6 +45,7 @@
       "Haiku 5.5"
     ],
     "vendor": "Anthropic",
+    "region": "us",
     "logo": "claude",
     "agent": "Claude Code",
     "effort": "xhigh",
@@ -58,6 +61,7 @@
       "6.1 Sol"
     ],
     "vendor": "OpenAI",
+    "region": "us",
     "logo": "openai",
     "agent": "Codex",
     "effort": "xhigh",
@@ -73,6 +77,7 @@
       "6.1 Terra"
     ],
     "vendor": "OpenAI",
+    "region": "us",
     "logo": "openai",
     "agent": "Codex",
     "effort": "xhigh",
@@ -88,6 +93,7 @@
       "6 Astra"
     ],
     "vendor": "OpenAI",
+    "region": "us",
     "logo": "openai",
     "agent": "Codex",
     "effort": "xhigh",
@@ -107,6 +113,7 @@
       "6 Luna"
     ],
     "vendor": "OpenAI",
+    "region": "us",
     "logo": "openai",
     "agent": "Codex",
     "effort": "xhigh",
@@ -122,6 +129,7 @@
       "GPT-5.6 Sol"
     ],
     "vendor": "OpenAI",
+    "region": "us",
     "logo": "openai",
     "agent": "Codex",
     "effort": "xhigh",
@@ -142,6 +150,7 @@
       "DeepSeek Flash"
     ],
     "vendor": "DeepSeek",
+    "region": "cn",
     "logo": "deepseek",
     "agent": "DeepSeek Harness",
     "effort": "max",
@@ -164,6 +173,7 @@
       "Xiaomi MiMo"
     ],
     "vendor": "Xiaomi",
+    "region": "cn",
     "logo": "xiaomimimo",
     "agent": "MiMo Code",
     "effort": "high",
@@ -185,6 +195,7 @@
       "Tencent Hy4"
     ],
     "vendor": "Tencent",
+    "region": "cn",
     "logo": "hunyuan",
     "agent": "CodeBuddy Code",
     "effort": "high",
@@ -207,9 +218,30 @@
       "Moonshot"
     ],
     "vendor": "Moonshot AI",
+    "region": "cn",
     "logo": "kimi",
     "agent": "Kimi Code",
     "effort": "max",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "qwen4-max",
+    "key": "Qwen/4Max",
+    "name": "Qwen4 Max",
+    "short": "4Max",
+    "aliases": [
+      "Qwen4",
+      "Qwen 4 Max",
+      "qwen4-max-preview",
+      "千问",
+      "通义千问"
+    ],
+    "vendor": "Alibaba",
+    "region": "cn",
+    "logo": "qwen",
+    "agent": "Qwen Code",
+    "effort": "xhigh",
     "tested": "",
     "audit": true
   },
@@ -226,6 +258,7 @@
       "谷歌"
     ],
     "vendor": "Google",
+    "region": "us",
     "logo": "gemini",
     "agent": "Antigravity CLI",
     "effort": "high",
@@ -248,6 +281,7 @@
       "谷歌"
     ],
     "vendor": "Google",
+    "region": "us",
     "logo": "gemini",
     "agent": "Antigravity CLI",
     "effort": "xhigh",
@@ -256,5 +290,172 @@
     "tier": "均衡性价比型",
     "series": "HYDROGEN",
     "portrait": "gemini.png"
+  },
+  {
+    "id": "ernie-5-5-flash",
+    "key": "ERNIE/5.5Flash",
+    "name": "ERNIE 5.5 Flash",
+    "short": "5.5Flash",
+    "aliases": [
+      "ERNIE 5.5",
+      "ERNIE 5.5 Flash Preview",
+      "ernie-5.5-flash-preview",
+      "文心",
+      "文心5.5",
+      "百度",
+      "Baidu"
+    ],
+    "vendor": "Baidu",
+    "region": "cn",
+    "logo": "wenxin",
+    "agent": "OpenCode",
+    "effort": "high",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "minimax-m3-1-flash",
+    "key": "MiniMax/M3.1Flash",
+    "name": "MiniMax M3.1 Flash",
+    "short": "M3.1Flash",
+    "aliases": [
+      "M3.1 Flash",
+      "MiniMax M3.1",
+      "MiniMax-M3.1-Flash",
+      "Space Bunny",
+      "MiniMax"
+    ],
+    "vendor": "MiniMax",
+    "region": "cn",
+    "logo": "minimax",
+    "agent": "MiniMax Code",
+    "effort": "max",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "glm-5-3",
+    "key": "GLM/5.3",
+    "name": "GLM-5.3",
+    "short": "5.3",
+    "aliases": [
+      "GLM 5.3",
+      "glm-5.3",
+      "智谱",
+      "智谱 GLM",
+      "Zhipu",
+      "Z.ai"
+    ],
+    "vendor": "Zhipu",
+    "region": "cn",
+    "logo": "zai",
+    "agent": "ZCode",
+    "effort": "max",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "step-5-preview",
+    "key": "StepFun/Step5Preview",
+    "name": "Step 5 Preview",
+    "short": "Step5",
+    "aliases": [
+      "Step 5",
+      "Step5",
+      "step-5-preview",
+      "阶跃",
+      "阶跃星辰",
+      "StepFun"
+    ],
+    "vendor": "StepFun",
+    "region": "cn",
+    "logo": "stepfun",
+    "agent": "OpenCode",
+    "effort": "high",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "grok-4-7",
+    "key": "xAI/Grok4.7",
+    "name": "Grok 4.7",
+    "short": "4.7",
+    "aliases": [
+      "Grok 4.7",
+      "grok-4.7",
+      "grok-4.7-build",
+      "Grok",
+      "xAI"
+    ],
+    "vendor": "xAI",
+    "region": "us",
+    "logo": "grok",
+    "agent": "Grok Build",
+    "effort": "xhigh",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "dots3-note-preview",
+    "key": "Dots/Dots3NotePreview",
+    "name": "dots3-note preview",
+    "short": "dots3-note",
+    "aliases": [
+      "dots3",
+      "dots3-note",
+      "dots3-note-prev",
+      "小红书",
+      "点点",
+      "Dots",
+      "RedNote"
+    ],
+    "vendor": "Xiaohongshu",
+    "region": "cn",
+    "logo": "dots",
+    "agent": "OpenCode",
+    "effort": "max",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "longcat-2-5",
+    "key": "Meituan/LongCat2.5",
+    "name": "LongCat-2.5",
+    "short": "2.5",
+    "aliases": [
+      "LongCat 2.5",
+      "LongCat",
+      "龙猫",
+      "美团",
+      "Meituan"
+    ],
+    "vendor": "Meituan",
+    "region": "cn",
+    "logo": "longcat",
+    "agent": "OpenCode",
+    "effort": "max",
+    "tested": "",
+    "audit": true
+  },
+  {
+    "id": "doubao-seed-2-1-pro",
+    "key": "Doubao/Seed2.1Pro",
+    "name": "Doubao-Seed-2.1-pro",
+    "short": "Seed2.1Pro",
+    "aliases": [
+      "Doubao Seed 2.1 Pro",
+      "doubao-seed-2.1-pro",
+      "豆包",
+      "豆包 2.1 Pro",
+      "字节",
+      "ByteDance"
+    ],
+    "vendor": "ByteDance",
+    "region": "cn",
+    "logo": "doubao",
+    "agent": "OpenCode",
+    "effort": "high",
+    "tested": "",
+    "audit": true
   }
 ]

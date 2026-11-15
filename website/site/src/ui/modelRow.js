@@ -1,7 +1,7 @@
 // Model rows (leaderboard.md「共用部件 / 模型行」), used by the leaderboard,
 // the category boards and the task pages.
 //
-// Columns: tick │ rank │ vendor icon │ full name │ plot │ score (│ test cost, with cost: true).
+// Columns: tick │ rank │ vendor icon │ full name │ plot │ score (│ test cost │ tokens used │ TPS, with cost: true).
 // The name is a link to the model scores page /models/<id>/ (with 名字接力);
 // a click anywhere else in the row opens the side panel (data-model-panel on
 // the row; for the keyboard a visually hidden button after the name does it).
@@ -27,8 +27,8 @@
 // 名次格的定制钩子 rank(cell, entry, ctx)：替代默认的「01」/「评测中」，自己往格里写；
 // 它在本行的读屏句（ctx.sr）写好之后跑，需要时可以改写那一句。
 //
-// 测试开销列（cost: true，排行总榜用）：分数后面多两格，同一行、竖直居中——.mrow-cost 金额 ¥23.4 后跟依据小记号
-// （○ 按订阅折算、◆ 按 API 标价折算，形状区分；金额为 null 写「暂无数据」），.mrow-tok 13 题合计 Token；
+// 资源列（cost: true，排行总榜用）：分数后面多三格，同一行、竖直居中——.mrow-cost 金额 ¥23.4 后跟依据小记号
+// （○ 按订阅折算、◆ 按 API 标价折算，形状区分；金额为 null 写「暂无数据」），.mrow-tok 13 题 Token 消耗，.mrow-tps 输出速度；
 // 记号的意思由页面写一次图例（ui/cost.js costLegend）；
 // 取 scores.<id>.cost（ui/cost.js），读屏句末尾接一句开销。表头 createRowHead({ cost: '测试开销', tokens: 'Token' }) 同列。
 import { h } from '../core/dom.js';
@@ -42,7 +42,7 @@ import { dur, flip, stagger, isInView } from '../motion.js';
 import { createBar, setBar } from '../charts/bar.js';
 import { GRID } from '../charts/axis.js';
 import { rowsToSVG } from '../charts/export.js';
-import { costOf, fillCost, fillTokens, costSr } from './cost.js';
+import { costOf, fillCost, fillTokens, fillTps, costSr } from './cost.js';
 
 /**
  * Default plot: a bar from 0 to the value on the fixed 0–100 scale, faint grid
@@ -135,6 +135,7 @@ export function createModelRow(entry, opts) {
     h('span.mrow-score.num', { 'aria-hidden': 'true' }),
     opts.cost ? h('span.mrow-cost', { 'aria-hidden': 'true' }) : null,
     opts.cost ? h('span.mrow-tok', { 'aria-hidden': 'true' }) : null,
+    opts.cost ? h('span.mrow-tps', { 'aria-hidden': 'true' }) : null,
     h('span.sr-only.mrow-sr'),
   ].filter(Boolean));
   fillRow(li, entry, opts, { first: true, animate: false });
@@ -175,8 +176,8 @@ function fillRow(li, entry, opts, { first, animate, delay = 0 }) {
   if (costCell && opts.data) {
     const cost = costOf(opts.data, entry.id);
     fillCost(costCell, cost);
-    const tokCell = li.querySelector(':scope > .mrow-tok');
-    if (tokCell) fillTokens(tokCell, cost);
+    fillTokens(li.querySelector(':scope > .mrow-tok'), cost);
+    fillTps(li.querySelector(':scope > .mrow-tps'), cost);
     sr.textContent = t('common.cost.srAppend', { text: sr.textContent, cost: costSr(cost) });
   }
 }

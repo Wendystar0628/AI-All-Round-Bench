@@ -199,6 +199,31 @@
     },
     {
       "type": "model",
+      "id": "qwen4-max",
+      "name": "Qwen4 Max",
+      "en": "Qwen4 Max",
+      "short": "4Max",
+      "terms": [
+        "Qwen 4 Max",
+        "qwen4-max-preview",
+        "千问",
+        "通义千问",
+        "Alibaba",
+        "Qwen Code",
+        "Qwen/4Max"
+      ],
+      "py": [
+        "qianwen",
+        "tongyiqianwen"
+      ],
+      "pyi": [
+        "qw",
+        "tyqw"
+      ],
+      "href": "/models/qwen4-max/"
+    },
+    {
+      "type": "model",
       "id": "gemini-4-carbon",
       "name": "Gemini 4 Carbon",
       "en": "Gemini 4 Carbon",
@@ -238,6 +263,192 @@
         "gg"
       ],
       "href": "/models/gemini-4-hydrogen/"
+    },
+    {
+      "type": "model",
+      "id": "ernie-5-5-flash",
+      "name": "ERNIE 5.5 Flash",
+      "en": "ERNIE 5.5 Flash",
+      "short": "5.5Flash",
+      "terms": [
+        "ERNIE 5.5 Flash Preview",
+        "ernie-5.5-flash-preview",
+        "文心",
+        "文心5.5",
+        "百度",
+        "Baidu",
+        "OpenCode",
+        "ERNIE/5.5Flash"
+      ],
+      "py": [
+        "wenxin",
+        "wenxin55",
+        "baidu"
+      ],
+      "pyi": [
+        "wx",
+        "wx55",
+        "bd"
+      ],
+      "href": "/models/ernie-5-5-flash/"
+    },
+    {
+      "type": "model",
+      "id": "minimax-m3-1-flash",
+      "name": "MiniMax M3.1 Flash",
+      "en": "MiniMax M3.1 Flash",
+      "short": "M3.1Flash",
+      "terms": [
+        "MiniMax-M3.1-Flash",
+        "Space Bunny",
+        "MiniMax Code",
+        "MiniMax/M3.1Flash"
+      ],
+      "py": [],
+      "pyi": [],
+      "href": "/models/minimax-m3-1-flash/"
+    },
+    {
+      "type": "model",
+      "id": "glm-5-3",
+      "name": "GLM-5.3",
+      "en": "GLM-5.3",
+      "short": "5.3",
+      "terms": [
+        "GLM 5.3",
+        "智谱",
+        "智谱 GLM",
+        "Zhipu",
+        "Z.ai",
+        "ZCode",
+        "GLM/5.3"
+      ],
+      "py": [
+        "zhipu",
+        "zhipuglm"
+      ],
+      "pyi": [
+        "zp",
+        "zpglm"
+      ],
+      "href": "/models/glm-5-3/"
+    },
+    {
+      "type": "model",
+      "id": "step-5-preview",
+      "name": "Step 5 Preview",
+      "en": "Step 5 Preview",
+      "short": "Step5",
+      "terms": [
+        "step-5-preview",
+        "阶跃",
+        "阶跃星辰",
+        "StepFun",
+        "OpenCode",
+        "StepFun/Step5Preview"
+      ],
+      "py": [
+        "jieyue",
+        "jieyuexingchen"
+      ],
+      "pyi": [
+        "jy",
+        "jyxc"
+      ],
+      "href": "/models/step-5-preview/"
+    },
+    {
+      "type": "model",
+      "id": "grok-4-7",
+      "name": "Grok 4.7",
+      "en": "Grok 4.7",
+      "short": "4.7",
+      "terms": [
+        "grok-4.7",
+        "grok-4.7-build",
+        "xAI",
+        "Grok Build",
+        "xAI/Grok4.7"
+      ],
+      "py": [],
+      "pyi": [],
+      "href": "/models/grok-4-7/"
+    },
+    {
+      "type": "model",
+      "id": "dots3-note-preview",
+      "name": "dots3-note preview",
+      "en": "dots3-note preview",
+      "short": "dots3-note",
+      "terms": [
+        "dots3-note-prev",
+        "小红书",
+        "点点",
+        "RedNote",
+        "Xiaohongshu",
+        "OpenCode",
+        "Dots/Dots3NotePreview"
+      ],
+      "py": [
+        "xiaohongshu",
+        "diandian"
+      ],
+      "pyi": [
+        "xhs",
+        "dd"
+      ],
+      "href": "/models/dots3-note-preview/"
+    },
+    {
+      "type": "model",
+      "id": "longcat-2-5",
+      "name": "LongCat-2.5",
+      "en": "LongCat-2.5",
+      "short": "2.5",
+      "terms": [
+        "LongCat 2.5",
+        "龙猫",
+        "美团",
+        "Meituan",
+        "OpenCode",
+        "Meituan/LongCat2.5"
+      ],
+      "py": [
+        "longmao",
+        "meituan"
+      ],
+      "pyi": [
+        "lm",
+        "mt"
+      ],
+      "href": "/models/longcat-2-5/"
+    },
+    {
+      "type": "model",
+      "id": "doubao-seed-2-1-pro",
+      "name": "Doubao-Seed-2.1-pro",
+      "en": "Doubao-Seed-2.1-pro",
+      "short": "Seed2.1Pro",
+      "terms": [
+        "Doubao Seed 2.1 Pro",
+        "豆包",
+        "豆包 2.1 Pro",
+        "字节",
+        "ByteDance",
+        "OpenCode",
+        "Doubao/Seed2.1Pro"
+      ],
+      "py": [
+        "doubao",
+        "doubao21pro",
+        "zijie"
+      ],
+      "pyi": [
+        "db",
+        "db21pro",
+        "zj"
+      ],
+      "href": "/models/doubao-seed-2-1-pro/"
     },
     {
       "type": "task",

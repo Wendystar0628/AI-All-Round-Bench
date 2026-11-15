@@ -48,14 +48,39 @@
     "compare": "2 to 4 ticked models, measure by measure"
   },
   "sort": {
-    "cost": "Test cost",
-    "costDesc": "Test cost (high→low)",
-    "costBy": "Cost ↑",
-    "costByDesc": "Cost ↓",
-    "costHeadAsc": "Sort by test cost, low to high",
-    "costHeadDesc": "Sort by test cost, high to low",
     "label": "Sort",
+    "cost": "Test cost",
+    "tokens": "Tokens used",
+    "tps": "Output speed (TPS)",
+    "dir": {
+      "desc": "Descending",
+      "asc": "Ascending"
+    },
+    "dirTitle": "{dir} now; click to switch between ascending and descending",
+    "headTitle": "Sort by {name}; click again to switch between ascending and descending",
     "compareOff": "Compare keeps the ticking order; sorting does not apply"
+  },
+  "scope": {
+    "label": "Models",
+    "all": "All",
+    "big3": "Big three",
+    "us": "US",
+    "cn": "China",
+    "title": {
+      "all": "All models",
+      "big3": "OpenAI, Anthropic and Google only",
+      "us": "Models from US vendors only",
+      "cn": "Models from Chinese vendors only"
+    }
+  },
+  "costMode": {
+    "label": "Cost",
+    "plan": "Subscription",
+    "api": "API price",
+    "title": {
+      "plan": "Subscribed models prorated to their plan; the others at official API prices",
+      "api": "Every model at official API list prices, request by request"
+    }
   },
   "cols": {
     "label": "Columns",
@@ -72,11 +97,10 @@
     "passCount": "Passed {a} │ Below {b}"
   },
   "row": {
-    "ariaCost": "Rank {rank} by {by}, {name}, test cost {value}, {label} {score}",
-    "ariaCostNone": "No test cost data, {name}, {label} {score}",
     "aria": "Rank {rank}, {name}, {label} {score}",
     "ariaSort": "Rank {rank} by {by}, {name}, {by} {value}, {label} {score}",
-    "ariaSortNone": "No {by} score yet, {name}, {label} {score}"
+    "ariaMetric": "Rank {rank} by {by}, {name}, {by} {value}, {label} {score}",
+    "ariaSortNone": "No {by} data yet, {name}, {label} {score}"
   },
   "tip": {
     "part": "{cat} {v} × {w} = {c}",

@@ -42,14 +42,39 @@
     "compare": "勾选的 2 到 4 个模型逐项差多少"
   },
   "sort": {
-    "cost": "测试开销",
-    "costDesc": "测试开销（高→低）",
-    "costBy": "测试开销 ↑",
-    "costByDesc": "测试开销 ↓",
-    "costHeadAsc": "按测试开销从低到高排序",
-    "costHeadDesc": "按测试开销从高到低排序",
     "label": "排序",
+    "cost": "测试开销",
+    "tokens": "Token 消耗",
+    "tps": "输出速度 TPS",
+    "dir": {
+      "desc": "降序",
+      "asc": "升序"
+    },
+    "dirTitle": "当前{dir}，点击切换升序 / 降序",
+    "headTitle": "按{name}排序；再点一次切换升序 / 降序",
     "compareOff": "对比视图按勾选顺序排列，不用排序"
+  },
+  "scope": {
+    "label": "模型",
+    "all": "全部",
+    "big3": "御三家",
+    "us": "美国",
+    "cn": "国产",
+    "title": {
+      "all": "全部模型",
+      "big3": "只看 OpenAI、Anthropic、Google",
+      "us": "只看美国厂商的模型",
+      "cn": "只看国产模型"
+    }
+  },
+  "costMode": {
+    "label": "开销",
+    "plan": "订阅折算",
+    "api": "API 标价",
+    "title": {
+      "plan": "订阅模型按套餐折算，没有订阅的按官方 API 标价",
+      "api": "全部模型都按官方 API 标价逐次计算"
+    }
   },
   "cols": {
     "label": "粒度",
@@ -66,11 +91,10 @@
     "passCount": "及格 {a} │ 未及格 {b}"
   },
   "row": {
-    "ariaCost": "按{by}第 {rank} 名，{name}，测试开销 {value}，{label} {score} 分",
-    "ariaCostNone": "测试开销暂无数据，{name}，{label} {score} 分",
     "aria": "第 {rank} 名，{name}，{label} {score} 分",
     "ariaSort": "按{by}第 {rank} 名，{name}，{by} {value} 分，{label} {score} 分",
-    "ariaSortNone": "{by}未出分，{name}，{label} {score} 分"
+    "ariaMetric": "按{by}第 {rank} 名，{name}，{by} {value}，{label} {score} 分",
+    "ariaSortNone": "{by}暂无数据，{name}，{label} {score} 分"
   },
   "tip": {
     "part": "{cat} {v} × {w} = {c}",

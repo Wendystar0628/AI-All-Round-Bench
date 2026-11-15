@@ -95,10 +95,10 @@ export function fitText(textEl, full, maxW) {
 }
 
 /**
- * The top of the ¥ scale used when sorting by test cost: five equal steps, each a round amount
- * (1, 2, 2.5 or 5 × 10ⁿ), so the 20 / 40 / 60 / 80 grid lines of the 0–100 scale fall on round amounts.
+ * The top of a resource scale (cost, tokens, speed) when sorting by it: five equal steps, each a round value
+ * (1, 2, 2.5 or 5 × 10ⁿ), so the 20 / 40 / 60 / 80 grid lines of the 0–100 scale fall on round values.
  */
-export function costTop(max) {
+export function niceTop(max) {
   if (!(max > 0)) return 1;
   const raw = max / 5;
   const mag = 10 ** Math.floor(Math.log10(raw));
@@ -106,5 +106,5 @@ export function costTop(max) {
   return step * 5;
 }
 
-/** The ¥ scale onto the same range as the 0–100 scale (scaleX). */
-export const scaleCost = (W, max) => scaleX(W).copy().domain([0, costTop(max)]);
+/** A resource scale onto the same range as the 0–100 scale (scaleX). */
+export const scaleTo = (W, max) => scaleX(W).copy().domain([0, niceTop(max)]);

@@ -1,14 +1,27 @@
 // Numbers behind the leaderboard: custom weights, the entries for the model
 // rows (sorted and filtered), and the best values each view highlights.
 // Everything is computed from the data; nothing about the models is fixed.
-import { rankBy, modelStatus, round1 } from '../../core/index.js';
-import { hasCosts } from '../../ui/cost.js';
+import { rankBy, valueOf, modelStatus, round1 } from '../../core/index.js';
+import { hasCosts, costOf, fmtCNY, fmtTokenValue } from '../../ui/cost.js';
 
-/** Sorting by test cost: cheapest first, or (cost-desc) dearest first. */
-export const COST_SORTS = ['cost', 'cost-desc'];
-export const isCostSort = (k) => COST_SORTS.includes(k);
+/**
+ * The resource columns right of the score, each a sort of its own: test cost (¥), tokens used, output speed.
+ *   of(cost) its value from scores.<id>.cost (ui/cost.js costOf, so the cost follows the chosen basis)
+ *   fmt(v)   the value as written in a tooltip or a screen reader sentence
+ *   tick(v)  an axis label when the bars draw it
+ *   dir      the direction the sort starts in
+ */
+export const RESOURCES = {
+  cost: { of: (c) => c?.cny ?? null, fmt: fmtCNY, tick: (v) => `¥${+v.toFixed(2)}`, dir: 'asc' },
+  tokens: { of: (c) => c?.tokens ?? null, fmt: fmtTokenValue, tick: fmtTokenValue, dir: 'desc' },
+  tps: { of: (c) => c?.tps ?? null, fmt: (v) => String(Math.round(v)), tick: (v) => String(+v.toFixed(1)), dir: 'desc' },
+};
+export const isResourceSort = (k) => Object.hasOwn(RESOURCES, k);
 /** Sorting by one part of the total (a kind of tasks or a category): the bar and the big number show that part. */
-export const isPartSort = (k) => k !== 'total' && !isCostSort(k);
+export const isPartSort = (k) => k !== 'total' && !isResourceSort(k);
+/** Sort directions; a sort starts high first, the test cost cheapest first. */
+export const DIRS = ['desc', 'asc'];
+export const defaultDir = (k) => RESOURCES[k]?.dir ?? 'desc';
 
 export const VIEWS = ['total', 'pass', 'parts', 'kinds', 'matrix', 'compare'];
 export const PASS = 60;
@@ -65,32 +78,36 @@ export function presets(data) {
   ];
 }
 
-/** Sort options: total, the two kinds, each category (data order), then the test cost when the data has it. */
+/** Sort options: total, the two kinds, each category (data order), then the resource columns when the data has costs. */
 export function sortKeys(data) {
-  return ['total', 'standard', 'design', ...data.categories.map((c) => c.key), ...(hasCosts(data) ? COST_SORTS : [])];
+  return ['total', 'standard', 'design', ...data.categories.map((c) => c.key), ...(hasCosts(data) ? Object.keys(RESOURCES) : [])];
 }
 
 /**
- * The order by test cost (leaderboard.md 排序): models with an amount by cny (ascending, or descending for
- * cost-desc), equal amounts share a rank (1, 1, 3) and go by total score; then the ranked models without an
- * amount (数据暂缺, no rank), then the models still being tested (no rank), both by total score.
- * totalOf(id) is the total in use (custom weights included). Returns [{ id, value, rank }].
+ * One order for every sort (leaderboard.md 排序): the models with a value by it, high or low first (dir); equal
+ * values (as shown) share a rank (1, 1, 3) and go by total, then name; then the models without a value (rank null):
+ * the fully scored ones before those still being tested, by total. A score counts wherever the model has it; a
+ * resource only for fully scored models. totalOf(id) is the total in use (custom weights included).
+ * Returns [{ id, value, rank }].
  */
-function costOrder(data, desc, totalOf) {
-  const cny = (id) => data.score(id)?.cost?.cny ?? null;
+function orderBy(data, key, dir, totalOf) {
   const ranked = (id) => modelStatus(data, id) === 'ranked';
-  const byTotal = (a, b) => (totalOf(b) ?? -1) - (totalOf(a) ?? -1);
-  const priced = data.order.filter((id) => ranked(id) && cny(id) != null).sort((a, b) => (desc ? cny(b) - cny(a) : cny(a) - cny(b)) || byTotal(a, b));
+  const resource = isResourceSort(key);
+  const value = key === 'total' ? totalOf : resource ? (id) => (ranked(id) ? RESOURCES[key].of(costOf(data, id)) : null) : (id) => valueOf(data, id, key);
+  const shown = (id) => (resource ? +value(id) : round1(value(id)));
+  const sign = dir === 'asc' ? 1 : -1;
+  const byTotal = (a, b) => (totalOf(b) ?? -1) - (totalOf(a) ?? -1) || data.model(a).name.localeCompare(data.model(b).name);
+  const valued = data.order.filter((id) => value(id) != null).sort((a, b) => sign * (shown(a) - shown(b)) || byTotal(a, b));
   let rank = 0;
   let prev = null;
-  const out = priced.map((id, i) => {
-    if (cny(id) !== prev) {
+  const out = valued.map((id, i) => {
+    if (shown(id) !== prev) {
       rank = i + 1;
-      prev = cny(id);
+      prev = shown(id);
     }
-    return { id, value: cny(id), rank };
+    return { id, value: value(id), rank };
   });
-  const rest = data.order.filter((id) => !priced.includes(id)).sort((a, b) => (ranked(a) ? 0 : 1) - (ranked(b) ? 0 : 1) || byTotal(a, b));
+  const rest = data.order.filter((id) => value(id) == null).sort((a, b) => (ranked(a) ? 0 : 1) - (ranked(b) ? 0 : 1) || byTotal(a, b));
   return out.concat(rest.map((id) => ({ id, value: null, rank: null })));
 }
 
@@ -101,15 +118,15 @@ const maxOf = (vals) => {
 
 /**
  * Everything one render needs.
- *   S: { sort, sliders, custom }
+ *   S: { sort, dir, sliders, custom }
  * Returns {
  *   info: Map<id, { id, model, status, total, totalRank, officialRank, delta, sortRank, sortValue,
  *                   std, des, cats:{k}, tasks:{k}, contrib:{k} }>,
- *   order: [id]   (sorted by S.sort; ranked first, then the rest),
+ *   order: [id]   (by S.sort in S.dir; models with a value first, then the rest),
  *   best: { total, std, des, cat:{k}, task:{k}, contrib:{k}, sort },   (sort: the best value of a score sort)
  *   weights: effective weights {k: pct} (official when not custom),
  *   pass: { yes, no }   (by the sorted score: the total, or the part sorted by),
- *   costMax: the largest test cost (¥) of a ranked model, or null
+ *   resourceMax: the largest value of the resource sorted by (the top of its bar scale), else null
  * }
  */
 export function compute(data, S) {
@@ -120,7 +137,7 @@ export function compute(data, S) {
   const official = S.custom ? rankBy(data, 'total') : totals;
   const offRank = new Map(official.map((e) => [e.id, e.rank]));
   const totRank = new Map(totals.map((e) => [e.id, e]));
-  const sorted = S.sort === 'total' ? totals : isCostSort(S.sort) ? costOrder(data, S.sort === 'cost-desc', (id) => totRank.get(id)?.value ?? null) : rankBy(data, S.sort);
+  const sorted = orderBy(data, S.sort, S.dir, (id) => totRank.get(id)?.value ?? null);
 
   const info = new Map();
   for (const id of data.order) {
@@ -177,14 +194,14 @@ export function compute(data, S) {
   best.sort = part ? maxOf(ranked.map((x) => x.sortValue)) : best.total;
   const passOf = (x) => (part ? x.sortValue : x.total);
   const passYes = ranked.filter((x) => passOf(x) != null && round1(passOf(x)) >= PASS).length;
-  const costs = ranked.map((x) => data.score(x.id)?.cost?.cny).filter((v) => v != null && Number.isFinite(+v));
+  const resourceValues = isResourceSort(S.sort) ? sorted.filter((e) => e.value != null).map((e) => +e.value) : [];
   return {
     info,
     order: sorted.map((e) => e.id),
     best,
     weights,
     pass: { yes: passYes, no: ranked.filter((x) => passOf(x) != null).length - passYes },
-    costMax: costs.length ? Math.max(...costs.map(Number)) : null,
+    resourceMax: resourceValues.length ? Math.max(...resourceValues) : null,
   };
 }
 

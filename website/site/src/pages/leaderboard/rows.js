@@ -8,15 +8,15 @@
 // come from CSS keyed on data-look / data-grid, switched at stage times.
 // The total and pass views draw the measure sorted by (data-metric): the total;
 // a kind or a category (one bar of that part, in its legend colour, 0–100);
-// or the test cost (one grey bar on a ¥ scale, no pass line).
+// or a resource — test cost, tokens, speed (one grey bar on its own scale, no pass line).
 import * as d3 from '../../charts/d3.js';
 import { svg as svgEl, t, pick, fmtScore, fmtDiff, fmtPct, fmtRankOf, round1, modelLabel, rankOf, progress } from '../../core/index.js';
 import { fill, needsEdge, starPath, CATEGORY_VAR, resolve, stepFill, stepInk } from '../../charts/index.js';
 import { DASH } from '../../core/format.js';
 import { dur, durIn, ease, stagger, isInView, reduced } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
-import { scaleX, scaleCost, columns, BAR_H } from './layout.js';
-import { PASS, isTop, isCostSort, isPartSort } from './model.js';
+import { scaleX, scaleTo, columns, BAR_H } from './layout.js';
+import { PASS, RESOURCES, isTop, isResourceSort, isPartSort } from './model.js';
 
 const ROW_VIEWS = new Set(['total', 'pass', 'parts', 'kinds', 'matrix']);
 const TICKS_OF = { total: 'pct', kinds: 'pct', compare: 'pct', pass: 'pass', parts: 'legend', matrix: 'matrix' };
@@ -45,10 +45,10 @@ const lum = (str) => {
 };
 const onColour = (key) => (lum(resolve(CATEGORY_VAR[key] ?? '--series')) > 0.3 ? 'var(--st-on-flare)' : '#ffffff');
 
-/** The kind of a sort's bar: 'total' │ 'cost' │ 'part'; std marks a standard-task part (drawn lime, the rest in the series colour). */
+/** The kind of a sort's bar: 'total' │ 'resource' │ 'part'; std marks a standard-task part (drawn lime, the rest in the series colour). */
 export function metricOf(key, data) {
   if (key === 'total') return { kind: 'total' };
-  if (isCostSort(key)) return { kind: 'cost' };
+  if (isResourceSort(key)) return { kind: 'resource' };
   const std = key === 'standard' || (key !== 'design' && data?.category(key)?.kind === 'standard');
   return { kind: 'part', std };
 }
@@ -130,7 +130,7 @@ export function createRows({ data, state, computed, list, sortLabel = (k) => k }
   }
 
   // ---- geometry targets for one row in one view ----
-  // the measure the total and pass views draw: the total, the part sorted by, or the test cost
+  // the measure the total and pass views draw: the total, the part sorted by, or the resource sorted by
   const metricValue = (info) => (state.sort === 'total' ? info.total : info.sortValue);
   const metricBest = () => (isPartSort(state.sort) ? C().best.sort : C().best.total);
 
@@ -138,9 +138,9 @@ export function createRows({ data, state, computed, list, sortLabel = (k) => k }
     const v = info.total;
     const mid = H / 2;
     const by = mid - BAR_H / 2;
-    const sortKind = state.sort === 'total' ? 'total' : isCostSort(state.sort) ? 'cost' : 'part';
+    const sortKind = metricOf(state.sort, data).kind;
     const mv = metricValue(info);
-    // one bar from 0 to the value (a part on 0–100, the cost on the ¥ scale); the other segments wait at its end
+    // one bar from 0 to the value (a part on 0–100, a resource on its own scale); the other segments wait at its end
     const single = (at) => cats.map((c, i) => (i === 0 ? { x: 0, w: at, y: by, h: BAR_H, o: 1 } : { x: at, w: 0, y: by, h: BAR_H, o: 1 }));
     const cs = cats.map((c) => info.contrib[c.key] ?? 0);
     const csum = cs.reduce((a, b) => a + b, 0);
@@ -156,15 +156,15 @@ export function createRows({ data, state, computed, list, sortLabel = (k) => k }
     const joined = (i, w) => (i < lastOn && w > 0 ? w + 0.75 : w);
     const T = { segs: [], best: null, pend: false, kinds: null, dl: null, gedge: null };
     const zero = (at, h = BAR_H, y = by) => cats.map(() => ({ x: at, w: 0, y, h, o: 0 }));
-    if ((view === 'total' || view === 'pass') && sortKind === 'cost') {
-      // by test cost: a model still being tested keeps its hatch; a ranked one without an amount gets no bar, only a dash
+    if ((view === 'total' || view === 'pass') && sortKind === 'resource') {
+      // by a resource: a model still being tested keeps its hatch; a ranked one without the value gets no bar, only a dash
       if (info.status !== 'ranked') {
         T.segs = zero(0);
         T.pend = true;
       } else if (mv == null) {
         T.segs = zero(0);
         T.dl = { x: 4, anchor: 'start', text: DASH };
-      } else T.segs = single(scaleCost(W, C().costMax)(mv));
+      } else T.segs = single(scaleTo(W, C().resourceMax)(mv));
       return T;
     }
     if (view === 'total' && sortKind === 'part') {
@@ -365,8 +365,8 @@ export function createRows({ data, state, computed, list, sortLabel = (k) => k }
     const v = info.total;
     const metric = metricOf(state.sort, data);
     const barView = view === 'total' || view === 'pass';
-    // the value the single bar of the total and pass views stands for (the total, the part sorted by; the cost is not scored)
-    const mv = metric.kind === 'cost' ? null : metricValue(info);
+    // the value the single bar of the total and pass views stands for (the total, the part sorted by; a resource is not scored)
+    const mv = metric.kind === 'resource' ? null : metricValue(info);
     svg.classList.toggle('is-below', mv != null && round1(mv) < PASS);
     svg.dataset.metric = metric.kind;
     svg.classList.toggle('is-std', !!metric.std);
@@ -391,7 +391,7 @@ export function createRows({ data, state, computed, list, sortLabel = (k) => k }
     band.setAttribute('width', 12);
     band.setAttribute('y', 0);
     band.setAttribute('height', H);
-    svg.dataset.grid = barView && metric.kind === 'cost' ? 'cost' : view === 'pass' ? 'pass' : view === 'matrix' ? 'none' : 'base';
+    svg.dataset.grid = barView && metric.kind === 'resource' ? 'resource' : view === 'pass' ? 'pass' : view === 'matrix' ? 'none' : 'base';
 
     // colours: back to the plain bar first, the new look in stage 3
     if (mode === 'switch' && from !== view) {
@@ -679,7 +679,7 @@ export function createRows({ data, state, computed, list, sortLabel = (k) => k }
         return `${name} │ ${what} ${fmtScore(val)} │ ${fmtRankOf(r.rank, r.of)}`;
       }
       if (view === 'kinds') return `${name} │ ${t('common.kind.standard')} ${fmtScore(info.std)} │ ${t('common.kind.design')} ${fmtScore(info.des)}`;
-      if ((view === 'total' || view === 'pass') && isCostSort(state.sort)) return `${name} │ ${sortLabel(state.sort)} ${info.sortValue == null ? DASH : `¥${+(+info.sortValue).toFixed(1)}`} │ ${totalLabel} ${fmtScore(info.total)}`;
+      if ((view === 'total' || view === 'pass') && isResourceSort(state.sort)) return `${name} │ ${sortLabel(state.sort)} ${info.sortValue == null ? DASH : RESOURCES[state.sort].fmt(info.sortValue)} │ ${totalLabel} ${fmtScore(info.total)}`;
       if ((view === 'total' || view === 'pass') && isPartSort(state.sort)) {
         const mv = info.sortValue;
         const what = sortLabel(state.sort);
