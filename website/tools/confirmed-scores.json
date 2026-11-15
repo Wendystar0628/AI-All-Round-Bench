@@ -137,23 +137,6 @@
       "tested": "2026-11-12"
     },
     {
-      "id": "mimo-v2-6-pro",
-      "key": "MiMo/V2.6Pro",
-      "name": "MiMo V2.6 Pro",
-      "short": "V2.6Pro",
-      "aliases": [
-        "MiMo",
-        "V2.6 Pro",
-        "MiMo Pro",
-        "Xiaomi MiMo"
-      ],
-      "vendor": "Xiaomi",
-      "logo": "xiaomimimo",
-      "agent": "MiMo Code",
-      "effort": "high",
-      "tested": "2026-11-12"
-    },
-    {
       "id": "hy4",
       "key": "Hy/Hy4",
       "name": "Hy4",
@@ -245,10 +228,28 @@
         "通义千问"
       ],
       "tested": "2026-11-15"
+    },
+    {
+      "id": "mimo-v2-6-pro",
+      "key": "MiMo/V2.6Pro",
+      "name": "MiMo V2.6 Pro",
+      "short": "V2.6Pro",
+      "vendor": "Xiaomi",
+      "region": "cn",
+      "logo": "xiaomimimo",
+      "agent": "MiMo Code",
+      "effort": "high",
+      "aliases": [
+        "MiMo",
+        "V2.6 Pro",
+        "MiMo Pro",
+        "Xiaomi MiMo"
+      ],
+      "tested": "2026-11-12"
     }
   ],
   "scores": {
-    "updated": "2026-11-15",
+    "updated": "2026-11-16",
     "order": [
       "gpt-6-astra",
       "gpt-6-1-sol",
@@ -1992,12 +1993,12 @@
       "mimo-v2-6-pro": {
         "total": 16.6,
         "kinds": {
-          "standard": 6.0,
+          "standard": 6.1,
           "design": 27.2
         },
         "categories": {
           "reason": 0.0,
-          "algo": 11.6,
+          "algo": 12.2,
           "battle": 10.3,
           "spatial": 8.0,
           "drawing": 0.0,
@@ -2010,7 +2011,7 @@
         "tasks": {
           "formal-proof": 0.0,
           "math-olympiad": 0.0,
-          "raytracing": 20.0,
+          "raytracing": 21.1,
           "circuit": 3.2,
           "conquest": 10.3,
           "luban": 8.0,
