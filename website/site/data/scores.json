@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15",
+  "updated": "2026-11-16",
   "cost_source": {
     "name": "ModelDial 订阅额度",
     "name_en": "ModelDial subscription quotas",
@@ -1281,7 +1281,7 @@
       "task_ranks": {
         "formal-proof": 8,
         "math-olympiad": 9,
-        "raytracing": 13,
+        "raytracing": 14,
         "circuit": 10,
         "conquest": 7,
         "luban": 14,
@@ -1437,7 +1437,7 @@
       "task_ranks": {
         "formal-proof": 10,
         "math-olympiad": 10,
-        "raytracing": 9,
+        "raytracing": 10,
         "circuit": 7,
         "conquest": 6,
         "luban": 13,
@@ -1752,7 +1752,7 @@
       "rank": 11,
       "category_ranks": {
         "reason": 13,
-        "algo": 15,
+        "algo": 19,
         "battle": 11,
         "spatial": 10,
         "drawing": 8,
@@ -1765,8 +1765,8 @@
       "task_ranks": {
         "formal-proof": 10,
         "math-olympiad": 13,
-        "raytracing": 15,
-        "circuit": 15,
+        "raytracing": 19,
+        "circuit": 17,
         "conquest": 11,
         "luban": 10,
         "drawing": 8,
@@ -1905,24 +1905,27 @@
         }
       },
       "cost": {
-        "cny": null,
+        "cny": 73.1,
         "basis": "subscription",
         "tokens": 175991783,
-        "method": null,
+        "method": "api_price",
         "api_usd": 66.0,
         "api_cny": 443.2,
         "hours": 15.2,
         "tps": 58.6,
         "tps_replies": 798,
         "plan": {
-          "name": "QwenCloud Token Plan",
-          "price": null
+          "name": "QwenCloud Token Plan Essential",
+          "name_en": "QwenCloud Token Plan Essential",
+          "price": 79,
+          "currency": "CNY",
+          "period": "month"
         }
       },
       "rank": 12,
       "category_ranks": {
         "reason": 12,
-        "algo": 13,
+        "algo": 14,
         "battle": 14,
         "spatial": 9,
         "drawing": 12,
@@ -1935,8 +1938,8 @@
       "task_ranks": {
         "formal-proof": 10,
         "math-olympiad": 12,
-        "raytracing": 12,
-        "circuit": 14,
+        "raytracing": 13,
+        "circuit": 16,
         "conquest": 14,
         "luban": 9,
         "drawing": 12,
@@ -2098,7 +2101,7 @@
       "rank": 13,
       "category_ranks": {
         "reason": 14,
-        "algo": 11,
+        "algo": 12,
         "battle": 13,
         "spatial": 14,
         "drawing": 13,
@@ -2111,8 +2114,8 @@
       "task_ranks": {
         "formal-proof": 14,
         "math-olympiad": 14,
-        "raytracing": 10,
-        "circuit": 11,
+        "raytracing": 11,
+        "circuit": 12,
         "conquest": 13,
         "luban": 14,
         "drawing": 13,
@@ -2260,7 +2263,7 @@
       "rank": 14,
       "category_ranks": {
         "reason": 11,
-        "algo": 12,
+        "algo": 13,
         "battle": 12,
         "spatial": 10,
         "drawing": 11,
@@ -2273,8 +2276,8 @@
       "task_ranks": {
         "formal-proof": 10,
         "math-olympiad": 11,
-        "raytracing": 11,
-        "circuit": 12,
+        "raytracing": 12,
+        "circuit": 14,
         "conquest": 12,
         "luban": 10,
         "drawing": 11,
@@ -2289,12 +2292,12 @@
     "mimo-v2-6-pro": {
       "total": 16.6,
       "kinds": {
-        "standard": 6.0,
+        "standard": 6.1,
         "design": 27.2
       },
       "categories": {
         "reason": 0.0,
-        "algo": 11.6,
+        "algo": 12.2,
         "battle": 10.3,
         "spatial": 8.0,
         "drawing": 0.0,
@@ -2307,7 +2310,7 @@
       "tasks": {
         "formal-proof": 0.0,
         "math-olympiad": 0.0,
-        "raytracing": 20.0,
+        "raytracing": 21.1,
         "circuit": 3.2,
         "conquest": 10.3,
         "luban": 8.0,
@@ -2444,7 +2447,7 @@
       "rank": 15,
       "category_ranks": {
         "reason": 14,
-        "algo": 14,
+        "algo": 15,
         "battle": 10,
         "spatial": 10,
         "drawing": 15,
@@ -2457,8 +2460,8 @@
       "task_ranks": {
         "formal-proof": 14,
         "math-olympiad": 14,
-        "raytracing": 14,
-        "circuit": 13,
+        "raytracing": 16,
+        "circuit": 15,
         "conquest": 10,
         "luban": 10,
         "drawing": 15,
@@ -2478,7 +2481,7 @@
       },
       "categories": {
         "reason": null,
-        "algo": null,
+        "algo": 25.2,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -2491,8 +2494,8 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 39.8,
+        "circuit": 10.7,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -2504,7 +2507,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 2,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -2522,12 +2525,6 @@
           "state": "testing"
         },
         "starship": {
-          "state": "testing"
-        },
-        "raytracing": {
-          "state": "testing"
-        },
-        "circuit": {
           "state": "testing"
         },
         "jelly-tank": {
@@ -2568,7 +2565,7 @@
       "rank": null,
       "category_ranks": {
         "reason": null,
-        "algo": null,
+        "algo": 11,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -2581,8 +2578,8 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 9,
+        "circuit": 13,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -2615,7 +2612,7 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 0.0,
         "circuit": null,
         "conquest": null,
         "luban": null,
@@ -2628,7 +2625,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 1,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -2649,7 +2646,11 @@
           "state": "testing"
         },
         "raytracing": {
-          "state": "testing"
+          "anomaly": [
+            {
+              "text": "最终节点布局改写未同步调用端，源码残留旧字段并编译失败。"
+            }
+          ]
         },
         "circuit": {
           "state": "testing"
@@ -2671,15 +2672,15 @@
         }
       },
       "cost": {
-        "cny": 58.7,
+        "cny": 32.2,
         "basis": "subscription",
-        "tokens": 775116419,
+        "tokens": 438709509,
         "method": "quota_usage",
-        "api_usd": 15.2,
-        "api_cny": 102.0,
+        "api_usd": 8.8,
+        "api_cny": 59.3,
         "hours": 15.2,
-        "tps": 186.3,
-        "tps_replies": 122,
+        "tps": 183.4,
+        "tps_replies": 156,
         "plan": {
           "name": "MiniMax M Plan Explore",
           "name_en": "MiniMax M Plan Explore",
@@ -2704,7 +2705,7 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 19,
         "circuit": null,
         "conquest": null,
         "luban": null,
@@ -2738,7 +2739,7 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 21.9,
         "circuit": null,
         "conquest": null,
         "luban": null,
@@ -2751,7 +2752,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 1,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -2769,9 +2770,6 @@
           "state": "testing"
         },
         "starship": {
-          "state": "testing"
-        },
-        "raytracing": {
           "state": "testing"
         },
         "circuit": {
@@ -2796,13 +2794,13 @@
       "cost": {
         "cny": null,
         "basis": "subscription",
-        "tokens": null,
+        "tokens": 160293952,
         "method": null,
-        "api_usd": null,
-        "api_cny": null,
+        "api_usd": 52.4,
+        "api_cny": 352.0,
         "hours": 15.2,
-        "tps": null,
-        "tps_replies": 0,
+        "tps": 53.5,
+        "tps_replies": 70,
         "plan": {
           "name": "GLM Coding Plan Lite",
           "name_en": "GLM Coding Plan Lite",
@@ -2828,7 +2826,7 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 15,
         "circuit": null,
         "conquest": null,
         "luban": null,
@@ -2862,7 +2860,7 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 0.0,
         "circuit": null,
         "conquest": null,
         "luban": null,
@@ -2875,7 +2873,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 1,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -2896,7 +2894,11 @@
           "state": "testing"
         },
         "raytracing": {
-          "state": "testing"
+          "anomaly": [
+            {
+              "text": "并行建树复用了根节点编号，覆盖父节点，导致大量几何漏渲染。"
+            }
+          ]
         },
         "circuit": {
           "state": "testing"
@@ -2920,13 +2922,13 @@
       "cost": {
         "cny": null,
         "basis": "subscription",
-        "tokens": null,
+        "tokens": 66630837,
         "method": null,
-        "api_usd": null,
-        "api_cny": null,
+        "api_usd": 12.8,
+        "api_cny": 86.0,
         "hours": 15.2,
-        "tps": null,
-        "tps_replies": 0,
+        "tps": 57.0,
+        "tps_replies": 30,
         "plan": {
           "name": "Step Plan Plus",
           "name_en": "StepFun Step Plan Plus",
@@ -2952,7 +2954,7 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 19,
         "circuit": null,
         "conquest": null,
         "luban": null,
@@ -2973,7 +2975,7 @@
       },
       "categories": {
         "reason": null,
-        "algo": null,
+        "algo": 6.3,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -2986,8 +2988,8 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 0.0,
+        "circuit": 12.7,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -2999,7 +3001,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 2,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -3020,10 +3022,11 @@
           "state": "testing"
         },
         "raytracing": {
-          "state": "testing"
-        },
-        "circuit": {
-          "state": "testing"
+          "anomaly": [
+            {
+              "text": "最终逐像素串行采样实现比基线慢约6.18倍，未取得加速。"
+            }
+          ]
         },
         "jelly-tank": {
           "state": "testing"
@@ -3060,7 +3063,7 @@
       "rank": null,
       "category_ranks": {
         "reason": null,
-        "algo": null,
+        "algo": 17,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -3073,8 +3076,8 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 19,
+        "circuit": 11,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -3094,7 +3097,7 @@
       },
       "categories": {
         "reason": null,
-        "algo": null,
+        "algo": 7.8,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -3107,8 +3110,8 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 15.7,
+        "circuit": 0.0,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -3120,7 +3123,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 2,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -3140,11 +3143,12 @@
         "starship": {
           "state": "testing"
         },
-        "raytracing": {
-          "state": "testing"
-        },
         "circuit": {
-          "state": "testing"
+          "anomaly": [
+            {
+              "text": "提交存在尾部掩码未定义行为，官方正确性与性能运行全部崩溃。"
+            }
+          ]
         },
         "jelly-tank": {
           "state": "testing"
@@ -3163,15 +3167,15 @@
         }
       },
       "cost": {
-        "cny": null,
+        "cny": 73.3,
         "basis": "api",
-        "tokens": null,
-        "method": null,
-        "api_usd": null,
-        "api_cny": null,
+        "tokens": 76483995,
+        "method": "api_price",
+        "api_usd": 10.9,
+        "api_cny": 73.3,
         "hours": 15.2,
-        "tps": null,
-        "tps_replies": 0,
+        "tps": 64.2,
+        "tps_replies": 43,
         "plan": {
           "name": "Dots API",
           "name_en": "Dots API"
@@ -3180,7 +3184,7 @@
       "rank": null,
       "category_ranks": {
         "reason": null,
-        "algo": null,
+        "algo": 16,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -3193,8 +3197,8 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 17,
+        "circuit": 17,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -3214,7 +3218,7 @@
       },
       "categories": {
         "reason": null,
-        "algo": null,
+        "algo": 5.9,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -3227,8 +3231,8 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 11.8,
+        "circuit": 0.0,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -3240,7 +3244,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 2,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -3260,11 +3264,12 @@
         "starship": {
           "state": "testing"
         },
-        "raytracing": {
-          "state": "testing"
-        },
         "circuit": {
-          "state": "testing"
+          "anomaly": [
+            {
+              "text": "最终实现先更新触发器再计算输出摘要，7个正确性输入全部答错。"
+            }
+          ]
         },
         "jelly-tank": {
           "state": "testing"
@@ -3283,15 +3288,15 @@
         }
       },
       "cost": {
-        "cny": null,
+        "cny": 40.1,
         "basis": "api",
-        "tokens": null,
-        "method": null,
-        "api_usd": null,
-        "api_cny": null,
+        "tokens": 213722617,
+        "method": "api_price",
+        "api_usd": 6.0,
+        "api_cny": 40.1,
         "hours": 15.2,
-        "tps": null,
-        "tps_replies": 0,
+        "tps": 58.3,
+        "tps_replies": 131,
         "plan": {
           "name": "LongCat API",
           "name_en": "LongCat API"
@@ -3300,7 +3305,7 @@
       "rank": null,
       "category_ranks": {
         "reason": null,
-        "algo": null,
+        "algo": 18,
         "battle": null,
         "spatial": null,
         "drawing": null,
@@ -3313,8 +3318,8 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
-        "circuit": null,
+        "raytracing": 18,
+        "circuit": 17,
         "conquest": null,
         "luban": null,
         "drawing": null,
@@ -3347,7 +3352,7 @@
       "tasks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 0.0,
         "circuit": null,
         "conquest": null,
         "luban": null,
@@ -3360,7 +3365,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 0,
+      "done": 1,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -3381,7 +3386,11 @@
           "state": "testing"
         },
         "raytracing": {
-          "state": "testing"
+          "anomaly": [
+            {
+              "text": "提交的 CUDA 程序连续两次超时，未完成有效渲染。"
+            }
+          ]
         },
         "circuit": {
           "state": "testing"
@@ -3405,13 +3414,13 @@
       "cost": {
         "cny": null,
         "basis": "subscription",
-        "tokens": null,
+        "tokens": 152160008,
         "method": null,
-        "api_usd": null,
-        "api_cny": null,
+        "api_usd": 34.9,
+        "api_cny": 234.6,
         "hours": 15.2,
-        "tps": null,
-        "tps_replies": 0,
+        "tps": 40.4,
+        "tps_replies": 77,
         "plan": {
           "name": "火山方舟 Agent Plan Medium",
           "name_en": "Volcengine Ark Agent Plan Medium",
@@ -3437,7 +3446,7 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": null,
-        "raytracing": null,
+        "raytracing": 19,
         "circuit": null,
         "conquest": null,
         "luban": null,
