@@ -265,8 +265,6 @@
       "tokens": "Tokens used",
       "tps": "TPS"
     },
-    "tpsHeadTitle": "Estimated output speed: tokens generated per second (thinking included), regressed over each reply's generation time",
-    "tpsTitle": "About {v} tokens/s output speed (regressed over {n} replies)",
     "noteQuota": "Prorated from ModelDial weekly quotas at the subscription fee",
     "noteApiPrice": "Converted from official API list prices and prorated to the subscription plan",
     "noteApiPriceUsd": "Converted from official API list prices and prorated to the plan (API equivalent {usd})",
@@ -284,7 +282,8 @@
       "basis": "Cost basis",
       "tokens": "Tokens"
     },
-    "noteApiDirect": "Calculated from input, cache-hit and output tokens at official API list prices"
+    "noteApiDirect": "Calculated from input, cache-hit and output tokens at official API list prices",
+    "tps": "{v} tokens/s output speed"
   },
   "export": {
     "button": "Save as image",

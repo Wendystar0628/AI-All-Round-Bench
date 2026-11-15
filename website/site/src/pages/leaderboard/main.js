@@ -61,7 +61,6 @@ boot(async ({ data }) => {
   const withCost = hasCosts(data);
   const sortName = (k) =>
     k === 'total' ? t('common.score.total') : k === 'standard' || k === 'design' ? t(`common.kind.${k}`) : isResourceSort(k) ? t(`leaderboard.sort.${k}`) : pick(data.category(k), 'name');
-  const arrow = (dir) => (dir === 'asc' ? '↑' : '↓');
   const viewName = (v) => t(`leaderboard.views.${v}`);
   // the short name in the score column head: 主动设计题, 数学推理 …
   const sortShort = (k) => pick(data.category(k) ?? {}, 'short') || sortName(k);
@@ -114,7 +113,9 @@ boot(async ({ data }) => {
   );
   sortSel.addEventListener('change', () => setSort(sortSel.value));
   // the direction of the sort: one button that flips it (the column heads flip it too)
-  const dirBtn = h('button.st-btn.small.lb-dir', { type: 'button', onclick: () => setSort(state.sort, state.dir === 'asc' ? 'desc' : 'asc') });
+  const dirLab = h('span');
+  const dirArrow = h('i.lb-arrow', { 'aria-hidden': 'true' });
+  const dirBtn = h('button.st-btn.small.lb-dir', { type: 'button', onclick: () => setSort(state.sort, state.dir === 'asc' ? 'desc' : 'asc') }, dirArrow, dirLab);
   const sortBox = h('div.lb-sort', h('label.lb-sort-pick', h('span.lb-sort-lab', t('leaderboard.sort.label')), h('span.lb-sort-box', sortSel)), dirBtn);
   tb.slots.top.append(seg, sortBox);
 
@@ -152,7 +153,7 @@ boot(async ({ data }) => {
       h(
         'div.st-seg.lb-ctl-seg',
         { role: 'radiogroup', 'aria-label': label },
-        keys.map((k) => h('label', { title: t(`leaderboard.${name}.title.${k}`) }, h('input', { type: 'radio', name: `lb-${name}`, value: k, checked: k === current, onchange: () => onPick(k) }), h('span', text(k)))),
+        keys.map((k) => h('label', h('input', { type: 'radio', name: `lb-${name}`, value: k, checked: k === current, onchange: () => onPick(k) }), h('span', text(k)))),
       ),
     );
   const scope0 = SCOPES.includes(getParam('scope')) ? getParam('scope') : 'all';
@@ -176,7 +177,7 @@ boot(async ({ data }) => {
   const sortHeads = [];
   const sortHead = (key, cellCls) => {
     const lab = h('span.lb-h-lab');
-    const mark = h('span.lb-h-arrow', { 'aria-hidden': 'true' });
+    const mark = h('i.lb-arrow', { 'aria-hidden': 'true' });
     const btn = h('button.lb-h-sort', { type: 'button', dataset: { key } }, lab, mark);
     btn.addEventListener('click', () => setSort(btn.dataset.key, btn.dataset.key === state.sort ? (state.dir === 'asc' ? 'desc' : 'asc') : defaultDir(btn.dataset.key)));
     sortHeads.push({ btn, lab, mark });
@@ -308,9 +309,8 @@ boot(async ({ data }) => {
     sortSel.disabled = cmp;
     dirBtn.disabled = cmp;
     sortBox.title = cmp ? t('leaderboard.sort.compareOff') : '';
-    const dirName = t(`leaderboard.sort.dir.${state.dir}`);
-    dirBtn.textContent = `${arrow(state.dir)} ${dirName}`;
-    dirBtn.title = t('leaderboard.sort.dirTitle', { dir: dirName });
+    dirArrow.dataset.dir = state.dir;
+    dirLab.textContent = t(`leaderboard.sort.dir.${state.dir}`);
     // the score head sorts by what the big numbers show: the part sorted by, else the total
     scoreHead.btn.dataset.key = isPartSort(state.sort) ? state.sort : 'total';
     if (cmp) {
@@ -318,9 +318,9 @@ boot(async ({ data }) => {
       hName.textContent = t('leaderboard.head.item');
       scoreHead.lab.textContent = t('leaderboard.compare.diffHead');
     } else {
-      const by = `${sortShort(state.sort)} ${arrow(state.dir)}`;
       const sorted = state.sort !== 'total' || state.dir !== defaultDir('total');
-      hRank.replaceChildren(...[h('span', t('leaderboard.head.rank')), sorted ? h('small.lb-h-by', by) : null].filter(Boolean));
+      const by = sorted ? h('small.lb-h-by', sortShort(state.sort), h('i.lb-arrow', { 'aria-hidden': 'true', dataset: { dir: state.dir } })) : null;
+      hRank.replaceChildren(...[h('span', t('leaderboard.head.rank')), by].filter(Boolean));
       hName.textContent = t('leaderboard.head.model');
       // sorted by a part: its name over the big numbers, the total over the small grey ones
       if (isPartSort(state.sort)) scoreHead.lab.replaceChildren(h('small.lb-tot', totalName()), h('span.lb-h-part', sortShort(state.sort)));
@@ -332,9 +332,7 @@ boot(async ({ data }) => {
       sh.btn.disabled = cmp;
       sh.btn.classList.toggle('is-on', on);
       sh.btn.setAttribute('aria-pressed', String(on));
-      sh.mark.textContent = cmp ? '' : on ? arrow(state.dir) : '↕';
-      const title = t('leaderboard.sort.headTitle', { name: sortName(key) });
-      sh.btn.title = key === 'tps' ? `${title}\n${t('common.cost.tpsHeadTitle')}` : title;
+      sh.mark.dataset.dir = cmp ? '' : on ? state.dir : 'off';
     }
     board.dataset.view = v;
     board.classList.toggle('is-by-part', isPartSort(state.sort));

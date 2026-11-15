@@ -244,8 +244,6 @@
       "tokens": "Token 消耗",
       "tps": "TPS"
     },
-    "tpsHeadTitle": "输出速度估算：每秒生成的 Token 数（含思考），按各次回复的生成时长回归",
-    "tpsTitle": "输出速度约 {v} Token/秒（{n} 次回复回归估算）",
     "noteQuota": "按 ModelDial 公开每周额度折算订阅费",
     "noteApiPrice": "按官方 API 标价与套餐价格比例折算",
     "noteApiPriceUsd": "按官方 API 标价与套餐价格比例折算（API 等值 {usd}）",
@@ -263,7 +261,8 @@
       "basis": "开销依据",
       "tokens": "Token 合计"
     },
-    "noteApiDirect": "按输入、缓存命中及输出 Token 套用官方 API 标价计算"
+    "noteApiDirect": "按输入、缓存命中及输出 Token 套用官方 API 标价计算",
+    "tps": "输出速度 {v} Token/秒"
   },
   "export": {
     "button": "存为图片",

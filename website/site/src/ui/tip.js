@@ -1,5 +1,6 @@
-// 浮签: the small ink tooltip for chart marks (leaderboard.md 交互). One
-// shared element; shows on pointer and on keyboard focus.
+// 浮签: the site's one tooltip (leaderboard.md 交互). One shared element;
+// shows on pointer and on keyboard focus. The browser's own title box is never
+// used: wireTitleTips() hands every title on the page to this tooltip.
 //
 //   import { attachTip, showTip, hideTip } from '../../ui/tip.js';
 //   attachTip(rectOrRow, () => '数学推理 78.0 × 15% = 11.7');
@@ -35,6 +36,41 @@ export function showTip(content, at) {
 
 export function hideTip() {
   el?.classList.remove('is-on');
+}
+
+/**
+ * Every title attribute on the site shows in this tooltip, not in the browser's box: when the pointer or focus
+ * reaches an element with a title, the text moves to data-tip (the browser then has nothing to draw) and the
+ * tooltip shows it. Listened in the capture phase, so a page's own tooltip for the same pointer move wins.
+ * An element with no text of its own keeps the words as its aria-label.
+ */
+export function wireTitleTips() {
+  const take = (el) => {
+    const text = el.getAttribute('title');
+    el.removeAttribute('title');
+    if (!text) return;
+    el.dataset.tip = text;
+    if (!el.hasAttribute('aria-label') && !el.textContent.trim()) el.setAttribute('aria-label', text);
+  };
+  const tipped = (e) => {
+    const titled = e.target.closest?.('[title]');
+    if (titled) take(titled);
+    return e.target.closest?.('[data-tip]');
+  };
+  document.addEventListener('pointerover', tipped, true);
+  document.addEventListener('pointermove', (e) => {
+    const el = tipped(e);
+    if (el) showTip(el.dataset.tip, { x: e.clientX, y: e.clientY - 6 });
+  }, true);
+  document.addEventListener('pointerout', (e) => {
+    const el = e.target.closest?.('[data-tip]');
+    if (el && !el.contains(e.relatedTarget)) hideTip();
+  }, true);
+  document.addEventListener('focusin', (e) => {
+    const el = tipped(e);
+    if (el) showTip(el.dataset.tip, el);
+  }, true);
+  document.addEventListener('focusout', (e) => e.target.closest?.('[data-tip]') && hideTip(), true);
 }
 
 /** Wire an element: text() is called on pointer enter/move and focus. Returns an unwire function. */

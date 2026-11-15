@@ -99,7 +99,6 @@ export function fillCost(cell, cost) {
   const key = costKey(cost);
   cell.classList.toggle('is-none', key === 'none');
   cell.dataset.basis = key;
-  cell.title = costTag(cost);
   if (key === 'none') cell.replaceChildren(h('span.mrow-cost-none', t('common.cost.basis.none')));
   else cell.replaceChildren(h('b.mrow-cost-v.num', fmtCNY(cost.cny)), costMark(key));
 }
@@ -118,7 +117,6 @@ export function fillTokens(cell, cost) {
 export function fillTps(cell, cost) {
   const none = cost?.tps == null;
   cell.classList.toggle('is-none', none);
-  cell.title = none ? '' : t('common.cost.tpsTitle', { v: Math.round(cost.tps), n: cost.tps_replies });
   cell.replaceChildren(h('span.mrow-tok-v.num', none ? DASH : String(Math.round(cost.tps))));
 }
 
@@ -150,7 +148,7 @@ export function costFacts(data, id) {
   const plan = planText(cost?.plan);
   if (plan) out.push(t(`common.cost.plan.${key === 'api' ? 'api' : 'subscription'}`, { plan }));
   out.push(cost?.tokens == null ? t('common.cost.tokensNone') : t('common.cost.tokens', { n: data.tasks.length, v: fmtTokens(cost.tokens) }));
-  if (cost?.tps != null) out.push(t('common.cost.tpsTitle', { v: Math.round(cost.tps), n: cost.tps_replies }));
+  if (cost?.tps != null) out.push(t('common.cost.tps', { v: Math.round(cost.tps) }));
   return out;
 }
 

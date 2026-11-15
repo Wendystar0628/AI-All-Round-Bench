@@ -15,6 +15,7 @@ import { ensureShellMarkup, wireBar, restoreScroll, switchLang, toggleTheme } fr
 import { wireShortcuts, registerShortcut, openKeys } from './shortcuts.js';
 import { openSearch } from './search.js';
 import { wirePanel, openPanelFromURL } from './panel.js';
+import { wireTitleTips } from '../ui/tip.js';
 
 export { openSearch, closeSearch } from './search.js';
 export { registerShortcut, openKeys } from './shortcuts.js';
@@ -35,6 +36,7 @@ function wireShell() {
   registerShortcut({ key: 'l', group: 'global', handler: () => switchLang() });
   registerShortcut({ key: '?', group: 'global', handler: () => openKeys() });
   wirePanel();
+  wireTitleTips();
 }
 
 // 暂停公示（website/tools/site.json 的 notice）：这些页面只画成绩和模型，打开时换成一条提示，页面自己的脚本不运行；
