@@ -14,7 +14,7 @@
 import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
 import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, progress, modelLabel, iconURL, DASH } from '../../core/index.js';
-import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, onComparingChange, isShown, onFilterChange, filterCount, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, COST_MODES, getCostMode, setCostMode, repoLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
+import { createToolbar, createChoice, createModelList, scoreTable, getCompare, onCompareChange, onComparingChange, isShown, onFilterChange, filterCount, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, COST_MODES, getCostMode, setCostMode, repoLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
 import { exportButton, rankingArt } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
@@ -87,36 +87,23 @@ boot(async ({ data }) => {
   // the view row is long (six views, sort, weights, download): let it wrap on narrow windows
   const tb = createToolbar({ data, download: { csv: csvTable, json: true }, wrap: true });
 
-  // view switch: a segmented control whose current block slides (← → move it)
-  const segInk = h('span.lb-seg-ink', { 'aria-hidden': 'true' });
-  const seg = h(
-    'div.st-seg.lb-views',
-    { role: 'radiogroup', 'aria-label': t('leaderboard.views.label') },
-    segInk,
-    VIEWS.map((v, i) =>
-      h(
-        'label',
-        { title: t('leaderboard.views.keyTitle', { name: viewName(v), key: i + 1 }), dataset: { view: v } },
-        h('input', { type: 'radio', name: 'lb-view', value: v, checked: v === state.view, 'aria-keyshortcuts': String(i + 1), onchange: () => switchView(v) }),
-        h('span', viewName(v)),
-      ),
-    ),
-  );
-  const sortSel = h(
-    'select.lb-sort-select',
-    { 'aria-label': t('leaderboard.sort.label') },
-    sorts.map((k) => h('option', { value: k, selected: k === state.sort }, sortName(k))),
-  );
-  sortSel.addEventListener('change', () => setSort(sortSel.value));
-  // the direction of the sort: one button that flips it (the column heads flip it too)
+  // the toolbar's choices (ui/choice.js): 图表 opens the five views, each with the question it answers and its key;
+  // 排序 opens the sort keys in three groups; the direction is one button beside it (the column heads flip it too)
+  const viewChoice = createChoice({
+    label: t('leaderboard.views.label'),
+    options: VIEWS.map((v, i) => ({ value: v, text: viewName(v), note: t(`leaderboard.viewQ.${v}`), key: String(i + 1) })),
+    value: state.view,
+    onPick: (v) => switchView(v),
+  });
+  const sortGroup = (k) => t(`leaderboard.sort.group.${isResourceSort(k) ? 'resource' : k === 'total' || k === 'standard' || k === 'design' ? 'score' : 'category'}`);
+  const sortChoice = createChoice({ label: t('leaderboard.sort.label'), options: sorts.map((k) => ({ value: k, text: sortName(k), group: sortGroup(k) })), value: state.sort, onPick: (k) => setSort(k) });
   const dirLab = h('span');
   const dirArrow = h('i.lb-arrow', { 'aria-hidden': 'true' });
-  const dirBtn = h('button.st-btn.small.lb-dir', { type: 'button', onclick: () => setSort(state.sort, state.dir === 'asc' ? 'desc' : 'asc') }, dirArrow, dirLab);
-  const sortBox = h('div.lb-sort', h('label.lb-sort-pick', h('span.lb-sort-lab', t('leaderboard.sort.label')), h('span.lb-sort-box', sortSel)), dirBtn);
-  tb.slots.start.append(seg, sortBox);
+  const dirBtn = h('button.st-btn.ctl-btn.lb-dir', { type: 'button', onclick: () => setSort(state.sort, state.dir === 'asc' ? 'desc' : 'asc') }, dirArrow, dirLab);
+  tb.slots.start.append(viewChoice.el, h('div.ctl.lb-sort', sortChoice.el, dirBtn));
 
   const wBtn = h(
-    'button.st-btn.small.lb-wbtn',
+    'button.st-btn.ctl-btn.lb-wbtn',
     { type: 'button', 'aria-expanded': 'false', 'aria-controls': 'lb-sandbox', 'aria-keyshortcuts': 'W', title: t('leaderboard.sandbox.buttonTitle') },
     t('leaderboard.sandbox.button'),
   );
@@ -128,27 +115,14 @@ boot(async ({ data }) => {
   const eyebrow = h('span.st-eyebrow');
   const vTitle = h('span.lb-vtitle');
   const question = h('span.lb-q');
-  const colsSeg = h(
-    'div.st-seg.lb-cols',
-    { role: 'radiogroup', 'aria-label': t('leaderboard.cols.label') },
-    ['category', 'task'].map((k) =>
-      h('label', h('input', { type: 'radio', name: 'lb-cols', value: k, checked: k === state.cols, onchange: () => setCols(k) }), h('span', t(`leaderboard.cols.${k}`))),
-    ),
-  );
   // 存为图片: the whole board as a poster, every model in the current order and scope (charts/poster.js)
   const exportBtn = exportButton({ poster: () => boardPoster(), filename: () => `ai-decathlon-leaderboard${state.custom ? '-custom' : ''}` });
-  // board head: the title left; right, two labelled switches (模型范围, 开销口径), the grain switch and 存为图片
-  const ctl = (name, label, keys, current, text, onPick) =>
-    h(
-      'div.lb-ctl',
-      h('span.lb-ctl-lab', label),
-      h(
-        'div.st-seg.lb-ctl-seg',
-        { role: 'radiogroup', 'aria-label': label },
-        keys.map((k) => h('label', h('input', { type: 'radio', name: `lb-${name}`, value: k, checked: k === current, onchange: () => onPick(k) }), h('span', text(k)))),
-      ),
-    );
-  const costCtl = withCost && withApi ? ctl('costMode', t('leaderboard.costMode.label'), COST_MODES, getCostMode(), (k) => t(`leaderboard.costMode.${k}`), (k) => setCost(k)) : null;
+  // board head: the title left; right, the choices 开销 (cost basis) and 粒度 (matrix and compare grain), then 存为图片
+  const choiceOf = (label, keys, current, text, onPick) => createChoice({ label, options: keys.map((k) => ({ value: k, text: text(k) })), value: current, onPick });
+  const costChoice = withCost && withApi ? choiceOf(t('leaderboard.costMode.label'), COST_MODES, getCostMode(), (k) => t(`leaderboard.costMode.${k}`), (k) => setCost(k)) : null;
+  const colsChoice = choiceOf(t('leaderboard.cols.label'), ['category', 'task'], state.cols, (k) => t(`leaderboard.cols.${k}`), (k) => setCols(k));
+  const costCtl = costChoice?.el ?? null;
+  const colsSeg = colsChoice.el;
   const boardHead = h('div.lb-board-head', h('h2.lb-board-title#lb-board-title', h('span.st-pair', eyebrow, vTitle), question), h('div.lb-board-tools', costCtl, colsSeg, exportBtn));
   // the cost marks (○ 订阅折算 ◆ API 标价) explained under the board, repainted when the basis changes
   const legendSlot = withCost ? h('div.lb-cost-legend-slot') : null;
@@ -294,9 +268,9 @@ boot(async ({ data }) => {
     colsSeg.hidden = !(v === 'matrix' || v === 'compare');
     if (costCtl) costCtl.hidden = v === 'compare';
     const cmp = v === 'compare';
-    sortSel.disabled = cmp;
+    sortChoice.setDisabled(cmp);
     dirBtn.disabled = cmp;
-    sortBox.title = cmp ? t('leaderboard.sort.compareOff') : '';
+    sortChoice.el.title = cmp ? t('leaderboard.sort.compareOff') : '';
     dirArrow.dataset.dir = state.dir;
     dirLab.textContent = t(`leaderboard.sort.dir.${state.dir}`);
     // the score head sorts by what the big numbers show: the part sorted by, else the total
@@ -326,21 +300,10 @@ boot(async ({ data }) => {
     board.classList.toggle('is-by-part', isPartSort(state.sort));
   }
 
-  function syncSeg({ animate = true } = {}) {
-    for (const inp of seg.querySelectorAll('input')) inp.checked = inp.value === state.view;
-    // the compare view is not one of the switch's blocks: no block is current then
-    const lab = seg.querySelector(`label[data-view="${state.view}"]`);
-    segInk.hidden = !lab;
-    if (!lab) return;
-    // at phone width the six blocks wrap into rows, so the ink follows the block's top and height too
-    const x = lab.offsetLeft;
-    const y = lab.offsetTop;
-    const w = lab.offsetWidth;
-    const hh = lab.offsetHeight;
-    segInk.style.transition = animate && !reduced() ? `transform ${dur('morph')}ms ${css.mech}, width ${dur('morph')}ms ${css.mech}, height ${dur('morph')}ms ${css.mech}` : 'none';
-    segInk.style.transform = `translate(${x}px, ${y}px)`;
-    segInk.style.width = `${w}px`;
-    segInk.style.height = `${hh}px`;
+  // 图表 shows the current view; the compare view is not one of its choices, so it reads 对比 with none marked
+  function syncViewChoice() {
+    viewChoice.set(state.view);
+    if (state.view === 'compare') viewChoice.setValueText(viewName('compare'));
   }
 
   let customShown = null;
@@ -402,7 +365,7 @@ boot(async ({ data }) => {
     if (!sorts.includes(k) || (k === state.sort && dir === state.dir)) return;
     state.sort = k;
     state.dir = dir;
-    sortSel.value = k;
+    sortChoice.set(k);
     setParams({ sort: k === 'total' ? null : k, dir: dir === defaultDir(k) ? null : dir });
     C = compute(data, state);
     // the score column widens for the grey total (or narrows back): measure the plot first, so the bars morph on the new width
@@ -420,7 +383,7 @@ boot(async ({ data }) => {
     if (k === state.cols) return;
     state.cols = k;
     setParams({ cols: k === 'task' ? k : null });
-    for (const inp of colsSeg.querySelectorAll('input')) inp.checked = inp.value === k;
+    colsChoice.set(k);
     if (state.view === 'matrix') {
       axis.render('matrix', { animate: true });
       rows.redrawAll('switch', { from: 'matrix' });
@@ -474,7 +437,7 @@ boot(async ({ data }) => {
 
   async function switchView(next) {
     if ((!VIEWS.includes(next) && next !== 'compare') || next === state.view) {
-      syncSeg();
+      syncViewChoice();
       return;
     }
     const prev = state.view;
@@ -485,7 +448,7 @@ boot(async ({ data }) => {
     setParams({ view: next === 'total' ? null : next });
     hideTip();
     rows.setFocus(null);
-    syncSeg();
+    syncViewChoice();
     if (next === 'compare') srMatrix.replaceChildren();
     if (next === 'compare') {
       paintHeads();
@@ -676,7 +639,6 @@ boot(async ({ data }) => {
     axis.render(state.view);
     rows.redrawAll('static');
     if (state.view === 'compare') compare.render();
-    syncSeg({ animate: false });
   }).observe(headRow.querySelector('.mrow-plot'));
 
   // ---------------- first paint ----------------
@@ -685,7 +647,7 @@ boot(async ({ data }) => {
   sandbox.sync();
   if (w0) toggleSandbox(true);
   measure();
-  syncSeg({ animate: false });
+  syncViewChoice();
   axis.render(state.view);
   const animateIn = !reduced();
   if (animateIn) {

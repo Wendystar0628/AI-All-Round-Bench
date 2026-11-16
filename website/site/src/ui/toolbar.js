@@ -57,9 +57,9 @@ export function createToolbar({ data, download = null, wrap = false } = {}) {
 
   // ---------- the two modes ----------
   const filterN = h('span.tb-mode-n.num');
-  const filterBtn = h('button.st-btn.small.tb-mode', { type: 'button', 'aria-expanded': 'false', 'aria-controls': panelId, 'aria-keyshortcuts': 'F', title: t('common.toolbar.filterTitle') }, glyph('filter'), h('span', t('common.toolbar.filter')), filterN);
+  const filterBtn = h('button.st-btn.ctl-btn', { type: 'button', 'aria-expanded': 'false', 'aria-controls': panelId, 'aria-keyshortcuts': 'F', title: t('common.toolbar.filterTitle') }, glyph('filter'), h('span', t('common.toolbar.filter')), filterN);
   const compareN = h('span.tb-mode-n.num');
-  const compareBtn = h('button.st-btn.small.tb-mode.tb-mode-compare', { type: 'button', 'aria-pressed': 'false', 'aria-controls': panelId, 'aria-keyshortcuts': 'C', title: t('common.toolbar.compareTitle') }, glyph('compare'), h('span', t('common.toolbar.compare')), compareN);
+  const compareBtn = h('button.st-btn.ctl-btn.tb-mode-compare', { type: 'button', 'aria-pressed': 'false', 'aria-controls': panelId, 'aria-keyshortcuts': 'C', title: t('common.toolbar.compareTitle') }, glyph('compare'), h('span', t('common.toolbar.compare')), compareN);
   filterBtn.addEventListener('click', () => setMode(filterOpen ? null : 'filter'));
   compareBtn.addEventListener('click', () => setMode(isComparing() ? null : 'compare'));
   // a filter that is on, while its panel is closed: what it shows, and a way back to every model
@@ -151,7 +151,7 @@ export function createToolbar({ data, download = null, wrap = false } = {}) {
   // ---------- download ----------
   if (download) {
     const menuId = `tb-dl-${Math.random().toString(36).slice(2, 8)}`;
-    const btn = h('button.st-btn.small.tb-download', { type: 'button', popovertarget: menuId, 'aria-haspopup': 'menu' }, t('common.toolbar.download'));
+    const btn = h('button.st-btn.ctl-btn.tb-download', { type: 'button', popovertarget: menuId, 'aria-haspopup': 'menu' }, t('common.toolbar.download'));
     const item = (label, fn) => {
       const b = h('button.st-act.tb-dl-item', { type: 'button', role: 'menuitem' }, h('span', label));
       b.addEventListener('click', async () => {

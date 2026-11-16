@@ -360,17 +360,123 @@
 .site-toolbar:not(.is-wrap) .tb-end {
   flex: none;
 }
-/* the two modes, 筛选 and 对比: ink-edged so they read as the board's main controls; the open one wears
-   the current mark (violet wash, violet bar) */
-.tb-mode {
-  box-shadow: inset 0 0 0 1px var(--st-ink);
+/* ---------- controls: everything that adjusts how a board is shown ----------
+   One language for every button that adjusts a board (the toolbar, the board heads): 2.25rem tall, a 1px ink
+   frame on the panel ground, the cut corner, type 0.85rem; it wipes with flare when pointed at, and an open
+   mode or menu wears the current mark (violet wash, violet bar). A labelled choice (图表, 排序, 开销, 粒度) is
+   such a button that names its group in bold, then the current value, then a chevron; pressing it opens the
+   choices in a menu under it (ui/choice.js), the current one marked the same way. */
+.ctl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 }
-.tb-mode.is-on {
+.ctl[hidden] {
+  display: none;
+}
+.st-btn.ctl-btn {
+  --fill: var(--st-panel);
+  min-height: 2.25rem;
+  box-shadow: inset 0 0 0 1px var(--st-ink);
+  font-size: 0.85rem;
+}
+.st-btn.ctl-btn:is(.is-on, .is-open, [aria-pressed='true'], [aria-expanded='true']) {
   --fill: var(--st-wash);
   box-shadow:
     inset var(--st-bar-w) 0 0 var(--st-orbit),
     inset 0 0 0 1px var(--st-ink);
+}
+.st-btn.ctl-btn:is(.is-on, [aria-pressed='true']) {
   font-weight: 800;
+}
+/* the choice button: 图表 │ 总分 ▾ */
+.ctl-choice {
+  gap: 0.55rem;
+}
+.ctl-k {
+  font-weight: 800;
+}
+.ctl-val {
+  padding-left: 0.55rem;
+  border-left: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  font-weight: 600;
+}
+.ctl-val:empty {
+  display: none;
+}
+.ctl-chev {
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: 0 0.1rem 0.2rem 0.15rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  rotate: 45deg;
+  transition: rotate 0.2s var(--st-mech), margin 0.2s var(--st-mech);
+}
+.ctl-choice.is-open .ctl-chev {
+  margin: 0.2rem 0.1rem 0 0.15rem;
+  rotate: -135deg;
+}
+/* the menu of choices: under its button, at least as wide; a group heading where the choices fall into groups */
+.ctl-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  max-height: min(70vh, 32rem);
+  overflow-y: auto;
+  padding: 0.3rem 0;
+  border: 1px solid var(--st-ink);
+  background: var(--st-panel);
+  color: var(--st-ink);
+  scrollbar-width: thin;
+}
+.ctl-menu-group {
+  padding: 0.55rem 0.95rem 0.2rem;
+  color: var(--st-ink-2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.ctl-opt {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.95rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: 600 0.85rem var(--st-font-ui);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ctl-opt:is(:hover, :focus-visible) {
+  background: var(--st-paper);
+  outline: none;
+}
+.ctl-opt[aria-checked='true'] {
+  background: var(--st-wash);
+  box-shadow: inset var(--st-bar-w) 0 0 var(--st-orbit);
+  font-weight: 800;
+}
+.ctl-opt-text {
+  display: grid;
+  gap: 0.05rem;
+}
+.ctl-opt-note {
+  color: var(--st-ink-2);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+.ctl-opt-key {
+  margin-left: auto;
+  padding: 0 0.35rem;
+  border: 1px solid var(--st-rule);
+  color: var(--st-ink-2);
+  font: 600 0.7rem var(--st-font-ui);
 }
 .tb-glyph {
   display: inline-grid;

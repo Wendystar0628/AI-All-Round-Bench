@@ -11,7 +11,7 @@
 //   b.el                     <section id="<key>">
 //   b.refresh({ animate })   recompute the current view (the filter) and update
 import { h, t, pick, links, rankBy, fmtPct, fmtRank, fmtScore, modelLabel, categoryIcon, DASH } from '../../core/index.js';
-import { createModelList, createRowHead, barPlot, challengeFacts, guideLines, isShown } from '../../ui/index.js';
+import { createModelList, createRowHead, barPlot, challengeFacts, guideLines, isShown, createChoice } from '../../ui/index.js';
 import { createMatrix } from '../../ui/matrix.js';
 import { exportButton, rankingArt, createBar, setBar } from '../../charts/index.js';
 import { dur, stagger, isInView } from '../../motion.js';
@@ -36,7 +36,13 @@ export function createBoard(cat, { data, index, view = 'task', onView, focus }) 
 
   // ---------- head ----------
   const titleId = `${uid}-title`;
-  const seg = buildSeg();
+  // 图表: the board's view, a choice button (ui/choice.js) like the leaderboard's
+  const seg = createChoice({
+    label: t('common.ctl.chart'),
+    options: VIEWS.map((value) => ({ value, text: t(`categories.view.${value}`), note: t(`categories.view.${value}Title`) })),
+    value: state.view,
+    onPick: (v) => setView(v),
+  });
   const ol = h('ol');
   const head = createRowHead({ rank: t('categories.board.rank'), name: t('categories.board.model'), score: t('categories.board.score'), plot: axisNode() });
   // 存为图片: the category's poster, whatever the view — every model ranked by the category score, each task's
@@ -87,7 +93,7 @@ export function createBoard(cat, { data, index, view = 'task', onView, focus }) 
   const foot = h('p.cat-board-foot.st-field');
   if (noScores) {
     el.append(h('div.site-empty.cat-empty', h('p', t('categories.board.empty'))));
-    seg.el.querySelectorAll('input').forEach((i) => (i.disabled = true));
+    seg.setDisabled(true);
     exportBtn.disabled = true;
   } else el.append(body, foot);
 
@@ -108,30 +114,12 @@ export function createBoard(cat, { data, index, view = 'task', onView, focus }) 
   const list = noScores ? null : createModelList(ol, opts);
   if (list) panes.model.append(list.box);
 
-  // ---------- the view switch ----------
-  function buildSeg() {
-    const name = `${uid}-view`;
-    const wrap = h('div.st-seg.cat-views', { role: 'radiogroup', 'aria-label': t('categories.view.label') });
-    const inputs = VIEWS.map((value) => {
-      const input = h('input', { type: 'radio', name, value, checked: value === state.view });
-      const lab = h('label', { dataset: { value }, title: t(`categories.view.${value}Title`) }, input, h('span', t(`categories.view.${value}`)));
-      input.addEventListener('change', () => input.checked && setView(value));
-      wrap.append(lab);
-      return input;
-    });
-    return {
-      el: wrap,
-      sync() {
-        for (const i of inputs) i.checked = i.value === state.view;
-      },
-    };
-  }
-
+  // ---------- the view ----------
   function setView(value, { silent = false } = {}) {
     if (state.view === value || !VIEWS.includes(value)) return;
     state.view = value;
     el.dataset.view = value;
-    seg.sync();
+    seg.set(value);
     refresh({ animate: true });
     if (!silent) onView?.(cat.key, value);
   }

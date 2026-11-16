@@ -125,108 +125,9 @@
   mask: var(--art) center / contain no-repeat;
 }
 
-/* ---------- toolbar: view switch, sort, weights ---------- */
-.lb-views {
-  position: relative;
-  grid-auto-columns: auto;
-}
-.lb-views label {
-  position: relative;
-  z-index: 1;
-  min-height: 2.25rem;
-  padding: 0 0.95rem;
-  white-space: nowrap;
-}
-.lb-views label:has(:checked),
-.lb-views label:has(:checked):hover {
-  background: transparent;
-}
-.lb-views label::after {
-  display: none;
-}
-/* the current block, which slides to the new view */
-.lb-seg-ink {
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background: var(--st-wash);
-  box-shadow: inset 0 calc(-1 * var(--st-bar-w)) 0 var(--st-orbit);
-  pointer-events: none;
-}
-/* sort: the label and select, then the direction switch (↓ 降序 / ↑ 升序) */
-.lb-sort,
-.lb-sort-pick {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-}
+/* ---------- toolbar: 图表 and 排序 (choice buttons, ui.css「controls」), the direction beside the sort ---------- */
 .lb-dir {
   white-space: nowrap;
-}
-.lb-sort-lab {
-  color: var(--st-ink-2);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-.lb-sort-box {
-  position: relative;
-  display: inline-block;
-}
-.lb-sort-box::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 1.05rem;
-  width: 0.4rem;
-  height: 0.4rem;
-  border-right: 1.5px solid var(--st-ink);
-  border-bottom: 1.5px solid var(--st-ink);
-  transform: translateY(-70%) rotate(45deg);
-  pointer-events: none;
-}
-.lb-sort-select {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 10.5rem;
-  min-height: 2.25rem;
-  text-overflow: ellipsis;
-  margin: 0;
-  padding: 0 calc(2.1rem + var(--st-cut)) 0 0.75rem;
-  border: 0;
-  border-radius: 0;
-  background: linear-gradient(-45deg, transparent calc(var(--st-cut) - 0.5px), var(--st-chip) var(--st-cut));
-  color: var(--st-ink);
-  font: 600 0.85rem var(--st-font-ui);
-  cursor: pointer;
-}
-.lb-sort-select:hover {
-  background: linear-gradient(-45deg, transparent calc(var(--st-cut) - 0.5px), var(--st-flare) var(--st-cut));
-  color: var(--st-on-flare);
-}
-.lb-sort-select:focus-visible {
-  outline: 2px solid var(--st-ink);
-  outline-offset: 2px;
-}
-.lb-sort-select:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.lb-sort-select option {
-  background: var(--st-panel);
-  color: var(--st-ink);
-}
-@media (max-width: 1200px) {
-  .lb-views label {
-    padding: 0 0.7rem;
-  }
-}
-.lb-wbtn[aria-expanded='true'] {
-  background-color: var(--st-wash);
-  box-shadow: inset var(--st-bar-w) 0 0 var(--st-orbit);
-  font-weight: 800;
 }
 
 /* ---------- the board ---------- */
@@ -285,29 +186,6 @@
 }
 .lb-board-tools .site-export {
   margin-left: 0;
-}
-/* a labelled switch in the board head: 开销 [订阅折算 API 标价] */
-.lb-ctl {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-.lb-ctl[hidden] {
-  display: none;
-}
-.lb-ctl-lab {
-  color: var(--st-ink-2);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-.lb-ctl-seg label,
-.lb-cols label {
-  min-height: 2rem;
-  padding: 0 0.8rem;
-  font-size: 0.82rem;
-  white-space: nowrap;
 }
 /* the cost marks explained once, under the rows; the compare view has no cost columns */
 .lb-cost-legend-slot {
@@ -1134,31 +1012,6 @@
   }
   .lb-figs span {
     font-size: 0.75rem;
-  }
-  .lb-views {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-auto-flow: row;
-    width: 100%;
-  }
-  .lb-views label {
-    padding: 0 0.35rem;
-  }
-  .lb-views label:nth-of-type(4) {
-    border-left: 0;
-  }
-  .lb-views label:nth-of-type(n + 4) {
-    border-top: 1px solid var(--st-rule);
-  }
-  .lb-sort {
-    flex: 1 1 100%;
-  }
-  .lb-sort-pick {
-    flex: 1;
-  }
-  .lb-sort-box,
-  .lb-sort-select {
-    flex: 1;
-    width: 100%;
   }
   .page-leaderboard .tb-end {
     margin-left: 0;

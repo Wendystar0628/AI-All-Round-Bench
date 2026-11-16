@@ -2,6 +2,7 @@
 //   import { createToolbar, createModelList, barPlot, scoreTable } from '../../ui/index.js';
 export * from './compare.js';
 export * from './filter.js';
+export * from './choice.js';
 export * from './modelRow.js';
 export * from './toolbar.js';
 export * from './download.js';

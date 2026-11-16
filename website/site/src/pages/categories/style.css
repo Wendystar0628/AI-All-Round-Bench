@@ -246,12 +246,6 @@
   color: var(--st-ink-2);
 }
 
-/* the view switch 按题 │ 矩阵 │ 按型号 */
-.cat-views label {
-  min-height: 2rem;
-  padding: 0 0.85rem;
-  font-size: 0.82rem;
-}
 .cat-pane[hidden] {
   display: none;
 }
@@ -571,8 +565,5 @@ a.cbt-name:is(:hover, :focus-visible) {
   .cbt .mrow-rank .st-state::after {
     content: '—';
     font-size: 0.8rem;
-  }
-  .cat-views {
-    width: 100%;
   }
 }

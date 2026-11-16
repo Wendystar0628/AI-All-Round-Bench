@@ -300,7 +300,7 @@ const tb = createToolbar({
   download: { csv: () => scoreTable(data, entries, { weights }), json: true },  // json 也可以是 () => 对象
 });
 el.append(tb.el);                 // 吸顶在命令栏下（top: var(--shell-h)）
-tb.slots.start.append(viewSeg);   // 同一行、两个模式按钮之后：总榜的视图分段、排序（有内容才显示）；tb.slots.end 在行右端、下载按钮前
+tb.slots.start.append(viewChoice.el);   // 同一行、两个模式按钮之后：总榜的「图表」「排序」选项按钮（ui/choice.js，有内容才显示）；tb.slots.end 在行右端、下载按钮前
 tb.slots.bottom.append(jumpBar);  // 工具条下面一行，和工具条一起吸顶（题目类别榜的跳转条）
 createToolbar({ …, wrap: true }); // 允许各行换行
 tb.on('compare', () => toggleCompareView());   // 对比栏「查看对比 / 返回榜单」；不监听时去 /leaderboard/?view=compare&cmp=…
