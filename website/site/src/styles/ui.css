@@ -204,7 +204,7 @@
 }
 /* resource columns (cost: true): three more columns right of the score, each one line, vertically centred like the
    score: 测试开销 (the amount, then its small basis mark ○ 按订阅折算 / ◆ 按 API 标价折算 / 暂无数据), Token 消耗
-   (the 13-task total) and TPS (the estimated output speed). Same row height, no stacked lines. */
+   (the answered tasks' total) and TPS (the estimated output speed). Same row height, no stacked lines. */
 .mrow.has-cost {
   grid-template-columns: var(--pick-col,) 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem) var(--mrow-tps-w, 3.75rem);
 }

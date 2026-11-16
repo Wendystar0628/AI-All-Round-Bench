@@ -182,7 +182,7 @@ def public_fields(data, fields):
 
 
 def public_cost(cost):
-    out = public_fields(cost, ('cny', 'basis', 'tokens', 'method', 'api_usd', 'api_cny', 'hours', 'tps', 'tps_replies'))
+    out = public_fields(cost, ('cny', 'basis', 'tokens', 'tasks', 'method', 'api_usd', 'api_cny', 'hours', 'tps', 'tps_replies'))
     if 'plan' in cost:
         out['plan'] = (public_fields(cost['plan'], ('name', 'name_en', 'price', 'currency', 'period', 'credits'))
                        if isinstance(cost['plan'], dict) else None)

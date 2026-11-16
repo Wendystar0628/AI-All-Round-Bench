@@ -82,12 +82,12 @@ python website/tools/publish.py --confirm "厂商/型号"      用户明确确�
   - `scores.json`：顶层 `order`（总榜顺序，评测中的排在最后）、`notice`（暂停公示时的中英提示，平时 `null`）；每个模型加 `status`、`done`（已出分题数）、`rank`、`category_ranks`、`task_ranks`（同分同名次）。
   - `scores.<模型 id>.task_info`：按题目 key，只写分数本身说不出的内容，没有可补充的题不出现。`state` 是没出分的原因：`testing` 评测中（还在作答或还在评分）、`missing` 未交、`failed` 评分失败、`unscored` 评分员没给总分；`graders` 是设计题主项有两位评分员时各自单独给出的题分（`[{name, score}]`，性能项仍用它自己的评分员，两者平均就是题分）；`anomaly` 是分数异常说明（`[{text}]`），只公开异常原文及其顺序，不公开异常所属评分员；设计题正常的 `graders` 分项不变。网站的成绩矩阵和题目类别榜“按题”视图用它写格里的短标记和浮签。
   - “未交”的判定：`grading.py` 报这题缺少提交（没有评分任务，也没有作答目录），并且 `orchestrator/state.json` 里这个模型这题的作答记录已经关闭；作答记录还没关闭或没有记录时算评测中。
-  - 测试开销只按公开白名单导出：`scores.json.cost_source` 为 `{name, name_en, url, fetched, usd_cny}`；`scores.<模型 id>.cost` 为 `{cny, basis, plan, tokens, method, api_usd, hours}`。`plan` 只含 `name`、`name_en`、`price`、`currency`、`period`、`credits` 中已有的通用套餐字段。金额、Token、计费方法及测试时长沿用 `orchestrator/costs.py` 的计算值；不公开内部采集情况、估算标记或题目清单、代理关系、日志路径、运行/会话 ID、`fitted`、`fit_basis`、`usage_gaps`、`pricing_issues` 及其他扩展。JSON/CSV 下载只读这些公开数据，不另取内部台账。换算和内部核算约定见 `orchestrator/docs/测试开销.md`。
+  - 测试开销只按公开白名单导出：`scores.json.cost_source` 为 `{name, name_en, url, fetched, usd_cny}`；`scores.<模型 id>.cost` 为 `{cny, basis, plan, tokens, tasks, method, api_usd, api_cny, hours, tps, tps_replies}`，金额、Token 和时长只累计已答的题（`tasks` 为计入的题数）。`plan` 只含 `name`、`name_en`、`price`、`currency`、`period`、`credits` 中已有的通用套餐字段。金额、Token、计费方法及测试时长沿用 `orchestrator/costs.py` 的计算值；不公开内部采集情况、估算标记或题目清单、代理关系、日志路径、运行/会话 ID、`fitted`、`fit_basis`、`usage_gaps`、`pricing_issues` 及其他扩展。JSON/CSV 下载只读这些公开数据，不另取内部台账。换算和内部核算约定见 `orchestrator/docs/测试开销.md`。
 - `export_data.py` 只读生成本地实时数据；`publish.py` 不采集或升级新成绩，只用确认快照在临时目录导出，并以绝对路径 `ONESHOT_SITE_DATA_DIR` 传给 Vite 的路由与数据输出。正式构建不覆盖本地 `site/data`。作答日志/用量仍由 clean、close、核心归档入口自动入账。
 - `updated` 是用到的评分结果文件（`result.json`）里最晚的修改日期。
 - `search.json`：`{ items: [{ type, id, name, en, short, terms, py, pyi, href, … }] }`，`type` 为 model、task、category、section；`py`、`pyi` 是名称、短名和中文别名的拼音全拼和首字母（数组）。
 - `stems/<类别>/<题目>.json`：题目页的题干，每次导出整个文件夹重写。摘录规则只写在 `export_data.py` 的 `STEM_RULE` 注释和 `NOT_STEM` 词表（按标题排除作答、规定、评分、环境、录制接口等章节，题面旁材料文件夹里的 `第NN题.md` 接在后面），`website/docs/tasks.md`「题干的摘录规则」照录并写明理由。改题面后重新发布，题干自动跟上。
 
-- Token 缺失题按实际运行时长拟合：已测 Token 合计 / 对应运行分钟合计 × 目标题实际分钟；代理也按目标自己的时长缩放。内部计算的可选 `cost.fit_basis` 记录速率、来源、各题分钟及限时回退，不进入网站导出；详见测试开销约定。新型号启动前即写 E 盘 runtime.json，每次归档把用量与时长一并入台账，核心归档和清理前自动采集，正常完整测试无需拟合。
+- 只算已答的题（有实测用量或已有评分），未答和正在作答的题不推算。已答但缺用量日志的题按实际运行时长补估：已测 Token 合计 / 对应运行分钟合计 × 该题实际分钟；代理也只补已答的题，按目标自己的时长缩放。内部计算的可选 `cost.fit_basis` 记录速率、来源、各题分钟及限时回退，不进入网站导出；详见测试开销约定。新型号启动前即写 E 盘 runtime.json，每次归档把用量与时长一并入台账，核心归档和清理前自动采集，正常完整测试无需拟合。
 
 - 最新作答按计时记录和显式续做关系选择，日志缺失不能回退旧作答。部分续做缺日志只补缺失段；内部 `cost.fit_basis` 带时间精度、缺失段和归属证据，不公开。只知截止的时长标为“实际停止未知”。内部 `cost.usage_gaps` 表示服务未返回用量，不能用字符数冒充实测。

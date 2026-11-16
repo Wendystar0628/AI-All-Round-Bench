@@ -102,8 +102,8 @@ export function fillCost(cell, cost) {
 }
 
 /**
- * A model row's token cell (.mrow-tok), one line: the 13-task total ("17.1 亿" / "1.71B"; the column head says
- * Token). No data: 暂无数据.
+ * A model row's token cell (.mrow-tok), one line: the total of the answered tasks ("17.1 亿" / "1.71B"; the column
+ * head says Token). No data: 暂无数据.
  */
 export function fillTokens(cell, cost) {
   const none = cost?.tokens == null;
@@ -145,7 +145,7 @@ export function costFacts(data, id) {
   const key = costKey(cost);
   const plan = planText(cost?.plan);
   if (plan) out.push(t(`common.cost.plan.${key === 'api' ? 'api' : 'subscription'}`, { plan }));
-  out.push(cost?.tokens == null ? t('common.cost.tokensNone') : t('common.cost.tokens', { n: data.tasks.length, v: fmtTokens(cost.tokens) }));
+  out.push(cost?.tokens == null ? t('common.cost.tokensNone') : t('common.cost.tokens', { n: cost.tasks ?? data.tasks.length, v: fmtTokens(cost.tokens) }));
   if (cost?.tps != null) out.push(t('common.cost.tps', { v: Math.round(cost.tps) }));
   return out;
 }
