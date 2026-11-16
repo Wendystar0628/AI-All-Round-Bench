@@ -6,7 +6,7 @@
   --lb-name-w: 13.25rem;
   --lb-grid: var(--pick-col,) var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 4.75rem;
   --lb-cost-w: 6.25rem;
-  --lb-tok-w: 5.5rem;
+  --lb-tok-w: 6.5rem;
   --lb-tps-w: 3.75rem;
   --lb-tb-h: 6.5rem;
   --lb-pad: 1.15rem;
@@ -25,6 +25,18 @@
 @media (min-width: 1360px) {
   .page-leaderboard {
     --lb-name-w: 15rem;
+  }
+}
+/* 600–899px: the TPS column folds away (as on phones) so the cost and token columns fit beside the bars */
+@media (min-width: 600px) and (max-width: 899px) {
+  .page-leaderboard .lb-board.has-cost {
+    --lb-grid: var(--pick-col,) var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 4.75rem var(--lb-cost-w) var(--lb-tok-w);
+  }
+  .page-leaderboard .lb-board.has-cost.is-by-part {
+    --lb-grid: var(--pick-col,) var(--lb-rank-w) 1.5rem minmax(6.5rem, var(--lb-name-w)) minmax(4rem, 1fr) 7.25rem var(--lb-cost-w) var(--lb-tok-w);
+  }
+  .page-leaderboard .mrow > .mrow-tps {
+    display: none;
   }
 }
 
@@ -366,7 +378,7 @@
 }
 .lb-h-by {
   color: var(--text-violet);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
