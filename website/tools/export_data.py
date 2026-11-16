@@ -615,8 +615,9 @@ def confirmed_data(categories):
     if not CONFIRMED.is_file():
         raise SystemExit('缺少已确认成绩快照，不能正式发布')
     snapshot = read_json(CONFIRMED)
-    region = {m['id']: m['region'] for m in load_registry()}  # 地区是型号的固定属性，跟随登记表
-    models = [m | {'region': region[m['id']]} for m in snapshot['models'] if m['id'] in region]
+    # 快照只冻结成绩和当时的测评日期；名字、简称、厂商、地区等登记信息跟随登记表
+    registry = {m['id']: m for m in load_registry()}
+    models = [public_model(registry[m['id']], m.get('tested')) for m in snapshot['models'] if m['id'] in registry]
     task_keys = [t['key'] for c in categories for t in c['tasks']]
     scores = copy.deepcopy(snapshot['scores'])
     scores['scores'] = {m['id']: scores['scores'][m['id']] for m in models}
@@ -635,6 +636,14 @@ def confirmed_data(categories):
     return models, scores
 
 
+def public_model(m, tested=None):
+    """A registry entry as the site shows it (preview and formal alike): its identity and display fields, and the
+    test date (the confirmed snapshot passes the date of the confirmed round)."""
+    return ({k: m[k] for k in ('id', 'key', 'name', 'short') if k in m} |
+            {'aliases': m.get('aliases', []), 'vendor': m['vendor'], 'region': m['region'], 'logo': m['logo'],
+             'agent': m['agent'], 'effort': m['effort'], 'tested': tested or m.get('tested') or latest_session_date(m['key'])})
+
+
 def confirm_model(key):
     """Called only by the explicit user-authorized --confirm command; update exactly this model's scores."""
     categories, _ = load_tasks()
@@ -645,10 +654,8 @@ def confirm_model(key):
     if model['id'] not in fresh['scores']:
         raise SystemExit('确认正式成绩需要全套 13 题完整且无评分缺口：' + key)
     snapshot = read_json(CONFIRMED)
-    tested = model.get('tested') or latest_session_date(key)
-    public_model = {k: model[k] for k in ('id', 'key', 'name', 'short', 'vendor', 'region', 'logo', 'agent', 'effort')}
-    public_model.update(aliases=model.get('aliases', []), tested=tested)
-    snapshot['models'] = [m for m in snapshot['models'] if m['id'] != model['id']] + [public_model]
+    entry = {'id': model['id'], 'key': key, 'tested': model.get('tested') or latest_session_date(key)}
+    snapshot['models'] = [m for m in snapshot['models'] if m['id'] != model['id']] + [entry]
     snapshot['scores']['scores'][model['id']] = {k: v for k, v in fresh['scores'][model['id']].items() if k != 'cost'}
     snapshot['scores']['updated'] = fresh['updated'] or snapshot['scores']['updated']
     snapshot['scores']['order'] = rank_records(snapshot['scores']['scores'], categories)
@@ -685,13 +692,7 @@ def main(argv=()):
     else:
         registry = load_registry(include_private=True)
         scores = build_scores(registry, categories, complete_only=False)
-        registry = [m for m in registry if m['id'] in scores['scores']]
-        models = []
-        for m in registry:
-            tested = m.get('tested') or latest_session_date(m['key'])
-            models.append({k: m[k] for k in ('id', 'key', 'name', 'short') if k in m} |
-                          {'aliases': m.get('aliases', []), 'vendor': m['vendor'], 'region': m['region'], 'logo': m['logo'], 'agent': m['agent'],
-                           'effort': m['effort'], 'tested': tested})
+        models = [public_model(m) for m in registry if m['id'] in scores['scores']]
     if notice:
         models = []
         scores['scores'] = {}

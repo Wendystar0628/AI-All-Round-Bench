@@ -3,248 +3,76 @@
     {
       "id": "claude-opus-5-5",
       "key": "Claude/Opus5.5",
-      "name": "Claude Opus 5.5",
-      "short": "Opus5.5",
-      "aliases": [
-        "Opus",
-        "Opus 5.5"
-      ],
-      "vendor": "Anthropic",
-      "logo": "claude",
-      "agent": "Claude Code",
-      "effort": "xhigh",
       "tested": "2026-11-04"
     },
     {
       "id": "claude-sonnet-5-5",
       "key": "Claude/Sonnet5.5",
-      "name": "Claude Sonnet 5.5",
-      "short": "Sonnet5.5",
-      "aliases": [
-        "Sonnet",
-        "Sonnet 5.5"
-      ],
-      "vendor": "Anthropic",
-      "logo": "claude",
-      "agent": "Claude Code",
-      "effort": "xhigh",
       "tested": "2026-11-04"
     },
     {
       "id": "claude-haiku-5-5",
       "key": "Claude/Haiku5.5",
-      "name": "Claude Haiku 5.5",
-      "short": "Haiku5.5",
-      "aliases": [
-        "Haiku",
-        "Haiku 5.5"
-      ],
-      "vendor": "Anthropic",
-      "logo": "claude",
-      "agent": "Claude Code",
-      "effort": "xhigh",
       "tested": "2026-11-04"
     },
     {
       "id": "gpt-6-1-sol",
       "key": "GPT/6.1Sol",
-      "name": "GPT 6.1 Sol",
-      "short": "6.1Sol",
-      "aliases": [
-        "Sol",
-        "6.1 Sol"
-      ],
-      "vendor": "OpenAI",
-      "logo": "openai",
-      "agent": "Codex",
-      "effort": "xhigh",
       "tested": "2026-11-04"
     },
     {
       "id": "gpt-6-1-terra",
       "key": "GPT/6.1Terra",
-      "name": "GPT 6.1 Terra",
-      "short": "6.1Terra",
-      "aliases": [
-        "Terra",
-        "6.1 Terra"
-      ],
-      "vendor": "OpenAI",
-      "logo": "openai",
-      "agent": "Codex",
-      "effort": "xhigh",
       "tested": "2026-11-04"
     },
     {
       "id": "gpt-6-astra",
       "key": "GPT/6Astra",
-      "name": "GPT 6 Astra",
-      "short": "6Astra",
-      "aliases": [
-        "Astra",
-        "6 Astra"
-      ],
-      "vendor": "OpenAI",
-      "logo": "openai",
-      "agent": "Codex",
-      "effort": "xhigh",
       "tested": "2026-11-04"
     },
     {
       "id": "gpt-6-luna",
       "key": "GPT/6Luna",
-      "name": "GPT 6 Luna",
-      "short": "6Luna",
-      "aliases": [
-        "Luna",
-        "6 Luna"
-      ],
-      "vendor": "OpenAI",
-      "logo": "openai",
-      "agent": "Codex",
-      "effort": "xhigh",
       "tested": "2026-11-04"
     },
     {
       "id": "gpt-5-6-sol",
       "key": "GPT/5.6Sol",
-      "name": "GPT 5.6 Sol",
-      "short": "5.6Sol",
-      "aliases": [
-        "5.6 Sol",
-        "GPT-5.6 Sol"
-      ],
-      "vendor": "OpenAI",
-      "logo": "openai",
-      "agent": "Codex",
-      "effort": "xhigh",
       "tested": "2026-11-12"
     },
     {
       "id": "deepseek-v4-1-flash",
       "key": "DeepSeek/V4.1Flash",
-      "name": "DeepSeek V4.1 Flash",
-      "short": "V4.1Flash",
-      "aliases": [
-        "DeepSeek",
-        "V4.1 Flash",
-        "DeepSeek Flash"
-      ],
-      "vendor": "DeepSeek",
-      "logo": "deepseek",
-      "agent": "DeepSeek Harness",
-      "effort": "max",
       "tested": "2026-11-12"
     },
     {
       "id": "hy4",
       "key": "Hy/Hy4",
-      "name": "Hy4",
-      "short": "Hy4",
-      "aliases": [
-        "Hy",
-        "Hunyuan",
-        "混元",
-        "Tencent Hy4"
-      ],
-      "vendor": "Tencent",
-      "logo": "hunyuan",
-      "agent": "CodeBuddy Code",
-      "effort": "high",
       "tested": "2026-11-13"
     },
     {
       "id": "gemini-4-carbon",
       "key": "Gemini/4Carbon",
-      "name": "Gemini 4 Carbon",
-      "short": "4Carbon",
-      "vendor": "Google",
-      "region": "us",
-      "logo": "gemini",
-      "agent": "Antigravity CLI",
-      "effort": "high",
-      "aliases": [
-        "Carbon",
-        "Gemini Carbon",
-        "Gemini 4",
-        "Google",
-        "谷歌"
-      ],
       "tested": "2026-11-13"
     },
     {
       "id": "gemini-4-hydrogen",
       "key": "Gemini/4Hydrogen",
-      "name": "Gemini 4 Hydrogen",
-      "short": "4Hydrogen",
-      "vendor": "Google",
-      "region": "us",
-      "logo": "gemini",
-      "agent": "Antigravity CLI",
-      "effort": "xhigh",
-      "aliases": [
-        "Hydrogen",
-        "Gemini Hydrogen",
-        "Gemini 4",
-        "Google",
-        "谷歌"
-      ],
       "tested": "2026-11-13"
     },
     {
       "id": "kimi-k3-1-pro",
       "key": "Kimi/K3.1Pro",
-      "name": "Kimi K3.1 Pro",
-      "short": "K3.1Pro",
-      "vendor": "Moonshot AI",
-      "region": "cn",
-      "logo": "kimi",
-      "agent": "Kimi Code",
-      "effort": "max",
-      "aliases": [
-        "K3.1 Pro",
-        "Kimi 3.1 Pro",
-        "Kimi K3.1",
-        "月之暗面",
-        "Moonshot"
-      ],
       "tested": "2026-11-15"
     },
     {
       "id": "qwen4-max",
       "key": "Qwen/4Max",
-      "name": "Qwen4 Max",
-      "short": "4Max",
-      "vendor": "Alibaba",
-      "region": "cn",
-      "logo": "qwen",
-      "agent": "Qwen Code",
-      "effort": "xhigh",
-      "aliases": [
-        "Qwen4",
-        "Qwen 4 Max",
-        "qwen4-max-preview",
-        "千问",
-        "通义千问"
-      ],
       "tested": "2026-11-15"
     },
     {
       "id": "mimo-v2-6-pro",
       "key": "MiMo/V2.6Pro",
-      "name": "MiMo V2.6 Pro",
-      "short": "V2.6Pro",
-      "vendor": "Xiaomi",
-      "region": "cn",
-      "logo": "xiaomimimo",
-      "agent": "MiMo Code",
-      "effort": "high",
-      "aliases": [
-        "MiMo",
-        "V2.6 Pro",
-        "MiMo Pro",
-        "Xiaomi MiMo"
-      ],
       "tested": "2026-11-12"
     }
   ],
