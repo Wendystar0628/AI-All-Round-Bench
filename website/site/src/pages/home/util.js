@@ -22,15 +22,6 @@ export function tn(key, vars = {}, count) {
   return out;
 }
 
-/** "60–100" or "60" */
-export function minuteRange(data) {
-  const m = data.tasks.map((x) => x.minutes).filter((x) => Number.isFinite(x));
-  if (!m.length) return '';
-  const lo = Math.min(...m);
-  const hi = Math.max(...m);
-  return lo === hi ? `${lo}` : `${lo}–${hi}`;
-}
-
 /** Eyebrow + title with the hairline to a star; an optional action sits at the line's end. */
 export function sectionHead({ id, eyebrow, title, action }) {
   return h(

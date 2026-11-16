@@ -11,12 +11,12 @@
 // pass views then draw that part (rows.js). Sorting by cost draws the cost.
 import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
-import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, modelLabel, iconURL, DASH } from '../../core/index.js';
+import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, minuteRange, modelLabel, iconURL, DASH } from '../../core/index.js';
 import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, SCOPES, COST_MODES, getCostMode, setCostMode, repoLink } from '../../ui/index.js';
 import { exportButton, rowsToSVG } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
-import { VIEWS, PASS, RESOURCES, DIRS, compute, officialWeights, isOfficial, parseWeights, formatWeights, sortKeys, headFigures, isResourceSort, isPartSort, defaultDir, isTop } from './model.js';
+import { VIEWS, RESOURCES, DIRS, compute, officialWeights, isOfficial, parseWeights, formatWeights, sortKeys, headFigures, isResourceSort, isPartSort, defaultDir, isTop } from './model.js';
 import { createRows, axisChanges } from './rows.js';
 import { createAxis } from './axis.js';
 import { createCompare } from './compare.js';
@@ -68,17 +68,16 @@ boot(async ({ data }) => {
 
   // ---------------- page head ----------------
   factsEl.replaceChildren(
-    h('li', t('leaderboard.facts.tasks', { n: data.tasks.length })),
-    h('li', t('leaderboard.facts.cats', { n: data.categories.length })),
     h('li', h('time', { datetime: data.updated }, t('leaderboard.facts.updated', { date: fmtDate(data.updated) }))),
     h('li', repoLink()),
   );
+  // the scale of the challenge: models, tasks (and categories), the per-task time limit
   const F = headFigures(data);
   const fig = (value, label, sub) => h('div', h('b.num', { 'data-fig': '' }, value), h('span', label), sub ? h('small', sub) : null);
   figsEl.replaceChildren(
     fig(String(F.models), t('leaderboard.figs.models'), F.testing ? t('leaderboard.figs.testing', { n: F.testing }) : null),
-    fig(String(F.pass), t('leaderboard.figs.pass', { n: PASS })),
-    fig(F.gap == null ? '—' : fmtScore(F.gap), F.n >= 3 ? t('leaderboard.figs.gap') : t('leaderboard.figs.gapN', { n: F.n })),
+    fig(String(data.tasks.length), t('leaderboard.figs.tasks'), t('leaderboard.figs.cats', { n: data.categories.length })),
+    fig(minuteRange(data), t('leaderboard.figs.minutes'), t('leaderboard.figs.minutesNote')),
   );
 
   // ---------------- toolbar ----------------

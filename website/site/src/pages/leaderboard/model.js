@@ -207,12 +207,8 @@ export function compute(data, S) {
 
 export const isTop = (v, best) => v != null && best != null && round1(v) === best;
 
-/** The three figures of the page head (official results only). */
+/** Ranked models (official results only) and those still in testing, for the page head. */
 export function headFigures(data) {
-  const ranked = rankBy(data, 'total').filter((e) => e.ranked);
-  const testing = data.order.length - ranked.length;
-  const pass = ranked.filter((e) => round1(e.value) >= PASS).length;
-  const n = Math.min(3, ranked.length);
-  const gap = n >= 2 ? round1(ranked[0].value) - round1(ranked[n - 1].value) : null;
-  return { models: ranked.length, testing, pass, gap, n };
+  const ranked = rankBy(data, 'total').filter((e) => e.ranked).length;
+  return { models: ranked, testing: data.order.length - ranked };
 }

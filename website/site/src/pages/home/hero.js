@@ -1,11 +1,11 @@
 // 首屏 (home.md 2): left column — fields, wordmark, marker line, intro, top 5;
 // right column — the 十项星盘 (shared dial) with its three-line legend.
-import { h, svg, t, tv, lang, fmtDate, fmtRank, fmtScore, fmtInt, modelName, modelLabel, vendorIcon, links, iconURL } from '../../core/index.js';
+import { h, svg, t, tv, lang, fmtDate, fmtRank, fmtScore, fmtInt, minuteRange, modelName, modelLabel, vendorIcon, links, iconURL } from '../../core/index.js';
 import { createStarDial, exportButton, starD } from '../../charts/index.js';
 import { dur, durIn, stagger, reduced, calm } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
 import { repoLink } from '../../ui/repo.js';
-import { tn, minuteRange } from './util.js';
+import { tn } from './util.js';
 
 /** The entrance plays (not under reduced motion or the calm variant). */
 const entering = () => !reduced() && !calm() && durIn('come') > 0;

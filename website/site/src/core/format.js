@@ -48,6 +48,15 @@ export function fmtMinutes(n) {
   return t('common.unit.minutes', { n });
 }
 
+/** The per-task time limits of the tasks as one range: "60–100", or "60" when all are equal. */
+export function minuteRange(data) {
+  const m = data.tasks.map((x) => x.minutes).filter((x) => Number.isFinite(x));
+  if (!m.length) return '';
+  const lo = Math.min(...m);
+  const hi = Math.max(...m);
+  return lo === hi ? `${lo}` : `${lo}–${hi}`;
+}
+
 /** Thousands separators for counts. */
 export function fmtInt(n) {
   return n == null ? DASH : Number(n).toLocaleString(lang === 'en' ? 'en-US' : 'zh-CN');
