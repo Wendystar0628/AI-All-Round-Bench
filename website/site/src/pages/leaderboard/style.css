@@ -1212,13 +1212,14 @@
 }
 .fr-axis text {
   fill: var(--st-ink-2);
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .fr-title {
-  fill: var(--st-ink-2);
-  font-size: 12px;
-  font-weight: 600;
+  fill: var(--st-ink);
+  font-size: 15px;
+  font-weight: 700;
 }
 .fr-zone {
   fill: var(--fr-zone);
@@ -1325,7 +1326,7 @@
 }
 .fr-badges text {
   fill: var(--st-panel);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -1402,5 +1403,12 @@
   }
   .fr-label {
     font-size: 11px;
+  }
+  .fr-axis text,
+  .fr-badges text {
+    font-size: 13px;
+  }
+  .fr-title {
+    font-size: 14px;
   }
 }

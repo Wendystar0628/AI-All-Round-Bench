@@ -25,7 +25,7 @@ import { isShown, showTip, hideTip, createChoice, costOf, costKey, costMark, cos
 import { openModelPanel } from '../../shell/index.js';
 import { dur, reduced, onEnterView, ease } from '../../motion.js';
 
-const M = { t: 22, r: 34, b: 52, l: 58 };
+const M = { t: 30, r: 34, b: 62, l: 64 };
 const NARROW = 560; // below this width (phones) the marks are smaller and only the frontier models are named
 const FONT = 12; // the names (11 on a phone, styles)
 
@@ -241,20 +241,20 @@ export function createFrontier({ data, weights }) {
       .data(xt, (d) => d)
       .join((en) => en.append('text').attr('text-anchor', 'middle').attr('x', (d) => x(d)))
       .text((d) => money(d))
-      .attr('y', H - M.b + 20)
+      .attr('y', H - M.b + 24)
       .call((sel) => tr(sel, T).attr('x', (d) => x(d)));
     gY
       .selectAll('text')
       .data(yt, (d) => d)
       .join((en) => en.append('text').attr('text-anchor', 'end').attr('y', (d) => y(d) + 4))
       .text((d) => d)
-      .attr('x', M.l - 10)
-      .call((sel) => tr(sel, T).attr('y', (d) => y(d) + 4));
+      .attr('x', M.l - 12)
+      .call((sel) => tr(sel, T).attr('y', (d) => y(d) + 5));
     gX.selectAll('line').data([0]).join('line').attr('class', 'fr-base').attr('x1', M.l).attr('x2', W - M.r).attr('y1', H - M.b).attr('y2', H - M.b);
     gY.selectAll('line').data([0]).join('line').attr('class', 'fr-base').attr('x1', M.l).attr('x2', M.l).attr('y1', M.t).attr('y2', H - M.b);
     const basis = t(`leaderboard.costMode.${getCostMode()}`);
-    titleX.attr('x', W - M.r).attr('y', H - 8).text(t(by === 'total' ? 'leaderboard.frontier.axisX' : 'leaderboard.frontier.axisXShare', { basis }));
-    titleY.attr('x', M.l + 8).attr('y', M.t - 8).text(nameOf(by));
+    titleX.attr('x', W - M.r).attr('y', H - 6).text(t(by === 'total' ? 'leaderboard.frontier.axisX' : 'leaderboard.frontier.axisXShare', { basis }));
+    titleY.attr('x', M.l + 10).attr('y', M.t - 10).text(nameOf(by));
   }
 
   // the models named in the chart: all of them; on a phone the frontier only (the rest by pointing)
@@ -421,8 +421,8 @@ export function createFrontier({ data, weights }) {
     const b = gBadges
       .selectAll('g')
       .data([
-        { text: fmtCNY(p.x), bx: cx, by: base + 20, anchor: 'middle' },
-        { text: fmtScore(p.y), bx: M.l - 10, by: cy + 4, anchor: 'end' },
+        { text: fmtCNY(p.x), bx: cx, by: base + 24, anchor: 'middle' },
+        { text: fmtScore(p.y), bx: M.l - 12, by: cy + 5, anchor: 'end' },
       ])
       .join((en) => {
         const gg = en.append('g');
