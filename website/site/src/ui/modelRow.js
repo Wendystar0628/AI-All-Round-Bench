@@ -41,8 +41,8 @@ import { getCompare, toggleCompare, isCompareFull, compareIndex, onCompareChange
 import { dur, flip, stagger, isInView } from '../motion.js';
 import { createBar, setBar } from '../charts/bar.js';
 import { GRID } from '../charts/axis.js';
-import { rowsToSVG } from '../charts/export.js';
 import { costOf, fillCost, fillTokens, fillTps, costSr } from './cost.js';
+import { createWindow } from './window.js';
 
 /**
  * Default plot: a bar from 0 to the value on the fixed 0–100 scale, faint grid
@@ -200,15 +200,23 @@ function syncTicks(rows) {
 /**
  * A keyed list of model rows in an <ol>. update(entries) adds, removes,
  * refills and reorders rows (FLIP), only animating what is in view.
- * Options: as createModelRow, plus { empty: text shown when no entries, animateIn: true }.
- * Returns { el, rows: Map<id, li>, update(entries, { animate }), destroy() }.
+ * The rows sit in the list window (ui/window.js): with more than WINDOW_ROWS models they scroll inside it,
+ * under the head row when one is given. The window box takes the <ol>'s place when the <ol> is already on the
+ * page; otherwise place list.box yourself.
+ * Options: as createModelRow, plus { head: a createRowHead() row kept on top of the window,
+ *          windowed: false when the list sits in a window shared with its neighbours (one scrollbar for lists side by
+ *          side, e.g. the 按题 view), empty: text shown when no entries, animateIn: true }.
+ * Returns { el, box, rows: Map<id, li>, update(entries, { animate }), reveal(id), destroy() }.
  */
 export function createModelList(target, opts) {
   const ol = target.tagName === 'OL' || target.tagName === 'UL' ? target : target.appendChild(h('ol'));
   ol.classList.add('mrows');
   const rows = new Map();
   const empty = h('p.mrows-empty', { hidden: true }, opts.empty ?? t('common.toolbar.noMatch'));
-  ol.after(empty);
+  const box = h('div.mrows-window');
+  if (ol.parentNode) ol.replaceWith(box);
+  box.append(...[opts.head, ol, empty].filter(Boolean));
+  const win = opts.windowed === false ? null : createWindow(box, { rows: () => ol.children });
   let firstRun = true;
   const off = onCompareChange(() => syncTicks(rows));
 
@@ -245,6 +253,7 @@ export function createModelList(target, opts) {
       });
       empty.hidden = entries.length > 0;
       syncTicks(rows);
+      win?.fit();
     };
     const stay = [...rows.values()].filter((li) => want.has(li.dataset.id));
     if (!animateNow || firstRun) doUpdate();
@@ -259,8 +268,11 @@ export function createModelList(target, opts) {
 
   return {
     el: ol,
+    box,
     rows,
     update,
+    /** Scroll a model's row into the middle of the window when it is below the first rows. */
+    reveal: (id) => win?.reveal(rows.get(id)),
     destroy() {
       off();
       empty.remove();
@@ -268,13 +280,4 @@ export function createModelList(target, opts) {
       rows.clear();
     },
   };
-}
-
-/**
- * "存为图片" for a list of model rows: the head and every visible row, sub rows
- * (.mrow-sub) included, as one SVG (charts/export.js rowsToSVG).
- * Returns Promise<{ svg, width, height }> for exportButton({ build }).
- */
-export function listToSVG(ol, { head } = {}) {
-  return rowsToSVG([head, ...ol.querySelectorAll(':scope > li.mrow')]);
 }

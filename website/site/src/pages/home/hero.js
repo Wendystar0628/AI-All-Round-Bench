@@ -1,7 +1,8 @@
 // 首屏 (home.md 2): left column — fields, wordmark, marker line, intro, top 5;
 // right column — the 十项星盘 (shared dial) with its three-line legend.
 import { h, svg, t, tv, lang, fmtDate, fmtRank, fmtScore, fmtInt, minuteRange, modelName, modelLabel, vendorIcon, links, iconURL } from '../../core/index.js';
-import { createStarDial, exportButton, starD } from '../../charts/index.js';
+import { createStarDial, exportButton, chartBody, starD } from '../../charts/index.js';
+import { modelFacts, guideLines } from '../../ui/facts.js';
 import { dur, durIn, stagger, reduced, calm } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
 import { repoLink } from '../../ui/repo.js';
@@ -186,9 +187,12 @@ function dialBlock(data, page) {
   };
   setDetail();
   let dial = null;
+  // 存为图片: the dial of the model on show as a poster (charts/poster.js), with its legend as how to read it
   const exp = exportButton({
-    getSvg: () => dial?.svg,
-    title: () => `${t('common.dial.title')} ${modelLabel(data.model(page.id))}`,
+    poster: () => {
+      const G = guideLines(data);
+      return { kicker: 'STAR DIAL', title: modelLabel(data.model(page.id)), subtitle: t('common.dial.title'), facts: modelFacts(data, page.id), body: chartBody(dial.svg), guide: [...(tv('home.dial.legend') || []), G.total, G.rules] };
+    },
     filename: () => `ai-decathlon-dial-${page.id}`,
   });
   // the figure fills the right column; the stack is a square dial plus its caption

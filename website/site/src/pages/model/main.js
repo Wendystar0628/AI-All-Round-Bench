@@ -9,7 +9,8 @@
 import './style.css';
 import { boot, registerShortcut } from '../../shell/index.js';
 import { h, t, route, links, modelLabel, altHref, BASE } from '../../core/index.js';
-import { createStarDial, exportButton } from '../../charts/index.js';
+import { createStarDial, exportButton, chartBody } from '../../charts/index.js';
+import { modelFacts, guideLines } from '../../ui/facts.js';
 import { dur, onEnterView } from '../../motion.js';
 import { createHead } from './head.js';
 import { createBarChart } from './bars.js';
@@ -34,6 +35,11 @@ boot(({ data }) => {
   }
 
   const nameOf = () => modelLabel(data.model(id));
+  // 存为图片: a chart of this model as a poster (charts/poster.js), with the model's figures and how to read it
+  const chartPoster = (kicker, what, svg, lines = []) => {
+    const G = guideLines(data);
+    return { kicker, title: nameOf(), subtitle: what, facts: modelFacts(data, id), body: chartBody(svg), guide: [...lines, G.total, G.rules] };
+  };
   const head = createHead(header, { data });
   const picker = createPicker(side, { data, onPick: (next) => go(next) });
 
@@ -42,7 +48,7 @@ boot(({ data }) => {
   const dialBox = h('div.md-dial-box');
   const dialPanel = h(
     'section.st-panel.md-dial-panel',
-    h('h2', pair(t('model.dial.eyebrow'), t('model.dial.title')), exportButton({ getSvg: () => dial.svg, title: () => `${t('common.dial.title')} │ ${nameOf()}`, filename: () => `ai-decathlon-dial-${id}` })),
+    h('h2', pair(t('model.dial.eyebrow'), t('model.dial.title')), exportButton({ poster: () => chartPoster(t('model.dial.eyebrow'), t('common.dial.title'), dial.svg, [t('model.dial.note')]), filename: () => `ai-decathlon-dial-${id}` })),
     dialBox,
     h('p.st-field.md-dial-note', t('model.dial.note')),
   );
@@ -52,7 +58,7 @@ boot(({ data }) => {
     h(
       'h2',
       pair(t('model.cats.eyebrow'), t('common.unit.categoriesShort', { n: data.categories.length })),
-      exportButton({ getSvg: () => cats.svg, title: () => t('model.cats.exportTitle', { name: nameOf() }), filename: () => `ai-decathlon-categories-${id}` }),
+      exportButton({ poster: () => chartPoster(t('model.cats.eyebrow'), t('common.unit.categoriesShort', { n: data.categories.length }), cats.svg), filename: () => `ai-decathlon-categories-${id}` }),
     ),
     catBox,
   );
@@ -62,7 +68,7 @@ boot(({ data }) => {
     h(
       'h2',
       pair(t('model.tasks.eyebrow'), t('common.unit.tasksShort', { n: data.tasks.length })),
-      exportButton({ getSvg: () => tasks.svg, title: () => t('model.tasks.exportTitle', { name: nameOf() }), filename: () => `ai-decathlon-tasks-${id}` }),
+      exportButton({ poster: () => chartPoster(t('model.tasks.eyebrow'), t('common.unit.tasksShort', { n: data.tasks.length }), tasks.svg), filename: () => `ai-decathlon-tasks-${id}` }),
     ),
     taskBox,
   );

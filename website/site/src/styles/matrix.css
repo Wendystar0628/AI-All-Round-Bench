@@ -11,13 +11,6 @@
   scrollbar-width: thin;
   scrollbar-color: var(--st-rule) transparent;
 }
-/* 存为图片 measures the whole table */
-.mx-scroll.is-full {
-  overflow: visible;
-}
-.mx-scroll.is-full .mx-model {
-  position: static;
-}
 .mx {
   --mx-model: 18.5rem;
   --mx-cell-h: 2.35rem;

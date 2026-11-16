@@ -1,5 +1,5 @@
 // 一张排好的画布（sheet.js）转成独立的 SVG，交给 charts/export.js 的 svgToPNG 画成 PNG。
-// 同 charts/export.js 的 rowsToSVG：位置和样式都取页面上的实际排版，Saira 内嵌，中文用系统字体；
+// 位置和样式都取页面上的实际排版，Saira 内嵌，中文用系统字体；
 // 不用 <foreignObject>，所以各浏览器都能画进 canvas。
 //
 // 画得出的：底色、边框（实线、虚线）、竖直方向的 linear-gradient 色带（高亮笔）、文字（按行拆开，

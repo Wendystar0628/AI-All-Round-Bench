@@ -8,11 +8,11 @@
 // is the category score).
 //
 //   const v = createByTask(cat, { data, tb });
-//   v.el; v.refresh({ animate }); v.build()   // build(): 存为图片
+//   v.el; v.refresh({ animate })   (存为图片 is the board's poster, board.js)
 import { h, t, pick, links, rankBy, fmtPct, fmtRank, modelLabel } from '../../core/index.js';
 import { createModelList, createRowHead, barPlot, showTip, hideTip } from '../../ui/index.js';
+import { createWindow } from '../../ui/window.js';
 import { cellState, cellMark, cellTip } from '../../ui/cells.js';
-import { rowsToSVG } from '../../charts/index.js';
 
 const GRID = [20, 40, 60, 80];
 
@@ -41,10 +41,9 @@ export function createByTask(cat, { data, tb }) {
     );
     const rowHead = createRowHead({ rank: t('categories.board.rank'), name: t('categories.board.model'), score: t('categories.byTask.score'), plot: axisNode(), checkable: false });
     const ol = h('ol');
-    b.head = head;
-    b.rowHead = rowHead;
     b.list = createModelList(ol, {
       data,
+      windowed: false,
       kind: cat.kind === 'design' ? 'design' : 'standard',
       checkable: false,
       grid: GRID,
@@ -61,9 +60,12 @@ export function createByTask(cat, { data, tb }) {
       },
       plot: barPlot,
     });
-    b.el = h('section.cbt-block', { dataset: { col: b.col.key } }, head, rowHead, ol);
+    // the column's title and head row stay on top while the shared window scrolls
+    b.el = h('section.cbt-block', { dataset: { col: b.col.key } }, h('div.cbt-top', head, rowHead), b.list.box);
     el.append(b.el);
   }
+  // one window for all the columns: one scrollbar, the rows of every column move together (ui/window.js)
+  const win = createWindow(el, { rows: () => blocks[0].list.el.children });
 
   function stateNote(id, col) {
     if (col.type === 'category') {
@@ -98,20 +100,12 @@ export function createByTask(cat, { data, tb }) {
 
   function refresh({ animate = true } = {}) {
     for (const b of blocks) b.list.update(rankBy(data, b.col.key).filter((e) => tb.matches(e.model)), { animate });
-  }
-
-  /** 存为图片: every block's title, head row and rows where they are on the page. */
-  function build() {
-    return rowsToSVG(
-      blocks.flatMap((b) => [b.head, b.rowHead, ...b.el.querySelectorAll(':scope > ol > li.mrow')]),
-      { span: false },
-    );
+    win.fit();
   }
 
   return {
     el,
     refresh,
-    build,
     get count() {
       return blocks[0].list.rows.size;
     },

@@ -61,7 +61,7 @@ site/
   scripts/routes.mjs  scripts/sync-assets.mjs 骨架方
   pages/<类型>.html          模板：骨架方建，<main> 里面归各页负责人
   data/                      数据方（导出脚本的产物）
-  public/                    favicon.svg（骨架方）；fonts/ decor/ logos/ icons/ 由 npm run sync 从 website/ 拷入，不要手改
+  public/                    favicon.svg（网站标识：切角紫方块上的几何“10”和荧光绿四角星，分享图顶栏同用）；fonts/ decor/ logos/ icons/ 由 npm run sync 从 website/ 拷入，不要手改
   src/
     vendor/stellar/          技能的 stellar.css、fx.js、tokens.json、星图（sync 拷入，不要手改）
     core/  shell/  charts/  ui/  styles/  motion.js     骨架方
@@ -229,14 +229,17 @@ dial.destroy();
 - 没出分的题不画星，在扇区里写「未出分」。home.md 要的「星盘下方三行图例」由首页负责人写在星盘外面。
 - 盘内小字按渲染尺寸放大，屏上不小于 11px（技能字号阶最小一级）；扇区名和权重两条弧随字号拉开，放不下的扇区名换简称；分组括弧在「标准评判 46%」处断开。紫盘标签放不下全名时依次换简称、去掉厂商图标，最后才截断（保留推理强度）。
 
-### 存为图片 `charts/export.js`
+### 存为图片：分享图 `charts/poster.js`、`charts/art.js`
 
-- `exportButton({ getSvg, title, filename })`：看板头右端的小按钮「存为图片」，完成时荧光绿穿过一次、字换成「已保存」。`getSvg` 返回在页上的 `<svg>`。
-- `exportButton({ build, title })`：图不是一整块 SVG 时用，`build()` 返回 `{ svg, width, height }`（样式已内联，可以是 Promise），例如 `build: () => listToSVG(ol, { head })`。
-- `rowsToSVG([head, ...rows], { sub: '.mrow-sub', skip: '.sr-only' })` → Promise：一组 HTML 行（连同行里的子行）拼成一张 SVG：文字照位置和样式写成 `<text>`（省略号照样截断），行里每个 SVG 原样带上，高光、虚线「评测中」框、柱尾四角星、厂商和类别图标、勾选紫条都保留，每行和每个子行下沿画自己的细线。带底色的标签加 `data-ground` 会连底色一起导出。
-- `exportChart(svg, { title, filename, scale = 2 })`、`exportPrepared(svg, w, h, opts)`：直接导出。PNG 是 2 倍像素、当前主题和状态，下加一行页脚「站名 │ 图名 │ 数据 日期 │ 网址」，嵌入 Saira。文件名默认 `ai-decathlon-<图名>-<更新日期>.png`。
-- 底层：`svgToPNG(svg, w, h, { scale })` → PNG Blob（样式已内联、字体已内嵌的 SVG），`saveBlob(blob, 文件名)` 下载，`fontCSS()` → Saira 的 `@font-face`（data URL）。猜你想问的整页导出（`src/pages/faq/sheet.js`，1920×1080，自动分页）用的就是这几个。
-- 导出靠复制每个元素的计算样式，所以图里的颜色写在 CSS（类或 `style`）里就行；HTML 元素（遮罩图标、`<div>` 柱）导不进去，图标用 `inlineSVG`。
+- 存下的都是分享图（docs/README「图表存图」）：同一套版式，按数据重画，包含当前排序和筛选下的全部模型，跟随当前主题，2 倍像素。
+- `exportButton({ poster, filename })`：看板头右端的小按钮「存为图片」，完成时荧光绿穿过一次、字换成「已保存」。`poster()` 返回（或 Promise 返回）分享图的内容：
+  `{ kicker, title, subtitle, facts: [{ value, label, sub }], body, guide: [句子 | { mark: 'subscription' | 'api', text }], index: [{ no, text }] }`。文件名 `<filename>-<更新日期>.png`。
+- 主体 `body` 是 `{ svg, width, height }`（可以是 Promise），宽不超过 `BODY_W`：
+  - `rankingArt({ rows, cols, heads, kind, pass })`：排名图。每行 `{ model, rank（null 为评测中）, value, scoreText, best, note, cells }`，`cols` 是分数右边的附加列 `{ key, label, width, sorted }`，格 `{ text, mark, best, muted }`。
+  - `matrixArt({ rows, groups, cols })`：成绩矩阵（`ui/matrix.js` 的 `art()` 拼好参数，`index()` 给题号对照）。
+  - `chartBody(svg)`：页上的星盘或柱图，复制计算样式。
+- 比赛规模的大数字与说明句共用 `ui/facts.js`：`challengeFacts(data)`、`modelFacts(data, id)`、`guideLines(data)`。
+- 底层 `charts/export.js`：`svgToPNG(svg, w, h, { scale })` → PNG Blob，`saveBlob(blob, 文件名)` 下载，`fontCSS()` → Saira 的 `@font-face`（data URL），`inlineStyles(live, clone)`。猜你想问的整页导出（`src/pages/faq/sheet.js`，1920×1080，自动分页）也用这几个。
 
 ### 配色 `charts/colors.js`（visual.md）
 
@@ -257,10 +260,12 @@ dial.destroy();
 列：勾选 │ 名次 │ 厂商图标 │ 全名（链接，到模型得分页 `/models/<id>/`，名字接力）│ 图区 │ 分数。点行的其余部分打开侧面板（行上有 `data-model-panel`；键盘用全名后面一个读屏可见的按钮）。行高 `--row-h`，指向或聚焦时左边落紫条、底变纸色、图形加深一档；勾选的行常显紫条（类 `is-checked`，`--cmp` 是勾选序号）。评测中的行名次写虚线框「评测中」、分数 `—`、图区斜线纹加「已出 8 / 13 题」。读屏把一行读作「第 1 名，GPT 6 Astra (xhigh)，74.7 分」。
 
 ```js
-import { createModelList, createRowHead, barPlot, listToSVG } from '../../ui/index.js';
+import { createModelList, createRowHead, barPlot } from '../../ui/index.js';
 const head = createRowHead({ rank: '名次', name: '模型', score: '总分', plot: axisNode });
 const list = createModelList(ol, {
   data,
+  head,                    // 表头放进榜单窗口顶上（可不给，表头另放）
+
   kind: 'series',          // 柱色：'series'（紫 300）| 'standard'（荧光绿加墨边）| 'design'（紫 300）
   plot: barPlot,           // 默认；或 (cell, entry, ctx) => {}，ctx: { data, kind, best, note, first, animate, delay, pass, grid, row, sr }
   checkable: true,         // 勾选框（对比）
@@ -271,14 +276,17 @@ const list = createModelList(ol, {
 });
 list.update(rankBy(data, 'total').filter((e) => tb.matches(e.model)));   // 按 id 复用行，FLIP 重排，新行逐行亮起，筛掉的先收起
 list.rows;  // Map<id, li>
+list.box;   // 榜单窗口（ol 已在页上时原地替换 ol，否则自己放）
+list.reveal(id);  // 让某行在窗口里看得见
 ```
+
+- 榜单窗口 `ui/window.js`：超过 `WINDOW_ROWS`（20）个模型时，框只有前 20 行（连同子行）高，行在框内滚动，表头固定在框顶；框到顶或到底后滚轮接着滚页面。成绩矩阵用同一个窗口；并排的几个列表（「按题」）给 `windowed: false`，由外层 `createWindow(外框, { rows })` 共用一个窗口。
 
 - 列宽：名字列 `--mrow-name`（默认 15rem，可在本页 CSS 里改）。行 `li.mrow` 带 `data-id`，图区是 `.mrow-plot`。
 - 每行（entry）可以带 `best`（全场最佳：分数垫荧光绿、柱尾荧光绿星；不写时名次 1 即最佳）和 `note`（行内备注：没出分的行写在斜线纹上，有分的行跟在柱尾；没出分又没写时是「已出 8 / 13 题」，写 `''` 不显示）。列表选项的 `note` 写成字符串时只给没出分的行。
 - 名次格钩子 `rank(cell, entry, ctx)`：自己往名次格里写（例如按某题排序的名次、名次变化），它在本行读屏句 `ctx.sr` 写好之后跑，需要时可改写。
 - `createRowHead({ …, hidden: true })`：默认整行对读屏隐藏；`hidden: false` 时标签可读，只隐藏装饰格（勾选位、图标位、没有链接的图区）。表头的名次、分数和其他表头字同一字号。
 - `barPlot`：共用的横向分数柱（`charts/bar.js`），固定 0–100，柱尾荧光绿四角星（HTML 叠加层）。自己画图区时同样只往 `cell` 里画。
-- `listToSVG(ol, { head })` → Promise `{ svg, width, height }`：表头和每个可见的模型行，连同行里的子行（`.mrow-sub`），拼成一张 SVG（`charts/export.js` 的 `rowsToSVG`），给 `exportButton({ build })`。
 - 测试开销列（`cost: true`）：行多两格 `.mrow-cost`（金额加依据记号）、`.mrow-tok`（Token 合计），类 `has-cost`，列宽 `--mrow-cost-w`、`--mrow-tok-w`，各一行、竖直居中；读屏句末尾接一句开销。记号的图例由页面写一次（`costLegend`）。
 
 ### 测试开销 `ui/cost.js`

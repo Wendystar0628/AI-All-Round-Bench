@@ -207,8 +207,3 @@ export function compute(data, S) {
 
 export const isTop = (v, best) => v != null && best != null && round1(v) === best;
 
-/** Ranked models (official results only) and those still in testing, for the page head. */
-export function headFigures(data) {
-  const ranked = rankBy(data, 'total').filter((e) => e.ranked).length;
-  return { models: ranked, testing: data.order.length - ranked };
-}

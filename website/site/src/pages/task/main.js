@@ -180,6 +180,7 @@ function scoresBlock(data, task, L) {
   const wrap = h('div.tk-scores', rowHead, ol);
   const list = createModelList(ol, {
     data,
+    head: rowHead,
     kind: task.kind === 'design' ? 'design' : 'standard',
     checkable: false,
     pass: false,

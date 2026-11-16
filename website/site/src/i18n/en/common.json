@@ -293,6 +293,37 @@
     "failed": "The image was not saved. Try again."
   },
   "repo": "GitHub repository",
+  "figs": {
+    "models": "Models ranked",
+    "testing": "{n} more in testing",
+    "tasks": "Tasks",
+    "cats": {
+      "one": "{n} category",
+      "other": "{n} categories"
+    },
+    "minutes": "Minutes per task",
+    "minutesNote": "No help, stopped at the limit",
+    "rank": "Rank {n}"
+  },
+  "poster": {
+    "guide": "How to read this image",
+    "total": "Total = the {cats} categories added by weight (out of 100); a category score is the mean of its tasks.",
+    "pass": "The dashed cyan line is the pass mark, 60.",
+    "rules": "AI coding agents answer each task alone within {range} minutes, with no help, stopped at the limit. \"In testing\" models have not finished all {tasks} tasks and are not ranked.",
+    "best": "The flare star and highlight mark the best score; a hatch means no score yet.",
+    "costPlan": "Subscription basis: a subscribed model's monthly fee, prorated to the usage of this test.",
+    "costApi": "API list price: without a subscription, or in the pure-API view, every request at the official API price.",
+    "tokens": "Tokens are the total of the {tasks} tasks; TPS is the end-to-end output speed, first-token latency included.",
+    "reading": "Sorted by {sort}, {dir} │ Models: {scope}",
+    "custom": "Custom weights",
+    "matrixSub": "Every model's score on the {tasks} tasks, grouped by category, the total last; sorted by the total.",
+    "matrixRead": "Deeper cells score higher: lime for judged tasks, violet for design tasks. A star marks the best of a task; hatched cells have no score and say in testing, not submitted or failed.",
+    "matrixIndex": "Column heads are task numbers, listed below.",
+    "catSub": "Category board │ weight {weight} │ {n} tasks │ {kind}",
+    "catRead": "The category score is the mean of its tasks (out of 100), and sets the order; the columns on the right are each task's score.",
+    "weight": "Category weight",
+    "dial": "Ten-axis dial"
+  },
   "footer": {
     "updated": "Data updated {date}",
     "models": {

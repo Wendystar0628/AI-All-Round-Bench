@@ -7,3 +7,4 @@ export * from './download.js';
 export * from './tip.js';
 export * from './cost.js';
 export * from './repo.js';
+export * from './facts.js';

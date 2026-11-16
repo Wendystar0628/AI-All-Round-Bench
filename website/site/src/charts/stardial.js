@@ -14,7 +14,7 @@
 //   const dial = createStarDial(container, { data, model: 'gpt-6-astra', entrance: 'edge' });
 //   dial.setModel('gpt-6-1-sol');   // home: switch with the three-stage motion
 //   dial.wipeTag({ delay: 420 })     // 紫盘标签擦入（钩子）：页面编排入场时自己定时机
-//   dial.svg                         // for exportChart()
+//   dial.svg                         // for chartBody() (存为图片)
 //   dial.destroy()
 //
 // 盘内小字（「标准评判 50%」、权重、刻度数、未出分、紫盘标签）按渲染尺寸放大，

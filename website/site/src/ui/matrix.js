@@ -9,11 +9,11 @@
 // grey with a hatch and a short mark (评测中 / 未交 / 失败). Rows carry the
 // compare tick, the full name links to the model page, the rest of a row
 // opens the side panel. At phone width the table scrolls sideways under a
-// model column that stays at the left.
+// model column that stays at the left. More than 20 models scroll inside the box under the head (ui/window.js).
 //
 //   const mx = createMatrix({ data, tb, cats: data.categories, last: 'total', label: '成绩矩阵' });
 //   panel.append(mx.el); mx.refresh();      // after filter changes too
-//   exportButton({ build: () => mx.build() })
+//   mx.art() / mx.index()                   存为图片: the matrix drawn from the data, every model (charts/art.js), and the task key
 import { h } from '../core/dom.js';
 import { t, pick } from '../core/i18n.js';
 import { modelName, vendorIcon, modelLabel, categoryIcon } from '../core/names.js';
@@ -21,7 +21,8 @@ import { links } from '../core/route.js';
 import { fmtScore, fmtRank, fmtPct } from '../core/format.js';
 import { rankBy } from '../core/rank.js';
 import { stepFill, stepInk } from '../charts/colors.js';
-import { rowsToSVG } from '../charts/export.js';
+import { matrixArt } from '../charts/art.js';
+import { createWindow } from './window.js';
 import { getCompare, toggleCompare, isCompareFull, compareIndex, onCompareChange } from './compare.js';
 import { showTip, hideTip } from './tip.js';
 import { colValue, cellState, cellMark, cellTip, colName, hasAnomaly } from './cells.js';
@@ -92,6 +93,7 @@ export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
   const empty = h('p.mx-empty', { hidden: true }, t('common.toolbar.noMatch'));
   const scroll = h('div.mx-scroll', table);
   const el = h('div.mx-wrap', scroll, empty);
+  const win = createWindow(scroll, { rows: () => tbody.rows });
 
   // ---------- rows ----------
   const rows = new Map();
@@ -163,6 +165,7 @@ export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
     }
     lastHead.classList.toggle('is-sort', state.sort == null);
     syncTicks();
+    win.fit();
   }
 
   function setSort(key) {
@@ -195,23 +198,35 @@ export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
   table.addEventListener('pointerleave', hideTip);
   scroll.addEventListener('scroll', hideTip, { passive: true });
 
-  // ---------- 存为图片: the whole table, unscrolled ----------
-  function build() {
-    const left = scroll.scrollLeft;
-    scroll.classList.add('is-full');
-    try {
-      return rowsToSVG([...table.rows].filter((r) => r.isConnected), { sub: 'th, td', span: false });
-    } finally {
-      scroll.classList.remove('is-full');
-      scroll.scrollLeft = left;
-    }
+  // ---------- 存为图片: drawn from the data, every model in the current order and filter ----------
+  function art() {
+    const list = rankBy(data, state.sort ?? by(lastCol)).filter((e) => !tb || tb.matches(e.model));
+    const head = (col) => (col === lastCol ? (lastCol.type === 'total' ? t('common.score.total') : t('common.matrix.categoryScore')) : fmtRank(col.task.no));
+    return matrixArt({
+      groups: grouped ? cats.map((c) => ({ name: pick(c, 'short') || pick(c, 'name'), sub: fmtPct(c.weight), span: c.tasks.length })) : [],
+      cols: all.map((col) => ({ key: col.key, head: head(col), kind: col.kind, last: col === lastCol })),
+      rows: list.map((e) => ({
+        model: e.model,
+        rank: e.rank,
+        cells: Object.fromEntries(
+          all.map((col) => {
+            const v = colValue(data, e.id, col);
+            const st = cellState(data, e.id, col);
+            return [col.key, { value: st ? null : v, text: fmtScore(v), mark: st ? cellMark(st) : null, best: !st && v != null && Math.round(v * 10) === Math.round(best.get(col) * 10) }];
+          }),
+        ),
+      })),
+    });
   }
+  /** The task key of the columns: number and name. */
+  const index = () => cols.map((col) => ({ no: fmtRank(col.task.no), text: pick(col.task, 'name') }));
 
   return {
     el,
     table,
     refresh,
-    build,
+    art,
+    index,
     get sort() {
       return state.sort;
     },

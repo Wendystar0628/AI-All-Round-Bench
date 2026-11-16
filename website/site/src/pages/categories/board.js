@@ -3,27 +3,23 @@
 //   按题    one block per measure (category score first, then each task), all
 //           models ranked inside each block (bytask.js)
 //   矩阵    models × this category's tasks and the category score (ui/matrix.js)
-//   按型号  model rows ranked by the category, each with its task sub rows. More
-//           than ROWS models: the rows scroll inside the board, ROWS rows high,
-//           under the head row that stays put; the model tested last is
-//           scrolled into view at first.
-// 存为图片 draws the current view, whole.
+//   按型号  model rows ranked by the category, each with its task sub rows, in the
+//           list window (ui/window.js); the model tested last is scrolled into view at first.
+// 存为图片 saves the board's poster (charts/poster.js): every model of the current view, drawn from the data.
 //
 //   const b = createBoard(category, { data, tb, index, view, onView, focus });
 //   b.el                     <section id="<key>">
 //   b.refresh({ animate })   recompute the current view (filter, compare) and update
-import { h, t, pick, links, rankBy, fmtPct, fmtRank, fmtScore, modelLabel, categoryIcon } from '../../core/index.js';
-import { createModelList, createRowHead, barPlot, listToSVG } from '../../ui/index.js';
+import { h, t, pick, links, rankBy, fmtPct, fmtRank, fmtScore, modelLabel, categoryIcon, DASH } from '../../core/index.js';
+import { createModelList, createRowHead, barPlot, challengeFacts, guideLines } from '../../ui/index.js';
 import { createMatrix } from '../../ui/matrix.js';
-import { exportButton, createBar, setBar } from '../../charts/index.js';
+import { exportButton, rankingArt, createBar, setBar } from '../../charts/index.js';
 import { dur, stagger, isInView } from '../../motion.js';
 import { createByTask } from './bytask.js';
 
 /** The views of a board, default first. */
 export const VIEWS = ['task', 'matrix', 'model'];
 
-/** Rows a board shows before its rows scroll inside it (categories.md 行数多时). */
-const ROWS = 10;
 /** Faint grid of the boards: 20/40/60/80 (no pass line here). */
 const GRID = [20, 40, 60, 80];
 let seq = 0;
@@ -43,23 +39,9 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
   const seg = buildSeg();
   const ol = h('ol');
   const head = createRowHead({ rank: t('categories.board.rank'), name: t('categories.board.model'), score: t('categories.board.score'), plot: axisNode() });
-  // the image is the current view, whole: a scroll box opens up while it is measured (no paint in between)
-  const exportBtn = exportButton({
-    build: () => {
-      if (state.view === 'task') return byTask.build();
-      if (state.view === 'matrix') return matrix.build();
-      const top = scroll.scrollTop;
-      scroll.classList.add('is-full');
-      try {
-        return listToSVG(ol, { head });
-      } finally {
-        scroll.classList.remove('is-full');
-        scroll.scrollTop = top;
-      }
-    },
-    title: () => t('categories.board.exportTitle', { name: pick(cat, 'name'), view: t(`categories.view.${state.view}`) }),
-    filename: () => `ai-decathlon-category-${cat.key}-${state.view}`,
-  });
+  // 存为图片: the category's poster, whatever the view — every model ranked by the category score, each task's
+  // score in its own column (charts/poster.js)
+  const exportBtn = exportButton({ poster: () => boardPoster(), filename: () => `ai-decathlon-category-${cat.key}` });
 
   const taskLinks = multi
     ? h(
@@ -94,13 +76,12 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
       ),
     ),
   );
-  const scroll = h('div.cat-board-scroll', head, ol);
   const byTask = noScores ? null : createByTask(cat, { data, tb });
   const matrix = noScores ? null : createMatrix({ data, tb, cats: [cat], last: 'category', label: t('categories.view.matrixLabel', { name: pick(cat, 'name') }) });
   const panes = {
     task: h('div.cat-pane.cat-pane-task', byTask?.el),
     matrix: h('div.cat-pane.cat-pane-matrix', matrix?.el),
-    model: h('div.cat-pane.cat-pane-model', scroll),
+    model: h('div.cat-pane.cat-pane-model'),
   };
   const body = h('div.cat-board-body', Object.values(panes));
   const foot = h('p.cat-board-foot.st-field');
@@ -112,6 +93,7 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
 
   const opts = {
     data,
+    head,
     kind: cat.kind === 'design' ? 'design' : 'standard',
     checkable: true,
     grid: GRID,
@@ -125,6 +107,7 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
     },
   };
   const list = noScores ? null : createModelList(ol, opts);
+  if (list) panes.model.append(list.box);
 
   // ---------- the view switch ----------
   function buildSeg() {
@@ -226,25 +209,47 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
     if (foot.firstChild !== countEl) foot.replaceChildren(countEl);
   }
 
-  // more than ROWS rows: the box is as tall as the head and the first ROWS rows (sub rows included) and scrolls
-  function fitScroll() {
-    const rows = ol.children;
-    const on = rows.length > ROWS && state.view === 'model';
-    scroll.classList.toggle('is-scroll', on);
-    scroll.style.maxHeight = on ? `${rows[ROWS - 1].offsetTop + rows[ROWS - 1].offsetHeight}px` : '';
+  // ---------- the poster ----------
+  function boardPoster() {
+    const ranked = rankBy(data, cat.key).filter((e) => tb.matches(e.model));
+    const best = Math.max(...ranked.filter((e) => e.value != null && e.ranked).map((e) => e.value));
+    const taskBest = new Map(cat.tasks.map((k) => [k.key, Math.max(...rankBy(data, k.key).filter((e) => e.ranked && e.value != null).map((e) => e.value))]));
+    const cols = multi ? cat.tasks.map((k) => ({ key: k.key, label: `${fmtRank(k.no)} ${pick(k, 'short') || pick(k, 'name')}`, width: 132 })) : [];
+    const rows = ranked.map((e) => {
+      const s = data.score(e.id);
+      const cells = Object.fromEntries(
+        cols.map((c) => {
+          const v = s.tasks?.[c.key] ?? null;
+          return [c.key, v == null ? { text: DASH, muted: true } : { text: fmtScore(v), best: e.ranked && Math.round(v * 10) === Math.round(taskBest.get(c.key) * 10) }];
+        }),
+      );
+      return {
+        model: e.model,
+        rank: e.value != null ? e.rank : null,
+        value: e.value,
+        scoreText: fmtScore(e.value),
+        best: e.value != null && e.ranked && Math.round(e.value * 10) === Math.round(best * 10),
+        note: e.value == null ? t('categories.board.progress', { done: catDone(e.id), all: cat.tasks.length }) : '',
+        cells,
+      };
+    });
+    const G = guideLines(data);
+    return {
+      kicker: cat.en,
+      title: pick(cat, 'name'),
+      subtitle: t('common.poster.catSub', { weight: fmtPct(cat.weight), n: cat.tasks.length, kind: t(`common.kind.${cat.kind}`) }),
+      facts: [
+        { value: fmtPct(cat.weight), label: t('common.poster.weight') },
+        { value: String(cat.tasks.length), label: t('common.figs.tasks') },
+        ...challengeFacts(data).slice(0, 1),
+      ],
+      body: rankingArt({ rows, cols, kind: cat.kind === 'design' ? 'design' : 'standard', pass: false, heads: { score: t('categories.board.score'), scoreSorted: 'desc' } }),
+      guide: [t('common.poster.catRead'), G.rules, G.best],
+    };
   }
-  if (!noScores) new ResizeObserver(fitScroll).observe(ol);
 
-  // the model tested last starts in view: scrolled to the middle of the box when it is below the first rows
+  // the model tested last starts in view (once)
   let focused = false;
-  function showFocus() {
-    focused = true;
-    const li = focus && ol.querySelector(`:scope > li[data-id="${CSS.escape(focus)}"]`);
-    if (!li || !scroll.classList.contains('is-scroll')) return;
-    const view = scroll.clientHeight - head.offsetHeight;
-    const y = li.offsetTop - head.offsetHeight;
-    if (y + li.offsetHeight > scroll.scrollTop + view) scroll.scrollTop = Math.max(0, y - (view - li.offsetHeight) / 2);
-  }
 
   // only the view on show is drawn; the others catch up when switched to
   function refresh({ animate = true } = {}) {
@@ -260,8 +265,8 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
       const shown = rankBy(data, cat.key).filter((e) => tb.matches(e.model));
       list.update(shown, { animate });
       paintFoot(shown.length);
-      fitScroll();
-      if (!focused) showFocus();
+      if (!focused && focus) list.reveal(focus);
+      focused = true;
     }
   }
 

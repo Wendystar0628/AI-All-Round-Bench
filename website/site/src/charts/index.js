@@ -2,6 +2,8 @@
 //   import { createStarDial, exportButton, fill, scale100 } from '../../charts/index.js';
 export * from './stardial.js';
 export * from './export.js';
+export { exportButton, chartBody, BODY_W } from './poster.js';
+export { rankingArt, matrixArt } from './art.js';
 export * from './colors.js';
 export * from './axis.js';
 export * from './star.js';

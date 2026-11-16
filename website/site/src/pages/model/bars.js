@@ -7,7 +7,7 @@
 //   const c = createBarChart(box, { data, model, grouped: true, fill: false, label });
 //   c.setModel(id)   bars morph, readouts settle
 //   c.enter()        the first draw (bars grow from 0)
-//   c.svg            for exportChart
+//   c.svg            for chartBody (存为图片)
 import * as d3 from '../../charts/d3.js';
 import { t, pick, links, rankBy, rankOf, valueOf, meanValue, fmtScore, fmtPct, fmtRank, fmtRankOf, modelLabel } from '../../core/index.js';
 import { scale100, starD, hatchPattern } from '../../charts/index.js';

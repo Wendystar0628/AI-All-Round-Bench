@@ -289,26 +289,6 @@
 .cat-tick.is-last {
   translate: -100% -50%;
 }
-/* more than 10 rows: the rows scroll inside the board under the head row, which stays put (board.js fitScroll) */
-.cat-board-scroll {
-  position: relative;
-}
-.cat-board-scroll.is-scroll {
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--st-rule) transparent;
-}
-.cat-board-scroll.is-scroll > .mrow-head {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  background: var(--st-panel);
-}
-/* 存为图片 measures the whole list with the box opened up */
-.cat-board-scroll.is-full {
-  max-height: none !important;
-  overflow: visible;
-}
 
 /* ---------- sub rows: one per task, under each model row ---------- */
 .cat-subs {
@@ -443,6 +423,13 @@
 }
 .cbt-block {
   min-width: 0;
+}
+/* one window for all the columns (bytask.js): each column's title and head row stay on top while it scrolls */
+.cbt.is-window .cbt-top {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--st-panel);
 }
 .cbt-head {
   display: flex;

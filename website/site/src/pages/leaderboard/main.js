@@ -11,12 +11,12 @@
 // pass views then draw that part (rows.js). Sorting by cost draws the cost.
 import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
-import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, minuteRange, modelLabel, iconURL, DASH } from '../../core/index.js';
-import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, SCOPES, COST_MODES, getCostMode, setCostMode, repoLink } from '../../ui/index.js';
-import { exportButton, rowsToSVG } from '../../charts/index.js';
+import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, progress, modelLabel, iconURL, DASH } from '../../core/index.js';
+import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, SCOPES, COST_MODES, getCostMode, setCostMode, repoLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
+import { exportButton, rankingArt } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
-import { VIEWS, RESOURCES, DIRS, compute, officialWeights, isOfficial, parseWeights, formatWeights, sortKeys, headFigures, isResourceSort, isPartSort, defaultDir, isTop } from './model.js';
+import { VIEWS, RESOURCES, DIRS, compute, officialWeights, isOfficial, parseWeights, formatWeights, sortKeys, isResourceSort, isPartSort, defaultDir, isTop } from './model.js';
 import { createRows, axisChanges } from './rows.js';
 import { createAxis } from './axis.js';
 import { createCompare } from './compare.js';
@@ -71,14 +71,8 @@ boot(async ({ data }) => {
     h('li', h('time', { datetime: data.updated }, t('leaderboard.facts.updated', { date: fmtDate(data.updated) }))),
     h('li', repoLink()),
   );
-  // the scale of the challenge: models, tasks (and categories), the per-task time limit
-  const F = headFigures(data);
-  const fig = (value, label, sub) => h('div', h('b.num', { 'data-fig': '' }, value), h('span', label), sub ? h('small', sub) : null);
-  figsEl.replaceChildren(
-    fig(String(F.models), t('leaderboard.figs.models'), F.testing ? t('leaderboard.figs.testing', { n: F.testing }) : null),
-    fig(String(data.tasks.length), t('leaderboard.figs.tasks'), t('leaderboard.figs.cats', { n: data.categories.length })),
-    fig(minuteRange(data), t('leaderboard.figs.minutes'), t('leaderboard.figs.minutesNote')),
-  );
+  // the scale of the challenge: models, tasks (and categories), the per-task time limit (ui/facts.js, also on the posters)
+  figsEl.replaceChildren(...challengeFacts(data).map((f) => h('div', h('b.num', { 'data-fig': '' }, f.value), h('span', f.label), f.sub ? h('small', f.sub) : null)));
 
   // ---------------- toolbar ----------------
   const currentIds = () => [...list.el.querySelectorAll(':scope > li.mrow')].map((li) => li.dataset.id);
@@ -140,11 +134,8 @@ boot(async ({ data }) => {
       h('label', h('input', { type: 'radio', name: 'lb-cols', value: k, checked: k === state.cols, onchange: () => setCols(k) }), h('span', t(`leaderboard.cols.${k}`))),
     ),
   );
-  const exportBtn = exportButton({
-    build: () => buildExport(),
-    title: () => [t('leaderboard.title'), viewName(state.view), state.custom ? t('common.score.custom') : ''].filter(Boolean).join(' │ '),
-    filename: () => `ai-decathlon-leaderboard-${state.view}${state.custom ? '-custom' : ''}`,
-  });
+  // 存为图片: the whole board as a poster, every model in the current order and scope (charts/poster.js)
+  const exportBtn = exportButton({ poster: () => boardPoster(), filename: () => `ai-decathlon-leaderboard${state.custom ? '-custom' : ''}` });
   // board head: the title left; right, two labelled switches (模型范围, 开销口径), the grain switch and 存为图片
   const ctl = (name, label, keys, current, text, onPick) =>
     h(
@@ -217,7 +208,10 @@ boot(async ({ data }) => {
       h(
         'div.lb-board-tools',
         h('p.lb-mx-hint.st-field', t('leaderboard.matrix.hint')),
-        exportButton({ build: () => matrix.build(), title: () => t('leaderboard.matrix.exportTitle'), filename: 'ai-decathlon-leaderboard-score-matrix' }),
+        exportButton({
+          poster: () => ({ kicker: 'SCORE MATRIX', title: t('leaderboard.matrix.title'), subtitle: t('common.poster.matrixSub', { tasks: data.tasks.length }), facts: challengeFacts(data), body: matrix.art(), guide: [t('common.poster.matrixRead'), guideLines(data).total, t('common.poster.matrixIndex')], index: matrix.index() }),
+          filename: 'ai-decathlon-score-matrix',
+        }),
       ),
     ),
     matrix.el,
@@ -578,15 +572,50 @@ boot(async ({ data }) => {
     }
   }
 
-  // ---------------- export ----------------
-  async function buildExport() {
-    board.classList.add('is-exporting');
-    try {
-      const els = state.view === 'compare' ? [...compare.el.querySelectorAll('tr.lb-cmp-row')] : [...ol.querySelectorAll(':scope > li.mrow')];
-      return await rowsToSVG([headRow, ...els]);
-    } finally {
-      board.classList.remove('is-exporting');
+  // ---------------- 存为图片 ----------------
+  // the poster of the board: every model in the current order and scope, the total as the bar, the sorted part
+  // (a category or a task kind) as its own column, the test cost (with its basis mark), tokens and TPS
+  function boardPoster() {
+    const part = isPartSort(state.sort);
+    const cols = [];
+    if (part) cols.push({ key: 'part', label: sortShort(state.sort), width: 92, sorted: state.dir });
+    if (withCost) {
+      for (const k of Object.keys(RESOURCES)) cols.push({ key: k, label: t(`common.cost.head.${k}`), width: k === 'tps' ? 60 : 96, sorted: state.sort === k ? state.dir : null });
     }
+    const rows = C.order
+      .filter((id) => tb.matches(id))
+      .map((id) => {
+        const it = C.info.get(id);
+        const ranked = it.status === 'ranked';
+        const cells = {};
+        if (part) cells.part = { text: fmtScore(it.sortValue), best: ranked && isTop(it.sortValue, C.best.sort) };
+        if (withCost) {
+          const cost = costOf(data, id);
+          const key = costKey(cost);
+          cells.cost = key === 'none' ? { text: DASH, muted: true } : { text: fmtCNY(cost.cny), mark: key };
+          cells.tokens = { text: fmtTokenValue(cost?.tokens) };
+          cells.tps = { text: cost?.tps == null ? DASH : String(Math.round(cost.tps)) };
+        }
+        return {
+          model: it.model,
+          rank: ranked ? (it.sortRank ?? DASH) : null,
+          value: it.total,
+          scoreText: fmtScore(it.total),
+          best: ranked && isTop(it.total, C.best.total),
+          note: it.total == null ? t('common.score.progress', progress(data, id)) : '',
+          cells,
+        };
+      });
+    const G = guideLines(data);
+    const reading = t('common.poster.reading', { sort: sortName(state.sort), dir: t(`leaderboard.sort.dir.${state.dir}`), scope: t(`leaderboard.scope.${tb.state.scope}`) });
+    return {
+      kicker: 'LEADERBOARD',
+      title: t('leaderboard.title'),
+      subtitle: [reading, withCost ? t(`leaderboard.costMode.${getCostMode()}`) : null, state.custom ? t('common.poster.custom') : null].filter(Boolean).join(' │ '),
+      facts: challengeFacts(data),
+      body: rankingArt({ rows, cols, heads: { rank: t('common.csv.rank'), name: t('common.csv.model'), score: t('common.score.total'), scoreSorted: state.sort === 'total' ? state.dir : null } }),
+      guide: [`${G.total}${G.pass}`, G.rules, G.best, ...(withCost ? G.cost : [])],
+    };
   }
 
   // ---------------- events ----------------
