@@ -9,13 +9,14 @@ export const NAV = [
   { key: 'leaderboard', path: 'leaderboard/' },
   { key: 'categories', path: 'categories/' },
   { key: 'models', path: 'models/' },
+  { key: 'zeros', path: 'zeros/' },
   { key: 'tasks', path: 'tasks/' },
   { key: 'about', path: 'about/' },
   { key: 'faq', path: 'faq/' },
 ];
 
 // which nav entry a page belongs to（模型得分：入口页 /models/ 和每个 /models/<id>/）
-const SECTION = { home: 'home', leaderboard: 'leaderboard', categories: 'categories', tasks: 'tasks', task: 'tasks', about: 'about', faq: 'faq', model: 'models' };
+const SECTION = { home: 'home', leaderboard: 'leaderboard', categories: 'categories', tasks: 'tasks', task: 'tasks', about: 'about', faq: 'faq', model: 'models', zeros: 'zeros' };
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 // Chinese 「·」 (间隔号) in the Chinese font (Saira draws it as a short bar, base.css .cjk)

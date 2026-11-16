@@ -29,7 +29,7 @@
 ## 三、页面与路由
 
 - 每种页面一个 HTML 模板，放在 `site/pages/<类型>.html`；对应一个脚本入口 `site/src/pages/<类型>/main.js`。
-  - 页面类型：`home`、`leaderboard`、`categories`、`about`、`faq`、`tasks`、`task`、`model`。
+  - 页面类型：`home`、`leaderboard`、`categories`、`about`、`faq`、`tasks`、`task`、`model`、`zeros`。
 - 构建时由 `vite.config.js` 里的路由插件，按模板和 `site/data/*.json` 生成每个路由的 HTML：
   - 中文版和 `/en/` 下的英文版各一份；
   - 每道题一页 `/tasks/<类别>/<题目>/`；

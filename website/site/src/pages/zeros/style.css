@@ -1,0 +1,351 @@
+/* /zeros/: page head, the zero grid with its reason legend, one group of rows per task, the tasks without a zero. */
+
+.zr-sheet-head {
+  padding-bottom: 1rem;
+}
+.zr-sheet-head .rd-title {
+  font-size: var(--st-t-h1);
+}
+.zr-count {
+  font-size: 0.95rem;
+}
+.rd-banner.zr-banner {
+  aspect-ratio: 340 / 180;
+  width: min(17rem, 40%);
+  top: -2.5rem;
+}
+
+/* ---------- one look per reason kind: the legend swatch, the grid mark, the row tag ---------- */
+:is(.zr-sw, .zr-c).is-none {
+  --zr-bg: var(--st-hatch), var(--st-panel);
+  --zr-edge: color-mix(in srgb, var(--st-ink) 70%, transparent);
+}
+:is(.zr-sw, .zr-c).is-crash {
+  --zr-bg: var(--v-600);
+}
+:is(.zr-sw, .zr-c).is-wrong {
+  --zr-bg: var(--c-500);
+}
+:is(.zr-sw, .zr-c).is-slow {
+  --zr-bg: var(--kind-standard);
+  --zr-edge: var(--lime-edge);
+}
+:is(.zr-sw, .zr-c).is-rule {
+  --zr-bg: var(--st-ink);
+}
+:is(.zr-sw, .zr-c).is-other {
+  --zr-bg: var(--st-ink-2);
+}
+.zr-sw {
+  display: inline-block;
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--zr-bg);
+  box-shadow: inset 0 0 0 1px var(--zr-edge, transparent);
+}
+
+/* ---------- FIG.01: legend chips (a reason filter) over the models × tasks grid ---------- */
+.zr-fig {
+  margin-top: 0.5rem;
+}
+.zr-fig .rd-fig-cap {
+  margin-bottom: 0.75rem;
+}
+.zr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.25rem 0 1rem;
+}
+.zr-chip {
+  cursor: pointer;
+}
+.zr-grid-wrap {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.zr-grid {
+  --zr-cols: minmax(12rem, 17rem) repeat(var(--zr-n), minmax(1.75rem, 1fr)) 3rem;
+  min-width: calc(12rem + var(--zr-n) * 1.75rem + 3rem);
+}
+.zr-gr {
+  display: grid;
+  grid-template-columns: var(--zr-cols);
+  align-items: center;
+  min-height: 2.1rem;
+  border-bottom: 1px solid var(--st-rule);
+}
+.zr-gr:not(.zr-gr-head):hover {
+  background: var(--st-paper);
+}
+.zr-gr-head {
+  align-items: stretch;
+  border-bottom-color: var(--st-ink);
+  font-family: var(--st-font-ui);
+  font-size: var(--st-t-field);
+  font-stretch: var(--st-wide);
+  color: var(--st-ink-2);
+}
+.zr-gr-head > .zr-gm,
+.zr-gr-head > .zr-tn {
+  align-self: end;
+  padding-bottom: 0.35rem;
+}
+/* a task's column head: category icon on top, the short name set vertically, the number at the foot */
+.zr-th {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0 0.35rem;
+  color: var(--st-ink);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.zr-th > .icon {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+.zr-th-name {
+  margin-bottom: auto;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--st-font-text);
+  font-size: 0.8rem;
+  font-stretch: 100%;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+/* English: the name reads bottom-up from the number, wrapping into a second line when long */
+body[data-lang='en'] .zr-th-name {
+  margin: auto 0 0;
+  max-height: 8.5rem;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-family: var(--st-font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  white-space: normal;
+}
+.zr-th-no {
+  flex: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--st-ink-2);
+}
+a.zr-th:is(:hover, :focus-visible),
+.zr-th.is-hot {
+  background: var(--st-wash);
+}
+a.zr-th:is(:hover, :focus-visible) .zr-th-name,
+.zr-th.is-hot .zr-th-name {
+  color: var(--text-violet);
+}
+.zr-th.is-clean {
+  color: var(--st-ink-2);
+}
+.zr-th.is-clean .zr-th-name {
+  font-weight: 400;
+}
+.zr-gm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding-right: 0.75rem;
+  color: var(--st-ink);
+  text-decoration: none;
+}
+.zr-gm .mname {
+  min-width: 0;
+}
+a.zr-gm:is(:hover, :focus-visible) .mname-text {
+  text-decoration: underline 2px var(--st-flare);
+  text-underline-offset: 4px;
+}
+.zr-c {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+a.zr-c {
+  background: var(--zr-bg);
+  box-shadow: inset 0 0 0 1px var(--zr-edge, transparent);
+  transition:
+    opacity 0.15s,
+    transform 0.15s var(--st-snap);
+}
+a.zr-c:is(:hover, :focus-visible) {
+  transform: scale(1.25);
+}
+.zr-c.is-dim {
+  opacity: var(--dim);
+}
+/* scored, not 0: a small dot; not scored yet (being tested): nothing */
+.zr-c.is-scored::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--st-ink) 28%, transparent);
+}
+.zr-tn {
+  justify-self: end;
+  padding-right: 0.4rem;
+  font-weight: 600;
+  color: var(--st-ink);
+}
+.zr-gr-head .zr-tn {
+  font-weight: 400;
+  color: var(--st-ink-2);
+}
+
+/* ---------- one group per task ---------- */
+.zr-group {
+  margin-top: 0.5rem;
+}
+.rd-group-head.zr-gh {
+  position: relative;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-top: 2.25rem;
+}
+.zr-gh-l {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.zr-gh .st-pair > :last-child {
+  font-size: var(--st-t-title);
+}
+body[data-lang='en'] .zr-gh .st-pair > :last-child {
+  font-family: var(--st-font-ui);
+  font-stretch: 100%;
+}
+.zr-gh-r {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 400;
+}
+.zr-task {
+  font-size: 0.78rem;
+}
+
+/* rows: model │ reason kind │ the sentence */
+.zr-recs .st-record.zr-rec {
+  grid-template-columns: minmax(0, 15rem) 7.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  padding-block: 0.8rem;
+}
+.zr-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  color: var(--st-ink);
+  text-decoration: none;
+}
+.zr-who .mname {
+  min-width: 0;
+}
+a.zr-who:is(:hover, :focus-visible) .mname-text {
+  text-decoration: underline 2px var(--st-flare);
+  text-underline-offset: 4px;
+}
+.zr-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+.zr-why {
+  margin: 0;
+  max-width: var(--st-measure);
+  line-height: 1.6;
+  color: var(--st-ink);
+}
+/* landing on a row from the grid: the orbit bar and a wash */
+.zr-row.rd-landed .zr-rec {
+  background: var(--st-wash);
+}
+.zr-row.rd-landed .zr-rec::before {
+  transform: none;
+}
+
+/* ---------- tasks without a zero ---------- */
+.zr-clean-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* contents: short name and the count of zeros */
+.zr-toc {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.zr-toc-n {
+  color: var(--st-ink-2);
+}
+
+/* below 1200 wide the reason column gets narrow: model and reason kind on the first line, the sentence under them
+   at full width */
+@media (max-width: 1199px) {
+  .zr-recs .st-record.zr-rec {
+    grid-template-columns: minmax(0, 16rem) auto;
+    grid-template-areas:
+      'who kind'
+      'why why';
+    justify-content: start;
+    gap: 0.4rem 1.25rem;
+  }
+  .zr-who {
+    grid-area: who;
+  }
+  .zr-kind {
+    grid-area: kind;
+  }
+  .zr-why {
+    grid-area: why;
+  }
+}
+
+/* phones: the grid scrolls sideways inside its frame */
+@media (max-width: 759px) {
+  .zr-recs .st-record.zr-rec {
+    grid-template-columns: minmax(0, 1fr) auto;
+    justify-content: stretch;
+    gap: 0.4rem 0.9rem;
+  }
+  .zr-grid {
+    --zr-cols: 10.5rem repeat(var(--zr-n), 1.6rem) 2.25rem;
+    min-width: calc(10.5rem + var(--zr-n) * 1.6rem + 2.25rem);
+  }
+  /* the grid scrolls sideways inside its frame: the model names stay put on the left */
+  .zr-gm {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    align-self: stretch;
+    background: var(--st-panel);
+  }
+  .zr-gr:not(.zr-gr-head):hover .zr-gm {
+    background: var(--st-paper);
+  }
+  .zr-gr-head > .zr-gm {
+    align-self: stretch;
+    align-items: flex-end;
+  }
+}

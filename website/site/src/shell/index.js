@@ -41,7 +41,7 @@ function wireShell() {
 
 // 暂停公示（website/tools/site.json 的 notice）：这些页面只画成绩和模型，打开时换成一条提示，页面自己的脚本不运行；
 // 题目页、说明页和猜你想问照常。
-const HOLD_PAGES = new Set(['home', 'leaderboard', 'categories', 'model']);
+const HOLD_PAGES = new Set(['home', 'leaderboard', 'categories', 'model', 'zeros']);
 
 function showHold(notice) {
   const main = document.querySelector('main') ?? document.body;

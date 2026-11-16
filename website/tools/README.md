@@ -68,6 +68,8 @@ python website/tools/publish.py --confirm "厂商/型号"      用户明确确�
 | `tasks_meta.json` | 类别和题目的中英文案（名称、短名、一句定位、交付物、搜索别名），说明页各节标题 |
 | `export_data.py` | 默认本地实时导出；`--confirmed --out <绝对目录>` 导出正式快照 |
 | `confirmed-scores.json` | 已确认公开成绩快照，只能显式确认某型号时更新 |
+| `zero-reasons.json` | 0分盘点的原因：按题名、型号存 `{kind, zh, en}`；导出时只取当前确实是 0 分的写进 `data/zeros.json`，不随快照冻结（见 `website/docs/zeros.md`） |
+| `zero-reasons-prompt.md` | 派 Sol 补 0 分原因的任务说明；导出日志列出「这些 0 分还没写原因」时，把那几条题名、型号补在末尾，用 `sol_exec.py --work` 派出 |
 | `publish.py` | 唯一的发布命令：导出、构建、推送 |
 | `publish.json` | 发布目标（自定义域名、分支），只在这里规定，不含密钥 |
 

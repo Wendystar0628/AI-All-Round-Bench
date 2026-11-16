@@ -102,7 +102,7 @@
 .site-search-short {
   display: none;
 }
-@media (max-width: 1319px) {
+@media (max-width: 1439px) {
   .site-search-ph {
     max-width: 5.5rem;
     overflow: hidden;
@@ -177,7 +177,8 @@
   transform: none;
 }
 
-@media (max-width: 1199px) {
+/* eight nav entries: tighter entries below 1440 wide */
+@media (max-width: 1439px) {
   .site-bar {
     gap: 0 0.75rem;
   }
@@ -188,7 +189,13 @@
     display: none;
   }
 }
-/* seven nav entries still fit on one line at 1024 wide */
+/* below 1200 the brand keeps only its seal */
+@media (max-width: 1199px) {
+  .site-bar .brand-name {
+    display: none;
+  }
+}
+/* the eight nav entries still fit on one line at 1024 wide */
 @media (max-width: 1099px) {
   .site-bar {
     gap: 0 0.5rem;

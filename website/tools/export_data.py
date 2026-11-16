@@ -27,6 +27,7 @@ WEBSITE = TOOLS.parent
 BENCH = WEBSITE.parent
 OUT = WEBSITE / 'site' / 'data'
 CONFIRMED = TOOLS / 'confirmed-scores.json'
+ZERO_REASONS = TOOLS / 'zero-reasons.json'
 LOGOS = WEBSITE / 'logos' / 'mark'
 sys.path.insert(0, str(BENCH / 'orchestrator'))
 
@@ -313,6 +314,29 @@ def build_scores(models, categories, complete_only=True):
         'order': order,
         'scores': {i: records[i] for i in order},
     }
+
+
+def build_zeros(models, scores, categories):
+    """zeros.json for 0分盘点: the written reason ({kind, zh, en}) of every 0 the exported scores hold, by task key and
+    model id. Reasons live in zero-reasons.json by task name and model key and always follow that file (the confirmed
+    snapshot freezes scores only); a 0 without a written reason is listed, and the page falls back to the grader's
+    anomaly note."""
+    written = read_json(ZERO_REASONS) if ZERO_REASONS.is_file() else {}
+    key_of = {m['id']: m['key'] for m in models}
+    reasons, missing = {}, []
+    for c in categories:
+        for t in c['tasks']:
+            by = written.get(t['_source'], {})
+            for i, r in scores['scores'].items():
+                if r['tasks'].get(t['key']) != 0:
+                    continue
+                if key_of[i] in by:
+                    reasons.setdefault(t['key'], {})[i] = by[key_of[i]]
+                else:
+                    missing.append(f'{t["_source"]} {key_of[i]}')
+    if missing:
+        print('提示：这些 0 分还没写原因（zero-reasons.json）：' + '；'.join(missing))
+    return {'reasons': reasons}
 
 
 # ---------- search ----------
@@ -707,10 +731,11 @@ def main(argv=()):
     if static:
         write_json(OUT / 'tasks.json', tasks)
     write_json(OUT / 'search.json', search)
+    write_json(OUT / 'zeros.json', build_zeros(models, scores, categories))
     if static:
         write_stems(categories)
 
-    written = 'models.json、scores.json、search.json' + (f'、tasks.json、题干 stems/（{len(TASKS)} 题）' if static else '')
+    written = 'models.json、scores.json、search.json、zeros.json' + (f'、tasks.json、题干 stems/（{len(TASKS)} 题）' if static else '')
     print(f'已同步 {OUT}：{written}；'
           f'数据日期 {scores["updated"]}')
     if notice:

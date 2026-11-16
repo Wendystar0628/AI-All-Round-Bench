@@ -32,6 +32,7 @@ npm run sync           # 只同步素材（dev 和构建前会自动跑）
 | `/tasks/<类别>/<题目>/` | `task` | `reason/formal-proof`（tasks.json 的 `path`） |
 | `/models/` | `model` | 总分第 1 名的模型 id（scores.json 的 `order` 第一个）：「模型得分」入口页，静态生成，不跳转 |
 | `/models/<id>/` | `model` | 模型 id（models.json 的 `id`） |
+| `/zeros/` | `zeros` | 空（0分盘点：0 分来自 scores.json，原因来自 zeros.json） |
 
 每个路由中文一份、`/en/` 下英文一份。生成的页面 `<body>` 上有 `data-page`、`data-lang`（`zh` / `en`）、`data-id`；`core/route.js` 的 `route` 读的就是它们。加模型、加题只要重新导出数据再构建，路由自动多出来。
 
@@ -151,7 +152,7 @@ boot(async ({ route, data, t, lang }) => {
 
 ### i18n `core/i18n.js`
 
-- 文件：`src/i18n/<zh|en>/<命名空间>.json`。`common` 归骨架方，每页一个与页面类型同名的命名空间（`home`、`leaderboard`、`categories`、`about`、`faq`、`tasks`、`task`、`model`）。
+- 文件：`src/i18n/<zh|en>/<命名空间>.json`。`common` 归骨架方，每页一个与页面类型同名的命名空间（`home`、`leaderboard`、`categories`、`about`、`faq`、`tasks`、`task`、`model`、`zeros`）。
 - `t('ns.key', vars)`：`{name}` 占位；英文缺键回落中文，再缺显示键名。`tv(key)` 取原值（对象、数组）。`has(key)`。
 - 单复数：英文值写成 `{ "one": "{n} model", "other": "{n} models" }`，`t()` 按 `vars.count`（没有时 `vars.n`）选形式；中文照旧写字符串。`plural(key, n)` 只取选好的原文（不填占位），给把占位换成元素的场合用。构建时的 `{{t:…}}` 同样支持。
 - `lang`：`'zh' | 'en'`。`pick(obj, 'name')`：英文页取 `name_en`（类别名取 `en`），没有就用中文；也用于 `short`、`brief`、`deliverable`。
@@ -162,7 +163,7 @@ boot(async ({ route, data, t, lang }) => {
 
 - `route`：`{ page, lang, id, category, task, model, base }`。`BASE`：基础路径。
 - `href(path, { lang, query, hash })`：站内链接，自动加基础路径和 `/en/`。`query` 可以是对象（数组用逗号连起来）。
-- `links`：`home()`、`leaderboard(query)`、`categories(类别key)`、`about(锚点)`、`faq(锚点)`、`tasks(类别key)`、`task(task 或 'reason/formal-proof')`、`model(id)`、`models()`（模型得分入口页）、`compare(ids)`（→ `/leaderboard/?view=compare&cmp=…`）、`data(file)`、`asset(path)`。每个都可再传 `{ lang }`。
+- `links`：`home()`、`leaderboard(query)`、`categories(类别key)`、`about(锚点)`、`faq(锚点)`、`tasks(类别key)`、`task(task 或 'reason/formal-proof')`、`model(id)`、`models()`（模型得分入口页）、`zeros(题目key)`（0分盘点）、`compare(ids)`（→ `/leaderboard/?view=compare&cmp=…`）、`data(file)`、`asset(path)`。每个都可再传 `{ lang }`。
 - `altHref(lang?)`：本页另一种语言的地址（带查询和锚点）。
 
 ### 地址参数与存储 `core/state.js`

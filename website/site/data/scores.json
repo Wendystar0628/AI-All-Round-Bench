@@ -2634,7 +2634,7 @@
         "battle": 11,
         "spatial": 9,
         "drawing": 15,
-        "interact": 21,
+        "interact": 22,
         "game": 12,
         "physics": 17,
         "visual": 13,
@@ -2648,7 +2648,7 @@
         "conquest": 11,
         "luban": 9,
         "drawing": 15,
-        "ae-editor": 21,
+        "ae-editor": 22,
         "tower-defense": 12,
         "jelly-tank": 17,
         "harbor": 15,
@@ -3244,7 +3244,7 @@
         "battle": 19,
         "spatial": 15,
         "drawing": 14,
-        "interact": 22,
+        "interact": 23,
         "game": 21,
         "physics": 19,
         "visual": 19,
@@ -3258,10 +3258,10 @@
         "conquest": 19,
         "luban": 15,
         "drawing": 14,
-        "ae-editor": 22,
+        "ae-editor": 23,
         "tower-defense": 21,
         "jelly-tank": 19,
-        "harbor": 20,
+        "harbor": 21,
         "starship": 19,
         "nested-os": 18
       }
@@ -3570,12 +3570,12 @@
         "ae-editor": 18.1,
         "tower-defense": 29.4,
         "jelly-tank": null,
-        "harbor": null,
+        "harbor": 20.7,
         "starship": null,
         "nested-os": null
       },
       "status": "testing",
-      "done": 4,
+      "done": 5,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -3613,7 +3613,21 @@
           ]
         },
         "harbor": {
-          "state": "testing"
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 24.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 17.0
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "船只、建筑、道具、生物、天气及运镜模块均为空占位，仅交付底座水域。"
+            }
+          ]
         },
         "starship": {
           "state": "testing"
@@ -3651,13 +3665,13 @@
       "cost": {
         "cny": null,
         "basis": "subscription",
-        "tokens": 278771467,
+        "tokens": 220749349,
         "method": null,
-        "api_usd": 41.5,
-        "api_cny": 278.6,
+        "api_usd": 33.1,
+        "api_cny": 222.3,
         "hours": 15.2,
-        "tps": 80.5,
-        "tps_replies": 251,
+        "tps": 73.3,
+        "tps_replies": 278,
         "plan": {
           "name": "Step Plan Plus",
           "name_en": "StepFun Step Plan Plus",
@@ -3691,7 +3705,7 @@
         "ae-editor": 20,
         "tower-defense": 19,
         "jelly-tank": null,
-        "harbor": null,
+        "harbor": 20,
         "starship": null,
         "nested-os": null
       }
@@ -3708,7 +3722,7 @@
         "battle": null,
         "spatial": null,
         "drawing": null,
-        "interact": null,
+        "interact": 16.9,
         "game": 45.5,
         "physics": null,
         "visual": null,
@@ -3722,7 +3736,7 @@
         "conquest": null,
         "luban": null,
         "drawing": null,
-        "ae-editor": null,
+        "ae-editor": 16.9,
         "tower-defense": 45.5,
         "jelly-tank": null,
         "harbor": 49.6,
@@ -3730,7 +3744,7 @@
         "nested-os": null
       },
       "status": "testing",
-      "done": 4,
+      "done": 5,
       "task_info": {
         "formal-proof": {
           "state": "testing"
@@ -3739,7 +3753,21 @@
           "state": "testing"
         },
         "ae-editor": {
-          "state": "testing"
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 18.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 15.4
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "缺失主入口、交互和示例等七个脚本，页面仅剩空壳。"
+            }
+          ]
         },
         "tower-defense": {
           "graders": [
@@ -3801,13 +3829,13 @@
       "cost": {
         "cny": null,
         "basis": "subscription",
-        "tokens": 218481168,
+        "tokens": 190899043,
         "method": null,
-        "api_usd": 48.5,
-        "api_cny": 325.3,
+        "api_usd": 43.5,
+        "api_cny": 291.9,
         "hours": 15.2,
-        "tps": 37.8,
-        "tps_replies": 411,
+        "tps": 37.0,
+        "tps_replies": 448,
         "plan": {
           "name": "火山方舟 Agent Plan Medium",
           "name_en": "Volcengine Ark Agent Plan Medium",
@@ -3824,7 +3852,7 @@
         "battle": null,
         "spatial": null,
         "drawing": null,
-        "interact": null,
+        "interact": 21,
         "game": 16,
         "physics": null,
         "visual": null,
@@ -3838,7 +3866,7 @@
         "conquest": null,
         "luban": null,
         "drawing": null,
-        "ae-editor": null,
+        "ae-editor": 21,
         "tower-defense": 16,
         "jelly-tank": null,
         "harbor": 19,

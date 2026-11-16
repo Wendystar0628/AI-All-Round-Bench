@@ -11,7 +11,7 @@ export function getRoute(body = document.body) {
   const id = d.id || '';
   const [category, task] = page === 'task' ? id.split('/') : [];
   return {
-    page, // home | leaderboard | categories | about | faq | tasks | task | model
+    page, // home | leaderboard | categories | about | faq | tasks | task | model | zeros
     lang, // zh | en
     id, // model id on a model page, "<category>/<task>" on a task page, '' elsewhere
     category: category || null,
@@ -64,6 +64,8 @@ export const links = {
   model: (id, o) => href(`models/${id}/`, o),
   /** 模型得分的入口页（命令栏和搜索框的「页面」组按 NAV 的 key 取 links[key]） */
   models: (o) => href('models/', o),
+  /** 0分盘点；anchor 是题目 key */
+  zeros: (anchor, o) => href('zeros/', { ...o, hash: anchor || '' }),
   compare: (ids, o) => href('leaderboard/', { ...o, query: { view: 'compare', cmp: ids } }),
   data: (file) => `${BASE}data/${file}`,
   asset: (path) => BASE + String(path).replace(/^\//, ''),
