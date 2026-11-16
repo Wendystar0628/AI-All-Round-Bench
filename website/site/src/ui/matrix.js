@@ -7,13 +7,14 @@
 // (the last column). Pointing at a cell shows the graders' scores of a design
 // task, anomaly notes and the weight (ui/cells.js). Cells without a score are
 // grey with a hatch and a short mark (评测中 / 未交 / 失败). Rows carry the
-// compare tick, the full name links to the model page, the rest of a row
-// opens the side panel. At phone width the table scrolls sideways under a
-// model column that stays at the left. More than 20 models scroll inside the box under the head (ui/window.js).
+// compare tick while the compare mode is on (ui/compare.js), the full name links to the model page, the rest
+// of a row opens the side panel. The rows follow the filter (ui/filter.js) by themselves. At phone width the
+// table scrolls sideways under a model column that stays at the left. More than 20 models scroll inside the
+// box under the head (ui/window.js).
 //
-//   const mx = createMatrix({ data, tb, cats: data.categories, last: 'total', label: '成绩矩阵' });
-//   panel.append(mx.el); mx.refresh();      // after filter changes too
-//   mx.art() / mx.index()                   存为图片: the matrix drawn from the data, every model (charts/art.js), and the task key
+//   const mx = createMatrix({ data, cats: data.categories, last: 'total', label: '成绩矩阵' });
+//   panel.append(mx.el); mx.refresh();
+//   mx.art() / mx.index()                   存为图片: the matrix drawn from the data, every shown model (charts/art.js), and the task key
 import { h } from '../core/dom.js';
 import { t, pick } from '../core/i18n.js';
 import { modelName, vendorIcon, modelLabel, categoryIcon } from '../core/names.js';
@@ -23,13 +24,14 @@ import { rankBy } from '../core/rank.js';
 import { stepFill, stepInk } from '../charts/colors.js';
 import { matrixArt } from '../charts/art.js';
 import { createWindow } from './window.js';
-import { getCompare, toggleCompare, isCompareFull, compareIndex, onCompareChange } from './compare.js';
+import { getCompare, toggleCompare, isCompareFull, compareIndex, onCompareChange, isComparing, onComparingChange } from './compare.js';
+import { isShown, onFilterChange } from './filter.js';
 import { showTip, hideTip } from './tip.js';
 import { colValue, cellState, cellMark, cellTip, colName, hasAnomaly } from './cells.js';
 
 let seq = 0;
 
-export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
+export function createMatrix({ data, cats, last = 'total', label = '' }) {
   const uid = `mx${++seq}`;
   const grouped = cats.length > 1;
   const cols = cats.flatMap((c) => c.tasks.map((k, i) => ({ type: 'task', key: k.key, kind: c.kind, cat: c.key, task: k, gstart: grouped && i === 0 })));
@@ -146,7 +148,7 @@ export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
   // ---------- order, filter ----------
   function refresh() {
     const list = rankBy(data, state.sort ?? by(lastCol));
-    const shown = list.filter((e) => !tb || tb.matches(e.model));
+    const shown = list.filter((e) => isShown(e.id));
     for (const e of shown) {
       let tr = rows.get(e.id);
       if (!tr) rows.set(e.id, (tr = rowOf(e.model)));
@@ -173,12 +175,14 @@ export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
     refresh();
   }
 
+  // the ticks follow the compare selection; a ticked row is marked only while the compare mode is on
   function syncTicks() {
     const ids = getCompare();
     const full = isCompareFull();
+    const comparing = isComparing();
     for (const [id, tr] of rows) {
       const on = ids.includes(id);
-      tr.classList.toggle('is-checked', on);
+      tr.classList.toggle('is-checked', on && comparing);
       tr.style.setProperty('--cmp', on ? compareIndex(id) : 0);
       const box = tr.querySelector('.mrow-tick');
       box.checked = on;
@@ -187,6 +191,8 @@ export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
     }
   }
   onCompareChange(syncTicks);
+  onComparingChange(syncTicks);
+  onFilterChange(() => refresh());
 
   // ---------- pointing at a cell ----------
   table.addEventListener('pointermove', (e) => {
@@ -198,9 +204,9 @@ export function createMatrix({ data, tb, cats, last = 'total', label = '' }) {
   table.addEventListener('pointerleave', hideTip);
   scroll.addEventListener('scroll', hideTip, { passive: true });
 
-  // ---------- 存为图片: drawn from the data, every model in the current order and filter ----------
+  // ---------- 存为图片: drawn from the data, every shown model in the current order ----------
   function art() {
-    const list = rankBy(data, state.sort ?? by(lastCol)).filter((e) => !tb || tb.matches(e.model));
+    const list = rankBy(data, state.sort ?? by(lastCol)).filter((e) => isShown(e.id));
     const head = (col) => (col === lastCol ? (lastCol.type === 'total' ? t('common.score.total') : t('common.matrix.categoryScore')) : fmtRank(col.task.no));
     return matrixArt({
       groups: grouped ? cats.map((c) => ({ name: pick(c, 'short') || pick(c, 'name'), sub: fmtPct(c.weight), span: c.tasks.length })) : [],

@@ -7,7 +7,7 @@
 import './style.css';
 import { boot, registerShortcut } from '../../shell/index.js';
 import { h, t, pick, fmtDate, fmtPct, fmtRank, getListParam, setParams, modelLabel } from '../../core/index.js';
-import { createToolbar } from '../../ui/index.js';
+import { createToolbar, isShown, onFilterChange } from '../../ui/index.js';
 import { dur, isInView } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
 import { createBoard, VIEWS } from './board.js';
@@ -50,7 +50,6 @@ boot(({ data }) => {
   const boards = data.categories.map((c, i) =>
     createBoard(c, {
       data,
-      tb,
       index: i,
       view: views.get(c.key) ?? VIEWS[0],
       focus,
@@ -176,14 +175,10 @@ boot(({ data }) => {
   if (arriving) goTo(hashKey);
   else spy();
 
-  // ---------- filter, search, compare ----------
-  tb.on('change', () => boards.forEach((b) => b.refresh({ animate: true })));
-
-  registerShortcut({
-    key: 'c',
-    label: t('categories.keys.compare'),
-    handler: () => tb.el.querySelector('.tb-compare:not(:disabled)')?.click(),
-  });
+  // ---------- filter and compare (the toolbar's two modes) ----------
+  onFilterChange(() => boards.forEach((b) => b.refresh({ animate: true })));
+  registerShortcut({ key: 'f', label: t('common.toolbar.keyFilter'), handler: () => tb.toggleFilter() });
+  registerShortcut({ key: 'c', label: t('common.toolbar.keyCompare'), handler: () => tb.toggleCompare() });
 
   // ---------- CSV: models × 10 categories and their tasks ----------
   function csvTable() {
@@ -197,7 +192,7 @@ boot(({ data }) => {
     }
     const rows = data.order
       .map((id) => data.model(id))
-      .filter((m) => tb.matches(m))
+      .filter((m) => isShown(m.id))
       .map((m) => {
         const s = data.score(m.id);
         const r = { model: modelLabel(m), vendor: m.vendor };

@@ -1,9 +1,13 @@
-// The compare selection: up to 4 model ids, in the order they were ticked.
-// Shared by every page through sessionStorage ("octa.compare"), so a
-// selection made on one leaderboard carries to the other (README 多模型扩展).
-// Changes are announced with a window event "octa:compare" { detail: { ids } }.
+// 对比 (leaderboard.md「共用部件 / 对比」): the compare selection — up to 4 model ids, in the order they
+// were ticked — and the compare mode. Separate from the filter (ui/filter.js).
 //
-//   import { getCompare, toggleCompare, onCompareChange } from '../../ui/compare.js';
+// The selection is shared by every page through sessionStorage ("octa.compare"), so ticks made on one board
+// carry to the other; changes are announced with the window event "octa:compare" { detail: { ids } }.
+// The mode is this page's: rows carry the compare ticks only while it is on (the toolbar's 对比 button), and the
+// ticked rows are marked only then. It is written on <html data-comparing> for the stylesheets, and announced
+// with "octa:comparing" { detail: { on } }.
+//
+//   import { getCompare, toggleCompare, onCompareChange, isComparing, setComparing, onComparingChange } from '../../ui/compare.js';
 import { session, getListParam } from '../core/state.js';
 
 export const MAX_COMPARE = 4;
@@ -71,4 +75,21 @@ export function onCompareChange(fn) {
     removeEventListener('octa:compare', local);
     removeEventListener('storage', other);
   };
+}
+
+/** Is the compare mode on (rows carry the ticks)? */
+export const isComparing = () => document.documentElement.hasAttribute('data-comparing');
+
+/** Turn the compare mode on or off. */
+export function setComparing(on) {
+  if (on === isComparing()) return;
+  document.documentElement.toggleAttribute('data-comparing', on);
+  dispatchEvent(new CustomEvent('octa:comparing', { detail: { on } }));
+}
+
+/** fn(on) when the compare mode turns on or off. Returns an unsubscribe function. */
+export function onComparingChange(fn) {
+  const w = (e) => fn(e.detail.on);
+  addEventListener('octa:comparing', w);
+  return () => removeEventListener('octa:comparing', w);
 }

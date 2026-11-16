@@ -14,19 +14,28 @@
   --bar-edge: none;
   position: relative;
   display: grid;
-  grid-template-columns: 2rem 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem;
+  /* --pick-col is the tick column: empty (no track) unless the compare mode is on */
+  grid-template-columns: var(--pick-col,) 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem;
   /* one track as tall as the row, so the plot cell (height: 100%) and its bar SVG get a definite height */
   grid-template-rows: minmax(0, 1fr);
   align-items: center;
   gap: 0 0.75rem;
   height: var(--row-h);
-  padding: 0 0.75rem 0 0.25rem;
+  padding: 0 0.75rem 0 0.6rem;
   border-bottom: 1px solid var(--st-rule);
   transition: background-color 0.15s;
 }
-.mrow.no-check {
-  grid-template-columns: 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem;
-  padding-left: 0.6rem;
+/* the compare mode (ui/compare.js writes <html data-comparing>): every model row gets its tick column */
+@media (min-width: 600px) {
+  :root[data-comparing] {
+    --pick-col: 2rem;
+  }
+  :root[data-comparing] .mrow-check {
+    display: grid;
+  }
+  :root[data-comparing] .mrow {
+    padding-left: 0.25rem;
+  }
 }
 .mrow.is-standard {
   --bar-fill: var(--kind-standard);
@@ -69,14 +78,11 @@
   font-stretch: inherit;
 }
 .mrow-check {
-  display: grid;
+  display: none;
   place-items: center;
   width: 2rem;
   height: 2rem;
   cursor: pointer;
-}
-.mrow.no-check .mrow-check {
-  display: none;
 }
 .mrow-tick {
   width: 1rem;
@@ -200,10 +206,7 @@
    score: 测试开销 (the amount, then its small basis mark ○ 按订阅折算 / ◆ 按 API 标价折算 / 暂无数据), Token 消耗
    (the 13-task total) and TPS (the estimated output speed). Same row height, no stacked lines. */
 .mrow.has-cost {
-  grid-template-columns: 2rem 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem) var(--mrow-tps-w, 3.75rem);
-}
-.mrow.has-cost.no-check {
-  grid-template-columns: 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem) var(--mrow-tps-w, 3.75rem);
+  grid-template-columns: var(--pick-col,) 2.75rem 1.5rem minmax(9rem, var(--mrow-name)) minmax(4rem, 1fr) 4.75rem var(--mrow-cost-w, 8.25rem) var(--mrow-tok-w, 6.25rem) var(--mrow-tps-w, 3.75rem);
 }
 .mrow-cost,
 .mrow-tok,
@@ -326,7 +329,6 @@
   flex: 1 1 auto;
   min-width: 0;
 }
-.tb-right,
 .tb-end {
   display: flex;
   align-items: center;
@@ -344,73 +346,203 @@
   margin-bottom: -0.6rem;
   border-top: 1px solid var(--st-rule);
 }
-/* one line per row unless the page asks for wrapping: the search narrows first */
+/* one line per row unless the page asks for wrapping */
 .site-toolbar:not(.is-wrap) :is(.tb-top, .tb-main, .tb-left) {
   flex-wrap: nowrap;
 }
-.site-toolbar:not(.is-wrap) .tb-search {
-  flex: 0 1 14rem;
-  width: auto;
-  min-width: 8rem;
-}
-.site-toolbar:not(.is-wrap) :is(.tb-right, .tb-end) {
+.site-toolbar:not(.is-wrap) .tb-end {
   flex: none;
 }
-/* many vendors: the chips wrap inside their own group rather than widen the toolbar */
-.site-toolbar:not(.is-wrap) .tb-vendors {
-  flex: 0 1 auto;
-  min-width: 0;
+/* the two modes, 筛选 and 对比: ink-edged so they read as the board's main controls; the open one wears
+   the current mark (violet wash, violet bar) */
+.tb-mode {
+  box-shadow: inset 0 0 0 1px var(--st-ink);
 }
-.site-toolbar.is-wrap .tb-right {
+.tb-mode.is-on {
+  --fill: var(--st-wash);
+  box-shadow:
+    inset var(--st-bar-w) 0 0 var(--st-orbit),
+    inset 0 0 0 1px var(--st-ink);
+  font-weight: 800;
+}
+.tb-glyph {
+  display: inline-grid;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+.tb-glyph svg {
+  width: 100%;
+  height: 100%;
+}
+.tb-mode-n {
+  font-stretch: var(--st-wide);
+  font-weight: 600;
+  opacity: 0.75;
+}
+.tb-mode-n:empty {
+  display: none;
+}
+/* a filter that is on: what it shows, and 清除筛选 */
+.tb-status {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  white-space: nowrap;
+}
+.tb-status[hidden] {
+  display: none;
+}
+.tb-clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-violet);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+/* the open mode's panel, under the toolbar's rows (it sticks with them) */
+.tb-panel {
+  max-height: min(24rem, 52vh);
+  overflow-y: auto;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--st-rule);
+  border-left: var(--st-bar-w) solid var(--st-orbit);
+  background: var(--st-panel);
+  scrollbar-width: thin;
+}
+.tb-panel[hidden] {
+  display: none;
+}
+/* the filter panel (ui/filter.js) */
+.tbf-head {
+  display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  margin-bottom: 0.75rem;
 }
-.tb-vendors {
+.tbf-title {
+  font-size: 0.95rem;
+}
+.tbf-presets {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
-.tb-vendors .st-chip {
+.tbf-presets .st-chip {
+  min-height: 2rem;
+  cursor: pointer;
+}
+.tbf-find {
+  flex: 0 1 13rem;
+  min-width: 8rem;
+}
+.tbf-find input {
   min-height: 2rem;
 }
-.tb-vendors .icon {
-  width: 0.95rem;
-  height: 0.95rem;
+.tbf-acts {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
 }
-.tb-more {
-  position: relative;
+.tbf-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  gap: 0.9rem 1.5rem;
 }
-.tb-more > summary {
-  list-style: none;
-  min-height: 2rem;
+.tbf-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
-.tb-more > summary::-webkit-details-marker {
+.tbf-group[hidden] {
   display: none;
 }
-.tb-more-list {
-  position: absolute;
-  z-index: 5;
-  top: calc(100% + 4px);
-  left: 0;
+.tbf-vendor {
+  width: 100%;
+  margin-bottom: 0.2rem;
+  padding: 0 0 0.25rem;
+  border-bottom: 1px solid var(--st-rule);
+}
+.tbf-vendor label,
+.tbf-model {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.8rem;
+  cursor: pointer;
+}
+.tbf-vendor label {
+  font-weight: 700;
+}
+.tbf-vname {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tbf-n {
+  margin-left: auto;
+  color: var(--st-ink-2);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.tbf-models {
   display: grid;
-  gap: 0.3rem;
-  padding: 0.5rem;
-  background: var(--st-panel);
-  border: 1px solid var(--st-rule);
+  padding-left: 0.2rem;
 }
-.tb-search {
-  width: 14rem;
+.tbf-model {
+  font-size: 0.85rem;
 }
-.tb-search input {
-  min-height: 2rem;
+.tbf-model[hidden] {
+  display: none;
+}
+.tbf-group input,
+.tb-panel input[type='checkbox'] {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  margin: 0;
+  accent-color: var(--st-orbit);
+  cursor: pointer;
+}
+/* a model left out: its name fades */
+.tbf-model:has(input:not(:checked)) .mname {
+  color: var(--st-ink-2);
+}
+/* the compare tray */
+.tb-cmp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+.tb-cmp-title {
+  font-size: 0.95rem;
 }
 .tb-tray {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
+}
+.tb-slot {
+  min-height: 2rem;
+  box-shadow: inset 3px 0 0 var(--c);
+  cursor: pointer;
 }
 .tb-slot b {
   color: var(--st-ink-2);
   font-weight: 700;
+}
+.tb-cmp-acts {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
 }
 .tb-hint {
   white-space: nowrap;
@@ -477,21 +609,20 @@
 
 /* ---------- narrow windows: the toolbar wraps inside the window; at phone width it scrolls away with the page ---------- */
 @media (max-width: 1023px) {
-  .site-toolbar:is(.is-wrap, :not(.is-wrap)) :is(.tb-top, .tb-main, .tb-left, .tb-right) {
+  .site-toolbar:is(.is-wrap, :not(.is-wrap)) :is(.tb-top, .tb-main, .tb-left) {
     flex-wrap: wrap;
   }
-  .site-toolbar:is(.is-wrap, :not(.is-wrap)) :is(.tb-vendors, .tb-right) {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
 }
+/* phone width: the toolbar scrolls away with the page; comparing is a desk task (no 对比, no tick column) */
 @media (max-width: 599px) {
   .site-toolbar {
     position: static;
   }
-  .site-toolbar:is(.is-wrap, :not(.is-wrap)) .tb-search {
+  .tb-mode-compare {
+    display: none;
+  }
+  .tbf-find {
     flex: 1 1 100%;
-    width: auto;
   }
   .site-toolbar .tb-hint {
     display: none;

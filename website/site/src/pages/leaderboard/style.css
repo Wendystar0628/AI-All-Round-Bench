@@ -4,7 +4,7 @@
 .page-leaderboard {
   --lb-rank-w: 3.9rem;
   --lb-name-w: 13.25rem;
-  --lb-grid: 2rem var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 4.75rem;
+  --lb-grid: var(--pick-col,) var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 4.75rem;
   --lb-cost-w: 6.25rem;
   --lb-tok-w: 5.5rem;
   --lb-tps-w: 3.75rem;
@@ -13,14 +13,14 @@
 }
 /* with test costs: two more columns right of the score, 测试开销 and Token (ui.css .mrow-cost, .mrow-tok) */
 .page-leaderboard .lb-board.has-cost {
-  --lb-grid: 2rem var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 4.75rem var(--lb-cost-w) var(--lb-tok-w) var(--lb-tps-w);
+  --lb-grid: var(--pick-col,) var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 4.75rem var(--lb-cost-w) var(--lb-tok-w) var(--lb-tps-w);
 }
 /* sorted by a part of the total (a kind or a category): the score column also holds the total in small grey */
 .page-leaderboard .lb-board.is-by-part {
-  --lb-grid: 2rem var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 7.25rem;
+  --lb-grid: var(--pick-col,) var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 7.25rem;
 }
 .page-leaderboard .lb-board.has-cost.is-by-part {
-  --lb-grid: 2rem var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 7.25rem var(--lb-cost-w) var(--lb-tok-w) var(--lb-tps-w);
+  --lb-grid: var(--pick-col,) var(--lb-rank-w) 1.5rem minmax(9rem, var(--lb-name-w)) minmax(4rem, 1fr) 7.25rem var(--lb-cost-w) var(--lb-tok-w) var(--lb-tps-w);
 }
 @media (min-width: 1360px) {
   .page-leaderboard {
@@ -290,7 +290,7 @@
 .lb-board-tools .site-export {
   margin-left: 0;
 }
-/* a labelled switch in the board head: 模型 [全部 御三家 外模 国模]、开销 [订阅折算 API 标价] */
+/* a labelled switch in the board head: 开销 [订阅折算 API 标价] */
 .lb-ctl {
   display: flex;
   align-items: center;
@@ -312,13 +312,6 @@
   padding: 0 0.8rem;
   font-size: 0.82rem;
   white-space: nowrap;
-}
-.lb-ctl-n {
-  margin-left: 0.3rem;
-  color: var(--st-ink-2);
-  font-size: 0.7rem;
-  font-weight: 600;
-  font-stretch: var(--st-wide);
 }
 /* the cost marks explained once, under the rows; the compare view has no cost columns */
 .lb-cost-legend-slot {

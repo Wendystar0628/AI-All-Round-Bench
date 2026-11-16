@@ -1,9 +1,9 @@
 // 模型得分 /models/<id>/ and the entry page /models/ (the top model; website/docs/models.md),
-// a console page: the side column (every model, grouped by vendor) beside
-// head (fields, three big figures, compare, download) → the star dial fixed to
-// this model beside the 10-category bars → the 13-task bars grouped by
-// category → strengths and weaknesses. Narrow windows fold the column into a
-// selector above the head.
+// a console page: the side column (every model, grouped by vendor, each vendor
+// foldable) beside head (fields, three big figures, compare, download) → one
+// figure: the star dial fixed to this model and the 10-category bars, saved as
+// one image → the 13-task bars grouped by category → strengths and weaknesses.
+// Narrow windows fold the column into a selector above the head.
 // Picking a model (column, ← →) switches it in place: stars settle, bars morph,
 // the address becomes /models/<id>/ with a history entry; back / forward work.
 import './style.css';
@@ -35,32 +35,27 @@ boot(({ data }) => {
   }
 
   const nameOf = () => modelLabel(data.model(id));
-  // 存为图片: a chart of this model as a poster (charts/poster.js), with the model's figures and how to read it
-  const chartPoster = (kicker, what, svg, lines = []) => {
+  // 存为图片: a figure of this model as a poster (charts/poster.js), with the model's figures and how to read it
+  const chartPoster = (kicker, what, body, lines = []) => {
     const G = guideLines(data);
-    return { kicker, title: nameOf(), subtitle: what, facts: modelFacts(data, id), body: chartBody(svg), guide: [...lines, G.total, G.rules] };
+    return { kicker, title: nameOf(), subtitle: what, facts: modelFacts(data, id), body, guide: [...lines, G.total, G.rules] };
   };
   const head = createHead(header, { data });
   const picker = createPicker(side, { data, onPick: (next) => go(next) });
 
-  // ---------- star dial + 10 categories ----------
+  // ---------- one figure: the star dial and the 10 categories ----------
   const pair = (eyebrow, title) => h('span.st-pair', h('span.st-eyebrow', eyebrow), h('span', title));
+  const ovTitle = t('model.overview.title', { n: data.categories.length });
   const dialBox = h('div.md-dial-box');
-  const dialPanel = h(
-    'section.st-panel.md-dial-panel',
-    h('h2', pair(t('model.dial.eyebrow'), t('model.dial.title')), exportButton({ poster: () => chartPoster(t('model.dial.eyebrow'), t('common.dial.title'), dial.svg, [t('model.dial.note')]), filename: () => `ai-decathlon-dial-${id}` })),
-    dialBox,
-    h('p.st-field.md-dial-note', t('model.dial.note')),
-  );
   const catBox = h('div.md-chart-box.is-fill');
-  const catPanel = h(
-    'section.st-panel.md-cats-panel',
+  const overview = h(
+    'section.st-panel.md-overview',
     h(
       'h2',
-      pair(t('model.cats.eyebrow'), t('common.unit.categoriesShort', { n: data.categories.length })),
-      exportButton({ poster: () => chartPoster(t('model.cats.eyebrow'), t('common.unit.categoriesShort', { n: data.categories.length }), cats.svg), filename: () => `ai-decathlon-categories-${id}` }),
+      pair(t('model.overview.eyebrow'), ovTitle),
+      exportButton({ poster: () => chartPoster(t('model.overview.eyebrow'), ovTitle, chartBody(dial.svg, cats.svg), [t('model.dial.note')]), filename: () => `ai-decathlon-dial-${id}` }),
     ),
-    catBox,
+    h('div.md-ov-body', h('figure.md-ov-dial', dialBox, h('figcaption.st-field.md-dial-note', t('model.dial.note'))), h('div.md-ov-cats', catBox)),
   );
   const taskBox = h('div.md-chart-box');
   const taskPanel = h(
@@ -68,12 +63,12 @@ boot(({ data }) => {
     h(
       'h2',
       pair(t('model.tasks.eyebrow'), t('common.unit.tasksShort', { n: data.tasks.length })),
-      exportButton({ poster: () => chartPoster(t('model.tasks.eyebrow'), t('common.unit.tasksShort', { n: data.tasks.length }), tasks.svg), filename: () => `ai-decathlon-tasks-${id}` }),
+      exportButton({ poster: () => chartPoster(t('model.tasks.eyebrow'), t('common.unit.tasksShort', { n: data.tasks.length }), chartBody(tasks.svg)), filename: () => `ai-decathlon-tasks-${id}` }),
     ),
     taskBox,
   );
   const swBox = h('div.md-sw-wrap');
-  slot.replaceChildren(h('div.md-top', dialPanel, catPanel), taskPanel, swBox);
+  slot.replaceChildren(overview, taskPanel, swBox);
 
   // ---------- entrance: head powers on → dial assembles, stars settle → bars grow ----------
   head.update(id, { dir: 0 });

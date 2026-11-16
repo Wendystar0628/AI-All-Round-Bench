@@ -175,14 +175,13 @@ function scoresBlock(data, task, L) {
     'span.tk-axis',
     [0, 25, 50, 75, 100].map((v) => h('span', { style: { left: `${v}%` } }, String(v))),
   );
-  const rowHead = createRowHead({ rank: L.head.rank, name: L.head.name, score: L.head.score, plot: axis, checkable: false });
+  const rowHead = createRowHead({ rank: L.head.rank, name: L.head.name, score: L.head.score, plot: axis });
   const ol = h('ol');
   const wrap = h('div.tk-scores', rowHead, ol);
   const list = createModelList(ol, {
     data,
     head: rowHead,
     kind: task.kind === 'design' ? 'design' : 'standard',
-    checkable: false,
     pass: false,
     grid: TICKS,
     animateIn: false,

@@ -2,12 +2,14 @@
 // the category boards and the task pages.
 //
 // Columns: tick │ rank │ vendor icon │ full name │ plot │ score (│ test cost │ tokens used │ TPS, with cost: true).
+// The tick column shows only while the compare mode is on (ui/compare.js, <html data-comparing>); then the
+// ticked rows keep the violet bar and the deeper plot.
 // The name is a link to the model scores page /models/<id>/ (with 名字接力);
 // a click anywhere else in the row opens the side panel (data-model-panel on
 // the row; for the keyboard a visually hidden button after the name does it).
 // Fixed row height, hairlines between rows, no zebra. Pointing at / focusing
 // a row drops the violet bar on its left, turns the ground to paper and
-// deepens the plot one step; a ticked row keeps the bar and the deeper plot.
+// deepens the plot one step.
 //
 //   import { createModelList, createRowHead, barPlot } from '../../ui/modelRow.js';
 //   const list = createModelList(ol, { data, kind: 'design', plot: barPlot });
@@ -37,7 +39,7 @@ import { modelName, vendorIcon, modelLabel } from '../core/names.js';
 import { links } from '../core/route.js';
 import { fmtScore, fmtRank } from '../core/format.js';
 import { progress } from '../core/rank.js';
-import { getCompare, toggleCompare, isCompareFull, compareIndex, onCompareChange } from './compare.js';
+import { getCompare, toggleCompare, isCompareFull, compareIndex, onCompareChange, isComparing, onComparingChange } from './compare.js';
 import { dur, flip, stagger, isInView } from '../motion.js';
 import { createBar, setBar } from '../charts/bar.js';
 import { GRID } from '../charts/axis.js';
@@ -78,12 +80,12 @@ export function barPlot(cell, entry, ctx) {
  * one sentence); with hidden: false its labels stay readable and only the
  * decorative cells (tick and icon placeholders, a plot without links) are hidden.
  */
-export function createRowHead({ rank = t('common.csv.rank'), name = t('common.csv.model'), score = t('common.score.total'), plot = null, cost = null, tokens = null, checkable = true, hidden = true } = {}) {
+export function createRowHead({ rank = t('common.csv.rank'), name = t('common.csv.model'), score = t('common.score.total'), plot = null, cost = null, tokens = null, hidden = true } = {}) {
   const deco = { 'aria-hidden': 'true' };
   const plotLive = plot instanceof Element && plot.querySelector('a, button, input, select');
   return h(
     'div.mrow.mrow-head',
-    { class: [checkable ? null : 'no-check', cost != null ? 'has-cost' : null].filter(Boolean).join(' ') || null, 'aria-hidden': hidden ? 'true' : null },
+    { class: cost != null ? 'has-cost' : null, 'aria-hidden': hidden ? 'true' : null },
     h('span.mrow-check', deco),
     h('span.mrow-rank', rank),
     h('span.mrow-icon', deco),
@@ -105,20 +107,13 @@ function noteOf(entry, opts) {
 
 /**
  * One row element. entry: { id, model, value, rank, ranked, best?, note? } (from rankBy).
- * opts: { data, kind: 'series'|'standard'|'design', plot = barPlot, checkable = true, cost = false,
+ * opts: { data, kind: 'series'|'standard'|'design', plot = barPlot, cost = false,
  *         best, note, grid, pass, scoreText(entry), rankText(entry), rank(cell, entry, ctx) }
  */
 export function createModelRow(entry, opts) {
-  const { checkable = true } = opts;
-  const li = h('li.mrow', { dataset: { id: entry.id, modelPanel: entry.id }, class: [`is-${opts.kind ?? 'series'}`, checkable ? null : 'no-check', opts.cost ? 'has-cost' : null].filter(Boolean).join(' ') });
-  const check = checkable
-    ? h('input', {
-        type: 'checkbox',
-        class: 'mrow-tick',
-        'aria-label': t('common.toolbar.compareAdd', { name: modelLabel(entry.model) }),
-      })
-    : null;
-  check?.addEventListener('change', () => {
+  const li = h('li.mrow', { dataset: { id: entry.id, modelPanel: entry.id }, class: [`is-${opts.kind ?? 'series'}`, opts.cost ? 'has-cost' : null].filter(Boolean).join(' ') });
+  const check = h('input', { type: 'checkbox', class: 'mrow-tick', 'aria-label': t('common.toolbar.compareAdd', { name: modelLabel(entry.model) }) });
+  check.addEventListener('change', () => {
     if (!toggleCompare(entry.id, check.checked)) check.checked = false;
   });
   // 原生 append 会把 null 写成文字「null」，没有开销列的页面（题目类别榜）要先滤掉空格位
@@ -182,15 +177,16 @@ function fillRow(li, entry, opts, { first, animate, delay = 0 }) {
   }
 }
 
+// the ticks follow the compare selection; a ticked row is marked only while the compare mode is on
 function syncTicks(rows) {
   const ids = getCompare();
   const full = isCompareFull();
+  const comparing = isComparing();
   for (const [id, li] of rows) {
     const box = li.querySelector('.mrow-tick');
     const on = ids.includes(id);
-    li.classList.toggle('is-checked', on);
+    li.classList.toggle('is-checked', on && comparing);
     li.style.setProperty('--cmp', on ? compareIndex(id) : 0);
-    if (!box) continue;
     box.checked = on;
     box.disabled = !on && full;
     box.title = !on && full ? t('common.toolbar.compareFull') : '';
@@ -218,7 +214,7 @@ export function createModelList(target, opts) {
   box.append(...[opts.head, ol, empty].filter(Boolean));
   const win = opts.windowed === false ? null : createWindow(box, { rows: () => ol.children });
   let firstRun = true;
-  const off = onCompareChange(() => syncTicks(rows));
+  const offs = [onCompareChange(() => syncTicks(rows)), onComparingChange(() => syncTicks(rows))];
 
   function update(entries, { animate = true } = {}) {
     const want = new Set(entries.map((e) => e.id));
@@ -274,7 +270,7 @@ export function createModelList(target, opts) {
     /** Scroll a model's row into the middle of the window when it is below the first rows. */
     reveal: (id) => win?.reveal(rows.get(id)),
     destroy() {
-      off();
+      offs.forEach((off) => off());
       empty.remove();
       ol.replaceChildren();
       rows.clear();

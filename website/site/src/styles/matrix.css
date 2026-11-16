@@ -77,13 +77,19 @@
   font-weight: 600;
   font-stretch: var(--st-wide);
 }
+/* the compare tick: only while the compare mode is on (as in the model rows; comparing is a desk task) */
 .mx-check {
-  display: grid;
+  display: none;
   flex: none;
   place-items: center;
   width: 1.25rem;
   height: 1.75rem;
   cursor: pointer;
+}
+@media (min-width: 600px) {
+  :root[data-comparing] .mx-check {
+    display: grid;
+  }
 }
 .mx-m > .icon-vendor {
   flex: none;
@@ -308,10 +314,6 @@
   .mx-rank {
     width: 1.25rem;
     font-size: 0.75rem;
-  }
-  /* comparing is a desk task (as in the model rows) */
-  .mx-check {
-    display: none;
   }
   .mx-name {
     font-size: 0.78rem;

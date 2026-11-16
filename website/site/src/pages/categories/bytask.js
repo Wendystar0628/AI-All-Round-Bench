@@ -3,20 +3,19 @@
 // the same fixed 0–100 scale. A model looks the same in every block (rank,
 // vendor icon, full name with effort, bar, score); pointing at it in one
 // block lights it up in all of them. The name link and the side panel work as
-// in any model row; ticked models stay marked (ticking itself is in 矩阵 and
-// 按型号, the blocks are too narrow for a tick column). A single-task category has one block (the task
-// is the category score).
+// in any model row; while the compare mode is on every block's rows carry the ticks (one model, one tick state
+// in all of them). A single-task category has one block (the task is the category score).
 //
-//   const v = createByTask(cat, { data, tb });
+//   const v = createByTask(cat, { data });
 //   v.el; v.refresh({ animate })   (存为图片 is the board's poster, board.js)
 import { h, t, pick, links, rankBy, fmtPct, fmtRank, modelLabel } from '../../core/index.js';
-import { createModelList, createRowHead, barPlot, showTip, hideTip } from '../../ui/index.js';
+import { createModelList, createRowHead, barPlot, showTip, hideTip, isShown } from '../../ui/index.js';
 import { createWindow } from '../../ui/window.js';
 import { cellState, cellMark, cellTip } from '../../ui/cells.js';
 
 const GRID = [20, 40, 60, 80];
 
-export function createByTask(cat, { data, tb }) {
+export function createByTask(cat, { data }) {
   const multi = cat.tasks.length > 1;
   const blocks = [
     { col: { type: 'category', key: cat.key }, title: t('categories.byTask.category'), sub: t('categories.board.weight', { w: fmtPct(cat.weight) }) },
@@ -39,13 +38,12 @@ export function createByTask(cat, { data, tb }) {
       h('h3.cbt-title', !multi ? h('span.cbt-kicker', b.title) : null, title),
       h('span.cbt-sub.st-field', b.sub),
     );
-    const rowHead = createRowHead({ rank: t('categories.board.rank'), name: t('categories.board.model'), score: t('categories.byTask.score'), plot: axisNode(), checkable: false });
+    const rowHead = createRowHead({ rank: t('categories.board.rank'), name: t('categories.board.model'), score: t('categories.byTask.score'), plot: axisNode() });
     const ol = h('ol');
     b.list = createModelList(ol, {
       data,
       windowed: false,
       kind: cat.kind === 'design' ? 'design' : 'standard',
-      checkable: false,
       grid: GRID,
       empty: t('categories.board.noMatch'),
       note: (e) => (e.value == null ? stateNote(e.id, b.col) : undefined),
@@ -98,8 +96,14 @@ export function createByTask(cat, { data, tb }) {
   });
   el.addEventListener('pointerleave', hideTip);
 
+  // the number of models shown: what was asked for, not the rows still folding away
+  let count = 0;
   function refresh({ animate = true } = {}) {
-    for (const b of blocks) b.list.update(rankBy(data, b.col.key).filter((e) => tb.matches(e.model)), { animate });
+    for (const b of blocks) {
+      const shown = rankBy(data, b.col.key).filter((e) => isShown(e.id));
+      b.list.update(shown, { animate });
+      count = shown.length;
+    }
     win.fit();
   }
 
@@ -107,7 +111,7 @@ export function createByTask(cat, { data, tb }) {
     el,
     refresh,
     get count() {
-      return blocks[0].list.rows.size;
+      return count;
     },
   };
 }

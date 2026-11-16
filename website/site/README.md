@@ -257,7 +257,7 @@ dial.destroy();
 
 ### 模型行 `ui/modelRow.js`
 
-列：勾选 │ 名次 │ 厂商图标 │ 全名（链接，到模型得分页 `/models/<id>/`，名字接力）│ 图区 │ 分数。点行的其余部分打开侧面板（行上有 `data-model-panel`；键盘用全名后面一个读屏可见的按钮）。行高 `--row-h`，指向或聚焦时左边落紫条、底变纸色、图形加深一档；勾选的行常显紫条（类 `is-checked`，`--cmp` 是勾选序号）。评测中的行名次写虚线框「评测中」、分数 `—`、图区斜线纹加「已出 8 / 13 题」。读屏把一行读作「第 1 名，GPT 6 Astra (xhigh)，74.7 分」。
+列：（勾选）│ 名次 │ 厂商图标 │ 全名（链接，到模型得分页 `/models/<id>/`，名字接力）│ 图区 │ 分数。勾选列只在对比模式出现：每行都带勾选框，`<html data-comparing>` 时 CSS 才给它一列（`--pick-col`，行的列模板写成 `var(--pick-col,) …`，平时没有这一轨）。点行的其余部分打开侧面板（行上有 `data-model-panel`；键盘用全名后面一个读屏可见的按钮）。行高 `--row-h`，指向或聚焦时左边落紫条、底变纸色、图形加深一档；对比模式下勾选的行常显紫条（类 `is-checked`，`--cmp` 是勾选序号）。评测中的行名次写虚线框「评测中」、分数 `—`、图区斜线纹加「已出 8 / 13 题」。读屏把一行读作「第 1 名，GPT 6 Astra (xhigh)，74.7 分」。
 
 ```js
 import { createModelList, createRowHead, barPlot } from '../../ui/index.js';
@@ -268,13 +268,12 @@ const list = createModelList(ol, {
 
   kind: 'series',          // 柱色：'series'（紫 300）| 'standard'（荧光绿加墨边）| 'design'（紫 300）
   plot: barPlot,           // 默认；或 (cell, entry, ctx) => {}，ctx: { data, kind, best, note, first, animate, delay, pass, grid, row, sr }
-  checkable: true,         // 勾选框（对比）
   cost: false,             // 分数右边的测试开销列（ui/cost.js；排行总榜在数据有开销时开），表头 createRowHead({ cost: '测试开销' })
   pass: true,              // barPlot 画 60 分线
   grid: [25, 50, 75],      // barPlot 的淡网格（默认 20/40/80）
   // 可选：best、note（常量或 (entry) => 值）、rank(cell, entry, ctx)、rankText(entry)、scoreText(entry)、empty（无行时的句子）
 });
-list.update(rankBy(data, 'total').filter((e) => tb.matches(e.model)));   // 按 id 复用行，FLIP 重排，新行逐行亮起，筛掉的先收起
+list.update(rankBy(data, 'total').filter((e) => isShown(e.id)));   // 按 id 复用行，FLIP 重排，新行逐行亮起，筛掉的先收起
 list.rows;  // Map<id, li>
 list.box;   // 榜单窗口（ol 已在页上时原地替换 ol，否则自己放）
 list.reveal(id);  // 让某行在窗口里看得见
@@ -298,24 +297,28 @@ list.reveal(id);  // 让某行在窗口里看得见
 ```js
 const tb = createToolbar({
   data,
-  vendors: true, search: true, compare: true,
   download: { csv: () => scoreTable(data, entries, { weights }), json: true },  // json 也可以是 () => 对象
 });
 el.append(tb.el);                 // 吸顶在命令栏下（top: var(--shell-h)）
 tb.slots.top.append(viewSeg);     // 总榜的视图分段、排序放这里（有内容才显示）；tb.slots.end 在下载按钮旁
 tb.slots.bottom.append(jumpBar);  // 工具条下面一行，和工具条一起吸顶（题目类别榜的跳转条）
-createToolbar({ …, wrap: true }); // 允许各行换行；默认每行一行，搜索框先变窄
-tb.on('change', ({ vendors, query }) => redraw());   // 厂商筛选或搜索变了：只隐藏行，不改名次
-tb.on('compare', ({ ids }) => toCompareView());      // 「对比」被按下；不监听时自动去 /leaderboard/?view=compare&cmp=…
-tb.matches(modelOrId);            // 是否通过筛选和搜索（全名、简称、厂商、aliases）
-tb.setQuery(q); tb.clear(); tb.state;   // { vendors: Set, query }
+createToolbar({ …, wrap: true }); // 允许各行换行
+tb.on('compare', () => toggleCompareView());   // 对比栏「查看对比 / 返回榜单」；不监听时去 /leaderboard/?view=compare&cmp=…
+tb.toggleFilter(); tb.toggleCompare();          // F、C 键
+tb.openCompare(); tb.setCompareView(on);        // 总榜打开时就在对比视图；对比视图显示时按钮改成「返回榜单」
 ```
 
-厂商块按模型数排、可多选、「全部」清空，超过 6 个厂商时其余收进「更多厂商」。右侧是已勾选模型的小块（序号 + 简称，点一下取消）和主要按钮「对比」（不足 2 个时不可按）。
+左端两个模式按钮「筛选」「对比」，一次只开一个，打开的模式在工具条下面展开面板（筛选面板或对比栏）；有筛选时旁边写「只看 12 / 23 个模型　清除筛选」。筛选只改看哪些模型，页面用 `onFilterChange` 重画。
 
-### 对比勾选 `ui/compare.js`
+### 筛选 `ui/filter.js`
 
-最多 4 个，按勾选先后排，存在 sessionStorage（`octa.compare`），两个榜单页之间沿用；地址有 `cmp=` 时以它为准。`getCompare()`、`setCompare(ids)`、`toggleCompare(id, on?)`（满 4 个时返回 `false`）、`isCompared(id)`、`compareIndex(id)`（1 起）、`isCompareFull()`、`onCompareChange(fn)`、`MAX_COMPARE`。变化时派发 `window` 事件 `octa:compare`（`detail.ids`）。总榜把勾选写进 `?cmp=` 由总榜负责人用 `setParams` 做。
+看哪些模型；`null` 是全部。存在 sessionStorage（`octa.filter`），两个榜单页之间沿用；地址 `?show=<id>,<id>`（筛选模块自己写，全部时去掉），地址有它时以它为准。`isShown(id)`、`getShown()`（`Set` 或 `null`）、`setShown(ids, data)`（选满全部即清除）、`filterCount(data)`（`{ n, all, on }`）、`onFilterChange(fn)`；变化时派发 `window` 事件 `octa:filter`。`createFilterPanel({ data, onDone })` 是工具条打开的面板：快捷组（全部 / 御三家 / 外模 / 国模）、找模型的输入框、全不选、完成，下面按厂商分组的勾选框（组头半选）。
+
+### 对比 `ui/compare.js`
+
+勾选：最多 4 个，按勾选先后排，存在 sessionStorage（`octa.compare`），各页之间沿用；地址有 `cmp=` 时以它为准。`getCompare()`、`setCompare(ids)`、`toggleCompare(id, on?)`（满 4 个时返回 `false`）、`isCompared(id)`、`compareIndex(id)`（1 起）、`isCompareFull()`、`onCompareChange(fn)`、`MAX_COMPARE`。变化时派发 `window` 事件 `octa:compare`（`detail.ids`）。总榜把勾选写进 `?cmp=` 由总榜负责人用 `setParams` 做。
+
+对比模式（本页的）：`isComparing()`、`setComparing(on)`、`onComparingChange(fn)`；开着时 `<html data-comparing>`，模型行和成绩矩阵才出勾选列、标出勾选的行。
 
 ### 数据下载 `ui/download.js`
 

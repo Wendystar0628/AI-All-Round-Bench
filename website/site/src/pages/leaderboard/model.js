@@ -23,7 +23,8 @@ export const isPartSort = (k) => k !== 'total' && !isResourceSort(k);
 export const DIRS = ['desc', 'asc'];
 export const defaultDir = (k) => RESOURCES[k]?.dir ?? 'desc';
 
-export const VIEWS = ['total', 'pass', 'parts', 'kinds', 'matrix', 'compare'];
+/** The views of the model rows (the view switch); the compare view is entered from the toolbar's 对比 instead. */
+export const VIEWS = ['total', 'pass', 'parts', 'kinds', 'matrix'];
 export const PASS = 60;
 export const SLIDER = { min: 0, max: 30, step: 0.5 };
 

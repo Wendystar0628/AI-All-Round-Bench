@@ -7,11 +7,11 @@
 //           list window (ui/window.js); the model tested last is scrolled into view at first.
 // 存为图片 saves the board's poster (charts/poster.js): every model of the current view, drawn from the data.
 //
-//   const b = createBoard(category, { data, tb, index, view, onView, focus });
+//   const b = createBoard(category, { data, index, view, onView, focus });
 //   b.el                     <section id="<key>">
-//   b.refresh({ animate })   recompute the current view (filter, compare) and update
+//   b.refresh({ animate })   recompute the current view (the filter) and update
 import { h, t, pick, links, rankBy, fmtPct, fmtRank, fmtScore, modelLabel, categoryIcon, DASH } from '../../core/index.js';
-import { createModelList, createRowHead, barPlot, challengeFacts, guideLines } from '../../ui/index.js';
+import { createModelList, createRowHead, barPlot, challengeFacts, guideLines, isShown } from '../../ui/index.js';
 import { createMatrix } from '../../ui/matrix.js';
 import { exportButton, rankingArt, createBar, setBar } from '../../charts/index.js';
 import { dur, stagger, isInView } from '../../motion.js';
@@ -24,7 +24,7 @@ export const VIEWS = ['task', 'matrix', 'model'];
 const GRID = [20, 40, 60, 80];
 let seq = 0;
 
-export function createBoard(cat, { data, tb, index, view = 'task', onView, focus }) {
+export function createBoard(cat, { data, index, view = 'task', onView, focus }) {
   const multi = cat.tasks.length > 1;
   const state = { view: VIEWS.includes(view) ? view : 'task' };
   const uid = `cb${++seq}`;
@@ -76,8 +76,8 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
       ),
     ),
   );
-  const byTask = noScores ? null : createByTask(cat, { data, tb });
-  const matrix = noScores ? null : createMatrix({ data, tb, cats: [cat], last: 'category', label: t('categories.view.matrixLabel', { name: pick(cat, 'name') }) });
+  const byTask = noScores ? null : createByTask(cat, { data });
+  const matrix = noScores ? null : createMatrix({ data, cats: [cat], last: 'category', label: t('categories.view.matrixLabel', { name: pick(cat, 'name') }) });
   const panes = {
     task: h('div.cat-pane.cat-pane-task', byTask?.el),
     matrix: h('div.cat-pane.cat-pane-matrix', matrix?.el),
@@ -95,7 +95,6 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
     data,
     head,
     kind: cat.kind === 'design' ? 'design' : 'standard',
-    checkable: true,
     grid: GRID,
     empty: t('categories.board.noMatch'),
     // rows without a category score: how many of its tasks are in
@@ -211,7 +210,7 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
 
   // ---------- the poster ----------
   function boardPoster() {
-    const ranked = rankBy(data, cat.key).filter((e) => tb.matches(e.model));
+    const ranked = rankBy(data, cat.key).filter((e) => isShown(e.id));
     const best = Math.max(...ranked.filter((e) => e.value != null && e.ranked).map((e) => e.value));
     const taskBest = new Map(cat.tasks.map((k) => [k.key, Math.max(...rankBy(data, k.key).filter((e) => e.ranked && e.value != null).map((e) => e.value))]));
     const cols = multi ? cat.tasks.map((k) => ({ key: k.key, label: `${fmtRank(k.no)} ${pick(k, 'short') || pick(k, 'name')}`, width: 132 })) : [];
@@ -262,7 +261,7 @@ export function createBoard(cat, { data, tb, index, view = 'task', onView, focus
       matrix.refresh();
       paintFoot(matrix.count);
     } else {
-      const shown = rankBy(data, cat.key).filter((e) => tb.matches(e.model));
+      const shown = rankBy(data, cat.key).filter((e) => isShown(e.id));
       list.update(shown, { animate });
       paintFoot(shown.length);
       if (!focused && focus) list.reveal(focus);

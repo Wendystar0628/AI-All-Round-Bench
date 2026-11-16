@@ -1,9 +1,11 @@
 // 排行总榜 /leaderboard/ (website/docs/leaderboard.md).
-// Page head with three figures → sticky toolbar (vendors, search, compare,
-// view switch, sort, weights, download) → one panel: the weight sandbox and
-// the axis bar (sticky) over one row per model. Six views; rows keep their
-// order across views (only the sort moves them). View, sort, ticks, custom
-// weights, grain and the open side panel live in the address. When the data
+// Page head with three figures → sticky toolbar (筛选 and 对比, view switch,
+// sort, weights, download) → one panel: the weight sandbox and the axis bar
+// (sticky) over one row per model. Five row views; rows keep their order
+// across views (only the sort moves them). The compare view is entered from
+// the toolbar's compare tray, and leaving the compare mode leaves it. View,
+// sort, ticks, filter, custom weights, grain and the open side panel live in
+// the address. When the data
 // carries test costs, every row also shows its cost right of the score
 // (ui/cost.js), with the conversion rule as a second foot line.
 // Sorting by a part of the total (a kind or a category) turns the big number
@@ -12,7 +14,7 @@
 import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
 import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, progress, modelLabel, iconURL, DASH } from '../../core/index.js';
-import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, SCOPES, COST_MODES, getCostMode, setCostMode, repoLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
+import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, onComparingChange, isShown, onFilterChange, filterCount, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, COST_MODES, getCostMode, setCostMode, repoLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
 import { exportButton, rankingArt } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
@@ -41,7 +43,7 @@ boot(async ({ data }) => {
   const withApi = hasApiCosts(data);
   if (withApi && COST_MODES.includes(getParam('cost'))) setCostMode(getParam('cost'));
   const sorts = sortKeys(data);
-  const view0 = VIEWS.includes(getParam('view')) ? getParam('view') : 'total';
+  const view0 = getParam('view') === 'compare' || VIEWS.includes(getParam('view')) ? getParam('view') : 'total';
   const w0 = parseWeights(data, getParam('w'));
   const sort0 = sorts.includes(getParam('sort')) ? getParam('sort') : 'total';
   const state = {
@@ -147,14 +149,8 @@ boot(async ({ data }) => {
         keys.map((k) => h('label', h('input', { type: 'radio', name: `lb-${name}`, value: k, checked: k === current, onchange: () => onPick(k) }), h('span', text(k)))),
       ),
     );
-  const scope0 = SCOPES.includes(getParam('scope')) ? getParam('scope') : 'all';
-  tb.state.scope = scope0;
-  const scopeCtl = ctl('scope', t('leaderboard.scope.label'), SCOPES, scope0, (k) => [t(`leaderboard.scope.${k}`), h('small.lb-ctl-n', String(tb.scopeCount(k)))], (k) => {
-    setParams({ scope: k === 'all' ? null : k });
-    tb.setScope(k);
-  });
   const costCtl = withCost && withApi ? ctl('costMode', t('leaderboard.costMode.label'), COST_MODES, getCostMode(), (k) => t(`leaderboard.costMode.${k}`), (k) => setCost(k)) : null;
-  const boardHead = h('div.lb-board-head', h('h2.lb-board-title#lb-board-title', h('span.st-pair', eyebrow, vTitle), question), h('div.lb-board-tools', scopeCtl, costCtl, colsSeg, exportBtn));
+  const boardHead = h('div.lb-board-head', h('h2.lb-board-title#lb-board-title', h('span.st-pair', eyebrow, vTitle), question), h('div.lb-board-tools', costCtl, colsSeg, exportBtn));
   // the cost marks (○ 订阅折算 ◆ API 标价) explained under the board, repainted when the basis changes
   const legendSlot = withCost ? h('div.lb-cost-legend-slot') : null;
   const paintLegend = () => legendSlot?.replaceChildren(costLegend(data, 'p.cost-legend.lb-cost-legend'));
@@ -198,7 +194,7 @@ boot(async ({ data }) => {
   // how the test costs are converted (ModelDial weekly quotas, the dollar rate, the date of the quota data)
   const costFoot = withCost ? costSourceNote(data, 'div.lb-foot.cost-note.st-field') : null;
   // 成绩矩阵 under the ranking: models × 13 tasks grouped by category, the total last (ui/matrix.js)
-  const matrix = createMatrix({ data, tb, cats: data.categories, last: 'total', label: t('leaderboard.matrix.label') });
+  const matrix = createMatrix({ data, cats: data.categories, last: 'total', label: t('leaderboard.matrix.label') });
   const mxBoard = h(
     'section.st-panel.lb-mx',
     { 'aria-labelledby': 'lb-mx-title' },
@@ -217,7 +213,6 @@ boot(async ({ data }) => {
     matrix.el,
   );
   matrix.refresh();
-  tb.on('change', () => matrix.refresh());
   slot.replaceChildren(tb.el, board, mxBoard, foot, ...(costFoot ? [costFoot] : []));
 
   // ---------------- rows ----------------
@@ -232,7 +227,7 @@ boot(async ({ data }) => {
   const rows = createRows({ data, state, computed, list, sortLabel: sortName });
 
   function entries({ keepOrder = false } = {}) {
-    const ids = keepOrder ? currentIds() : C.order.filter((id) => tb.matches(id));
+    const ids = keepOrder ? currentIds() : C.order.filter(isShown);
     const part = isPartSort(state.sort);
     return ids.map((id) => {
       const it = C.info.get(id);
@@ -334,7 +329,9 @@ boot(async ({ data }) => {
 
   function syncSeg({ animate = true } = {}) {
     for (const inp of seg.querySelectorAll('input')) inp.checked = inp.value === state.view;
+    // the compare view is not one of the switch's blocks: no block is current then
     const lab = seg.querySelector(`label[data-view="${state.view}"]`);
+    segInk.hidden = !lab;
     if (!lab) return;
     // at phone width the six blocks wrap into rows, so the ink follows the block's top and height too
     const x = lab.offsetLeft;
@@ -366,7 +363,7 @@ boot(async ({ data }) => {
   // ---------------- updates ----------------
   function refresh({ animate = true } = {}) {
     list.update(entries(), { animate });
-    setPanelOrder(C.order.filter((id) => tb.matches(id)));
+    setPanelOrder(C.order.filter(isShown));
     paintSrMatrix();
   }
 
@@ -385,7 +382,7 @@ boot(async ({ data }) => {
         h('thead', h('tr', h('th', { scope: 'col' }, t('leaderboard.head.model')), cols.map((k) => h('th', { scope: 'col' }, label(k))))),
         h(
           'tbody',
-          C.order.filter((id) => tb.matches(id)).map((id) => {
+          C.order.filter(isShown).map((id) => {
             const it = C.info.get(id);
             return h(
               'tr',
@@ -477,7 +474,7 @@ boot(async ({ data }) => {
   }
 
   async function switchView(next) {
-    if (!VIEWS.includes(next) || next === state.view) {
+    if ((!VIEWS.includes(next) && next !== 'compare') || next === state.view) {
       syncSeg();
       return;
     }
@@ -485,6 +482,7 @@ boot(async ({ data }) => {
     const my = ++viewToken;
     state.view = next;
     if (next !== 'compare') state.lastRowView = next;
+    tb.setCompareView(next === 'compare');
     setParams({ view: next === 'total' ? null : next });
     hideTip();
     rows.setFocus(null);
@@ -583,7 +581,7 @@ boot(async ({ data }) => {
       for (const k of Object.keys(RESOURCES)) cols.push({ key: k, label: t(`common.cost.head.${k}`), width: k === 'tps' ? 60 : 96, sorted: state.sort === k ? state.dir : null });
     }
     const rows = C.order
-      .filter((id) => tb.matches(id))
+      .filter(isShown)
       .map((id) => {
         const it = C.info.get(id);
         const ranked = it.status === 'ranked';
@@ -607,7 +605,8 @@ boot(async ({ data }) => {
         };
       });
     const G = guideLines(data);
-    const reading = t('common.poster.reading', { sort: sortName(state.sort), dir: t(`leaderboard.sort.dir.${state.dir}`), scope: t(`leaderboard.scope.${tb.state.scope}`) });
+    const fc = filterCount(data);
+    const reading = t('common.poster.reading', { sort: sortName(state.sort), dir: t(`leaderboard.sort.dir.${state.dir}`), models: fc.on ? t('common.filter.some', fc) : t('common.filter.every', fc) });
     return {
       kicker: 'LEADERBOARD',
       title: t('leaderboard.title'),
@@ -619,10 +618,15 @@ boot(async ({ data }) => {
   }
 
   // ---------------- events ----------------
-  tb.on('change', () => {
+  onFilterChange(() => {
     if (state.view !== 'compare') refresh();
   });
-  tb.on('compare', () => switchView('compare'));
+  // the tray's 查看对比 enters the compare view, its 返回榜单 goes back to the rows; leaving the compare mode leaves it too
+  tb.on('compare', () => switchView(state.view === 'compare' ? state.lastRowView : 'compare'));
+  onComparingChange((on) => {
+    if (!on && state.view === 'compare') switchView(state.lastRowView);
+    else if (state.view === 'kinds') rows.redrawAll('update');
+  });
   onCompareChange((ids) => {
     setParams({ cmp: ids });
     if (state.view === 'compare') compare.render();
@@ -658,10 +662,11 @@ boot(async ({ data }) => {
   // a click on a row (the matrix cells included) opens the side panel through the row's
   // data-model-panel (shell/panel.js), in the order set by setPanelOrder; the name is a link to the model page
 
-  // keyboard: 1–6 views, W weights, C compare (listed under "本页" in the ? sheet)
+  // keyboard: 1–5 views, W weights, F filter, C compare (listed under "本页" in the ? sheet)
   VIEWS.forEach((v, i) => registerShortcut({ key: String(i + 1), label: t('leaderboard.keys.view', { name: viewName(v) }), handler: () => switchView(v) }));
   registerShortcut({ key: 'w', label: t('leaderboard.keys.weights'), handler: () => toggleSandbox() });
-  registerShortcut({ key: 'c', label: t('leaderboard.keys.compare'), handler: () => switchView('compare') });
+  registerShortcut({ key: 'f', label: t('common.toolbar.keyFilter'), handler: () => tb.toggleFilter() });
+  registerShortcut({ key: 'c', label: t('common.toolbar.keyCompare'), handler: () => tb.toggleCompare() });
 
   // sticky: the axis bar sits right under the toolbar
   const setTbH = () => main.style.setProperty('--lb-tb-h', `${tb.el.offsetHeight}px`);
@@ -690,6 +695,9 @@ boot(async ({ data }) => {
     axis.svg.animate?.([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 -40px 0 0)' }], { duration: dur('wipe'), delay: 200, easing: css.mech, fill: 'backwards' });
   }
   if (state.view === 'compare') {
+    // opened on the compare view (a shared link, or 查看对比 from another page): the compare mode is on
+    tb.openCompare();
+    tb.setCompareView(true);
     list.update(entries(), { animate: false });
     compare.el.hidden = false;
     compare.render({ animate: animateIn });

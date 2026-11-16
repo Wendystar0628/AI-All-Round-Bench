@@ -1,135 +1,152 @@
-// The toolbar above every leaderboard (leaderboard.md「共用部件 / 工具条」).
-// Sticky under the command bar. Left: vendor filter chips (multi-select,
-// "全部" clears); middle: model search (this page's rows only, not the site
-// search); right: the ticked models (index + short name; click to untick),
-// the primary "对比" button and "下载数据".
+// The toolbar above the boards (leaderboard.md「共用部件 / 工具条」), sticky under the command bar.
+// Left: the two modes, 筛选 and 对比, one open at a time, and — while a filter is on — what it shows with a
+// button to clear it. Right (slots.end): the page's tools, 下载数据 last. Under them the open mode's panel: the
+// filter panel (ui/filter.js) or the compare tray (the ticked models, 清空, 查看对比, 完成). By default no row
+// carries a tick box; the compare ticks appear only while 对比 is on (ui/compare.js).
 //
 //   const tb = createToolbar({ data, download: { csv: () => scoreTable(...), json: true } });
 //   container.append(tb.el);
-//   tb.on('change', () => list.update(rankBy(data, 'total').filter((e) => tb.matches(e.model))));
-//   tb.on('compare', ({ ids }) => …)      // leaderboard: switch to its compare view
-//                                          // without a listener: go to /leaderboard/?view=compare&cmp=…
-//   tb.slots.top / tb.slots.end           // put the view switch and sort select here (leaderboard)
-//   tb.slots.bottom                        // a row under the toolbar that sticks with it (题目类别榜的跳转条)
-//   createToolbar({ wrap: true })          // let the rows wrap onto more lines; by default each row
-//                                          // stays on one line and the model search narrows first
-//
-// Filtering and searching only hide rows; they never change ranks.
+//   tb.on('compare', () => …)          查看对比 / 返回榜单 pressed; without a listener: /leaderboard/?view=compare&cmp=…
+//   tb.toggleFilter(), tb.toggleCompare()   the F and C keys
+//   tb.setCompareView(on)              the leaderboard's compare view is showing: the tray's button reads 返回榜单
+//   tb.slots.top / tb.slots.end        rows and tools of the page (the leaderboard's views, sort, weights)
+//   tb.slots.bottom                    a row under the toolbar that sticks with it (题目类别榜的跳转条)
+//   createToolbar({ wrap: true })      let the rows wrap onto more lines
 import { h } from '../core/dom.js';
 import { t } from '../core/i18n.js';
 import { links } from '../core/route.js';
-import { vendorIcon, modelLabel } from '../core/names.js';
-import { getCompare, toggleCompare, onCompareChange, MAX_COMPARE } from './compare.js';
+import { modelLabel } from '../core/names.js';
+import { getCompare, setCompare, toggleCompare, onCompareChange, isComparing, setComparing, onComparingChange, MAX_COMPARE } from './compare.js';
+import { createFilterPanel, filterCount, onFilterChange, setShown } from './filter.js';
 import { downloadCSV, downloadJSON, downloadBundle } from './download.js';
 import { flashDone } from '../vendor/stellar/fx.js';
+import { play } from '../motion.js';
 
-const norm = (s) => String(s ?? '').toLowerCase().replace(/\s+/g, '');
-const MAX_VENDOR_CHIPS = 6;
-
-// 模型范围：全部 / 御三家（OpenAI、Anthropic、Google）/ 外模 / 国模（models.json 的 region）
-export const SCOPES = ['all', 'big3', 'us', 'cn'];
-const BIG3 = new Set(['OpenAI', 'Anthropic', 'Google']);
-export const inScope = (model, scope) => scope === 'all' || (scope === 'big3' ? BIG3.has(model.vendor) : model.region === scope);
+// the two mode glyphs: a funnel (筛选) and three bars of different length (对比)
+const GLYPHS = {
+  filter: '<svg viewBox="0 0 16 16"><path d="M1.5 2.5h13l-5 6v5l-3 1.5v-6.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  compare: '<svg viewBox="0 0 16 16"><path d="M2 3.5h8M2 8h12M2 12.5h5.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+};
+function glyph(k) {
+  const s = h('span.tb-glyph', { 'aria-hidden': 'true' });
+  s.innerHTML = GLYPHS[k];
+  return s;
+}
 
 /**
  * Options:
  *   data        loadData() result (required)
- *   vendors     show the vendor filter (default true)
- *   search      show the model search (default true)
- *   compare     show ticked models and the 对比 button (default true)
  *   download    null | { csv: () => ({ columns, rows, preface }), json: true | () => object }
- *   wrap        false (default): every row stays on one line, the search field narrows;
- *               true: rows may wrap onto more lines (many vendors, long labels)
- * Returns { el, slots: { top, end, bottom }, state: { vendors:Set, query }, matches(model|id), on(type, fn), setQuery(q), clear() }
- * Events: 'change' (filter or search changed), 'compare' ({ ids })
+ *   wrap        false (default): every row stays on one line; true: rows may wrap
+ * Returns { el, slots: { top, end, bottom }, on(type, fn), toggleFilter(), toggleCompare(), setCompareView(on) }
+ * Events: 'compare' (查看对比 or 返回榜单 pressed)
  */
-export function createToolbar({ data, vendors = true, search = true, compare = true, download = null, wrap = false } = {}) {
+export function createToolbar({ data, download = null, wrap = false } = {}) {
   const events = new EventTarget();
-  const state = { vendors: new Set(), query: '', scope: 'all' };
   const emit = (type, detail) => events.dispatchEvent(new CustomEvent(type, { detail }));
+  let listening = false;
+  let filterOpen = false;
+  let compareView = false;
 
   const top = h('div.tb-top');
   const end = h('div.tb-end');
-  const left = h('div.tb-left');
-  const right = h('div.tb-right');
   const bottom = h('div.tb-bottom');
-  const el = h('div.site-toolbar', { role: 'toolbar', 'aria-label': t('common.toolbar.label'), class: wrap ? 'is-wrap' : null }, top, h('div.tb-main', left, right, end), bottom);
+  const panelId = `tb-panel-${Math.random().toString(36).slice(2, 8)}`;
+
+  // ---------- the two modes ----------
+  const filterN = h('span.tb-mode-n.num');
+  const filterBtn = h('button.st-btn.small.tb-mode', { type: 'button', 'aria-expanded': 'false', 'aria-controls': panelId, 'aria-keyshortcuts': 'F', title: t('common.toolbar.filterTitle') }, glyph('filter'), h('span', t('common.toolbar.filter')), filterN);
+  const compareN = h('span.tb-mode-n.num');
+  const compareBtn = h('button.st-btn.small.tb-mode.tb-mode-compare', { type: 'button', 'aria-pressed': 'false', 'aria-controls': panelId, 'aria-keyshortcuts': 'C', title: t('common.toolbar.compareTitle') }, glyph('compare'), h('span', t('common.toolbar.compare')), compareN);
+  filterBtn.addEventListener('click', () => setMode(filterOpen ? null : 'filter'));
+  compareBtn.addEventListener('click', () => setMode(isComparing() ? null : 'compare'));
+  // a filter that is on, while its panel is closed: what it shows, and a way back to every model
+  const statusText = h('span');
+  const status = h('span.tb-status.st-field', statusText, h('button.tb-clear', { type: 'button', onclick: () => setShown(null, data) }, t('common.toolbar.filterClear')));
+
+  // ---------- the panels ----------
+  const filterPanel = createFilterPanel({ data, onDone: () => setMode(null) });
+  const trayList = h('div.tb-tray', { 'aria-live': 'polite' });
+  const trayGo = h('button.st-btn.small.go.tb-cmp-go', { type: 'button' });
+  trayGo.addEventListener('click', () => {
+    if (listening) emit('compare');
+    else location.href = links.compare(getCompare());
+  });
+  const tray = h(
+    'div.tb-cmp',
+    { role: 'group', 'aria-label': t('common.toolbar.compare') },
+    h('b.tb-cmp-title', t('common.toolbar.compareTray', { n: MAX_COMPARE })),
+    trayList,
+    h(
+      'div.tb-cmp-acts',
+      h('button.st-btn.small', { type: 'button', onclick: () => setCompare([]) }, t('common.toolbar.compareClear')),
+      trayGo,
+      h('button.st-btn.small', { type: 'button', onclick: () => setMode(null) }, t('common.toolbar.done')),
+    ),
+  );
+  const panel = h('div.tb-panel', { id: panelId, hidden: true });
+
+  const left = h('div.tb-left', filterBtn, compareBtn, status);
+  const el = h('div.site-toolbar', { role: 'toolbar', 'aria-label': t('common.toolbar.label'), class: wrap ? 'is-wrap' : null }, top, h('div.tb-main', left, end), panel, bottom);
   // the top and bottom slots show only when something is put in them
   for (const slot of [top, bottom]) {
     slot.hidden = true;
     new MutationObserver(() => (slot.hidden = !slot.childElementCount)).observe(slot, { childList: true });
   }
+  // Esc inside the toolbar closes the open mode
+  el.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || (!filterOpen && !isComparing())) return;
+    e.stopPropagation();
+    setMode(null);
+  });
 
-  // vendor chips
-  if (vendors && data.vendors.length > 1) {
-    const all = h('button.st-chip', { type: 'button', 'aria-pressed': 'true' }, t('common.toolbar.all'), h('span.n', String(data.models.length)));
-    const chip = (v) => {
-      const b = h('button.st-chip', { type: 'button', 'aria-pressed': 'false', dataset: { vendor: v.vendor } }, vendorIcon(v.logo), v.vendor, h('span.n', String(v.count)));
-      b.addEventListener('click', () => {
-        state.vendors.has(v.vendor) ? state.vendors.delete(v.vendor) : state.vendors.add(v.vendor);
-        paint();
-        emit('change', { ...state });
-      });
-      return b;
-    };
-    const chips = data.vendors.map(chip);
-    const shown = chips.slice(0, MAX_VENDOR_CHIPS);
-    const more = chips.slice(MAX_VENDOR_CHIPS);
-    const group = h('div.tb-vendors', { role: 'group', 'aria-label': t('common.toolbar.vendors') }, all, shown);
-    if (more.length) group.append(h('details.tb-more', h('summary.st-chip', t('common.toolbar.moreVendors'), h('span.n', String(more.length))), h('div.tb-more-list', more)));
-    all.addEventListener('click', () => {
-      state.vendors.clear();
-      paint();
-      emit('change', { ...state });
-    });
-    function paint() {
-      all.setAttribute('aria-pressed', String(state.vendors.size === 0));
-      for (const c of chips) c.setAttribute('aria-pressed', String(state.vendors.has(c.dataset.vendor)));
+  function setMode(mode) {
+    const was = filterOpen ? 'filter' : isComparing() ? 'compare' : null;
+    filterOpen = mode === 'filter';
+    setComparing(mode === 'compare');
+    paint();
+    if (mode && mode !== was) {
+      play(panel, [{ clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0)' }], { duration: 'expand', easing: 'mech' });
+      if (mode === 'filter') filterPanel.focus();
     }
-    left.append(group);
   }
 
-  // model search
-  let input = null;
-  if (search) {
-    input = h('input', { type: 'search', placeholder: t('common.toolbar.search'), 'aria-label': t('common.toolbar.searchLabel'), autocomplete: 'off', spellcheck: 'false' });
-    input.addEventListener('input', () => {
-      state.query = input.value;
-      emit('change', { ...state });
-    });
-    left.append(h('label.st-search.tb-search', input));
+  function paintTray() {
+    const ids = getCompare().filter((id) => data.model(id));
+    trayList.replaceChildren(
+      ...ids.map((id, i) => {
+        const m = data.model(id);
+        const b = h('button.st-chip.tb-slot', { type: 'button', title: t('common.toolbar.compareRemove', { name: modelLabel(m) }), style: { '--c': `var(--compare-${i + 1})` } }, h('b.num', String(i + 1).padStart(2, '0')), m.short || m.name);
+        b.addEventListener('click', () => toggleCompare(id, false));
+        return b;
+      }),
+    );
+    if (!ids.length) trayList.append(h('span.tb-hint.st-field', t('common.toolbar.compareHint')));
+    trayGo.textContent = compareView ? t('common.toolbar.compareBack') : t('common.toolbar.compareGo');
+    trayGo.disabled = !compareView && ids.length < 2;
+    compareN.textContent = ids.length ? String(ids.length) : '';
   }
 
-  // ticked models + compare
-  if (compare) {
-    const tray = h('div.tb-tray', { 'aria-live': 'polite' });
-    const btn = h('button.st-btn.small.go.tb-compare', { type: 'button', title: t('common.toolbar.compareTitle'), 'aria-keyshortcuts': 'C' }, t('common.toolbar.compare'));
-    btn.addEventListener('click', () => {
-      const ids = getCompare();
-      if (events.__hasCompare) emit('compare', { ids });
-      else location.href = links.compare(ids);
-    });
-    const paintTray = () => {
-      const ids = getCompare();
-      tray.replaceChildren(
-        ...ids.map((id, i) => {
-          const m = data.model(id);
-          if (!m) return '';
-          const b = h('button.st-chip.tb-slot', { type: 'button', title: t('common.toolbar.compareRemove', { name: modelLabel(m) }) }, h('b', String(i + 1).padStart(2, '0')), m.short || m.name);
-          b.addEventListener('click', () => toggleCompare(id, false));
-          return b;
-        }),
-      );
-      if (!ids.length) tray.append(h('span.tb-hint.st-field', t('common.toolbar.compareHint')));
-      btn.disabled = ids.length < 2;
-      btn.title = ids.length < 2 ? t('common.toolbar.compareHint') : t('common.toolbar.compareTitle');
-    };
-    onCompareChange(paintTray);
+  function paint() {
+    const comparing = isComparing();
+    filterBtn.setAttribute('aria-expanded', String(filterOpen));
+    filterBtn.classList.toggle('is-on', filterOpen);
+    compareBtn.setAttribute('aria-pressed', String(comparing));
+    compareBtn.classList.toggle('is-on', comparing);
+    const c = filterCount(data);
+    filterN.textContent = c.on ? `${c.n}/${c.all}` : '';
+    statusText.textContent = t('common.toolbar.filterStatus', c);
+    status.hidden = !c.on || filterOpen;
+    const show = filterOpen ? filterPanel.el : comparing ? tray : null;
+    panel.hidden = !show;
+    if (show && panel.firstChild !== show) panel.replaceChildren(show);
     paintTray();
-    right.append(tray, btn);
   }
+  onFilterChange(paint);
+  onCompareChange(paintTray);
+  onComparingChange(paint);
 
-  // download
+  // ---------- download ----------
   if (download) {
     const menuId = `tb-dl-${Math.random().toString(36).slice(2, 8)}`;
     const btn = h('button.st-btn.small.tb-download', { type: 'button', popovertarget: menuId, 'aria-haspopup': 'menu' }, t('common.toolbar.download'));
@@ -157,45 +174,24 @@ export function createToolbar({ data, vendors = true, search = true, compare = t
     end.append(btn, menu);
   }
 
-  const api = {
+  paint();
+
+  return {
     el,
     slots: { top, end, bottom },
-    state,
-    /** Does a model pass the vendor filter and the search? (pass a model or an id) */
-    matches(m) {
-      const model = typeof m === 'string' ? data.model(m) : m;
-      if (!model) return false;
-      if (!inScope(model, state.scope)) return false;
-      if (state.vendors.size && !state.vendors.has(model.vendor)) return false;
-      const q = norm(state.query);
-      if (!q) return true;
-      return [model.name, model.short, model.vendor, model.id, ...(model.aliases ?? [])].some((s) => norm(s).includes(q));
-    },
     on(type, fn) {
-      if (type === 'compare') events.__hasCompare = true;
+      if (type === 'compare') listening = true;
       const w = (e) => fn(e.detail);
       events.addEventListener(type, w);
       return () => events.removeEventListener(type, w);
     },
-    setQuery(q) {
-      state.query = q;
-      if (input) input.value = q;
-      emit('change', { ...state });
+    toggleFilter: () => setMode(filterOpen ? null : 'filter'),
+    toggleCompare: () => setMode(isComparing() ? null : 'compare'),
+    /** Open the compare mode (the leaderboard opened on its compare view). */
+    openCompare: () => setMode('compare'),
+    setCompareView(on) {
+      compareView = on;
+      paintTray();
     },
-    setScope(s) {
-      state.scope = s;
-      emit('change', { ...state });
-    },
-    /** How many models each scope holds (for the scope switch). */
-    scopeCount: (s) => data.models.filter((m) => inScope(m, s)).length,
-    clear() {
-      state.vendors.clear();
-      state.query = '';
-      if (input) input.value = '';
-      el.querySelectorAll('.tb-vendors .st-chip').forEach((c, i) => c.setAttribute('aria-pressed', String(i === 0)));
-      emit('change', { ...state });
-    },
-    MAX_COMPARE,
   };
-  return api;
 }

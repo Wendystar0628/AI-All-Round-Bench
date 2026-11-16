@@ -6,14 +6,18 @@
 // the violet bar, which slides from item to item. Each item is a real link to
 // /models/<id>/; a plain click switches the page in place (main.js go()), a
 // modified click opens it normally.
+// Each vendor head folds its group (a chevron turns); the head of the column folds or opens them all. What is
+// folded is remembered in localStorage ("octa.md.folded"); switching to a model opens its group.
 // Narrow windows: the column folds into a selector above the head — a button
 // with the current model that opens the same grouped list below it.
 //
 //   const picker = createPicker(navEl, { data, onPick: (id) => … });
 //   picker.update(id)   mark the current model, keep it in view inside the column
 //   picker.ids          the column's order (← → step through it)
-import { h, t, links, rankOf, modelStatus, progress, fmtScore, fmtRank, modelName, modelLabel, vendorIcon } from '../../core/index.js';
+import { h, t, links, rankOf, modelStatus, progress, fmtScore, fmtRank, modelName, modelLabel, vendorIcon, local } from '../../core/index.js';
 import { dur, durOut, play } from '../../motion.js';
+
+const FOLDED = 'md.folded';
 
 export function createPicker(nav, { data, onPick }) {
   // official order (ranked by total, then being tested), plus anything registered but missing from it
@@ -31,18 +35,44 @@ export function createPicker(nav, { data, onPick }) {
   const listId = 'md-side-list';
   const bar = h('span.md-side-bar', { 'aria-hidden': 'true' });
   const list = h('div.md-side-list', { id: listId }, bar);
+  const folded = new Set(local.get(FOLDED, []).filter((v) => groups.has(v)));
   for (const g of groups.values()) {
-    const headId = `md-side-${g.ids[0]}`;
-    const ol = h('ol.md-side-models', { 'aria-labelledby': headId });
-    for (const id of g.ids) ol.append(h('li', item(id)));
-    list.append(
-      h(
-        'section.md-side-group',
-        h('h2.md-side-vendor#' + headId, vendorIcon(g.logo), h('span.md-side-vname', g.vendor), h('span.md-side-count.num', String(g.ids.length))),
-        ol,
-      ),
+    const olId = `md-side-${g.ids[0]}`;
+    g.ol = h('ol.md-side-models', { id: olId });
+    for (const id of g.ids) g.ol.append(h('li', item(id)));
+    g.btn = h(
+      'button.md-side-fold',
+      { type: 'button', 'aria-controls': olId },
+      h('span.md-fold-chev', { 'aria-hidden': 'true' }),
+      vendorIcon(g.logo),
+      h('span.md-side-vname', g.vendor),
+      h('span.md-side-count.num', String(g.ids.length)),
     );
+    g.btn.addEventListener('click', () => fold([g.vendor], !folded.has(g.vendor)));
+    g.el = h('section.md-side-group', h('h2.md-side-vendor', g.btn), g.ol);
+    list.append(g.el);
   }
+
+  // ---------- folding ----------
+  const allBtn = h('button.md-side-all', { type: 'button' });
+  allBtn.addEventListener('click', () => fold([...groups.keys()], folded.size < groups.size));
+  function fold(vendors, on) {
+    for (const v of vendors) on ? folded.add(v) : folded.delete(v);
+    local.set(FOLDED, [...folded]);
+    paintFolds();
+    place(false);
+  }
+  function paintFolds() {
+    for (const g of groups.values()) {
+      const f = folded.has(g.vendor);
+      g.ol.hidden = f;
+      g.el.classList.toggle('is-folded', f);
+      g.btn.setAttribute('aria-expanded', String(!f));
+      g.btn.title = t(f ? 'model.picker.unfold' : 'model.picker.fold', { vendor: g.vendor });
+    }
+    allBtn.textContent = t(folded.size < groups.size ? 'model.picker.foldAll' : 'model.picker.unfoldAll');
+  }
+  paintFolds();
 
   function item(id) {
     const m = data.model(id);
@@ -80,7 +110,7 @@ export function createPicker(nav, { data, onPick }) {
     current,
     h('span.md-side-chev', { 'aria-hidden': 'true' }),
   );
-  const head = h('p.md-side-head', h('span.st-eyebrow', t('model.picker.eyebrow')), h('b', t('model.picker.title')), h('span.st-field', t('common.unit.models', { n: ids.length })));
+  const head = h('div.md-side-head', h('span.st-eyebrow', t('model.picker.eyebrow')), h('b', t('model.picker.title')), h('span.md-side-sub', h('span.st-field', t('common.unit.models', { n: ids.length })), allBtn));
   nav.replaceChildren(head, toggle, list);
 
   const narrow = matchMedia('(max-width: 1023px)');
@@ -118,7 +148,10 @@ export function createPicker(nav, { data, onPick }) {
   let currentId = null;
   function place(slide) {
     const a = items.get(currentId);
-    if (!a || !a.offsetParent) return;
+    if (!a || !a.offsetParent) {
+      bar.classList.remove('is-on');
+      return;
+    }
     bar.classList.toggle('is-ready', slide && dur('come') > 0);
     bar.style.transform = `translateY(${a.offsetTop}px)`;
     bar.style.height = `${a.offsetHeight}px`;
@@ -128,6 +161,9 @@ export function createPicker(nav, { data, onPick }) {
   function update(id) {
     const slide = currentId != null;
     currentId = id;
+    // the current model's group always opens
+    const vendor = data.model(id).vendor;
+    if (folded.has(vendor)) fold([vendor], false);
     for (const [k, a] of items) {
       const on = k === id;
       a.classList.toggle('is-current', on);

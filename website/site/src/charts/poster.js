@@ -9,7 +9,7 @@
 //   exportButton({ poster: () => spec, filename })     the small 存为图片 button of a panel head
 //   spec = { kicker, title, subtitle, facts: [{ value, label, sub }], body: { svg, width, height } | Promise,
 //            guide: [line | { mark: 'subscription' | 'api', text }], index: [{ no, text }] }
-//   chartBody(liveSvg)        a live chart (D3 <svg>) cloned with its computed styles, as a body
+//   chartBody(liveSvg, …)     live charts (D3 <svg>s) cloned with their computed styles, side by side, as a body
 //   BODY_W                    the width a body is drawn at; narrower bodies are centred
 import { t } from '../core/i18n.js';
 import { BASE, REPO } from '../core/route.js';
@@ -199,14 +199,31 @@ export async function posterSVG(spec) {
   return { svg: out, width: W, height: y, updated };
 }
 
-/** A live chart (D3 <svg>) as a poster body: cloned with its computed look, scaled down to BODY_W when wider. */
-export function chartBody(live) {
-  const box = live.getBoundingClientRect();
-  const clone = live.cloneNode(true);
-  inlineStyles(live, clone);
-  if (!clone.getAttribute('viewBox')) clone.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
-  const k = Math.min(1, BODY_W / box.width);
-  return { svg: clone, width: Math.round(box.width * k), height: Math.round(box.height * k) };
+/**
+ * Live charts (D3 <svg>s) as one poster body: each cloned with its computed look; several sit side by side,
+ * centred on one line, as on the page (the model page's star dial and category bars); the whole is scaled
+ * down to BODY_W when wider.
+ */
+export function chartBody(...lives) {
+  const GAP = 40;
+  const parts = lives.map((live) => {
+    const box = live.getBoundingClientRect();
+    const clone = live.cloneNode(true);
+    inlineStyles(live, clone);
+    if (!clone.getAttribute('viewBox')) clone.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+    return { clone, w: box.width, h: box.height };
+  });
+  const W = parts.reduce((a, p) => a + p.w, 0) + GAP * (parts.length - 1);
+  const H = Math.max(...parts.map((p) => p.h));
+  const out = svgEl('svg', { viewBox: `0 0 ${W} ${H}` });
+  let x = 0;
+  for (const p of parts) {
+    for (const [k, v] of Object.entries({ x, y: (H - p.h) / 2, width: p.w, height: p.h })) p.clone.setAttribute(k, v);
+    out.append(p.clone);
+    x += p.w + GAP;
+  }
+  const k = Math.min(1, BODY_W / W);
+  return { svg: out, width: Math.round(W * k), height: Math.round(H * k) };
 }
 
 /** The small 存为图片 button: poster() returns the spec (or a promise of it); filename may be a function. */
