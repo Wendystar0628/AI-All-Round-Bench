@@ -48,6 +48,9 @@ export function href(path = '', { lang = route.lang, query, hash } = {}) {
 
 const taskPath = (t) => (typeof t === 'string' ? t : t?.path || `${t?.category}/${t?.key}`);
 
+/** The project repository on GitHub: public tasks, their isolated environments and the site. */
+export const REPO = 'https://github.com/Wendystar0628/AI-High-Pressure-Challenge';
+
 /** Named links. Each takes an optional last argument { lang }. */
 export const links = {
   home: (o) => href('', o),

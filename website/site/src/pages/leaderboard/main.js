@@ -12,7 +12,7 @@
 import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
 import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, modelLabel, iconURL, DASH } from '../../core/index.js';
-import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, SCOPES, COST_MODES, getCostMode, setCostMode } from '../../ui/index.js';
+import { createToolbar, createModelList, scoreTable, getCompare, onCompareChange, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, SCOPES, COST_MODES, getCostMode, setCostMode, repoLink } from '../../ui/index.js';
 import { exportButton, rowsToSVG } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
@@ -71,6 +71,7 @@ boot(async ({ data }) => {
     h('li', t('leaderboard.facts.tasks', { n: data.tasks.length })),
     h('li', t('leaderboard.facts.cats', { n: data.categories.length })),
     h('li', h('time', { datetime: data.updated }, t('leaderboard.facts.updated', { date: fmtDate(data.updated) }))),
+    h('li', repoLink()),
   );
   const F = headFigures(data);
   const fig = (value, label, sub) => h('div', h('b.num', { 'data-fig': '' }, value), h('span', label), sub ? h('small', sub) : null);

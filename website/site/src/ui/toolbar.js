@@ -26,7 +26,7 @@ import { flashDone } from '../vendor/stellar/fx.js';
 const norm = (s) => String(s ?? '').toLowerCase().replace(/\s+/g, '');
 const MAX_VENDOR_CHIPS = 6;
 
-// 模型范围：全部 / 御三家（OpenAI、Anthropic、Google）/ 美国模型 / 国产模型（models.json 的 region）
+// 模型范围：全部 / 御三家（OpenAI、Anthropic、Google）/ 外模 / 国模（models.json 的 region）
 export const SCOPES = ['all', 'big3', 'us', 'cn'];
 const BIG3 = new Set(['OpenAI', 'Anthropic', 'Google']);
 export const inScope = (model, scope) => scope === 'all' || (scope === 'big3' ? BIG3.has(model.vendor) : model.region === scope);

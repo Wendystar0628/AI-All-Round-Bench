@@ -21,9 +21,7 @@ import { h } from '../core/dom.js';
 import { t, lang, pick } from '../core/i18n.js';
 import { fmtDate, fmtInt, DASH } from '../core/format.js';
 import { modelLabel } from '../core/names.js';
-
-/** The project repository (same as reading/rich.js REPO): tasks and their isolated environments, for re-testing. */
-export const REPO = 'https://github.com/Wendystar0628/AI-High-Pressure-Challenge';
+import { REPO } from '../core/route.js';
 
 // 两种口径：'plan' 按订阅折算（没有订阅的按 API 标价）；'api' 一律按官方 API 标价（cost.api_cny）。页面启动时按地址参数设定。
 export const COST_MODES = ['plan', 'api'];
@@ -157,7 +155,8 @@ export function costNotes(data, id) {
   const cost = costOf(data, id);
   const out = [];
   if (!cost || cost.cny == null) return out;
-  if (cost.method === 'api_price' && cost.basis === 'api') out.push(t('common.cost.noteApiDirect'));
+  if (cost.method === 'free') out.push(t('common.cost.noteFree'));
+  else if (cost.method === 'api_price' && cost.basis === 'api') out.push(t('common.cost.noteApiDirect'));
   else if (cost.method === 'api_price') out.push(cost.api_usd == null ? t('common.cost.noteApiPrice') : t('common.cost.noteApiPriceUsd', { usd: fmtUSD(cost.api_usd) }));
   else if (cost.method === 'credits') out.push(t('common.cost.noteCredits'));
   else if (cost.method === 'quota') out.push(t('common.cost.noteQuota'));

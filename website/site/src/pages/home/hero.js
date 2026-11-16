@@ -4,6 +4,7 @@ import { h, svg, t, tv, lang, fmtDate, fmtRank, fmtScore, fmtInt, modelName, mod
 import { createStarDial, exportButton, starD } from '../../charts/index.js';
 import { dur, durIn, stagger, reduced, calm } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
+import { repoLink } from '../../ui/repo.js';
 import { tn, minuteRange } from './util.js';
 
 /** The entrance plays (not under reduced motion or the calm variant). */
@@ -20,6 +21,7 @@ function fields(data) {
     h('li', tn('home.hero.tasks', { n: num(data.tasks.length) }, data.tasks.length)),
     h('li', tn('home.hero.categories', { n: num(data.categories.length) }, data.categories.length)),
     range ? h('li', tn('home.hero.minutes', { range: num(range) })) : null,
+    h('li', repoLink()),
   ];
   return h('ul.hero-fields.st-field', items);
 }

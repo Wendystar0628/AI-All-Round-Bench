@@ -497,3 +497,8 @@
     display: none;
   }
 }
+
+/* the repository link (ui/repo.js): GitHub mark and label in the meta lines of the home hero and the leaderboard head */
+.repo-link { display: inline-flex; align-items: center; gap: 0.35em; color: inherit; text-decoration: none; }
+.repo-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.repo-mark { width: 1.1em; height: 1.1em; flex: none; }

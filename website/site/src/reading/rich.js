@@ -1,9 +1,8 @@
 // Rich text for the reading pages: inline markup, formulas (TeX to MathML in
 // tex.js), and the block renderer (format: content.js).
-import { h, esc, links, fromHTML } from '../core/index.js';
+import { h, esc, links, fromHTML, REPO } from '../core/index.js';
 import { tex, texSymbol } from './tex.js';
 
-export const REPO = 'https://github.com/Wendystar0628/AI-High-Pressure-Challenge';
 const repoPath = (path) => String(path).split('/').map(encodeURIComponent).join('/');
 /** A file of the repository on GitHub (path as in tasks.json `statement`). */
 export const repoFile = (path) => `${REPO}/blob/main/${repoPath(path)}`;
