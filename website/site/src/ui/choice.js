@@ -2,10 +2,12 @@
 // 开销, 粒度. A framed button that reads "<group> <current value> ▾"; pressing it opens the choices in a menu right
 // under it, the current one marked (violet wash, violet bar), each with an optional line saying what it shows and
 // its key. A pick closes the menu; Esc and a click elsewhere close it too; ↑ ↓ move between the choices.
+// The button owns what it shows: a pick becomes its current value at once, then onPick tells the page; picking
+// the current value again does nothing.
 //
 //   const c = createChoice({ label: '图表', options: [{ value, text, note?, key?, group? }], value, onPick: (v) => … });
 //   el.append(c.el);
-//   c.set(value)          show another current value (after a key, the address, a column head)
+//   c.set(value)          the value changed elsewhere (a key, the address, a column head): show it
 //   c.setDisabled(on)     the board does not use this choice now (the compare view has no sort)
 //   c.setValueText(text)  a current value that is not one of the choices (the compare view under 图表)
 import { h } from '../core/dom.js';
@@ -38,7 +40,10 @@ export function createChoice({ label, options, value, onPick, className = '' }) 
     );
     item.addEventListener('click', () => {
       menu.hidePopover?.();
-      if (item.dataset.value !== current) onPick(item.dataset.value);
+      const v = item.dataset.value;
+      if (v === current) return;
+      set(v);
+      onPick(v);
     });
     items.set(String(o.value), item);
     menu.append(item);

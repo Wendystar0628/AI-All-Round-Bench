@@ -2263,10 +2263,10 @@
         }
       },
       "cost": {
-        "cny": null,
+        "cny": 54.1,
         "basis": "subscription",
         "tokens": 949458067,
-        "method": null,
+        "method": "api_price",
         "api_usd": 17.6,
         "api_cny": 118.5,
         "hours": 15.2,
@@ -2277,8 +2277,7 @@
           "name_en": "Qianfan Token Plan Standard",
           "price": 100,
           "currency": "CNY",
-          "period": "month",
-          "credits": 22000
+          "period": "month"
         }
       },
       "rank": 14,
@@ -2611,10 +2610,10 @@
         }
       },
       "cost": {
-        "cny": null,
+        "cny": 22.1,
         "basis": "subscription",
         "tokens": 232037170,
-        "method": null,
+        "method": "api_price",
         "api_usd": 282.3,
         "api_cny": 1895.1,
         "hours": 15.2,
@@ -2623,7 +2622,9 @@
         "plan": {
           "name": "X Premium",
           "name_en": "X Premium",
-          "price": null
+          "price": 212.53,
+          "currency": "CNY",
+          "period": "month"
         }
       },
       "rank": 16,
@@ -3468,7 +3469,7 @@
           ]
         },
         "tower-defense": {
-          "state": "testing"
+          "state": "failed"
         },
         "harbor": {
           "state": "testing"
@@ -3495,13 +3496,13 @@
       "cost": {
         "cny": null,
         "basis": "subscription",
-        "tokens": 115355439,
+        "tokens": 149318480,
         "method": null,
-        "api_usd": 44.0,
-        "api_cny": 295.1,
+        "api_usd": 54.4,
+        "api_cny": 365.5,
         "hours": 15.2,
-        "tps": 67.0,
-        "tps_replies": 181,
+        "tps": 67.4,
+        "tps_replies": 233,
         "plan": {
           "name": "GLM Coding Plan Lite",
           "name_en": "GLM Coding Plan Lite",

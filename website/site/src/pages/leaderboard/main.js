@@ -383,7 +383,6 @@ boot(async ({ data }) => {
     if (k === state.cols) return;
     state.cols = k;
     setParams({ cols: k === 'task' ? k : null });
-    colsChoice.set(k);
     if (state.view === 'matrix') {
       axis.render('matrix', { animate: true });
       rows.redrawAll('switch', { from: 'matrix' });

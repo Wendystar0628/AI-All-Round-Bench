@@ -114,14 +114,13 @@ export function createBoard(cat, { data, index, view = 'task', onView, focus }) 
   const list = noScores ? null : createModelList(ol, opts);
   if (list) panes.model.append(list.box);
 
-  // ---------- the view ----------
-  function setView(value, { silent = false } = {}) {
+  // ---------- the view (picked on the 图表 button, which already shows it) ----------
+  function setView(value) {
     if (state.view === value || !VIEWS.includes(value)) return;
     state.view = value;
     el.dataset.view = value;
-    seg.set(value);
     refresh({ animate: true });
-    if (!silent) onView?.(cat.key, value);
+    onView?.(cat.key, value);
   }
 
   // ---------- 按型号 rows ----------
@@ -264,6 +263,5 @@ export function createBoard(cat, { data, index, view = 'task', onView, focus }) 
       return state.view;
     },
     refresh,
-    setView,
   };
 }
