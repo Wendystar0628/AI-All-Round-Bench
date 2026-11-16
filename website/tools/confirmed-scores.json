@@ -61,11 +61,6 @@
       "tested": "2026-11-13"
     },
     {
-      "id": "kimi-k3-1-pro",
-      "key": "Kimi/K3.1Pro",
-      "tested": "2026-11-15"
-    },
-    {
       "id": "qwen4-max",
       "key": "Qwen/4Max",
       "tested": "2026-11-15"
@@ -74,6 +69,11 @@
       "id": "mimo-v2-6-pro",
       "key": "MiMo/V2.6Pro",
       "tested": "2026-11-12"
+    },
+    {
+      "id": "kimi-k3-1-pro",
+      "key": "Kimi/K3.1Pro",
+      "tested": "2026-11-15"
     }
   ],
   "scores": {
@@ -640,7 +640,7 @@
           "drawing": 9,
           "interact": 4,
           "game": 5,
-          "physics": 6,
+          "physics": 5,
           "visual": 4,
           "system": 2
         },
@@ -654,7 +654,7 @@
           "drawing": 9,
           "ae-editor": 4,
           "tower-defense": 5,
-          "jelly-tank": 6,
+          "jelly-tank": 5,
           "harbor": 4,
           "starship": 5,
           "nested-os": 2
@@ -1989,10 +1989,10 @@
         }
       },
       "kimi-k3-1-pro": {
-        "total": 38.2,
+        "total": 37.7,
         "kinds": {
           "standard": 17.4,
-          "design": 59.1
+          "design": 58.1
         },
         "categories": {
           "reason": 19.3,
@@ -2002,7 +2002,7 @@
           "drawing": 6.3,
           "interact": 43.4,
           "game": 68.4,
-          "physics": 61.7,
+          "physics": 56.8,
           "visual": 71.4,
           "system": 50.3
         },
@@ -2016,7 +2016,7 @@
           "drawing": 6.3,
           "ae-editor": 43.4,
           "tower-defense": 68.4,
-          "jelly-tank": 61.7,
+          "jelly-tank": 56.8,
           "harbor": 74.6,
           "starship": 68.2,
           "nested-os": 50.3
@@ -2076,11 +2076,11 @@
             "graders": [
               {
                 "name": "GPT 6.1 Sol",
-                "score": 67.5
+                "score": 62.5
               },
               {
                 "name": "Claude Opus 5.5",
-                "score": 55.9
+                "score": 51.1
               }
             ]
           },
@@ -2106,7 +2106,7 @@
           "drawing": 10,
           "interact": 11,
           "game": 7,
-          "physics": 5,
+          "physics": 6,
           "visual": 7,
           "system": 9
         },
@@ -2120,7 +2120,7 @@
           "drawing": 10,
           "ae-editor": 11,
           "tower-defense": 7,
-          "jelly-tank": 5,
+          "jelly-tank": 6,
           "harbor": 7,
           "starship": 7,
           "nested-os": 9
