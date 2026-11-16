@@ -120,5 +120,35 @@
     "q": "每道题谁高谁低",
     "label": "成绩矩阵：模型 × 13 道题",
     "hint": "点题号按这道题排序，再点恢复按总分"
+  },
+  "frontier": {
+    "eyebrow": "Score × cost",
+    "title": "成绩与开销",
+    "q": "花多少钱换多少分",
+    "yLabel": "纵轴",
+    "axisX": "测试开销（元，{basis}）",
+    "axisXShare": "测试开销（元，{basis}，按题目时长折算）",
+    "legend": {
+      "front": "帕累托前沿",
+      "vendor": "厂商自家的前沿",
+      "zone": "前沿下方",
+      "hint": "指向一个点看详情，点击打开模型"
+    },
+    "front": "帕累托前沿",
+    "frontQ": "没有别的模型能更便宜又更高分",
+    "label": "成绩与开销：{measure}，{n} 个模型，{front} 个在帕累托前沿上",
+    "onFront": "在帕累托前沿上",
+    "beaten": "被 {name} 超过",
+    "aria": "{name}，{measure} {score}，测试开销 {cost}，{status}",
+    "tipScore": "{measure} {score} │ 第 {rank} 名",
+    "tipCost": "测试开销 {cost}",
+    "tipShare": "整套 {full} × 时长占比 {share}",
+    "tipTokens": "Token {tokens}",
+    "tipFront": "帕累托前沿：没有别的模型开销更低且得分更高",
+    "tipBeaten": "被 {name} 超过：开销 {cost}、得分 {score}",
+    "shareNote": "{name}的开销按题目时长折算：整套开销 × {share}（这类题的限时占 13 题限时的比例）。",
+    "testing": "评测中的 {n} 个模型还没测完，没画。",
+    "noCost": "{n} 个模型没有开销数据，没画。",
+    "posterRead": "横轴测试开销、纵轴得分，都是线性坐标；紫色阶梯是帕累托前沿，阶梯右下方是被前沿超过的区域。"
   }
 }

@@ -120,5 +120,41 @@
     "q": "Who leads on each task",
     "label": "Score matrix: models × 13 tasks",
     "hint": "Click a task number to sort by it; click again for the total"
+  },
+  "frontier": {
+    "eyebrow": "Score × cost",
+    "title": "Score and cost",
+    "q": "How much score the money buys",
+    "yLabel": "Y axis",
+    "axisX": "Test cost (CNY, {basis})",
+    "axisXShare": "Test cost (CNY, {basis}, shared by time)",
+    "legend": {
+      "front": "Pareto frontier",
+      "vendor": "Each vendor's own frontier",
+      "zone": "Under the frontier",
+      "hint": "Point at a mark for details, click to open the model"
+    },
+    "front": "Pareto frontier",
+    "frontQ": "No other model is both cheaper and higher",
+    "label": "Score and cost: {measure}, {n} models, {front} on the Pareto frontier",
+    "onFront": "on the Pareto frontier",
+    "beaten": "beaten by {name}",
+    "aria": "{name}, {measure} {score}, test cost {cost}, {status}",
+    "tipScore": "{measure} {score} │ rank {rank}",
+    "tipCost": "Test cost {cost}",
+    "tipShare": "Whole run {full} × time share {share}",
+    "tipTokens": "Tokens {tokens}",
+    "tipFront": "Pareto frontier: no other model costs less and scores higher",
+    "tipBeaten": "Beaten by {name}: {cost}, score {score}",
+    "shareNote": "The cost for {name} is the whole run's cost shared by time: × {share} (its tasks' time limits over all 13 tasks').",
+    "testing": {
+      "one": "{n} model still being tested is not drawn.",
+      "other": "{n} models still being tested are not drawn."
+    },
+    "noCost": {
+      "one": "{n} model has no cost data and is not drawn.",
+      "other": "{n} models have no cost data and are not drawn."
+    },
+    "posterRead": "Test cost across, score up, both linear; the violet staircase is the Pareto frontier and the area below and right of it is beaten by the frontier."
   }
 }

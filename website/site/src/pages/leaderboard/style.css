@@ -1150,3 +1150,257 @@
     margin-left: 0;
   }
 }
+
+/* ---------- 成绩与开销 under the ranking (frontier.js) ---------- */
+.lb-fr {
+  --fr-zone: color-mix(in srgb, var(--v-300) 14%, transparent);
+  --fr-vline: color-mix(in srgb, var(--st-ink) 30%, transparent);
+  margin-top: 1.25rem;
+  padding: 1rem var(--lb-pad) 1rem;
+}
+.fr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.4rem;
+  margin: 0.6rem 0 0.25rem;
+  color: var(--st-ink-2);
+}
+.fr-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.fr-key-hint {
+  margin-left: auto;
+}
+.fr-key-front {
+  width: 1.5rem;
+  height: 0.7rem;
+  background:
+    radial-gradient(circle, var(--series-deep) 0 0.18rem, transparent 0.2rem) left center / 0.45rem 0.45rem no-repeat,
+    radial-gradient(circle, var(--series-deep) 0 0.18rem, transparent 0.2rem) right center / 0.45rem 0.45rem no-repeat,
+    linear-gradient(var(--series-deep), var(--series-deep)) center / 100% 2.5px no-repeat;
+}
+.fr-key-vendor {
+  width: 1.5rem;
+  border-top: 1.5px solid var(--fr-vline);
+}
+.fr-wash {
+  width: 1rem;
+  height: 0.75rem;
+  background: var(--fr-zone);
+  box-shadow: inset 0 2px 0 var(--series-deep);
+}
+.fr-box {
+  width: 100%;
+}
+.fr-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--st-font-ui);
+}
+.fr-grid line {
+  stroke: var(--st-rule);
+  stroke-width: 1;
+}
+.fr-base {
+  stroke: var(--st-ink);
+  stroke-width: 1;
+}
+.fr-axis text {
+  fill: var(--st-ink-2);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.fr-title {
+  fill: var(--st-ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+.fr-zone {
+  fill: var(--fr-zone);
+}
+.fr-front-line {
+  fill: none;
+  stroke: var(--series-deep);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.fr-vline {
+  fill: none;
+  stroke: var(--fr-vline);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  transition:
+    stroke 0.15s,
+    stroke-width 0.15s,
+    opacity 0.15s;
+}
+.fr-leaders line {
+  stroke: var(--st-ink-2);
+  stroke-width: 1;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+/* a mark: the vendor's logo on a disc; frontier marks ringed in violet */
+.fr-pt {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 0.15s;
+}
+.fr-halo {
+  fill: transparent;
+  transition: fill 0.15s;
+}
+.fr-disc {
+  fill: var(--st-panel);
+  stroke: color-mix(in srgb, var(--st-ink) 35%, transparent);
+  stroke-width: 1.25;
+}
+.fr-pt.is-front .fr-disc {
+  stroke: var(--series-deep);
+  stroke-width: 2.5;
+}
+.fr-logo {
+  color: var(--st-ink);
+  pointer-events: none;
+}
+.fr-pt.is-hot .fr-halo {
+  fill: color-mix(in srgb, var(--series-deep) 20%, transparent);
+}
+.fr-pt.is-hot .fr-disc {
+  stroke: var(--st-ink);
+  stroke-width: 2;
+}
+.fr-pt.is-front.is-hot .fr-disc {
+  stroke: var(--series-deep);
+  stroke-width: 3;
+}
+.fr-pt:focus-visible .fr-halo {
+  stroke: var(--st-flare);
+  stroke-width: 2;
+}
+.fr-label {
+  fill: var(--st-ink);
+  font-size: 12px;
+  font-weight: 500;
+  paint-order: stroke;
+  stroke: var(--st-panel);
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.fr-label.is-front {
+  fill: var(--text-violet);
+  font-weight: 700;
+}
+/* pointing: the point and its vendor stay, the rest steps back; the vendor's line comes forward */
+.fr-svg.has-hot .fr-pt:not(.is-hot, .is-kin),
+.fr-svg.has-hot .fr-label:not(.is-hot, .is-kin),
+.fr-svg.has-hot .fr-leaders line:not(.is-kin) {
+  opacity: 0.25;
+}
+.fr-svg.has-hot .fr-vline:not(.is-kin) {
+  opacity: 0.35;
+}
+.fr-vline.is-kin {
+  stroke: var(--st-ink);
+  stroke-width: 2;
+}
+.fr-label.is-hot {
+  font-weight: 700;
+}
+.fr-guide line {
+  stroke: var(--st-ink-2);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.fr-badges rect {
+  fill: var(--st-ink);
+}
+.fr-badges text {
+  fill: var(--st-panel);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fr-front {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--st-rule);
+}
+.fr-front-h {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+}
+.fr-front-h span {
+  color: var(--st-ink-2);
+  font-size: 0.85rem;
+}
+.fr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--st-rule);
+  background: var(--st-panel);
+  color: var(--st-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+.fr-chip:is(:hover, :focus-visible),
+.fr-chip.is-hot {
+  border-color: var(--series-deep);
+  background: var(--st-wash);
+}
+.fr-chip .icon {
+  width: 1rem;
+  height: 1rem;
+}
+.fr-chip-v {
+  display: inline-flex;
+  gap: 0.45rem;
+  color: var(--st-ink-2);
+}
+.fr-chip-v b {
+  color: var(--st-ink);
+}
+.fr-note {
+  margin: 0.6rem 0 0;
+  color: var(--st-ink-2);
+}
+@media (max-width: 599px) {
+  .lb-fr .lb-board-tools {
+    flex-wrap: wrap;
+    margin-left: 0;
+  }
+  .fr-key-hint {
+    display: none;
+  }
+  .fr-label {
+    font-size: 11px;
+  }
+}

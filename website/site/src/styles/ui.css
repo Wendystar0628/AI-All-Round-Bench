@@ -748,9 +748,12 @@
 .repo-mark { width: 1.1em; height: 1.1em; flex: none; }
 
 /* 榜单窗口 (ui/window.js): with more than 20 models the rows scroll inside the box, which shows the first 20;
-   the head row (or the matrix head) stays on top. A visible thin scrollbar says there is more below. */
+   the head row (or the matrix head) stays on top. A visible thin scrollbar says there is more below.
+   The rows never anchor the page's scroll: they move inside their own box when the list updates (a new cost basis,
+   a sort), and a page anchored on one of them would be pulled back up the screen with it. */
 .st-window {
   position: relative;
+  overflow-anchor: none;
 }
 .st-window.is-window {
   overflow-y: auto;

@@ -15,7 +15,7 @@ import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
 import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, progress, modelLabel, iconURL, DASH } from '../../core/index.js';
 import { createToolbar, createChoice, createModelList, scoreTable, getCompare, onCompareChange, onComparingChange, isShown, onFilterChange, filterCount, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, COST_MODES, getCostMode, setCostMode, repoLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
-import { exportButton, rankingArt } from '../../charts/index.js';
+import { exportButton, rankingArt, chartBody } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
 import { VIEWS, RESOURCES, DIRS, compute, officialWeights, isOfficial, parseWeights, formatWeights, sortKeys, isResourceSort, isPartSort, defaultDir, isTop } from './model.js';
@@ -24,6 +24,7 @@ import { createAxis } from './axis.js';
 import { createCompare } from './compare.js';
 import { createSandbox } from './sandbox.js';
 import { createMatrix } from '../../ui/matrix.js';
+import { createFrontier } from './frontier.js';
 
 boot(async ({ data }) => {
   const main = document.querySelector('main');
@@ -186,7 +187,24 @@ boot(async ({ data }) => {
     matrix.el,
   );
   matrix.refresh();
-  slot.replaceChildren(tb.el, board, mxBoard, foot, ...(costFoot ? [costFoot] : []));
+  // 成绩与开销 under the ranking: a measure on y (纵轴, the keys of 排序) against the test cost on x, with the Pareto
+  // frontier (frontier.js); its 开销 choice is the board's basis, picked from either place
+  const frontier = withCost ? createFrontier({ data, weights: () => (state.custom ? C.weights : undefined) }) : null;
+  const frCost = frontier && withApi ? choiceOf(t('leaderboard.costMode.label'), COST_MODES, getCostMode(), (k) => t(`leaderboard.costMode.${k}`), (k) => setCost(k)) : null;
+  const frBoard = frontier
+    ? h(
+        'section.st-panel.lb-fr',
+        { 'aria-labelledby': 'lb-fr-title' },
+        h(
+          'div.lb-board-head',
+          h('h2.lb-board-title#lb-fr-title', h('span.st-pair', h('span.st-eyebrow', t('leaderboard.frontier.eyebrow')), h('span', t('leaderboard.frontier.title'))), h('span.lb-q', t('leaderboard.frontier.q'))),
+          h('div.lb-board-tools', frontier.measure, frCost?.el ?? null, exportButton({ poster: () => frontierPoster(), filename: 'ai-decathlon-score-cost' })),
+        ),
+        frontier.el,
+      )
+    : null;
+  slot.replaceChildren(tb.el, board, ...(frBoard ? [frBoard] : []), mxBoard, foot, ...(costFoot ? [costFoot] : []));
+  frontier?.update();
 
   // ---------------- rows ----------------
   const list = createModelList(ol, {
@@ -327,6 +345,7 @@ boot(async ({ data }) => {
     list.update(entries(), { animate });
     setPanelOrder(C.order.filter(isShown));
     paintSrMatrix();
+    frontier?.update({ animate });
   }
 
   function paintSrMatrix() {
@@ -394,6 +413,8 @@ boot(async ({ data }) => {
   function setCost(k) {
     if (k === getCostMode()) return;
     setCostMode(k);
+    costChoice?.set(k);
+    frCost?.set(k);
     setParams({ cost: k === 'plan' ? null : k });
     C = compute(data, state);
     paintLegend();
@@ -532,6 +553,21 @@ boot(async ({ data }) => {
   }
 
   // ---------------- 存为图片 ----------------
+  // the poster of 成绩与开销: the chart as drawn (measure, basis and filter), the frontier models as the index
+  function frontierPoster() {
+    const fc = filterCount(data);
+    const front = frontier.front();
+    return {
+      kicker: 'SCORE × COST',
+      title: t('leaderboard.frontier.title'),
+      subtitle: [frontier.measureName(), t(`leaderboard.costMode.${getCostMode()}`), fc.on ? t('common.filter.some', fc) : t('common.filter.every', fc)].join(' │ '),
+      facts: challengeFacts(data),
+      body: chartBody(frontier.svg),
+      guide: [t('leaderboard.frontier.posterRead'), t('leaderboard.frontier.tipFront')],
+      index: front.map((p, i) => ({ no: String(i + 1).padStart(2, '0'), text: `${modelLabel(p.model)}  ${fmtScore(p.y)} │ ${fmtCNY(p.x)}` })),
+    };
+  }
+
   // the poster of the board: every model in the current order and scope, the total as the bar, the sorted part
   // (a category or a task kind) as its own column, the test cost (with its basis mark), tokens and TPS
   function boardPoster() {
@@ -581,6 +617,7 @@ boot(async ({ data }) => {
   // ---------------- events ----------------
   onFilterChange(() => {
     if (state.view !== 'compare') refresh();
+    else frontier?.update({ animate: true });
   });
   // the tray's 查看对比 enters the compare view, its 返回榜单 goes back to the rows; leaving the compare mode leaves it too
   tb.on('compare', () => switchView(state.view === 'compare' ? state.lastRowView : 'compare'));

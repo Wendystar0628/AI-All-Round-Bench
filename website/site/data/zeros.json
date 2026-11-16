@@ -21,6 +21,11 @@
         "zh": "八份文件都能编译，但证明部分全是 sorry（暂不证明的占位符）；核查发现所有结论都依赖这些空缺，八道题没有一题得到实际证明。",
         "en": "All eight files compiled, but each proof consisted solely of sorry, a placeholder that admits a claim without proving it. Every conclusion depended on that placeholder, leaving none of the eight problems actually proved."
       },
+      "step-5-preview": {
+        "kind": "crash",
+        "zh": "只交了第 1 题的证明，却把等式方向写反，还引用了数学库中不存在的名称；编译报出 85 处错误，无法核验为有效证明，其余七题也未提交。",
+        "en": "Submitted only a proof for problem 1, reversing equalities and referencing names absent from the mathematics library. Compilation reported 85 errors, leaving no verifiable valid proof; the other seven problems were not submitted."
+      },
       "dots3-note-preview": {
         "kind": "none",
         "zh": "只交第 1 题的证明框架，留有 12 处未证明的占位符，还写错积分工具名称、调用不存在的求导方法；编译未能建立主定理，其余七题也没有提交。",
@@ -30,6 +35,11 @@
         "kind": "none",
         "zh": "只留下查询有限集合计数用法的草稿，没有八题中的任何正式定理；结束前仍在反复推敲第 1 题，思路始终没写成可检查的证明。",
         "en": "Left only a scratch file querying finite-set counting functions, with none of the eight required theorems. At the end it was still reworking problem 1, without turning its ideas into a verifiable proof."
+      },
+      "doubao-seed-2-1-pro": {
+        "kind": "none",
+        "zh": "只交了第 1 题的部分证明，结尾仍用 sorry（暂不证明的占位符）留空，前面的证明也有多处编译错误；其余七题缺交，没有一份完整有效的证明。",
+        "en": "Submitted only a partial proof for problem 1, ending with sorry, a placeholder that leaves the claim unproved. Earlier proof steps also failed to compile; the other seven problems were missing, leaving no complete, valid proof."
       }
     },
     "math-olympiad": {
@@ -75,15 +85,15 @@
         "zh": "提交了完整的 GPU 渲染实现，每个像素的采样仍由单个线程依次计算；画面检查全部通过，但渲染需 3177 毫秒，原程序仅 514 毫秒，耗时为其 6.18 倍，未达计分门槛。",
         "en": "Submitted a complete GPU renderer, with each thread computing one pixel's samples sequentially. All image checks passed, but rendering took 3,177 ms versus the original's 514 ms, or 6.18 times as long, below the performance threshold for points."
       },
-      "minimax-m3-1-flash": {
-        "kind": "crash",
-        "zh": "提交了 GPU 渲染源码，把节点数据改成“中心加半长”，遍历和数据打包却仍访问旧字段，相关函数参数也未同步；编译报 33 处错误，未能生成可运行程序。",
-        "en": "Submitted GPU rendering source with node bounds changed to centers and half-extents, but traversal and packing still referenced old fields, and function arguments were inconsistent. Compilation reported 33 errors, leaving no runnable program."
-      },
       "step-5-preview": {
         "kind": "wrong",
         "zh": "提交的并行建树程序把根节点和首个子节点都编号为 0，子节点覆盖根节点，导致大量物体漏渲染；虽快约 2.83 倍，5 次画面检查仍全失败，每次约 97 万个像素与标准画面不符。",
         "en": "The parallel scene-tree builder assigned index 0 to both the root and its first child, overwriting the root and omitting much of the scene. Despite a 2.83× speedup, all five image checks failed, with about 970,000 pixels outside tolerance each time."
+      },
+      "minimax-m3-1-flash": {
+        "kind": "crash",
+        "zh": "提交了 GPU 渲染源码，把节点数据改成“中心加半长”，遍历和数据打包却仍访问旧字段，相关函数参数也未同步；编译报 33 处错误，未能生成可运行程序。",
+        "en": "Submitted GPU rendering source with node bounds changed to centers and half-extents, but traversal and packing still referenced old fields, and function arguments were inconsistent. Compilation reported 33 errors, leaving no runnable program."
       },
       "doubao-seed-2-1-pro": {
         "kind": "crash",
@@ -102,15 +112,15 @@
         "zh": "提交了批量并行仿真程序，却先更新存储电路状态的触发器，再读取输出，读成了下一时刻的值；9 项性能输出虽通过，7 项正确性检查全错，无法获得分数。",
         "en": "Submitted a batch-parallel simulator, but updated the state-holding flip-flops before reading outputs, using the next state instead of the current one. All nine performance outputs passed, but all seven correctness checks failed, eliminating any points."
       },
-      "dots3-note-preview": {
-        "kind": "crash",
-        "zh": "提交的批量仿真程序能编译，但处理不足一批的数据时，移动二进制位的次数可能算成负数；实测出现非法内存访问和堆损坏，7 项正确性、9 项性能测试全部崩溃。",
-        "en": "The batch simulator compiled, but its partial-batch handling could calculate a negative bit-shift count. Runs reported illegal memory accesses and heap corruption; all seven correctness and nine performance inputs crashed."
-      },
       "step-5-preview": {
         "kind": "crash",
         "zh": "提交了运行时生成机器指令的仿真程序，但生成的代码在样例预热阶段就触发非法指令；7 项正确性和 9 项性能测试全部崩溃，尚未开始正式计时，没有有效成绩。",
         "en": "Submitted a simulator that generates machine instructions at runtime, but its generated code triggered an illegal instruction during sample warm-up. All seven correctness and nine performance inputs crashed before timed simulation, producing no valid result."
+      },
+      "dots3-note-preview": {
+        "kind": "crash",
+        "zh": "提交的批量仿真程序能编译，但处理不足一批的数据时，移动二进制位的次数可能算成负数；实测出现非法内存访问和堆损坏，7 项正确性、9 项性能测试全部崩溃。",
+        "en": "The batch simulator compiled, but its partial-batch handling could calculate a negative bit-shift count. Runs reported illegal memory accesses and heap corruption; all seven correctness and nine performance inputs crashed."
       },
       "doubao-seed-2-1-pro": {
         "kind": "wrong",
@@ -119,6 +129,11 @@
       }
     },
     "conquest": {
+      "step-5-preview": {
+        "kind": "slow",
+        "zh": "提交了可正常对局的策略程序，实现了留兵防守和扩张进攻；但 480 局仅 6 胜 474 负，胜率只有 1.25%，对战实力未达计分门槛。",
+        "en": "Submitted a working strategy program with defensive reserves and expansion attacks, but won only 6 of 480 games and lost 474. Its 1.25% win rate left its playing strength below the threshold for points."
+      },
       "dots3-note-preview": {
         "kind": "none",
         "zh": "反复读题、查看示例并构思策略，首段会话接口报错后，续跑仍停在读题和整理摘要；最终未写出 bot.cpp，编译报源文件缺失，没有程序可以参加对局。",
@@ -146,10 +161,20 @@
         "zh": "只留下第 1 题的试答文件，第 4 条指令把 A 零件向外移出时发生碰撞，此前没有完成任何分离；其余七题未交，八题均无可计分的拆解进展。",
         "en": "Left only a trial answer for the first puzzle. Its fourth instruction collided while removing piece A, before any valid separation; the other seven puzzles were unanswered, leaving no disassembly progress eligible for credit."
       },
+      "step-5-preview": {
+        "kind": "wrong",
+        "zh": "只留下第 1 题的七份试探路线，检查全部在首次分离前碰撞，最后一份在第五条指令移出 A 零件时仍撞件；其余七题未交，没有可计分的拆解进展。",
+        "en": "Left seven trial routes for puzzle 1; all collided before the first separation. The final route still collided while removing piece A on its fifth instruction; the other seven puzzles were unanswered, leaving no disassembly progress eligible for credit."
+      },
       "dots3-note-preview": {
         "kind": "none",
         "zh": "反复读取第 1 题零件数据、整理摘要并处理命令和编码问题，86 次工具调用后仍未创建答案目录，也没有检查拆解路线；八题全部缺交。",
         "en": "Repeatedly reread the first puzzle's piece data, wrote summaries, and dealt with command and encoding issues. After 86 tool calls, no answer directory or route checks existed; all eight puzzles remained unanswered."
+      },
+      "minimax-m3-1-flash": {
+        "kind": "wrong",
+        "zh": "只留下第 1 题一份三步试答，第三条指令移出 A 零件时发生碰撞，尚未完成任何分离；其余七题未交，八题均无可计分的拆解进展。",
+        "en": "Left only one three-move trial route for puzzle 1. Its third instruction collided while removing piece A, before any separation; the other seven puzzles were unanswered, leaving no disassembly progress eligible for credit."
       }
     },
     "drawing": {
