@@ -218,10 +218,6 @@
   background: var(--st-panel);
   color: var(--st-ink);
 }
-/* weights and download: the right end of the view row, also when it wraps */
-.page-leaderboard .tb-top > .tb-end {
-  margin-left: auto;
-}
 @media (max-width: 1200px) {
   .lb-views label {
     padding: 0 0.7rem;
@@ -1164,7 +1160,7 @@
     flex: 1;
     width: 100%;
   }
-  .page-leaderboard .tb-top > .tb-end {
+  .page-leaderboard .tb-end {
     margin-left: 0;
   }
   .lb-board-head {

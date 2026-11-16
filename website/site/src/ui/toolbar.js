@@ -1,15 +1,17 @@
 // The toolbar above the boards (leaderboard.md「共用部件 / 工具条」), sticky under the command bar.
-// Left: the two modes, 筛选 and 对比, one open at a time, and — while a filter is on — what it shows with a
-// button to clear it. Right (slots.end): the page's tools, 下载数据 last. Under them the open mode's panel: the
-// filter panel (ui/filter.js) or the compare tray (the ticked models, 清空, 查看对比, 完成). By default no row
-// carries a tick box; the compare ticks appear only while 对比 is on (ui/compare.js).
+// One row: the two modes, 筛选 and 对比, one open at a time, and — while a filter is on — what it shows with a
+// button to clear it; then the page's own controls (slots.start: the leaderboard's views and sort); at the right
+// end the page's tools (slots.end), 下载数据 last. Under the row the open mode's panel: the filter panel
+// (ui/filter.js) or the compare tray (the ticked models, 清空, 查看对比, 完成). By default no row carries a tick
+// box; the compare ticks appear only while 对比 is on (ui/compare.js).
 //
 //   const tb = createToolbar({ data, download: { csv: () => scoreTable(...), json: true } });
 //   container.append(tb.el);
 //   tb.on('compare', () => …)          查看对比 / 返回榜单 pressed; without a listener: /leaderboard/?view=compare&cmp=…
 //   tb.toggleFilter(), tb.toggleCompare()   the F and C keys
 //   tb.setCompareView(on)              the leaderboard's compare view is showing: the tray's button reads 返回榜单
-//   tb.slots.top / tb.slots.end        rows and tools of the page (the leaderboard's views, sort, weights)
+//   tb.slots.start / tb.slots.end      the page's controls after the modes, and its tools at the right end
+//                                      (the leaderboard: views and sort; weights before 下载数据)
 //   tb.slots.bottom                    a row under the toolbar that sticks with it (题目类别榜的跳转条)
 //   createToolbar({ wrap: true })      let the rows wrap onto more lines
 import { h } from '../core/dom.js';
@@ -38,7 +40,7 @@ function glyph(k) {
  *   data        loadData() result (required)
  *   download    null | { csv: () => ({ columns, rows, preface }), json: true | () => object }
  *   wrap        false (default): every row stays on one line; true: rows may wrap
- * Returns { el, slots: { top, end, bottom }, on(type, fn), toggleFilter(), toggleCompare(), setCompareView(on) }
+ * Returns { el, slots: { start, end, bottom }, on(type, fn), toggleFilter(), toggleCompare(), openCompare(), setCompareView(on) }
  * Events: 'compare' (查看对比 or 返回榜单 pressed)
  */
 export function createToolbar({ data, download = null, wrap = false } = {}) {
@@ -48,7 +50,7 @@ export function createToolbar({ data, download = null, wrap = false } = {}) {
   let filterOpen = false;
   let compareView = false;
 
-  const top = h('div.tb-top');
+  const start = h('div.tb-start');
   const end = h('div.tb-end');
   const bottom = h('div.tb-bottom');
   const panelId = `tb-panel-${Math.random().toString(36).slice(2, 8)}`;
@@ -86,10 +88,10 @@ export function createToolbar({ data, download = null, wrap = false } = {}) {
   );
   const panel = h('div.tb-panel', { id: panelId, hidden: true });
 
-  const left = h('div.tb-left', filterBtn, compareBtn, status);
-  const el = h('div.site-toolbar', { role: 'toolbar', 'aria-label': t('common.toolbar.label'), class: wrap ? 'is-wrap' : null }, top, h('div.tb-main', left, end), panel, bottom);
-  // the top and bottom slots show only when something is put in them
-  for (const slot of [top, bottom]) {
+  const modes = h('div.tb-modes', filterBtn, compareBtn, status);
+  const el = h('div.site-toolbar', { role: 'toolbar', 'aria-label': t('common.toolbar.label'), class: wrap ? 'is-wrap' : null }, h('div.tb-main', modes, start, end), panel, bottom);
+  // the start and bottom slots show only when something is put in them
+  for (const slot of [start, bottom]) {
     slot.hidden = true;
     new MutationObserver(() => (slot.hidden = !slot.childElementCount)).observe(slot, { childList: true });
   }
@@ -178,7 +180,7 @@ export function createToolbar({ data, download = null, wrap = false } = {}) {
 
   return {
     el,
-    slots: { top, end, bottom },
+    slots: { start, end, bottom },
     on(type, fn) {
       if (type === 'compare') listening = true;
       const w = (e) => fn(e.detail);

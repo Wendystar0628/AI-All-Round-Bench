@@ -113,7 +113,7 @@ boot(async ({ data }) => {
   const dirArrow = h('i.lb-arrow', { 'aria-hidden': 'true' });
   const dirBtn = h('button.st-btn.small.lb-dir', { type: 'button', onclick: () => setSort(state.sort, state.dir === 'asc' ? 'desc' : 'asc') }, dirArrow, dirLab);
   const sortBox = h('div.lb-sort', h('label.lb-sort-pick', h('span.lb-sort-lab', t('leaderboard.sort.label')), h('span.lb-sort-box', sortSel)), dirBtn);
-  tb.slots.top.append(seg, sortBox);
+  tb.slots.start.append(seg, sortBox);
 
   const wBtn = h(
     'button.st-btn.small.lb-wbtn',
@@ -121,9 +121,8 @@ boot(async ({ data }) => {
     t('leaderboard.sandbox.button'),
   );
   wBtn.addEventListener('click', () => toggleSandbox());
+  // weights and download sit at the right end of the toolbar's one row
   tb.slots.end.prepend(wBtn);
-  // weights and download sit at the right end of the view row, so the toolbar stays two rows high
-  tb.slots.top.append(tb.slots.end);
 
   // ---------------- the board ----------------
   const eyebrow = h('span.st-eyebrow');

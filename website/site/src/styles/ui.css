@@ -314,25 +314,32 @@
   background: var(--st-paper);
   border-bottom: 1px solid var(--st-rule);
 }
-.tb-top,
+/* one row: the modes, the page's controls (slots.start), the page's tools at the right end (slots.end) */
 .tb-main {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem 1rem;
 }
-.tb-left {
+.tb-modes,
+.tb-start {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem 1rem;
-  flex: 1 1 auto;
+  gap: 0.6rem 0.5rem;
   min-width: 0;
+}
+.tb-start {
+  gap: 0.6rem 1rem;
+}
+.tb-start[hidden] {
+  display: none;
 }
 .tb-end {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-left: auto;
 }
 .tb-end:empty {
   display: none;
@@ -347,7 +354,7 @@
   border-top: 1px solid var(--st-rule);
 }
 /* one line per row unless the page asks for wrapping */
-.site-toolbar:not(.is-wrap) :is(.tb-top, .tb-main, .tb-left) {
+.site-toolbar:not(.is-wrap) :is(.tb-main, .tb-modes, .tb-start) {
   flex-wrap: nowrap;
 }
 .site-toolbar:not(.is-wrap) .tb-end {
@@ -609,7 +616,7 @@
 
 /* ---------- narrow windows: the toolbar wraps inside the window; at phone width it scrolls away with the page ---------- */
 @media (max-width: 1023px) {
-  .site-toolbar:is(.is-wrap, :not(.is-wrap)) :is(.tb-top, .tb-main, .tb-left) {
+  .site-toolbar:is(.is-wrap, :not(.is-wrap)) :is(.tb-main, .tb-modes, .tb-start) {
     flex-wrap: wrap;
   }
 }

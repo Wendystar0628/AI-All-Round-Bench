@@ -300,7 +300,7 @@ const tb = createToolbar({
   download: { csv: () => scoreTable(data, entries, { weights }), json: true },  // json 也可以是 () => 对象
 });
 el.append(tb.el);                 // 吸顶在命令栏下（top: var(--shell-h)）
-tb.slots.top.append(viewSeg);     // 总榜的视图分段、排序放这里（有内容才显示）；tb.slots.end 在下载按钮旁
+tb.slots.start.append(viewSeg);   // 同一行、两个模式按钮之后：总榜的视图分段、排序（有内容才显示）；tb.slots.end 在行右端、下载按钮前
 tb.slots.bottom.append(jumpBar);  // 工具条下面一行，和工具条一起吸顶（题目类别榜的跳转条）
 createToolbar({ …, wrap: true }); // 允许各行换行
 tb.on('compare', () => toggleCompareView());   // 对比栏「查看对比 / 返回榜单」；不监听时去 /leaderboard/?view=compare&cmp=…
@@ -308,7 +308,7 @@ tb.toggleFilter(); tb.toggleCompare();          // F、C 键
 tb.openCompare(); tb.setCompareView(on);        // 总榜打开时就在对比视图；对比视图显示时按钮改成「返回榜单」
 ```
 
-左端两个模式按钮「筛选」「对比」，一次只开一个，打开的模式在工具条下面展开面板（筛选面板或对比栏）；有筛选时旁边写「只看 12 / 23 个模型　清除筛选」。筛选只改看哪些模型，页面用 `onFilterChange` 重画。
+工具条只有一行：左端两个模式按钮「筛选」「对比」，一次只开一个，打开的模式在这一行下面展开面板（筛选面板或对比栏）；有筛选时旁边写「只看 12 / 23 个模型　清除筛选」。筛选只改看哪些模型，页面用 `onFilterChange` 重画。
 
 ### 筛选 `ui/filter.js`
 
