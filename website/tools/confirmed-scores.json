@@ -74,6 +74,26 @@
       "id": "kimi-k3-1-pro",
       "key": "Kimi/K3.1Pro",
       "tested": "2026-11-15"
+    },
+    {
+      "id": "ernie-5-5-flash",
+      "key": "ERNIE/5.5Flash",
+      "tested": "2026-11-16"
+    },
+    {
+      "id": "grok-4-7",
+      "key": "xAI/Grok4.7",
+      "tested": "2026-11-16"
+    },
+    {
+      "id": "longcat-2-5",
+      "key": "Meituan/LongCat2.5",
+      "tested": "2026-11-16"
+    },
+    {
+      "id": "dots3-note-preview",
+      "key": "Dots/Dots3NotePreview",
+      "tested": "2026-11-16"
     }
   ],
   "scores": {
@@ -92,8 +112,12 @@
       "deepseek-v4-1-flash",
       "qwen4-max",
       "hy4",
+      "ernie-5-5-flash",
       "gpt-6-luna",
-      "mimo-v2-6-pro"
+      "grok-4-7",
+      "mimo-v2-6-pro",
+      "longcat-2-5",
+      "dots3-note-preview"
     ],
     "scores": {
       "gpt-6-astra": {
@@ -920,7 +944,7 @@
           "algo": 6,
           "battle": 4,
           "spatial": 4,
-          "drawing": 14,
+          "drawing": 16,
           "interact": 3,
           "game": 6,
           "physics": 2,
@@ -934,7 +958,7 @@
           "circuit": 5,
           "conquest": 4,
           "luban": 4,
-          "drawing": 14,
+          "drawing": 16,
           "ae-editor": 3,
           "tower-defense": 6,
           "jelly-tank": 2,
@@ -1195,7 +1219,7 @@
           "reason": 9,
           "algo": 10,
           "battle": 7,
-          "spatial": 14,
+          "spatial": 15,
           "drawing": 6,
           "interact": 6,
           "game": 9,
@@ -1206,16 +1230,16 @@
         "task_ranks": {
           "formal-proof": 8,
           "math-olympiad": 9,
-          "raytracing": 13,
+          "raytracing": 14,
           "circuit": 10,
           "conquest": 7,
-          "luban": 14,
+          "luban": 15,
           "drawing": 6,
           "ae-editor": 6,
           "tower-defense": 9,
           "jelly-tank": 8,
           "harbor": 11,
-          "starship": 12,
+          "starship": 13,
           "nested-os": 7
         }
       },
@@ -1332,29 +1356,29 @@
         "category_ranks": {
           "reason": 8,
           "algo": 8,
-          "battle": 15,
+          "battle": 18,
           "spatial": 7,
           "drawing": 7,
-          "interact": 13,
-          "game": 13,
+          "interact": 14,
+          "game": 15,
           "physics": 10,
-          "visual": 13,
-          "system": 12
+          "visual": 15,
+          "system": 13
         },
         "task_ranks": {
           "formal-proof": 8,
           "math-olympiad": 4,
           "raytracing": 8,
           "circuit": 9,
-          "conquest": 15,
+          "conquest": 18,
           "luban": 7,
           "drawing": 7,
-          "ae-editor": 13,
-          "tower-defense": 13,
+          "ae-editor": 14,
+          "tower-defense": 15,
           "jelly-tank": 10,
-          "harbor": 13,
-          "starship": 14,
-          "nested-os": 12
+          "harbor": 14,
+          "starship": 16,
+          "nested-os": 13
         }
       },
       "deepseek-v4-1-flash": {
@@ -1490,9 +1514,9 @@
         "rank": 11,
         "category_ranks": {
           "reason": 13,
-          "algo": 15,
-          "battle": 11,
-          "spatial": 10,
+          "algo": 19,
+          "battle": 14,
+          "spatial": 11,
           "drawing": 8,
           "interact": 8,
           "game": 10,
@@ -1502,11 +1526,11 @@
         },
         "task_ranks": {
           "formal-proof": 10,
-          "math-olympiad": 13,
-          "raytracing": 15,
-          "circuit": 15,
-          "conquest": 11,
-          "luban": 10,
+          "math-olympiad": 14,
+          "raytracing": 18,
+          "circuit": 17,
+          "conquest": 14,
+          "luban": 11,
           "drawing": 8,
           "ae-editor": 8,
           "tower-defense": 10,
@@ -1646,30 +1670,30 @@
         },
         "rank": 13,
         "category_ranks": {
-          "reason": 14,
-          "algo": 11,
-          "battle": 13,
-          "spatial": 14,
+          "reason": 16,
+          "algo": 12,
+          "battle": 16,
+          "spatial": 15,
           "drawing": 13,
-          "interact": 12,
+          "interact": 13,
           "game": 11,
           "physics": 12,
           "visual": 11,
           "system": 10
         },
         "task_ranks": {
-          "formal-proof": 14,
-          "math-olympiad": 14,
-          "raytracing": 10,
-          "circuit": 11,
-          "conquest": 13,
-          "luban": 14,
+          "formal-proof": 15,
+          "math-olympiad": 15,
+          "raytracing": 11,
+          "circuit": 12,
+          "conquest": 16,
+          "luban": 15,
           "drawing": 13,
-          "ae-editor": 12,
+          "ae-editor": 13,
           "tower-defense": 11,
           "jelly-tank": 12,
           "harbor": 10,
-          "starship": 11,
+          "starship": 12,
           "nested-os": 10
         }
       },
@@ -1789,33 +1813,33 @@
             ]
           }
         },
-        "rank": 14,
+        "rank": 15,
         "category_ranks": {
           "reason": 11,
-          "algo": 12,
-          "battle": 12,
-          "spatial": 10,
+          "algo": 13,
+          "battle": 15,
+          "spatial": 11,
           "drawing": 11,
-          "interact": 14,
-          "game": 15,
+          "interact": 15,
+          "game": 17,
           "physics": 13,
-          "visual": 15,
-          "system": 13
+          "visual": 18,
+          "system": 15
         },
         "task_ranks": {
           "formal-proof": 10,
           "math-olympiad": 11,
-          "raytracing": 11,
-          "circuit": 12,
-          "conquest": 12,
-          "luban": 10,
+          "raytracing": 12,
+          "circuit": 14,
+          "conquest": 15,
+          "luban": 11,
           "drawing": 11,
-          "ae-editor": 14,
-          "tower-defense": 15,
+          "ae-editor": 15,
+          "tower-defense": 17,
           "jelly-tank": 13,
-          "harbor": 15,
-          "starship": 15,
-          "nested-os": 13
+          "harbor": 17,
+          "starship": 18,
+          "nested-os": 15
         }
       },
       "mimo-v2-6-pro": {
@@ -1959,33 +1983,33 @@
             ]
           }
         },
-        "rank": 15,
+        "rank": 17,
         "category_ranks": {
-          "reason": 14,
-          "algo": 14,
-          "battle": 10,
-          "spatial": 10,
-          "drawing": 15,
-          "interact": 15,
-          "game": 14,
+          "reason": 16,
+          "algo": 15,
+          "battle": 12,
+          "spatial": 11,
+          "drawing": 17,
+          "interact": 16,
+          "game": 16,
           "physics": 15,
-          "visual": 14,
-          "system": 15
+          "visual": 16,
+          "system": 18
         },
         "task_ranks": {
-          "formal-proof": 14,
-          "math-olympiad": 14,
-          "raytracing": 14,
-          "circuit": 13,
-          "conquest": 10,
-          "luban": 10,
-          "drawing": 15,
-          "ae-editor": 15,
-          "tower-defense": 14,
+          "formal-proof": 15,
+          "math-olympiad": 15,
+          "raytracing": 15,
+          "circuit": 15,
+          "conquest": 12,
+          "luban": 11,
+          "drawing": 17,
+          "ae-editor": 16,
+          "tower-defense": 16,
           "jelly-tank": 15,
-          "harbor": 14,
-          "starship": 13,
-          "nested-os": 15
+          "harbor": 16,
+          "starship": 14,
+          "nested-os": 18
         }
       },
       "kimi-k3-1-pro": {
@@ -2102,7 +2126,7 @@
           "reason": 10,
           "algo": 9,
           "battle": 6,
-          "spatial": 13,
+          "spatial": 14,
           "drawing": 10,
           "interact": 11,
           "game": 7,
@@ -2113,10 +2137,10 @@
         "task_ranks": {
           "formal-proof": 10,
           "math-olympiad": 10,
-          "raytracing": 9,
+          "raytracing": 10,
           "circuit": 7,
           "conquest": 6,
-          "luban": 13,
+          "luban": 14,
           "drawing": 10,
           "ae-editor": 11,
           "tower-defense": 7,
@@ -2255,30 +2279,757 @@
         "rank": 12,
         "category_ranks": {
           "reason": 12,
-          "algo": 13,
-          "battle": 14,
-          "spatial": 9,
+          "algo": 14,
+          "battle": 17,
+          "spatial": 10,
           "drawing": 12,
           "interact": 9,
-          "game": 12,
+          "game": 14,
           "physics": 14,
           "visual": 10,
+          "system": 16
+        },
+        "task_ranks": {
+          "formal-proof": 10,
+          "math-olympiad": 13,
+          "raytracing": 13,
+          "circuit": 16,
+          "conquest": 17,
+          "luban": 10,
+          "drawing": 12,
+          "ae-editor": 9,
+          "tower-defense": 14,
+          "jelly-tank": 14,
+          "harbor": 12,
+          "starship": 10,
+          "nested-os": 16
+        }
+      },
+      "ernie-5-5-flash": {
+        "total": 23.0,
+        "kinds": {
+          "standard": 8.6,
+          "design": 37.4
+        },
+        "categories": {
+          "reason": 8.6,
+          "algo": 25.2,
+          "battle": 9.2,
+          "spatial": 0.0,
+          "drawing": 0.0,
+          "interact": 29.0,
+          "game": 57.0,
+          "physics": 1.5,
+          "visual": 56.0,
+          "system": 43.8
+        },
+        "tasks": {
+          "formal-proof": 0.0,
+          "math-olympiad": 17.3,
+          "raytracing": 39.8,
+          "circuit": 10.7,
+          "conquest": 9.2,
+          "luban": 0.0,
+          "drawing": 0.0,
+          "ae-editor": 29.0,
+          "tower-defense": 57.0,
+          "jelly-tank": 1.5,
+          "harbor": 64.5,
+          "starship": 47.6,
+          "nested-os": 43.8
+        },
+        "status": "ranked",
+        "done": 13,
+        "task_info": {
+          "formal-proof": {
+            "anomaly": [
+              {
+                "text": "仅交第1题且以sorry收尾并编译失败，其余七题未交。"
+              }
+            ]
+          },
+          "ae-editor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 31.2
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 26.7
+              }
+            ]
+          },
+          "tower-defense": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 62.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 51.9
+              }
+            ]
+          },
+          "harbor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 68.7
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 60.3
+              }
+            ]
+          },
+          "starship": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 54.5
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 40.6
+              }
+            ]
+          },
+          "jelly-tank": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 3.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 0.0
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "仅留底层模块和测试页，缺失入口与果冻场景，水体着色器亦未通过编译。"
+              }
+            ]
+          },
+          "nested-os": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 45.5
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 42.0
+              }
+            ]
+          },
+          "luban": {
+            "anomaly": [
+              {
+                "text": "反复调用检查器试验路线，最终八题均未完成一次合法分离。"
+              }
+            ]
+          },
+          "drawing": {
+            "anomaly": [
+              {
+                "text": "自编脚本直接调用几何内核重建实体，逐步计算体积和包围盒，违反工具限制。"
+              }
+            ]
+          }
+        },
+        "rank": 14,
+        "category_ranks": {
+          "reason": 14,
+          "algo": 11,
+          "battle": 13,
+          "spatial": 15,
+          "drawing": 17,
+          "interact": 12,
+          "game": 12,
+          "physics": 18,
+          "visual": 14,
+          "system": 12
+        },
+        "task_ranks": {
+          "formal-proof": 15,
+          "math-olympiad": 12,
+          "raytracing": 9,
+          "circuit": 13,
+          "conquest": 13,
+          "luban": 15,
+          "drawing": 17,
+          "ae-editor": 12,
+          "tower-defense": 12,
+          "jelly-tank": 18,
+          "harbor": 13,
+          "starship": 15,
+          "nested-os": 12
+        }
+      },
+      "grok-4-7": {
+        "total": 21.7,
+        "kinds": {
+          "standard": 8.7,
+          "design": 34.8
+        },
+        "categories": {
+          "reason": 6.2,
+          "algo": 6.3,
+          "battle": 10.4,
+          "spatial": 18.6,
+          "drawing": 2.0,
+          "interact": 15.3,
+          "game": 57.0,
+          "physics": 11.4,
+          "visual": 57.7,
+          "system": 32.4
+        },
+        "tasks": {
+          "formal-proof": 12.5,
+          "math-olympiad": 0.0,
+          "raytracing": 0.0,
+          "circuit": 12.7,
+          "conquest": 10.4,
+          "luban": 18.6,
+          "drawing": 2.0,
+          "ae-editor": 15.3,
+          "tower-defense": 57.0,
+          "jelly-tank": 11.4,
+          "harbor": 60.9,
+          "starship": 54.5,
+          "nested-os": 32.4
+        },
+        "status": "ranked",
+        "done": 13,
+        "task_info": {
+          "math-olympiad": {
+            "anomaly": [
+              {
+                "text": "创建答案目录后仍只推理，最终没有写出任何答案文件。"
+              }
+            ]
+          },
+          "ae-editor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 16.8
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 13.9
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "只落盘基础模块，未交付入口、渲染器和默认示例。"
+              }
+            ]
+          },
+          "tower-defense": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 62.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 51.9
+              }
+            ]
+          },
+          "harbor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 65.1
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 56.8
+              }
+            ]
+          },
+          "starship": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 61.5
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 47.6
+              }
+            ]
+          },
+          "raytracing": {
+            "anomaly": [
+              {
+                "text": "最终逐像素串行采样实现比基线慢约6.18倍，未取得加速。"
+              }
+            ]
+          },
+          "jelly-tank": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 16.5
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 6.3
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "只交付七个底层脚本，缺少入口与场景，主要着色器无法编译。"
+              }
+            ]
+          },
+          "nested-os": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 33.2
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 31.5
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "仅交付内核与应用模块，缺少桌面主入口和渲染器，作品无法启动。"
+              }
+            ]
+          }
+        },
+        "rank": 16,
+        "category_ranks": {
+          "reason": 15,
+          "algo": 17,
+          "battle": 11,
+          "spatial": 9,
+          "drawing": 15,
+          "interact": 18,
+          "game": 12,
+          "physics": 17,
+          "visual": 13,
           "system": 14
         },
         "task_ranks": {
           "formal-proof": 10,
-          "math-olympiad": 12,
-          "raytracing": 12,
-          "circuit": 14,
-          "conquest": 14,
+          "math-olympiad": 15,
+          "raytracing": 18,
+          "circuit": 11,
+          "conquest": 11,
           "luban": 9,
-          "drawing": 12,
-          "ae-editor": 9,
+          "drawing": 15,
+          "ae-editor": 18,
           "tower-defense": 12,
-          "jelly-tank": 14,
-          "harbor": 12,
-          "starship": 10,
+          "jelly-tank": 17,
+          "harbor": 15,
+          "starship": 11,
           "nested-os": 14
+        }
+      },
+      "longcat-2-5": {
+        "total": 14.4,
+        "kinds": {
+          "standard": 4.0,
+          "design": 24.8
+        },
+        "categories": {
+          "reason": 0.0,
+          "algo": 5.9,
+          "battle": 13.9,
+          "spatial": 0.0,
+          "drawing": 0.0,
+          "interact": 19.0,
+          "game": 24.3,
+          "physics": 12.9,
+          "visual": 48.6,
+          "system": 19.0
+        },
+        "tasks": {
+          "formal-proof": 0.0,
+          "math-olympiad": 0.0,
+          "raytracing": 11.8,
+          "circuit": 0.0,
+          "conquest": 13.9,
+          "luban": 0.0,
+          "drawing": 0.0,
+          "ae-editor": 19.0,
+          "tower-defense": 24.3,
+          "jelly-tank": 12.9,
+          "harbor": 51.2,
+          "starship": 46.1,
+          "nested-os": 19.0
+        },
+        "status": "ranked",
+        "done": 13,
+        "task_info": {
+          "formal-proof": {
+            "anomaly": [
+              {
+                "text": "八份文件均仅留下题面声明和 sorry，未提交任何证明。"
+              }
+            ]
+          },
+          "math-olympiad": {
+            "anomaly": [
+              {
+                "text": "读完题目后只创建空答案目录，持续思考却未保存任何解答。"
+              }
+            ]
+          },
+          "ae-editor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 20.7
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 17.3
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "默认渲染传入空目标，启动即报错，画布全黑且播放中断。"
+              }
+            ]
+          },
+          "tower-defense": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 26.5
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 22.2
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "仅交付素材模块，缺失游戏、界面、演示及启动脚本，入口停在加载层。"
+              }
+            ]
+          },
+          "harbor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 55.3
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 47.2
+              }
+            ]
+          },
+          "starship": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 53.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 39.1
+              }
+            ]
+          },
+          "circuit": {
+            "anomaly": [
+              {
+                "text": "最终实现先更新触发器再计算输出摘要，7个正确性输入全部答错。"
+              }
+            ]
+          },
+          "jelly-tank": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 18.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 7.8
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "水槽、演示和音效未实现，果冻冲击后碎散并出现渲染错误。"
+              }
+            ]
+          },
+          "nested-os": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 18.8
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 19.2
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "未交付启动及应用脚本，主窗口停在启动页，递归承载报未编译。"
+              }
+            ]
+          },
+          "luban": {
+            "anomaly": [
+              {
+                "text": "仅留第01题碰撞试答，其余七题未交，未完成任何合法分离。"
+              }
+            ]
+          },
+          "drawing": {
+            "anomaly": [
+              {
+                "text": "反复运行自编脚本计算斜轴法向、孔位与装配坐标，违反手工推理限制。"
+              }
+            ]
+          }
+        },
+        "rank": 18,
+        "category_ranks": {
+          "reason": 16,
+          "algo": 18,
+          "battle": 10,
+          "spatial": 15,
+          "drawing": 17,
+          "interact": 17,
+          "game": 18,
+          "physics": 16,
+          "visual": 17,
+          "system": 17
+        },
+        "task_ranks": {
+          "formal-proof": 15,
+          "math-olympiad": 15,
+          "raytracing": 17,
+          "circuit": 17,
+          "conquest": 10,
+          "luban": 15,
+          "drawing": 17,
+          "ae-editor": 17,
+          "tower-defense": 18,
+          "jelly-tank": 16,
+          "harbor": 18,
+          "starship": 17,
+          "nested-os": 17
+        }
+      },
+      "dots3-note-preview": {
+        "total": 2.3,
+        "kinds": {
+          "standard": 2.4,
+          "design": 2.2
+        },
+        "categories": {
+          "reason": 0.0,
+          "algo": 7.8,
+          "battle": 0.0,
+          "spatial": 0.0,
+          "drawing": 4.3,
+          "interact": 2.4,
+          "game": 0.4,
+          "physics": 0.0,
+          "visual": 8.3,
+          "system": 0.0
+        },
+        "tasks": {
+          "formal-proof": 0.0,
+          "math-olympiad": 0.0,
+          "raytracing": 15.7,
+          "circuit": 0.0,
+          "conquest": 0.0,
+          "luban": 0.0,
+          "drawing": 4.3,
+          "ae-editor": 2.4,
+          "tower-defense": 0.4,
+          "jelly-tank": 0.0,
+          "harbor": 12.3,
+          "starship": 4.2,
+          "nested-os": 0.0
+        },
+        "status": "ranked",
+        "done": 13,
+        "task_info": {
+          "formal-proof": {
+            "anomaly": [
+              {
+                "text": "仅交第1题草稿，关键步骤留有sorry，其余七题未提交。"
+              }
+            ]
+          },
+          "math-olympiad": {
+            "anomaly": [
+              {
+                "text": "反复思考第六题而未落盘，二十四题均未交解答。"
+              }
+            ]
+          },
+          "ae-editor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 3.1
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 1.6
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "提交的字体图集代码引用未声明变量，初始化即崩溃，画布及操作未就绪。"
+              }
+            ]
+          },
+          "tower-defense": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 0.5
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 0.4
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "仅交付 HTML/CSS，js 目录为空，缺失全部游戏脚本，无法开局。"
+              }
+            ]
+          },
+          "harbor": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 16.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 8.6
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "提交入口引用未定义变量，首帧前抛错，场景始终空白。"
+              }
+            ]
+          },
+          "starship": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 8.5
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 0.0
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "体素网格坐标轴传参错误，舰船与四处内景全部退化不可见。"
+              }
+            ]
+          },
+          "circuit": {
+            "anomaly": [
+              {
+                "text": "提交存在尾部掩码未定义行为，官方正确性与性能运行全部崩溃。"
+              }
+            ]
+          },
+          "jelly-tank": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 0.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 0.0
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "模型反复读题和推演方案，未写出任何作品文件。"
+              }
+            ]
+          },
+          "nested-os": {
+            "graders": [
+              {
+                "name": "GPT 6.1 Sol",
+                "score": 0.0
+              },
+              {
+                "name": "Claude Opus 5.5",
+                "score": 0.0
+              }
+            ],
+            "anomaly": [
+              {
+                "text": "会话反复输出“1pro”，未写出任何项目源码。"
+              }
+            ]
+          },
+          "luban": {
+            "anomaly": [
+              {
+                "text": "反复读取第01题并整理摘要，结束时未创建答案目录，八题均未交。"
+              }
+            ]
+          },
+          "conquest": {
+            "anomaly": [
+              {
+                "text": "反复读取题面、列目录，始终没有写出 bot.cpp。"
+              }
+            ]
+          }
+        },
+        "rank": 19,
+        "category_ranks": {
+          "reason": 16,
+          "algo": 16,
+          "battle": 19,
+          "spatial": 15,
+          "drawing": 14,
+          "interact": 19,
+          "game": 19,
+          "physics": 19,
+          "visual": 19,
+          "system": 18
+        },
+        "task_ranks": {
+          "formal-proof": 15,
+          "math-olympiad": 15,
+          "raytracing": 16,
+          "circuit": 17,
+          "conquest": 19,
+          "luban": 15,
+          "drawing": 14,
+          "ae-editor": 19,
+          "tower-defense": 19,
+          "jelly-tank": 19,
+          "harbor": 19,
+          "starship": 19,
+          "nested-os": 18
         }
       }
     },
