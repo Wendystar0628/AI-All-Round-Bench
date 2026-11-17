@@ -42,7 +42,8 @@ export function paretoFront(points) {
   return front;
 }
 
-// ---- name placement: around each mark, nearest first; then a little further out (no leader lines) ----
+// ---- name placement: automatic, greedy; each name hugs its own mark, nearest free spot first (no leader lines) ----
+const GAPS = [3, 8, 14, 22, 32]; // px between the mark's disc and the name, tried in turn
 const AROUND = [
   [1, 0],
   [-1, 0],
@@ -56,11 +57,15 @@ const AROUND = [
 const overlap = (a, b) => Math.max(0, Math.min(a.x2, b.x2) - Math.max(a.x1, b.x1)) * Math.max(0, Math.min(a.y2, b.y2) - Math.max(a.y1, b.y1));
 
 /**
- * items [{ id, cx, cy, w }] in priority order; lines [[x1, y1, x2, y2]] the drawn lines a name should not sit on
- * -> Map id -> { lx, ly, anchor, box, far, dx, dy }
+ * Re-run on every redraw (data, measure, cost basis, filter, size), so new models need no hand placing. The models,
+ * in priority order (frontier first, then by score), each take the free spot nearest their own mark: a name box set
+ * just outside the mark's disc in one of 8 directions, a small gap away; the gap grows only when every nearer spot is
+ * covered (an earlier name, another mark, a drawn line, the plot's edge), and then the least covered spot wins.
+ * items [{ id, cx, cy, w }] in priority order; lines [[x1, y1, x2, y2]] the drawn lines a name should not sit on;
+ * dots [[cx, cy]] every mark; r the marks' radius -> Map id -> { lx, ly, anchor, box }
  */
 function placeNames(items, bounds, lines, dots, r) {
-  const marks = dots.map(([cx, cy]) => ({ x1: cx - r - 2, x2: cx + r + 2, y1: cy - r - 2, y2: cy + r + 2 }));
+  const marks = dots.map(([cx, cy]) => ({ cx, cy, x1: cx - r - 2, x2: cx + r + 2, y1: cy - r - 2, y2: cy + r + 2 }));
   // the lines as a trail of small boxes every 6 px
   const trail = [];
   for (const [x1, y1, x2, y2] of lines) {
@@ -74,23 +79,31 @@ function placeNames(items, bounds, lines, dots, r) {
   const taken = [];
   const out = new Map();
   const hgt = FONT + 2;
+  const diag = r * Math.SQRT1_2; // how far the disc reaches along a diagonal, in x and in y
   for (const it of items) {
+    const others = marks.filter((m) => m.cx !== it.cx || m.cy !== it.cy);
     let best = null;
-    for (const ring of [r + 5, r + 22, r + 40]) {
+    for (const gap of GAPS) {
+      const free = gap * 0.6; // nearer is better
       for (const [dx, dy] of AROUND) {
-        const lx = it.cx + dx * ring;
-        const cy = it.cy + dy * (dx ? ring - 4 : ring);
-        const anchor = dx > 0 ? 'start' : dx < 0 ? 'end' : 'middle';
-        const x1 = anchor === 'start' ? lx : anchor === 'end' ? lx - it.w : lx - it.w / 2;
-        const bx = { x1, x2: x1 + it.w, y1: cy - hgt / 2, y2: cy + hgt / 2 };
-        let cost = ring * 0.6; // nearer is better
+        const corner = dx && dy;
+        const ex = corner ? diag + gap * 0.7 : r + gap; // the box's near edge, this far from the centre
+        const ey = corner ? diag + gap * 0.7 : r + gap;
+        const x1 = dx > 0 ? it.cx + ex : dx < 0 ? it.cx - ex - it.w : it.cx - it.w / 2;
+        const y1 = dy > 0 ? it.cy + ey : dy < 0 ? it.cy - ey - hgt : it.cy - hgt / 2;
+        const bx = { x1, x2: x1 + it.w, y1, y2: y1 + hgt };
+        let cost = free + (corner ? 1 : 0);
         if (bx.x1 < bounds.x1 || bx.x2 > bounds.x2 || bx.y1 < bounds.y1 || bx.y2 > bounds.y2) cost += 1e6;
         for (const b of taken) cost += overlap(bx, b) * 4;
-        for (const m of marks) cost += overlap(bx, m) * 3;
+        for (const m of others) cost += overlap(bx, m) * 3;
         for (const d of trail) cost += overlap(bx, d) * 2;
-        if (!best || cost < best.cost) best = { cost, box: bx, lx, ly: cy + FONT / 2 - 2, anchor, ring };
+        if (!best || cost < best.cost) {
+          const anchor = dx > 0 ? 'start' : dx < 0 ? 'end' : 'middle';
+          const lx = anchor === 'start' ? bx.x1 : anchor === 'end' ? bx.x2 : (bx.x1 + bx.x2) / 2;
+          best = { cost, box: bx, lx, ly: (bx.y1 + bx.y2) / 2 + FONT / 2 - 2, anchor, free };
+        }
       }
-      if (best.cost <= best.ring * 0.6) break; // a free spot in this ring
+      if (best.cost <= best.free + 1) break; // a free spot at this gap
     }
     taken.push(best.box);
     out.set(it.id, best);
