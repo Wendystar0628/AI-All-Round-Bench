@@ -1030,6 +1030,99 @@
   }
 }
 
+/* ============ 开屏 · 星轨定盘 (splash.js): over the content, under the command bar ============ */
+:root {
+  --sx-glint: var(--st-ink);
+  --sx-trail-k: 1;
+}
+:root[data-theme='dark'] {
+  --sx-glint: var(--st-flare);
+  --sx-trail-k: 1.35;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --sx-glint: var(--st-flare);
+    --sx-trail-k: 1.35;
+  }
+}
+.sx {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  overflow: hidden;
+  background: var(--st-paper);
+  cursor: default;
+}
+.sx-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sx-sky {
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+.sx.is-on .sx-sky {
+  opacity: 1;
+}
+.sx-trail {
+  fill: none;
+  stroke: var(--st-orbit);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-opacity: min(1, calc(var(--m, 0.5) * var(--sx-trail-k)));
+  vector-effect: non-scaling-stroke;
+}
+.sx-trail.is-data {
+  stroke-opacity: min(1, calc(0.5 * var(--sx-trail-k)));
+}
+.sx-glint {
+  fill: var(--sx-glint);
+  fill-opacity: min(1, calc(0.35 + var(--m, 0.5)));
+}
+.sx-star {
+  fill: var(--st-ink);
+}
+.sx-star.is-best,
+.sx-pole {
+  fill: var(--st-flare);
+  stroke: var(--lime-edge);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.sx-skip {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  background: none;
+  color: var(--st-ink-2);
+  font: 0.8125rem var(--st-font-text);
+  cursor: pointer;
+}
+.sx-skip kbd {
+  padding: 0 0.4em;
+  border: 1px solid var(--st-rule);
+  color: var(--st-ink-2);
+  font: 0.7rem var(--st-font-ui);
+}
+.sx-skip:hover {
+  color: var(--st-ink);
+}
+@media print {
+  .sx {
+    display: none;
+  }
+}
+
 /* ============ 入场 (home.md 入场顺序; the dial's own parts run inside the shared dial) ============ */
 
 @media (prefers-reduced-motion: no-preference) {

@@ -254,19 +254,14 @@ body[data-lang='en'] .md-side-head .st-eyebrow {
 .md-head.is-pending .md-fig-total b {
   color: var(--st-ink-2);
 }
-/* header banner: rays/rays-fan-up, single colour at 0.5 (visual.md 六) */
+/* header banner (星钟, visual.md 六): a horizontal sundial at 35°N, the violet line the shadow of now */
 .md-head-decor {
   position: absolute;
   z-index: -1;
-  left: 28%;
+  left: 30%;
   bottom: -1.5rem;
-  width: min(36rem, 40%);
-  aspect-ratio: 720 / 240;
-  background: var(--st-ink-2);
-  opacity: 0.5;
-  pointer-events: none;
-  -webkit-mask: url('/decor/rays/rays-fan-up.svg') center bottom / 100% 100% no-repeat;
-  mask: url('/decor/rays/rays-fan-up.svg') center bottom / 100% 100% no-repeat;
+  width: min(36rem, 46%);
+  aspect-ratio: 720 / 260;
 }
 /* the first-place badge behind the total (rays-burst, the page's one two-colour decor) */
 .md-head.is-first .md-fig-total::before {

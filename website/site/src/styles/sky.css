@@ -1,0 +1,88 @@
+/* 星钟 (src/decor/skyclock.js, visual.md 六): each page's one decor slot as an astronomical
+   timepiece. Light is the "negative" (ink lines on pale paper), dark the "positive" (pale lines on
+   the night); the one violet mark is "now" (violet 500 light, violet 300 dark). */
+:root {
+  --sky-line: var(--st-ink-2);
+  --sky-star: var(--st-ink);
+  --sky-now: var(--v-500);
+  --sky-op: 0.55;
+  --sky-fill: color-mix(in srgb, var(--st-ink-2) 26%, transparent);
+  --sky-moon-dark: color-mix(in srgb, var(--st-ink-2) 55%, transparent);
+  --sky-moon-lit: var(--st-panel);
+}
+:root[data-theme='dark'] {
+  --sky-now: var(--v-300);
+  --sky-op: 0.5;
+  --sky-moon-dark: transparent;
+  --sky-moon-lit: color-mix(in srgb, var(--st-ink) 70%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --sky-now: var(--v-300);
+    --sky-op: 0.5;
+    --sky-moon-dark: transparent;
+    --sky-moon-lit: color-mix(in srgb, var(--st-ink) 70%, transparent);
+  }
+}
+
+/* the slot: under the content, never in the way; the drawing fills it */
+.sky {
+  pointer-events: none;
+  opacity: var(--sky-op);
+}
+.sky > .sky-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.sky-svg .sky-line {
+  fill: none;
+  stroke: var(--sky-line);
+}
+.sky-svg .sky-star {
+  fill: var(--sky-star);
+}
+.sky-svg .sky-now {
+  stroke: var(--sky-now);
+}
+.sky-svg .sky-fill {
+  fill: var(--sky-fill);
+}
+.sky-svg .sky-moon {
+  fill: var(--sky-moon-dark);
+  stroke: var(--sky-line);
+}
+.sky-svg .sky-moon-lit {
+  fill: var(--sky-moon-lit);
+}
+/* reading pages: the banner slot keeps its place, the mask decor gives way to the drawing */
+.rd-banner.sky {
+  background: none;
+  -webkit-mask: none;
+  mask: none;
+  opacity: var(--sky-op);
+}
+/* 挑战赛说明: the light-time ruler keeps the wide band */
+.rd-banner.ab-banner {
+  aspect-ratio: 1200 / 230;
+  width: min(36rem, 70%);
+}
+/* reading pages on a phone: the instrument joins the flow above the title, full width */
+@media (max-width: 759px) {
+  .rd-head .rd-banner:is(.sky-lunation, .sky-louke, .sky-lighttime) {
+    position: relative;
+    inset: auto;
+    display: block;
+    width: 100%;
+    margin: 0 0 0.75rem;
+  }
+  .rd-head .rd-banner.sky-pointers {
+    width: 8.5rem;
+  }
+}
+@media print {
+  .sky {
+    display: none;
+  }
+}
