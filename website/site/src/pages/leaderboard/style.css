@@ -1253,12 +1253,6 @@
     stroke-width 0.15s,
     opacity 0.15s;
 }
-.fr-leaders line {
-  stroke: var(--st-ink-2);
-  stroke-width: 1;
-  opacity: 0.6;
-  transition: opacity 0.15s;
-}
 /* a mark: the vendor's logo on a disc; frontier marks ringed in violet */
 .fr-pt {
   cursor: pointer;
@@ -1314,8 +1308,7 @@
 }
 /* pointing: the point and its vendor stay, the rest steps back; the vendor's line comes forward */
 .fr-svg.has-hot .fr-pt:not(.is-hot, .is-kin),
-.fr-svg.has-hot .fr-label:not(.is-hot, .is-kin),
-.fr-svg.has-hot .fr-leaders line:not(.is-kin) {
+.fr-svg.has-hot .fr-label:not(.is-hot, .is-kin) {
   opacity: 0.25;
 }
 .fr-svg.has-hot .fr-vline:not(.is-kin) {

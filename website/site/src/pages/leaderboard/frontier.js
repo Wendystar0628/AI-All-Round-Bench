@@ -5,7 +5,7 @@
 // limits of its tasks ÷ the time limits of all 13 tasks.
 //
 // Each point is its vendor's mark on a disc, named beside it (names are placed so they do not cover each other or
-// the marks; one pushed away from its point gets a short leader line). The Pareto frontier — the models no other
+// the marks, and never get a leader line). The Pareto frontier — the models no other
 // model beats on both counts (as cheap or cheaper and as high or higher) — is joined by a violet polyline, with a wash
 // under it; each vendor's own frontier (its models no other model of the same vendor beats) by a thin grey line, both
 // in cost order. The chart follows
@@ -42,7 +42,7 @@ export function paretoFront(points) {
   return front;
 }
 
-// ---- name placement: around each mark, nearest first; then rings further out, reached by a leader line ----
+// ---- name placement: around each mark, nearest first; then a little further out (no leader lines) ----
 const AROUND = [
   [1, 0],
   [-1, 0],
@@ -88,7 +88,7 @@ function placeNames(items, bounds, lines, dots, r) {
         for (const b of taken) cost += overlap(bx, b) * 4;
         for (const m of marks) cost += overlap(bx, m) * 3;
         for (const d of trail) cost += overlap(bx, d) * 2;
-        if (!best || cost < best.cost) best = { cost, box: bx, lx, ly: cy + FONT / 2 - 2, anchor, far: ring > r + 5, dx, dy, ring };
+        if (!best || cost < best.cost) best = { cost, box: bx, lx, ly: cy + FONT / 2 - 2, anchor, ring };
       }
       if (best.cost <= best.ring * 0.6) break; // a free spot in this ring
     }
@@ -131,7 +131,6 @@ export function createFrontier({ data, weights }) {
   const gVendor = svg.append('g').attr('class', 'fr-vlines');
   const frontLine = svg.append('path').attr('class', 'fr-front-line');
   const guide = svg.append('g').attr('class', 'fr-guide').style('display', 'none');
-  const gLeaders = svg.append('g').attr('class', 'fr-leaders').attr('aria-hidden', 'true');
   const gLabels = svg.append('g').attr('class', 'fr-labels').attr('aria-hidden', 'true');
   const gPts = svg.append('g').attr('class', 'fr-pts');
   const gBadges = svg.append('g').attr('class', 'fr-badges').style('display', 'none');
@@ -326,7 +325,7 @@ export function createFrontier({ data, weights }) {
     g.select('svg.fr-logo').attr('x', -L / 2).attr('y', -L / 2).attr('width', L).attr('height', L);
     g.sort((a, b) => (a.front === b.front ? b.x - a.x : a.front ? 1 : -1)); // frontier marks on top
 
-    // the names, with a leader line when pushed away from the mark
+    // the names, beside their marks (no leader lines)
     const at = spots();
     const lab = gLabels
       .selectAll('text')
@@ -339,25 +338,6 @@ export function createFrontier({ data, weights }) {
     tr(lab, T)
       .attr('x', (p) => at.get(p.id).lx)
       .attr('y', (p) => at.get(p.id).ly);
-    const end = (s) => ({
-      x: s.anchor === 'start' ? s.box.x1 - 2 : s.anchor === 'end' ? s.box.x2 + 2 : (s.box.x1 + s.box.x2) / 2,
-      y: s.dy < 0 ? s.box.y2 : s.dy > 0 ? s.box.y1 : (s.box.y1 + s.box.y2) / 2,
-    });
-    gLeaders
-      .selectAll('line')
-      .data(
-        named().filter((p) => at.get(p.id).far),
-        (p) => p.id,
-      )
-      .join((en) => en.append('line').style('opacity', shown ? null : 0))
-      .attr('data-vendor', (p) => p.vendor)
-      .call((sel) =>
-        tr(sel, T)
-          .attr('x1', (p) => x(p.x) + at.get(p.id).dx * (R + 1))
-          .attr('y1', (p) => y(p.y) + at.get(p.id).dy * (R + 1))
-          .attr('x2', (p) => end(at.get(p.id)).x)
-          .attr('y2', (p) => end(at.get(p.id)).y),
-      );
 
     paintChips();
     if (hot) setHot(pts.find((p) => p.id === hot.id) ?? null);
@@ -398,7 +378,6 @@ export function createFrontier({ data, weights }) {
     };
     gPts.selectAll('g.fr-pt').classed('is-hot', (q) => !!p && q.id === p.id).classed('is-kin', kin);
     gLabels.selectAll('text').classed('is-hot', (q) => !!p && q.id === p.id).classed('is-kin', kin);
-    gLeaders.selectAll('line').classed('is-kin', kin);
     gVendor.selectAll('path').classed('is-kin', kin);
     for (const c of chips.querySelectorAll('.fr-chip')) c.classList.toggle('is-hot', !!p && c.dataset.id === p.id);
     guide.style('display', p ? null : 'none');
@@ -501,7 +480,7 @@ export function createFrontier({ data, weights }) {
   function enter() {
     if (shown) return;
     shown = true;
-    const later = [gVendor.selectAll('path'), gLabels.selectAll('text'), gLeaders.selectAll('line')];
+    const later = [gVendor.selectAll('path'), gLabels.selectAll('text')];
     // the inline opacity goes once an element is in, so the pointing (CSS) can step the rest back
     const settle = function () {
       this.style.removeProperty('opacity');
