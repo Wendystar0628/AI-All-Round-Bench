@@ -3,6 +3,7 @@ import math,json,copy
 from pathlib import Path
 import numpy as np
 import build_problem_set as b
+from drawing_common import freeze_dimensions
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[2]
@@ -384,8 +385,50 @@ def assembly(ports,count,index):
 BUILDERS=[twin,lambda:valve(),bearing,gear,separator,bridge,
           lambda:assembly(3,14,6),lambda:assembly(4,18,7),lambda:assembly(5,22,8),lambda:assembly(6,26,9)]
 
+def valve_assembly_witness(parts, no):
+    """Use the same instance/port association as assembly(), before view selection or D numbering."""
+    base = parts[0]
+    def body(name):
+        return b.MateFeature(parts, 1, name)
+    def fitted(name):
+        return b.MateFeature(parts, no, name)
+
+    port_count = len(base.ports)
+    index = no - 2
+    if index < 3*port_count:
+        port, member = divmod(index, 3)
+        seat = f'斜座{port+1}'
+        spindle, shoulder, side, key = [
+            ('配合外圆','端部定位法兰','Z+','定向键槽'),
+            ('工作轴','止推轴肩','Z-','定向铣扁'),
+            ('芯轴避让孔','端盖圆板','Z-','键向指示缺口'),
+        ][member]
+        axis = body(seat+'主通道').axis()
+        return b.assembly_witness(
+            b.mate('coaxial', fitted(spindle).axis(), axis),
+            b.mate('contact' if member == 2 else 'coplanar', fitted(shoulder).face(side), body(seat).face('end')),
+            b.mate('radial_alignment', axis, fitted(key).face('X-'), body(seat+'端盖螺孔1').axis(),
+                   direction=[0,0,-1]))
+    extra = index - 3*port_count
+    front = body('前接口沉台').axis()
+    flange = body('前接口凸缘').face('Y-')
+    if extra == 0:
+        return b.assembly_witness(b.mate('coaxial', fitted('定位颈').axis(), front),
+            b.mate('contact', fitted('盖盘').face('Z-'), flange),
+            b.mate('positive_side', front, fitted('偏置测压孔').axis(), direction=[1,0,0]))
+    if extra == 1:
+        ring, groove = fitted('密封环'), fitted('外圆密封槽')
+        return b.assembly_witness(b.mate('coaxial', ring.axis(), front),
+            b.mate('offset', flange, ring.face('Z+'), direction=[0,1,0], value=6),
+            b.mate('centered', groove.face('Z-'), groove.face('Z+'), ring.face('Z-'), ring.face('Z+'),
+                   direction=[0,-1,0]))
+    return b.assembly_witness(b.mate('coaxial', fitted('定位杆').axis(), body(f'定位销孔{extra-1}').axis()),
+                              b.mate('contact', fitted('止推头').face('Z-'), body('地脚法兰').face('Z+')))
+
+
 def new_spec(pid,title,parts):
     sheets=[]
+    number=0
     notes=['技术要求','单位mm；链式和相对尺寸须结合剖视推算。','R/C均须建模；未注棱保持理论交线。',
       '斜轴倾角对总+Z，方位从总+X逆时针；孔从外端面向内。','斜视首孔在轴线与总Z的共面低侧；其余孔90°均布。']
     if len(parts)>1:
@@ -402,8 +445,11 @@ def new_spec(pid,title,parts):
             return lines
         def dimension(item,view,point):
             no,text=item[:2];value=item[2] if len(item)>2 else 0
-            return dict(view=view,type='leader',at=point,text=wrap(text),value=value,category='装配贴合及定向关系')
+            return dict(view=view,type='leader',at=point,text=wrap(text),value=value,category='装配贴合及定向关系',
+                        **valve_assembly_witness(parts, no))
         def add(views,dims,balloons):
+            nonlocal number
+            number=freeze_dimensions(dims,number)
             sheets.append(dict(paper='A1',scale=[1,.8,.65,.5,.4,.3],frame='assembly',title=title,
                 drawing_no=f'JX-{pid}-Z{len(sheets)+1}',views=views,dimensions=dims,parts_list=rows,notes=notes,balloons=balloons))
         overview=[dict(view='主视图',part='1',at=[150,9],text='1')]
@@ -445,6 +491,7 @@ def new_spec(pid,title,parts):
         for aux in p.special_views:
             dims=[m for m in p.measures if m['view']==aux['name']]
             packs.extend((dims[k:k+6],aux) for k in range(0,len(dims),6))
+        number=freeze_dimensions([m for group,_ in packs for m in group],number)
         for page,(group,aux) in enumerate(packs):
             start=page*16;dims=copy.deepcopy(group)
             views=[dict(type='front'),dict(type='top'),dict(type='left')] if aux is None else [dict(type='front'),copy.deepcopy(aux)]
@@ -472,26 +519,38 @@ def legacy(old):
             p.finish('chamfer',[[x0+(x1-x0)/4,y0,z0]],1,'主视图',[x0+(x1-x0)/4,z0],'所指前下直棱')
     return ps
 
+def problem_data(problem):
+    """只构造一题的 HEAD 参数与私有规格，无文件写入。"""
+    i=int(problem)
+    if not 1<=i<=25:raise ValueError('题号必须为 01—25')
+    pid=f'{i:02d}'
+    oldmap=json.loads((HERE/'旧新题号映射.json').read_text(encoding='utf-8'))
+    if i<=15:
+        row=oldmap[i-1];old=row['old'];ps=legacy(old);name=row['name'];tier=row['tier'];weight=row['max']
+        for p in ps:p.chain_dimensions()
+        spec=b.spec_for_parts(old,name,ps)
+        spec['problem']=pid
+        for j,s in enumerate(spec['sheets'],1):
+            s['id']=f'{pid}-{j}';s['drawing_no']=s['drawing_no'].replace('JX-'+old+'-','JX-'+pid+'-')
+        reason=f"保留旧{old}题；头部五型号平均F={row['head_mean_f']:.4f}，按实测由易到难重排。"
+    else:
+        data=BUILDERS[i-16]();ps=data if isinstance(data,list) else [data]
+        for p in ps:p.chain_dimensions()
+        name=NAMES[i-16];tier='困难档';weight=4.4;reason=REASONS[i-16]
+        spec=new_spec(pid,name,ps)
+    desc=dict(problem=pid,parts=[p.desc(n) for n,p in enumerate(ps,1)])
+    return dict(problem=pid,description=desc,spec=spec,parts=ps,name=name,tier=tier,weight=weight,reason=reason,
+                legacy_id=oldmap[i-1]['old'] if i<=15 else None)
+
+
 def build():
     oldmap=json.loads((HERE/'旧新题号映射.json').read_text(encoding='utf-8'))
     records=[];audit=[]
     for i in range(1,26):
         pid=f'{i:02d}'
-        if i<=15:
-            row=oldmap[i-1];old=row['old'];ps=legacy(old);name=row['name'];tier=row['tier'];weight=row['max']
-            for p in ps:p.chain_dimensions()
-            spec=b.spec_for_parts(old,name,ps)
-            spec['problem']=pid
-            for j,s in enumerate(spec['sheets'],1):
-                s['id']=f'{pid}-{j}';s['drawing_no']=s['drawing_no'].replace('JX-'+old+'-','JX-'+pid+'-')
-            reason=f"保留旧{old}题；头部五型号平均F={row['head_mean_f']:.4f}，按实测由易到难重排。"
-        else:
-            data=BUILDERS[i-16]();ps=data if isinstance(data,list) else [data]
-            for p in ps:p.chain_dimensions()
-            name=NAMES[i-16];tier='困难档';weight=4.4;reason=REASONS[i-16]
-            spec=new_spec(pid,name,ps)
-        desc=dict(problem=pid,parts=[p.desc(n) for n,p in enumerate(ps,1)])
-        b.save(HERE/'参考答案'/f'第{pid}题.json',desc);b.save(HERE/'出图规格'/f'{pid}.json',spec)
+        data=problem_data(pid)
+        ps,name,tier,weight,reason,spec,desc=(data[k] for k in ('parts','name','tier','weight','reason','spec','description'))
+        b.save_reference(HERE/'参考答案'/f'第{pid}题.json',desc);b.save(HERE/'出图规格'/f'{pid}.json',spec)
         records.append(dict(id=pid,tier=tier,name=name,kind='assembly' if len(ps)>1 else 'part',max=weight,
             parts=[str(n) for n in range(1,len(ps)+1)],part_count=len(ps),reference=f'参考答案/第{pid}题.json',legacy_id=oldmap[i-1]['old'] if i<=15 else None))
         audit.append(dict(problem=pid,name=name,tier=tier,reason=reason,sheet_count=len(spec['sheets']),

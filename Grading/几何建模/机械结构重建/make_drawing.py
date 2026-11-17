@@ -4,13 +4,17 @@
   python make_drawing.py 出图规格/01.json                    # 参考描述默认取 参考答案/第01题.json
   python make_drawing.py 出图规格/01.json --ref X.json --out 输出目录 --dpi 200
   python make_drawing.py --all                                # 出图规格/ 下全部
+  python make_drawing.py --sandbox 08 --out 调研沙箱目录         # 单题隔离出图
+  python make_drawing.py --freeze-samples --out 样例目录         # 五题 HEAD 冻结样例
 出图规格的写法见本目录 README.md。输出默认写到 几何建模/机械结构重建/<题号>/。
 """
 import argparse
+import copy
 import json
 import math
 import re
 import sys
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -29,20 +33,14 @@ BASIC = {
     "bottom": ("仰视图", (0, 0, 1), (1, 0, 0), (0, -1, 0), (0, 1)),
     "rear": ("后视图", (0, -1, 0), (-1, 0, 0), (0, 0, 1), (1, 3)),
 }
-PAPERS = {"A4": (210, 297, 25, 5), "A3": (420, 297, 25, 5), "A2": (594, 420, 25, 10), "A1": (841, 594, 25, 10)}
-SCALES = [5, 4, 2.5, 2, 1, 1 / 1.5, 1 / 2, 1 / 2.5, 1 / 3, 1 / 4, 1 / 5]
-DIM_H = 9.0        # 尺寸数字字高
-LABEL_H = 9.0      # 视图名称字高
-ARROW = 3.0        # 箭头长
-EXT_GAP = 1.0      # 尺寸界线与轮廓的间隙
-EXT_OVER = 2.0     # 尺寸界线超出尺寸线
-LEVEL0 = 12.0       # 第一道尺寸线离轮廓
-LEVEL_STEP = 14.0   # 相邻尺寸线间距
-VIEW_GAP = 12.0    # 视图间距
-TB_W, TB_H = 180.0, 32.0
-PL_ROW = 7.0
-ROMAN = ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ"]
-HATCH_STYLES = [(45, 3.0), (135, 3.0), (45, 1.8), (135, 1.8), (60, 3.0), (120, 3.0)]
+from drawing_common import (PAPERS, SCALES, DIM_H, LABEL_H, ARROW, EXT_GAP, EXT_OVER,
+                            LEVEL0, LEVEL_STEP, VIEW_GAP, TB_W, TB_H, PL_ROW, ROMAN, HATCH_STYLES)
+from drawing_common import box_union, box_pts, box_overlap, text_box, Occupancy, Marks, round_any, Stack, view_extent
+import drawing_common
+import drawing_views
+import drawing_sections
+import drawing_dimensions
+import drawing_layout
 
 
 class SpecError(Exception):
@@ -73,162 +71,6 @@ def scale_text(s):
 
 # ---------------------------------------------------------------- 小工具
 
-def box_union(a, b):
-    if a is None:
-        return b
-    if b is None:
-        return a
-    return [min(a[0], b[0]), min(a[1], b[1]), max(a[2], b[2]), max(a[3], b[3])]
-
-
-def box_pts(pts):
-    pts = np.asarray(pts, float)
-    return [float(pts[:, 0].min()), float(pts[:, 1].min()), float(pts[:, 0].max()), float(pts[:, 1].max())]
-
-
-def box_overlap(a, b, margin=0.0):
-    return not (a[2] + margin <= b[0] or b[2] + margin <= a[0] or a[3] + margin <= b[1] or b[3] + margin <= a[1])
-
-
-def text_box(text, at, h, anchor="mm", angle=0.0):
-    w, hh = render.text_extent(text, h)
-    ax = {"l": 0.0, "m": 0.5, "r": 1.0}[anchor[0]] * w
-    ay = {"t": 1.0, "m": 0.5, "b": 0.0}[anchor[1]] * hh
-    corners = np.array([[0, 0], [w, 0], [w, hh], [0, hh]]) - [ax, ay]
-    a = math.radians(angle)
-    rot = np.array([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]])
-    return box_pts(corners @ rot.T + np.asarray(at))
-
-
-class Occupancy:
-    """视图周围的占用栅格（局部图纸坐标，0.5 毫米一格），用来给文字、引线找不压线的位置。"""
-    RES = 0.5
-
-    def __init__(self, box, margin=100.0):
-        self.x0, self.y0 = box[0] - margin, box[1] - margin
-        self.nx = int((box[2] - box[0] + 2 * margin) / self.RES) + 1
-        self.ny = int((box[3] - box[1] + 2 * margin) / self.RES) + 1
-        self.g = np.zeros((self.ny, self.nx), np.float32)
-        self.text_g = np.zeros_like(self.g)
-
-    def _ij(self, pts):
-        pts = np.atleast_2d(pts)
-        i = ((pts[:, 0] - self.x0) / self.RES).astype(int)
-        j = ((pts[:, 1] - self.y0) / self.RES).astype(int)
-        ok = (i >= 0) & (i < self.nx) & (j >= 0) & (j < self.ny)
-        return i[ok], j[ok]
-
-    def add_curve(self, c, w=1.0):
-        i, j = self._ij(g2.sample(c, 0.25))
-        self.g[j, i] = np.maximum(self.g[j, i], w)
-
-    def _slice(self, box, inset=0.0):
-        i0 = int(np.floor((box[0] + inset - self.x0) / self.RES))
-        i1 = int(np.ceil((box[2] - inset - self.x0) / self.RES))
-        j0 = int(np.floor((box[1] + inset - self.y0) / self.RES))
-        j1 = int(np.ceil((box[3] - inset - self.y0) / self.RES))
-        return slice(max(0, j0), max(0, min(self.ny, j1))), slice(max(0, i0), max(0, min(self.nx, i1)))
-
-    def add_box(self, box, w=4.0):
-        sj, si = self._slice(box)
-        self.g[sj, si] += w
-
-    def add_text(self, box):
-        sj, si = self._slice(box)
-        self.g[sj, si] += 20.0
-        self.text_g[sj, si] = 1.0
-
-    def crosses_text(self, a, b):
-        i, j = self._ij(g2.sample(g2.line(a, b, "x"), 0.25))
-        return float(self.text_g[j, i].sum())
-
-    def add_fill(self, loops, w=0.5):
-        b = box_pts(np.concatenate([np.asarray(lp, float) for lp in loops]))
-        sj, si = self._slice(b)
-        if sj.stop <= sj.start or si.stop <= si.start:
-            return
-        jj, ii = np.mgrid[sj, si]
-        pts = np.stack([self.x0 + (ii.ravel() + 0.5) * self.RES, self.y0 + (jj.ravel() + 0.5) * self.RES], axis=1)
-        inside = np.zeros(len(pts), bool)
-        for lp in loops:
-            inside ^= g2.contains({"shape": "polygon", "points": lp}, pts)
-        sub = self.g[sj, si].ravel()
-        sub[inside] = np.maximum(sub[inside], w)
-        self.g[sj, si] = sub.reshape(self.g[sj, si].shape)
-
-    def cost(self, box, inset=0.3):
-        sj, si = self._slice(box, inset)
-        return float(self.g[sj, si].sum())
-
-    def line_cost(self, a, b):
-        i, j = self._ij(g2.sample(g2.line(a, b, "x"), 0.25))
-        return float(self.g[j, i].sum()) * 0.5
-
-
-class Marks:
-    """视图内的标注图元，坐标先用"局部图纸坐标"（视图坐标 × 比例），最后换回视图坐标。
-    occ 不为空时，画上的图元同时登记到占用栅格。"""
-
-    def __init__(self, occ=None):
-        self.items = []
-        self.box = None
-        self.occ = occ
-
-    def curve(self, c, role=None):
-        self.items.append({"kind": "curve", "curve": c, "role": role})
-        self.box = box_union(self.box, g2.bounds([c]))
-        if self.occ is not None:
-            self.occ.add_curve(c, 1.0)
-
-    def line(self, a, b, kind="thin", role=None):
-        self.curve(g2.line(a, b, kind), role)
-
-    def arrow(self, tip, d, role=None, size=ARROW):
-        d = np.asarray(d, float)
-        d = d / np.linalg.norm(d)
-        self.items.append({"kind": "arrow", "tip": g2.P(tip), "dir": g2.P(d), "size": size, "role": role})
-        self.box = box_union(self.box, box_pts([tip, np.asarray(tip) - d * size]))
-        if self.occ is not None:
-            self.occ.add_box(box_pts([tip, np.asarray(tip) - d * size]), 1.0)
-
-    def dot(self, at, role=None, r=0.6):
-        self.items.append({"kind": "dot", "at": g2.P(at), "r": r, "role": role})
-
-    def text(self, text, at, h=None, anchor="mm", angle=0.0, role=None):
-        h = DIM_H if h is None else h
-        self.items.append({"kind": "text", "text": str(text), "at": g2.P(at), "height": h,
-                           "anchor": anchor, "angle": float(angle), "role": role})
-        tb = text_box(text, at, h, anchor, angle)
-        self.box = box_union(self.box, tb)
-        if self.occ is not None:
-            self.occ.add_text([tb[0] - 0.8, tb[1] - 0.8, tb[2] + 0.8, tb[3] + 0.8])
-
-    def to_view(self, s):
-        out = []
-        for m in self.items:
-            m = dict(m)
-            if m["kind"] == "curve":
-                m["curve"] = g2.xform(m["curve"], 1 / s, (0, 0))
-                for key in ("from", "to", "center", "points"):
-                    if key in m["curve"]:
-                        m["curve"][key] = round_any(m["curve"][key])
-                if "r" in m["curve"]:
-                    m["curve"]["r"] = round(m["curve"]["r"], 6)
-            for key in ("tip", "at"):
-                if key in m:
-                    m[key] = [round(m[key][0] / s, 6), round(m[key][1] / s, 6)]
-            if m.get("role") is None:
-                m.pop("role", None)
-            out.append(m)
-        return out
-
-
-def round_any(v):
-    if isinstance(v, (list, tuple)) and v and isinstance(v[0], (list, tuple)):
-        return [[round(a, 6), round(b, 6)] for a, b in v]
-    return [round(v[0], 6), round(v[1], 6)]
-
-
 # ---------------------------------------------------------------- 视图解析
 
 class View:
@@ -247,9 +89,19 @@ class View:
         self.extra_lines = []
         self.box_geom = None
         self.paper_origin = None
+        self.view_key = spec.get('view_key')
+        self.candidate = spec.get('_candidate')
+        self.parent_key = spec.get('parent_key', (self.candidate or {}).get('parent_key'))
+        self.source_key = spec.get('source_key', (self.candidate or {}).get('source_key'))
+        self.source_reference = spec.get('_source_reference')
+        self.section_references = spec.get('section_references', (self.candidate or {}).get('section_references', []))
+        self.auxiliary_references = spec.get('auxiliary_references', (self.candidate or {}).get('auxiliary_references', []))
+        if self.section_references:
+            # B.section_marks 读取 candidate；D 试排也允许只在纸面 spec 上给引用。
+            self.candidate = dict(self.candidate or {}, section_references=self.section_references)
 
 
-def resolve_views(sheet, part_names):
+def resolve_views(sheet, part_names, *, check_names=True):
     views = []
     letters_used = set()
     for i, spec in enumerate(sheet.get("views", [])):
@@ -294,9 +146,15 @@ def resolve_views(sheet, part_names):
                       "detail": {"parent": spec["parent"], "center": spec["center"], "r": spec["r"]}}
         else:
             raise SpecError(f"未知视图类型 {t}")
+        if spec.get('_definition'):
+            v.vdef = copy.deepcopy(spec['_definition'])
+            v.vdef['parts'] = v.vdef.get('parts') or parts
+        for key in ('witness_elements', '_a_features'):
+            if key in spec:
+                v.vdef[key] = copy.deepcopy(spec[key])
         views.append(v)
     names = [v.name for v in views]
-    if len(set(names)) != len(names):
+    if check_names and len(set(names)) != len(names):
         raise SpecError(f"视图名称重复：{names}")
     # 局部放大图编号
     k = 0
@@ -308,6 +166,291 @@ def resolve_views(sheet, part_names):
     return views
 
 
+def restore_assembly_witnesses(spec, description):
+    """给本题未规划的旧规格恢复同一原始尺寸的身份。自定义零件或不同尺寸不能借用见证。"""
+    missing = [d for sheet in spec['sheets'] if sheet.get('frame') == 'assembly'
+               for d in sheet.get('dimensions', []) if not d.get('_witness_3d')]
+    if not missing or spec['problem'] not in ('01', '02', '22', '23', '24', '25'):
+        return
+    from advanced_parts import problem_data
+    data = problem_data(spec['problem'])
+    if data['description']['parts'] != description['parts']:
+        return
+    originals = {d['_id']: d for sheet in data['spec']['sheets'] if sheet.get('frame') == 'assembly'
+                 for d in sheet['dimensions']}
+    for target in missing:
+        source = originals.get(target['_id'])
+        if source and all(source.get(k) == target.get(k) for k in ('type','text','value','category')):
+            for key in ('source_part','source_feature','covers_features','_witness_3d'):
+                target[key] = copy.deepcopy(source[key])
+
+
+def plan_problem(spec, description):
+    """运行 A→B→C→D 接缝；只增加私有元数据，默认重建 HEAD 原页序。"""
+    spec = copy.deepcopy(spec)
+    for index, sheet in enumerate(spec['sheets'], 1):
+        sheet.setdefault('id', spec['problem'] if len(spec['sheets']) == 1 else f"{spec['problem']}-{index}")
+    dimensions = drawing_common.ensure_dimension_ids(spec)
+    restore_assembly_witnesses(spec, description)
+    for sheet in spec['sheets']:
+        for dimension in sheet.get('dimensions', []):
+            dimension['_head_sheet'] = sheet['id']
+    context = dict(problem=spec['problem'], title=spec.get('title', ''),
+                   parts=description['parts'], dimensions=dimensions, head_sheets=spec['sheets'], dimension_audit=[],
+                   layout_capabilities={'source_references': True})
+    # C 可以按需查看候选投影，D 可以在正式分页前取得 C 的尺寸范围。
+    # 默认空包不调用这两个回调，因此仍走原 HEAD 的一次建模/出图路径。
+    planning_model = None
+    final_edge_service = None
+    candidates = []
+
+    def get_planning_model():
+        nonlocal planning_model
+        if planning_model is None:
+            planning_model = model.build(description)
+            for part in planning_model.parts:
+                if part.error:
+                    raise SpecError(f"参考描述生成失败：{part.error}")
+        return planning_model
+
+    def project_candidate(candidate, scale=1.):
+        sheet = drawing_common.make_sheet_spec(dict(frame=candidate['frame'], part=candidate.get('part')), [candidate], [])
+        sheet = drawing_common.complete_projection_dependencies(sheet, candidates)
+        shapes, names = sheet_shapes(get_planning_model(), sheet)
+        views, dependencies = projection_views(sheet, names)
+        project_all(views + dependencies, shapes, scale)
+        view = next(v for v in views if v.view_key == candidate['view_key'])
+        elements = final_edge_witnesses(dict(candidate, **view.vdef), view.geom)
+        if elements:
+            return dict(view.geom, witness_elements=list(view.geom.get('witness_elements', []))+elements)
+        return view.geom
+
+    def final_edge_witnesses(candidate, projection=None):
+        nonlocal final_edge_service
+        if projection is None:
+            projected = project_candidate(candidate)
+            return [element for element in projected.get('witness_elements', [])
+                if isinstance(element.get('provenance'), dict) and
+                element['provenance'].get('method') == 'occt_generated_face_final_edge_visible_hlr']
+        if final_edge_service is None:
+            final_edge_service = drawing_common.FinalEdgeWitnesses(get_planning_model(), description)
+            context['final_edge_audit'] = final_edge_service.audit
+        return final_edge_service.prove(candidate, projection)
+
+    def measure_sheet(sheet, scale):
+        sheet = drawing_common.complete_projection_dependencies(sheet, candidates)
+        _apply_drawing_style(sheet.get('paper', 'A3'))
+        return compose(sheet, get_planning_model(), scale, 1, 1, spec['problem'], spec.get('title', ''))
+
+    context['project_candidate'] = project_candidate
+    context['measure_sheet'] = measure_sheet
+    context['final_edge_witnesses'] = final_edge_witnesses
+
+    def head_candidates():
+        candidates = []
+        for sheet in spec['sheets']:
+            all_names = [str(p.get('name', i)) for i, p in enumerate(description['parts'], 1)]
+            names = sheet.get('parts') or (all_names if sheet.get('frame', 'part') == 'assembly'
+                                           else [sheet.get('part') or all_names[0]])
+            views = resolve_views(sheet, names)
+            keys = {v.name: v.spec.get('view_key', f"{sheet['id']}:v{v.index+1}") for v in views}
+            for view in views:
+                definition = copy.deepcopy(view.vdef)
+                if view.kind == 'detail':
+                    parent = view_by_name(views, view.parent)
+                    definition.update({k: copy.deepcopy(parent.vdef[k]) for k in ('direction', 'u', 'v', 'origin')})
+                candidate = dict(definition, view_key=keys[view.name], name=view.name,
+                    part=(view.vdef['parts'][0] if sheet.get('frame', 'part') == 'part' and len(view.vdef['parts']) == 1 else None),
+                    frame=sheet.get('frame', 'part'), parent_key=keys.get(view.parent),
+                    expresses=[], spec=copy.deepcopy(view.spec), _head_sheet=sheet['id'])
+                for field in drawing_common.CANDIDATE_PRIVATE_FIELDS + ('view_role',):
+                    if field in view.spec:
+                        candidate[field] = copy.deepcopy(view.spec[field])
+                candidates.append(candidate)
+        return candidates
+
+    candidates = [drawing_common.normalize_candidate(v) for v in drawing_views.plan_views(context, legacy=head_candidates)]
+    candidates = [drawing_common.normalize_candidate(v) for v in drawing_sections.plan_sections(candidates, context=context)]
+    context['candidates'] = candidates
+    keys = [v['view_key'] for v in candidates]
+    if len(set(keys)) != len(keys):
+        raise SpecError('候选 view_key 重复')
+
+    def head_assignments():
+        by_name = {(v['_head_sheet'], v['name']): v['view_key'] for v in candidates}
+        return [dict(d, view_key=by_name[(d['_head_sheet'], d['view'])]) for d in dimensions]
+
+    original = {d['_id']: copy.deepcopy(d) for d in dimensions}
+    try:
+        assigned = drawing_dimensions.assign_dimensions(dimensions, candidates, context=context, legacy=head_assignments)
+    except ValueError as error:
+        if isinstance(error, drawing_common.DimensionAssignmentError) or (
+                type(error).__name__ == 'DimensionAssignmentError' and
+                all(hasattr(error, field) for field in ('unresolved', 'assignments', 'audit'))):
+            context['dimension_audit'] = error.audit
+            error.context = context
+        raise
+    if len(assigned) != len(original) or {d['_id'] for d in assigned} != set(original):
+        raise SpecError('每个原 D 必须恰好归属一次')
+    for dimension in assigned:
+        if dimension.get('view_key') not in keys:
+            raise SpecError(f"{dimension['_id']} 未归属有效候选视图")
+        for field in ('value', 'category', 'source_part', 'source_feature', 'covers_features', '_witness_3d'):
+            if dimension.get(field) != original[dimension['_id']].get(field):
+                raise SpecError(f"{dimension['_id']} 改动了原尺寸 {field}")
+
+    def head_sheets():
+        return [drawing_common.make_sheet_spec(sheet,
+                    [v for v in candidates if v['_head_sheet'] == sheet['id']],
+                    [d for d in assigned if d['_head_sheet'] == sheet['id']]) for sheet in spec['sheets']]
+
+    spec['sheets'] = drawing_layout.plan_sheets(candidates, assigned, context=context, legacy=head_sheets)
+    spec['sheets'] = [drawing_common.complete_projection_dependencies(sheet, candidates) for sheet in spec['sheets']]
+    emitted = [d['_id'] for sheet in spec['sheets'] for d in sheet.get('dimensions', [])]
+    if len(emitted) != len(original) or set(emitted) != set(original):
+        raise SpecError('分页后原 D 目录不完整或重复')
+    for sheet in spec['sheets']:
+        drawn_keys = {v.get('view_key') for v in sheet.get('views', [])}
+        for dimension in sheet.get('dimensions', []):
+            if dimension.get('view_key') not in drawn_keys:
+                raise SpecError(f"{dimension['_id']} 未归属本页实际绘制视图")
+            for field in ('value', 'category', 'source_part', 'source_feature', 'covers_features', '_witness_3d'):
+                if dimension.get(field) != original[dimension['_id']].get(field):
+                    raise SpecError(f"分页改动了 {dimension['_id']} 的原尺寸 {field}")
+    finalize_sheet_references(spec['sheets'], candidates)
+    finalize_dimension_audit(spec, assigned, context)
+    spec['_drawing_planned'] = True
+    return spec, candidates, assigned
+
+
+def finalize_sheet_references(sheets, candidates):
+    """按最终页表回填来源、剖切追踪；投影父键与本页符号父图互不混用。"""
+    by_key = {v['view_key']: v for v in candidates}
+    locations = {}
+    # 试排携带的页码可能随最后一次合页改变。按最终可见视图重建分页引用，
+    # 保留 HEAD 手工指定的、没有目标页号的独立剖切标记。
+    for candidate in candidates:
+        candidate.pop('section_references', None)
+    for index, sheet in enumerate(sheets, 1):
+        if 'section_traces' in sheet:
+            sheet['section_traces'] = [r for r in sheet['section_traces']
+                                       if 'target_sheet' not in r and 'target_sheet_id' not in r]
+        for view in sheet.get('views', []):
+            view.pop('section_references', None)
+            view.get('_candidate', {}).pop('section_references', None)
+            view.pop('_source_reference', None)
+            key = view.get('view_key')
+            if not key:
+                continue
+            role = view.get('role', view.get('_candidate', {}).get('role'))
+            previous = locations.get(key)
+            if previous is None or (previous[3] == 'locator' and role != 'locator'):
+                locations[key] = (index, sheet, view, role)
+
+    def locate(key):
+        seen = set()
+        fallback = (None, None)
+        while key and key not in seen:
+            if key in locations:
+                if locations[key][3] != 'locator':
+                    return key, locations[key]
+                if fallback[0] is None:
+                    fallback = (key, locations[key])
+            seen.add(key)
+            key = by_key.get(key, {}).get('canonical_key')
+        return fallback
+
+    def append_reference(container, reference):
+        references = container.setdefault('section_references', [])
+        if reference not in references:
+            references.append(copy.deepcopy(reference))
+
+    for index, sheet in enumerate(sheets, 1):
+        visible_keys = {v.get('view_key') for v in sheet.get('views', [])}
+        for view in sheet.get('views', []):
+            candidate = view.get('_candidate', {})
+            parent_key = view.get('parent_key') or candidate.get('parent_key')
+            explicit_source = view.get('source_key') or candidate.get('source_key')
+            key, located = locate(explicit_source or parent_key)
+            if parent_key and parent_key not in visible_keys:
+                view['parent'] = None
+                if view.get('section'):
+                    view['section'].pop('parent', None)
+            if view.get('role', candidate.get('role')) == 'locator':
+                continue  # 定位副本不占用剖视结果的正式目标页。
+            if not located:
+                if explicit_source:
+                    raise SpecError(f"{view.get('view_key')} 的定位来源 {explicit_source} 没有绘制在任何图页")
+                continue
+            source_index, source_sheet, source_view, _ = located
+            if source_index == index and not explicit_source:
+                continue
+            if explicit_source and explicit_source not in visible_keys and key in visible_keys:
+                view['source_key'] = key
+            section = view.get('section') or view.get('_definition', {}).get('section')
+            if source_index != index:
+                view['_source_reference'] = dict(view_key=key, sheet_id=source_sheet['id'],
+                    sheet_index=source_index, view=source_view.get('name', source_view.get('_candidate', {}).get('name')))
+            if not section:
+                continue
+            if not view.get('section'):
+                view['section'] = copy.deepcopy(section)
+            view['section'].update(source_sheet=source_index, source_sheet_id=source_sheet['id'])
+            if 'source_reference' in view['section']:
+                if source_index != index:
+                    view['section']['source_reference'] = f'剖切位置见第{source_index}张'
+                else:
+                    view['section'].pop('source_reference')
+            for original in (candidate, by_key.get(view.get('view_key'))):
+                if original is not None:
+                    display = original.setdefault('spec', {})
+                    if not display.get('section'):
+                        display['section'] = copy.deepcopy(section)
+                    display['section'].update(source_sheet=source_index, source_sheet_id=source_sheet['id'])
+            label = view['section'].get('label') or view.get('label')
+            if not label:
+                continue
+            definition = view.get('_definition', candidate)
+            cut = definition.get('section') or section
+            reference = dict(label=label, point=copy.deepcopy(cut['point']),
+                direction=copy.deepcopy(definition['direction']), target_sheet=index,
+                target_sheet_id=sheet['id'])
+            append_reference(source_view, reference)
+            append_reference(source_view.setdefault('_candidate', {}), reference)
+            if key in by_key:
+                append_reference(by_key[key], reference)
+            if source_index != index:
+                trace = dict(parent=source_view.get('name', source_view['_candidate'].get('name')),
+                    parent_key=key, **reference)
+                traces = source_sheet.setdefault('section_traces', [])
+                identity = lambda r: (r.get('parent_key', r.get('parent')), r.get('label'),
+                    json.dumps(r.get('point')), json.dumps(r.get('direction')))
+                if not any(identity(old) == identity(trace) for old in traces):
+                    traces.append(trace)
+
+
+def finalize_dimension_audit(spec, assignments, context):
+    """只在最终分页成功后写实际 sheet.id，不用原 _head_sheet 代替。"""
+    locations = {}
+    for index, sheet in enumerate(spec['sheets'], 1):
+        names = {v.get('view_key'): v.get('name', v.get('_candidate', {}).get('name'))
+                 for v in sheet.get('views', [])}
+        for dimension in sheet.get('dimensions', []):
+            locations[dimension['_id']] = dict(sheet_id=sheet['id'], sheet_index=index,
+                view_key=dimension.get('view_key'), view=names.get(dimension.get('view_key'), dimension.get('view')))
+    audit = context.get('dimension_audit', [])
+    records = drawing_common.backfill_dimension_audit(audit, locations)
+    if audit:
+        spec['_dimension_audit'] = copy.deepcopy(audit)
+    for dimension in assignments + [d for s in spec['sheets'] for d in s.get('dimensions', [])]:
+        identity = dimension['_id']
+        if '_dimension_audit' in dimension:
+            drawing_common.backfill_dimension_audit(dimension['_dimension_audit'], locations, identity)
+        elif identity in records:
+            found = records[identity]
+            dimension['_dimension_audit'] = copy.deepcopy(found[0] if len(found) == 1 else found)
+
+
 def apply_section(v, vdef, sec, name):
     mode = sec.get("mode", "full")
     letter = sec.get("label")
@@ -316,7 +459,7 @@ def apply_section(v, vdef, sec, name):
         s2["half"] = sec["half"]
     if mode == "local":
         s2["region"] = sec["region"]
-    for key in ("unsectioned", "no_hatch"):
+    for key in ("unsectioned", "no_hatch", "_no_hatch_parts"):
         if sec.get(key):
             s2[key] = sec[key]
     vdef["section"] = s2
@@ -339,25 +482,85 @@ def view_by_name(views, name):
 _PROJECT_CACHE = {}
 
 
+def projection_views(sheet, part_names):
+    """实际绘制列表与仅供父投影依赖的列表分开解析，均用稳定键寻父图。"""
+    visible = resolve_views(sheet, part_names)
+    dependencies = resolve_views(dict(sheet, views=sheet.get('projection_views', [])), part_names, check_names=False)
+    keys = [v.view_key for v in visible + dependencies if v.view_key]
+    if len(keys) != len(set(keys)):
+        raise SpecError('同一页的绘制图与投影依赖 view_key 重复')
+    return visible, dependencies
+
+
+def parent_view(views, view):
+    if view.parent_key:
+        return next((v for v in views if v.view_key == view.parent_key), None)
+    name = view.parent or (view.vdef.get('detail') or {}).get('parent')
+    return next((v for v in views if v.name == name), None) if name else None
+
+
+def annotation_parent_view(views, view):
+    if view.source_key:
+        return next((v for v in views if v.view_key == view.source_key), None)
+    return parent_view(views, view)
+
+
+def part_no_hatch(geometry, definition):
+    """B 的纵剖肋免剖区域仅作用于对应零件，不修改公开内核或参考实体。"""
+    regions = (definition.get('section') or {}).get('_no_hatch_parts')
+    if not regions:
+        return geometry
+    geometry = dict(geometry, hatches=copy.deepcopy(geometry['hatches']))
+    extra = []
+    for name, polygons in regions.items():
+        hatches = [h for h in geometry['hatches'] if h['part'] == str(name)]
+        if hatches:
+            pending = [poly for poly in polygons if not all(
+                {'shape':'polygon','points':poly} in h.get('exclude',[]) for h in hatches)]
+            extra.extend(project.rib_lines({'no_hatch': pending}, hatches))
+    if definition.get('keep'):
+        extra = g2.clip_all(extra, definition['keep'])
+    geometry['lines'] = list(geometry['lines']) + extra
+    return geometry
+
+
 def project_all(views, shapes, scale):
-    for v in views:
-        if v.kind == "detail":
-            continue
+    complete, active = set(), set()
+
+    def project_one(v):
+        identity = id(v)
+        if identity in complete:
+            return
+        if identity in active:
+            raise SpecError('候选父图引用成环')
+        active.add(identity)
         v.scale = float(v.spec.get("scale", scale))
+        if v.kind == 'detail':
+            parent = parent_view(views, v)
+            if parent is None:
+                raise SpecError(f'局部放大图 {v.name} 缺少投影父图')
+            project_one(parent)
+            v.vdef.update({k: parent.vdef[k] for k in ('direction', 'u', 'v', 'origin')})
+            v.vdef['parent_definition'] = copy.deepcopy(parent.vdef)
+            v.vdef['scale'] = v.scale
+            v.geom = drawing_views.project_external_view(shapes, v.vdef, parent=parent.geom,
+                legacy=lambda: project.project_view(shapes, v.vdef, parent=parent.geom))
+            complete.add(identity)
+            active.remove(identity)
+            return
         v.vdef["scale"] = v.scale
         key=(tuple((n,hash(s)) for n,s in shapes.items()),json.dumps(v.vdef,sort_keys=True))
         if key not in _PROJECT_CACHE:
-            _PROJECT_CACHE[key]=project.project_view(shapes,v.vdef)
+            callback = drawing_sections.project_section if v.vdef.get('section') else drawing_views.project_external_view
+            projected=callback(shapes,v.vdef,legacy=lambda: project.project_view(shapes,v.vdef))
+            if 'witness_elements' in v.vdef and 'witness_elements' not in projected:
+                projected=dict(projected,witness_elements=copy.deepcopy(v.vdef['witness_elements']))
+            _PROJECT_CACHE[key]=part_no_hatch(projected, v.vdef)
         v.geom = _PROJECT_CACHE[key]
-    for v in views:
-        if v.kind != "detail":
-            continue
-        parent = view_by_name(views, v.vdef["detail"]["parent"])
-        v.scale = float(v.spec["scale"])
-        v.vdef.update({k: parent.vdef[k] for k in ("direction", "u", "v", "origin")})
-        v.vdef["scale"] = v.scale
-        v.vdef["parent_definition"] = {k: val for k, val in parent.vdef.items()}
-        v.geom = project.project_view(shapes, v.vdef, parent=parent.geom)
+        complete.add(identity)
+        active.remove(identity)
+    for view in views:
+        project_one(view)
 
 
 # ---------------------------------------------------------------- 尺寸
@@ -392,20 +595,6 @@ def dim_text(spec, value, default_prefix=""):
     if spec.get("reference"):
         text = f"({text})"
     return (f"〔{spec['_id']}〕 " if spec.get("_id") else "") + text
-
-
-class Stack:
-    def __init__(self):
-        self.levels = {"top": [], "bottom": [], "left": [], "right": []}
-
-    def place(self, side, lo, hi):
-        levels = self.levels[side]
-        for k, occ in enumerate(levels):
-            if all(hi <= a - 0.5 or lo >= b + 0.5 for a, b in occ):
-                occ.append((lo, hi))
-                return k
-        levels.append([(lo, hi)])
-        return len(levels) - 1
 
 
 def linear_dims(view, specs, s):
@@ -764,11 +953,21 @@ def build_dims(view, specs):
         if "category" in source:
             d["category"] = source["category"]
         d["source_feature"] = source.get("source_feature")
+        d['covers_features'] = copy.deepcopy(source.get('covers_features', []))
+        d['_witness_3d'] = copy.deepcopy(source.get('_witness_3d'))
+        for key in ('source_part', '_dimension_witness', '_dimension_audit'):
+            if key in source:
+                d[key] = copy.deepcopy(source[key])
 
 
 # ---------------------------------------------------------------- 标注：剖切符号、箭头、原点
 
 def trace_symbol(parent, plane_point, direction, letter):
+    return drawing_sections.section_marks(parent, plane_point, direction, letter,
+        legacy=lambda: _head_trace_symbol(parent, plane_point, direction, letter))
+
+
+def _head_trace_symbol(parent, plane_point, direction, letter):
     """在父视图上画剖切位置（粗短画）、投射方向箭头和字母。"""
     s = parent.scale
     pj = project.Projector(parent.vdef)
@@ -808,6 +1007,69 @@ def trace_symbol(parent, plane_point, direction, letter):
         m.text(letter, p_out + n * 7 + n * (2.0 + LABEL_H / 2) + t * sign * 0.5, LABEL_H, "mm", role="section")
 
 
+def auxiliary_symbol(parent, direction, arrow_at, label, target_sheet=None):
+    """在通过原指向点的投射线上，将箭头与字母放在可见轮廓外侧。"""
+    projector = project.Projector(parent.vdef)
+    direction = np.asarray(direction, float)
+    axis = np.array([direction @ projector.u, direction @ projector.v])
+    length = np.linalg.norm(axis)
+    if length < 1e-8:
+        raise SpecError(f'向视 {label} 的投射方向无法在来源图 {parent.name} 上表示')
+    if length < .2:
+        warn(f'斜视图 {label} 的投射方向与 {parent.name} 的图面几乎垂直')
+    axis /= length
+    anchor = np.asarray(arrow_at, float)*parent.scale
+    normal = np.array([-axis[1],axis[0]])
+    reach = 0.
+    for curve in parent.geom['lines']:
+        if curve['type'] != 'visible':
+            continue
+        coords = g2.sample(curve, .15)*parent.scale-anchor
+        along, across = coords@axis, coords@normal
+        a,b = across[:-1],across[1:]
+        hit = (a*b <= 0) & (abs(a-b) > 1e-10)
+        if np.any(hit):
+            t = a[hit]/(a-b)[hit]
+            reach = max(reach, -float(np.min(along[:-1][hit]+t*np.diff(along)[hit])))
+    text = str(label)+(f'（见第 {target_sheet} 张）' if target_sheet is not None else '')
+    width, height = render.text_extent(text,LABEL_H)
+    choices = []
+    for gap in (2.,6.,12.,20.):
+        tip = anchor-axis*(reach+gap)
+        tail = tip-axis*8
+        for sign in (1,-1):
+            side = normal*sign
+            at = tail+side*(1.5+(abs(side[0])*width+abs(side[1])*height)/2)
+            cost = parent.occ.cost(text_box(text,at,LABEL_H)) + parent.occ.line_cost(tail,tip)
+            choices.append((cost,gap,tip,tail,at))
+    _,_,tip,tail,at = min(choices,key=lambda item:item[:2])
+    parent.marks.line(tail,tip,role='aux')
+    parent.marks.arrow(tip,axis,role='aux')
+    parent.marks.text(text,at,LABEL_H,'mm',role='aux-direction')
+
+
+def reference_legend(view):
+    """密集总览保留各个箭头旁的字母，重复的页号合写于本图下方。"""
+    pages = {}
+    for ref in view.section_references + view.auxiliary_references:
+        if ref.get('target_sheet') is not None:
+            labels = pages.setdefault(ref['target_sheet'], [])
+            if ref['label'] not in labels:
+                labels.append(ref['label'])
+    x0,y0,x1,_ = view.box_geom
+    rows = []
+    for page,labels in pages.items():
+        entry = f"{'、'.join(labels)}见第{page}张"
+        if rows and render.text_extent(rows[-1]+'　'+entry,LABEL_H)[0] <= 1.2*(x1-x0):
+            rows[-1] += '　'+entry
+        else:
+            rows.append(entry)
+    y = min(y0,view.marks.box[1] if view.marks.box else y0)-3
+    for row in rows:
+        view.marks.text(row,((x0+x1)/2,y),LABEL_H,'mt',role='source-reference')
+        y -= LABEL_H+2
+
+
 def origin_marker(view):
     if view.kind not in BASIC:
         return
@@ -837,10 +1099,13 @@ def origin_marker(view):
 # ---------------------------------------------------------------- 图框、标题栏、明细栏
 
 def sheet_frame(paper, info, sheet_index, sheet_count, parts_list, notes):
+    style=drawing_layout.drawing_style(paper)
+    if style.get('frame_builder'):
+        return style['frame_builder'](paper, info, sheet_index, sheet_count, parts_list, notes)
     W,H,a,c=PAPERS[paper]
     m=Marks()
     m.curve(g2.polyline([(a,c),(W-c,c),(W-c,H-c),(a,H-c),(a,c)],'frame'))
-    h=9.0 if paper=='A1' else 6.5
+    h=style['FRAME_H']
     m.text(f"{info['title']}  |  {info['problem_label']}  {sheet_index}/{sheet_count}",(a+6,c+6),h,'lb')
     m.text(f"第一角画法   单位mm   比例{info['scale_text']}   {info['drawing_no']}",(W-c-6,c+6),h,'rb')
     m.line((a,c+22),(W-c,c+22),'frame')
@@ -860,18 +1125,6 @@ def sheet_frame(paper, info, sheet_index, sheet_count, parts_list, notes):
     return m,(a,c+25,W-c,y-6),reserved
 
 
-def view_extent(v):
-    """视图在局部图纸坐标（视图原点为 0）下占的范围，含尺寸、标注、名称。"""
-    b = None
-    s = v.scale
-    gb = getattr(v, "box_full", v.box_geom)
-    b = box_union(b, gb)
-    for d in v.dims:
-        b = box_union(b, d["marks"].box)
-    b = box_union(b, v.marks.box)
-    return b
-
-
 def add_label(v):
     b = view_extent(v)
     cx = (b[0] + b[2]) / 2 if v.kind not in BASIC else (v.box_geom[0] + v.box_geom[2]) / 2
@@ -889,8 +1142,15 @@ def add_label(v):
             c = np.array([cx + tw / 2 + 4.5, b[3] + 4 + LABEL_H / 2])
             r = LABEL_H / 2
             v.marks.curve(g2.arc(c, r, 0, 180, "thin"), role="label")
-            ccw = v.spec.get("rotated") != "cw"
-            v.marks.arrow(c + ([r, 0] if ccw else [-r, 0]), (0, -1), role="label", size=1.8)
+            clockwise = v.spec.get("rotated") == "cw"
+            v.marks.arrow(c + ([r, 0] if clockwise else [-r, 0]), (0, -1), role="label", size=1.8)
+    if v.source_reference and v.source_reference.get('sheet_index'):
+        reference = v.source_reference
+        page = f"见第 {reference['sheet_index']} 张"
+        text = ('剖切位置' if v.vdef.get('section') else '定位来源') + page
+        if re.sub(r'\s+', '', page) not in re.sub(r'\s+', '', v.name):
+            bounds = view_extent(v)
+            v.marks.text(text, (cx, bounds[3]+3), DIM_H, 'mb', role='source-reference')
 
 
 def arrange(views, frame_box, reserved, placed_boxes=None):
@@ -961,8 +1221,8 @@ def arrange(views, frame_box, reserved, placed_boxes=None):
         else:
             target = None
             if v.parent:
-                pv = view_by_name(views, v.parent)
-                if pv.paper_origin is not None:
+                pv = parent_view(views, v)
+                if pv is not None and pv.paper_origin is not None:
                     pe = ext[pv.name]
                     target = ((pe[0] + pe[2]) / 2 + pv.paper_origin[0], (pe[1] + pe[3]) / 2 + pv.paper_origin[1])
             fx0, fy0, fx1, fy1 = frame_box
@@ -990,26 +1250,47 @@ def arrange(views, frame_box, reserved, placed_boxes=None):
 
 def sheet_shapes(mdl, sheet):
     frame = sheet.get("frame", "part")
+    def explicit_parts(view):
+        return view.get('_definition', {}).get('parts') or view.get('parts') or []
+
+    defaults = [str(n) for n in (sheet.get('parts') or [])]
+    if not defaults:
+        if frame == 'assembly':
+            defaults = [p.name for p in mdl.parts]
+        else:
+            defaults = [str(sheet.get('part') or mdl.parts[0].name)]
+    names = []
+    for view in sheet.get('views', []) + sheet.get('projection_views', []):
+        for name in explicit_parts(view) or defaults:
+            if str(name) not in names:
+                names.append(str(name))
+    names = names or defaults
     if frame == "assembly":
         cache=getattr(mdl,'_drawing_placed',{})
         shapes={}
         for p in mdl.parts:
+            if p.name not in names:
+                continue
             stamp=(hash(p.shape),tuple(p.placement.ravel()))
             if p.name not in cache or cache[p.name][0]!=stamp:cache[p.name]=(stamp,p.placed())
             shapes[p.name]=cache[p.name][1]
         mdl._drawing_placed=cache
-        return shapes, [p.name for p in mdl.parts]
-    name = sheet.get("part", mdl.parts[0].name)
-    part = mdl.part(name)
-    if part is None:
-        raise SpecError(f"参考描述中没有零件 {name}")
-    return {name: part.shape}, [name]
+        if set(names) - set(shapes):
+            raise SpecError(f'参考描述中没有零件 {set(names)-set(shapes)}')
+        return shapes, defaults
+    shapes = {}
+    for name in names:
+        part = mdl.part(name)
+        if part is None:
+            raise SpecError(f"参考描述中没有零件 {name}")
+        shapes[name] = part.shape
+    return shapes, defaults
 
 
 def compose(sheet, mdl, scale, sheet_index, sheet_count, problem, problem_title):
     shapes, names = sheet_shapes(mdl, sheet)
-    views = resolve_views(sheet, names)
-    project_all(views, shapes, scale)
+    views, dependencies = projection_views(sheet, names)
+    project_all(views + dependencies, shapes, scale)
     for v in views:
         s = v.scale
         gb = project.geometry_bounds(v.geom)
@@ -1023,31 +1304,42 @@ def compose(sheet, mdl, scale, sheet_index, sheet_count, problem, problem_title)
             if not h.get("clip"):
                 v.occ.add_fill([[[p[0] * s, p[1] * s] for p in lp] for lp in h["loops"]], 0.5)
         v.marks.occ = v.occ
-    # 跨图纸剖视的剖切位置：结果视图在另一张图上，本张仍给出剖切符号。
+        v.marks.group_section_pages = len(v.auxiliary_references) > 1
+    # D 的最终试排先有 section_references，正式页还会有 section_traces。
+    marked_sections = set()
+
+    def mark_section(parent, point, direction, label):
+        key = (parent.index, label, tuple(point), tuple(direction))
+        if key not in marked_sections:
+            trace_symbol(parent, point, direction, label)
+            marked_sections.add(key)
+
     for trace in sheet.get("section_traces", []):
-        trace_symbol(view_by_name(views, trace["parent"]), trace["point"], trace["direction"], trace["label"])
+        parent = next((v for v in views if trace.get('parent_key') and v.view_key == trace['parent_key']), None)
+        mark_section(parent or view_by_name(views, trace["parent"]), trace["point"], trace["direction"], trace["label"])
+    for view in views:
+        for reference in view.section_references:
+            mark_section(view, reference['point'], reference['direction'], reference['label'])
+        seen = set()
+        for reference in view.auxiliary_references:
+            key = json.dumps(reference,sort_keys=True)
+            if key not in seen:
+                target = None if view.marks.group_section_pages else reference['target_sheet']
+                auxiliary_symbol(view,reference['direction'],reference['arrow_at'],reference['label'],target)
+                seen.add(key)
     # 剖切符号、斜视图箭头、放大范围圆
     for v in views:
-        if v.kind in ("auxiliary",) + tuple(BASIC) and v.vdef.get("section") and v.parent and v.letter                 and v.vdef["section"]["mode"] != "local":
-            trace_symbol(view_by_name(views, v.parent), v.vdef["section"]["point"], v.vdef["direction"], v.letter)
-        elif v.kind == "removed_section" and v.parent and v.letter:
-            trace_symbol(view_by_name(views, v.parent), v.vdef["section"]["point"], v.vdef["direction"], v.letter)
-        elif v.kind == "auxiliary" and v.parent:
-            pv = view_by_name(views, v.parent)
-            pj = project.Projector(pv.vdef)
-            d = np.asarray(v.vdef["direction"])
-            e = np.array([d @ pj.u, d @ pj.v])
-            if np.linalg.norm(e) < 0.2:
-                warn(f"斜视图 {v.name} 的投射方向与 {pv.name} 的图面几乎垂直")
-            e /= np.linalg.norm(e)
-            tip = np.asarray(v.spec.get("arrow_at", [0, 0]), float) * pv.scale
-            tail = tip - e * 12
-            pv.marks.line(tail, tip, role="aux")
-            pv.marks.arrow(tip, e, role="aux")
-            nrm = np.array([-e[1], e[0]])
-            pv.marks.text(v.letter, tail - e * 2 + nrm * LABEL_H, LABEL_H, "mm", role="aux")
+        pv = annotation_parent_view(views, v)
+        if pv is None and (v.source_key or parent_view(dependencies, v) is not None):
+            continue  # 父图仅供投影；不在隐藏依赖上添加纸面符号。
+        if (v.vdef.get('section') and (v.parent or v.source_key) and v.letter
+                and v.vdef['section']['mode'] != 'local'):
+            mark_section(pv or view_by_name(views, v.parent), v.vdef["section"]["point"], v.vdef["direction"], v.letter)
+        elif v.kind == "auxiliary" and (v.parent or v.source_key):
+            pv = pv or view_by_name(views, v.parent)
+            auxiliary_symbol(pv,v.vdef['direction'],v.spec.get('arrow_at',[0,0]),v.letter)
         elif v.kind == "detail":
-            pv = view_by_name(views, v.vdef["detail"]["parent"])
+            pv = pv or view_by_name(views, v.vdef["detail"]["parent"])
             c = np.asarray(v.vdef["detail"]["center"], float) * pv.scale
             r = v.vdef["detail"]["r"] * pv.scale
             pv.marks.curve(g2.arc(c, r, 0, 360, "thin"), role="detail")
@@ -1056,6 +1348,8 @@ def compose(sheet, mdl, scale, sheet_index, sheet_count, problem, problem_title)
             pv.marks.text(v.letter, c + e * (r + 7) + [0, 0.8], LABEL_H, "mb", role="detail")
     for v in views:
         origin_marker(v)
+        if v.marks.group_section_pages:
+            reference_legend(v)
     # 补充中心线
     for cl in sheet.get("centerlines", []):
         v = view_by_name(views, cl["view"])
@@ -1076,7 +1370,20 @@ def compose(sheet, mdl, scale, sheet_index, sheet_count, problem, problem_title)
             v.marks.curve(g2.arc(c, ph["r"] * s, ph.get("start", 0), ph.get("end", 360), "phantom"), role="phantom")
     # 尺寸
     for v in views:
-        build_dims(v, [d for d in sheet.get("dimensions", []) if d.get("view") == v.name])
+        mine = [d for d in sheet.get('dimensions', [])
+                if (d.get('view_key') == v.view_key if d.get('view_key') else d.get('view') == v.name)]
+        def head_dimensions():
+            build_dims(v, mine)
+            bbox = None
+            for dimension in v.dims:
+                bbox = box_union(bbox, drawing_common.marks_bounds(dimension['marks'].to_view(v.scale), v.scale))
+            return dict(dimensions=v.dims, bbox=bbox, unresolved=[])
+        result = drawing_dimensions.layout_dimensions(v, mine,
+            style=drawing_layout.drawing_style(sheet.get('paper', 'A3')), legacy=head_dimensions)
+        if result.get('unresolved'):
+            raise SpecError(f"未解决尺寸：{result['unresolved']}")
+        v.dims = result['dimensions']
+        v.dimension_bbox = result['bbox']
     # 零件序号
     balloons = sheet.get("balloons", [])
     for v in views:
@@ -1137,11 +1444,16 @@ def place_balloons(v, items):
             v.marks.text(str(b["part"]), ((x + x2) / 2, y + 0.8), LABEL_H, "mb", role="balloon")
 
 
+def _apply_drawing_style(paper):
+    style=drawing_layout.drawing_style(paper)
+    drawing_common.apply_style(style)
+    for key in ('DIM_H', 'LABEL_H', 'LEVEL_STEP', 'ARROW', 'EXT_GAP', 'EXT_OVER', 'LEVEL0', 'VIEW_GAP'):
+        if key in style:globals()[key]=style[key]
+    return style
+
+
 def pick_scale(sheet, mdl, paper, sheet_index, sheet_count, problem, title, info, parts_list, notes):
-    global DIM_H, LABEL_H, LEVEL_STEP
-    DIM_H=9.0 if paper=='A1' else 6.5
-    LABEL_H=DIM_H
-    LEVEL_STEP=DIM_H+5
+    style=_apply_drawing_style(paper)
     spec_scale = sheet.get("scale", 1)
     candidates = [float(x) for x in spec_scale] if isinstance(spec_scale, list) else SCALES if spec_scale == "auto" else [float(spec_scale)]
     for sc in candidates:
@@ -1149,7 +1461,8 @@ def pick_scale(sheet, mdl, paper, sheet_index, sheet_count, problem, title, info
         views = compose(sheet, mdl, sc, sheet_index, sheet_count, problem, title)
         _, frame_box, reserved = sheet_frame(paper, dict(info, scale_text=scale_text(sc)), sheet_index,
                                              sheet_count, parts_list, notes)
-        fit = arrange(views, frame_box, reserved)
+        fit = drawing_layout.arrange_views(views, frame_box, reserved, style=style,
+            legacy=lambda: arrange(views, frame_box, reserved))
         if fit:
             flush_warnings()
             return sc, views
@@ -1158,8 +1471,9 @@ def pick_scale(sheet, mdl, paper, sheet_index, sheet_count, problem, title, info
     raise AssertionError
 
 
-def hatch_style(index):
-    return HATCH_STYLES[index % len(HATCH_STYLES)]
+def hatch_style(index, styles=None):
+    styles=HATCH_STYLES if styles is None else styles
+    return styles[index % len(styles)]
 
 
 def protect_annotation_text(view):
@@ -1186,10 +1500,54 @@ def protect_annotation_text(view):
         marks[:]=revised
 
 
-def make_sheet(sheet, mdl, problem, title, sheet_index, sheet_count, dpi):
+def protect_hatch_text(sheet):
+    """把整页最终字框换回各剖视坐标；仅向 hatch.exclude 追加留白区域。"""
+    views = sheet['views']
+    if not any(v.get('hatches') for v in views):
+        return sheet
+    boxes = []
+
+    def collect(marks, scale, origin):
+        for mark in marks:
+            if mark['kind'] != 'text' or not mark['text']:
+                continue
+            x0,y0,x1,y1 = text_box(mark['text'], [0,0], mark['height'], mark.get('anchor','mm'))
+            # 0.5 mm 为纸面留白，随文字旋转，字高不随视图比例缩放。
+            corners = np.array([[x0-.5,y0-.5], [x1+.5,y0-.5], [x1+.5,y1+.5], [x0-.5,y1+.5]])
+            angle = math.radians(mark.get('angle', 0))
+            c,s = math.cos(angle), math.sin(angle)
+            polygon = corners @ np.array([[c,s],[-s,c]]) + np.asarray(mark['at'])*scale + origin
+            boxes.append((box_pts(polygon), polygon))
+
+    collect(sheet.get('sheet_marks', []), 1, [0,0])
+    for view in views:
+        scale, origin = render.view_xf(view)
+        collect(view.get('annotations', []), scale, origin)
+        for dimension in view.get('dimensions', []):
+            collect(dimension['draw'], scale, origin)
+    for view in views:
+        scale, origin = render.view_xf(view)
+        for hatch in view.get('hatches', []):
+            loops = [loop for loop in hatch['loops'] if len(loop) >= 3]
+            if not loops:
+                continue
+            bounds = box_pts(np.concatenate(loops)*scale + origin)
+            excluded = list(hatch.get('exclude', []))  # 原免剖区可能与投影缓存共享。
+            for box, polygon in boxes:
+                if box_overlap(bounds, box):
+                    region = dict(shape='polygon', points=((polygon-origin)/scale).tolist())
+                    if region not in excluded:
+                        excluded.append(region)
+            if excluded:
+                hatch['exclude'] = excluded
+    return sheet
+
+
+def make_sheet(sheet, mdl, problem, title, sheet_index, sheet_count, dpi, *, finalize=False):
     paper = sheet.get("paper", "A3")
     if paper not in PAPERS:
         raise SpecError(f"图幅 {paper} 不支持，可用 {'、'.join(PAPERS)}")
+    style = drawing_layout.drawing_style(paper)
     parts_list = sheet.get("parts_list") or []
     notes = sheet.get("notes") or []
     frame = sheet.get("frame", "part")
@@ -1205,9 +1563,9 @@ def make_sheet(sheet, mdl, problem, title, sheet_index, sheet_count, dpi):
     for v in views:
         hatches = []
         for h in v.geom["hatches"]:
-            ang, sp = hatch_style(order.index(h["part"]) if h["part"] in order else 0)
+            ang, sp = hatch_style(order.index(h["part"]) if h["part"] in order else 0, style.get('hatch_styles'))
             if frame == "part":
-                ang, sp = 45, 3.0
+                ang, sp = 45, style['hatch_spacing']
             hh = {"part": h["part"], "angle": ang, "spacing": sp, "loops": h["loops"]}
             for key in ("clip", "exclude"):
                 if h.get(key):
@@ -1221,6 +1579,7 @@ def make_sheet(sheet, mdl, problem, title, sheet_index, sheet_count, dpi):
             vdef["parent_definition"] = {k: val for k, val in v.vdef["parent_definition"].items()}
         entry = {
             "name": v.name,
+            "view_key": v.view_key,
             "kind": v.kind if v.kind in ("auxiliary", "removed_section", "detail") else "basic",
             "position": v.kind if v.kind in BASIC else None,
             "frame": frame,
@@ -1228,6 +1587,13 @@ def make_sheet(sheet, mdl, problem, title, sheet_index, sheet_count, dpi):
             "placement": {"scale": v.scale, "scale_text": scale_text(v.scale),
                           "paper_origin": [round(v.paper_origin[0], 4), round(v.paper_origin[1], 4)]},
         }
+        for key in drawing_common.CANDIDATE_PRIVATE_FIELDS:
+            if key in v.spec:
+                entry[key] = copy.deepcopy(v.spec[key])
+        if v.geom.get('witness_elements') is not None:
+            entry['witness_elements'] = copy.deepcopy(v.geom['witness_elements'])
+        if v.source_reference:
+            entry['_source_reference'] = copy.deepcopy(v.source_reference)
         if getattr(v, "axes", None):
             entry["axes"] = v.axes
         if v.kind in BASIC and v.vdef.get("section"):
@@ -1255,7 +1621,18 @@ def make_sheet(sheet, mdl, problem, title, sheet_index, sheet_count, dpi):
         "views": out_views,
         "sheet_marks": frame_marks.to_view(1.0),
     }
-    return sheet_json
+    for key in ('_dimension_audit', 'parts'):
+        if key in sheet:
+            sheet_json[key] = copy.deepcopy(sheet[key])
+    move_letters = str(problem).isdigit() and 16 <= int(problem) <= 25
+    if finalize:
+        if move_letters:
+            _move_auxiliary_letters(sheet_json)
+        if not drawing_layout.arrange_finalized_page(sheet_json):
+            raise SpecError(f"{sheet['id']}：{paper} 比例 {scale_text(sc)} 放不下最终文字、引线和视图")
+    elif move_letters:
+        return sheet_json  # 试排调用方可先检查原位，再单独调用 clear_auxiliary_letters。
+    return protect_hatch_text(sheet_json)
 
 
 CONVENTIONS = {
@@ -1303,8 +1680,6 @@ def public_sheet(sheet):
     kind_cn = {"basic": "基本视图", "auxiliary": "斜视图", "removed_section": "断面", "detail": "局部放大"}
     for v in sheet["views"]:
         # 新题仅使用全剖/断面；视图定位是页面布局而非任何参考图线。
-        if (v["definition"].get("section") or {}).get("region"):
-            raise SpecError("公开协议不允许局部剖区域顶点；请改用独立全剖图")
         vv = {k: v[k] for k in ("name", "kind", "position", "frame")}
         vv["projection_direction"] = v["definition"].get("direction")
         vv["section"] = ({"label":v.get("section_label"),"mode":v["definition"]["section"]["mode"]} if v["definition"].get("section") else None)
@@ -1321,6 +1696,9 @@ def public_sheet(sheet):
 
 def validate_public(doc):
     forbidden = {"lines", "hatches", "loops", "draw", "annotations", "sheet_marks", "from", "to", "points", "vertices", "center", "region"}
+    forbidden.update(drawing_common.CANDIDATE_PRIVATE_FIELDS)
+    forbidden.update({'source_part', 'source_feature', 'covers_features', '_dimension_witness', '_dimension_audit', '_witness_3d', 'projection_views',
+                      '_a_local', '_a_position', '_no_hatch_parts', '_source_reference', 'view_role'})
     def visit(node):
         if isinstance(node, dict):
             if forbidden.intersection(node):
@@ -1336,9 +1714,15 @@ def validate_public(doc):
         raise SpecError("尺寸编号重复")
 
 
-def clear_auxiliary_letters(sheet):
+def _move_auxiliary_letters(sheet):
     """文字避开真实零件轮廓，保留原定位端点并以引线关联。"""
-    geometry=[];texts=[];points=[]
+    geometry=[];texts=[];points=[];occupied=[]
+    width, height = sheet['paper']['width'], sheet['paper']['height']
+    frame = [31,40,width-15,height-20]
+    if 'title_block' in sheet:
+        info = dict(sheet['title_block'], problem_label=sheet['problem'])
+        _, frame, _ = sheet_frame(sheet['paper']['size'], info, sheet['sheet_index'],
+                                  sheet['sheet_count'], sheet['parts_list'], sheet['notes'])
     for v in sheet['views']:
         sc,off=render.view_xf(v)
         curves=[c for c in v['lines'] if c['type'] in ('visible','hidden')]
@@ -1346,7 +1730,12 @@ def clear_auxiliary_letters(sheet):
         geometry.append(None if gb is None else [gb[0]*sc+off[0],gb[1]*sc+off[1],gb[2]*sc+off[0],gb[3]*sc+off[1]])
         arrays=[g2.sample(g2.xform(c,sc,off),.35) for c in curves]
         points.append(np.concatenate(arrays) if arrays else np.zeros((0,2)))
-        for m in v['annotations']+[m for d in v['dimensions'] for m in d['draw']]:
+        marks = v['annotations']+[m for d in v['dimensions'] for m in d['draw']]
+        # D 已为每个视图分配含图名、箭头、尺寸在内的范围。移动文字也要避开邻图。
+        full = g2.bounds(v['lines'])
+        full = box_union([x*sc for x in full] if full is not None else None, drawing_common.marks_bounds(marks,sc))
+        occupied.append([p+off[i%2] for i,p in enumerate(full)] if full is not None else None)
+        for m in marks:
             if m['kind']=='text':texts.append(text_box(m['text'],np.array(m['at'])*sc+off,m['height'],m.get('anchor','mm'),m.get('angle',0)))
     for m in sheet['sheet_marks']:
         if m['kind']=='text':texts.append(text_box(m['text'],m['at'],m['height'],m.get('anchor','mm'),m.get('angle',0)))
@@ -1372,26 +1761,39 @@ def clear_auxiliary_letters(sheet):
                 good=[]
                 for at in candidates:
                     b=text_box(m['text'],at,m['height'],'mm')
-                    if b[0]<31 or b[2]>sheet['paper']['width']-15 or b[1]<40 or b[3]>sheet['paper']['height']-20:continue
+                    if b[0]<frame[0] or b[2]>frame[2] or b[1]<frame[1] or b[3]>frame[3]:continue
+                    proposed=box_union(occupied[vi],b)
+                    if any(box_overlap(proposed,r) for i,r in enumerate(occupied) if i!=vi and r is not None):continue
                     if any(box_overlap(b,r,2) for r in geometry+texts if r is not None):continue
                     good.append((float(np.linalg.norm(np.array(at)-old)),at,b))
                 return min(good,key=lambda t:t[0]) if good else None
             best=choose(candidates)
-            if best is None:best=choose([[x,y] for x in np.arange(35+tw/2,sheet['paper']['width']-15-tw/2,12) for y in np.arange(45,sheet['paper']['height']-24,12)])
+            if best is None:best=choose([[x,y] for x in np.arange(frame[0]+tw/2,frame[2]-tw/2+1e-6,8) for y in np.arange(frame[1]+th/2,frame[3]-th/2+1e-6,8)])
             if best is None:raise SpecError(f"{sheet['sheet']}：文字无空白位置：{m['text']}")
             _,at,bestbox=best;m['at']=((np.array(at)-off)/sc).tolist();m['anchor']='mm';m['angle']=0
+            occupied[vi]=box_union(occupied[vi],bestbox)
             v['annotations'].append(dict(kind='curve',curve=g2.line((old-off)/sc,m['at'],'thin'),role='text-callout'))
             texts.append(bestbox)
     for v in sheet['views']:protect_annotation_text(v)
-    return sheet
+
+
+def clear_auxiliary_letters(sheet):
+    """独立试排入口。最终写出由 make_sheet(finalize=True) 在整图平移后统一留白。"""
+    _move_auxiliary_letters(sheet)
+    return protect_hatch_text(sheet)
 
 
 def run(spec_path, ref_path=None, out_dir=None, dpi=240, sheet_filter=None):
     _PROJECT_CACHE.clear()
     spec = json.loads(Path(spec_path).read_text(encoding="utf-8-sig"))
     problem = spec.get("problem") or Path(spec_path).stem
+    spec.setdefault('problem', problem)
     ref_path = Path(ref_path) if ref_path else HERE / "参考答案" / f"第{problem}题.json"
+    if spec.get('format')=='终稿实测图元':
+        return replay_delivery(spec_path,spec,ref_path,out_dir,dpi,sheet_filter)
     desc = model.load(ref_path)
+    if not spec.get('_drawing_planned'):
+        spec, _, _ = plan_problem(spec, desc)
     mdl = model.build(desc)
     for p in mdl.parts:
         for w in p.warnings:
@@ -1403,11 +1805,6 @@ def run(spec_path, ref_path=None, out_dir=None, dpi=240, sheet_filter=None):
     sheets = spec["sheets"]
     title = spec.get("title", "")
     written = []
-    number = 0
-    for sh in sheets:
-        for dimension in sh.get("dimensions", []):
-            number += 1
-            dimension["_id"] = f"D{number}"
     private = HERE / "图纸几何" if out_dir == PUBLIC else out_dir / "出题端几何"
     private.mkdir(parents=True, exist_ok=True)
     out_dir = out_dir / problem   # 公开图纸按题号分文件夹：<输出目录>/NN/NN-张次.png
@@ -1416,19 +1813,499 @@ def run(spec_path, ref_path=None, out_dir=None, dpi=240, sheet_filter=None):
         sheet.setdefault("id", problem if len(sheets) == 1 else f"{problem}-{i}")
         if sheet_filter and sheet["id"] not in sheet_filter:
             continue
-        sj = make_sheet(sheet, mdl, problem, sheet.get("title", title), i, len(sheets), dpi)
-        if int(problem)>=16:clear_auxiliary_letters(sj)
+        sj = make_sheet(sheet, mdl, problem, sheet.get("title", title), i, len(sheets), dpi, finalize=True)
         jpath = out_dir / f"{sheet['id']}.json"
         (private / jpath.name).write_text(json.dumps(sj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         public = public_sheet(sj)
         validate_public(public)
         jpath.write_text(json.dumps(public, ensure_ascii=False, indent=2), encoding="utf-8")
-        img = render.render_sheet(sj).image()
+        with drawing_common.render_style(drawing_layout.drawing_style(sj['paper']['size'])):
+            img = render.render_sheet(sj).image()
         ppath = out_dir / f"{sheet['id']}.png"
         img.save(ppath, optimize=True, dpi=(dpi, dpi))
         written += [ppath, jpath]
         print(f"已出图：{ppath.name}（{sj['paper']['size']}，比例 {sj['scale']}，{len(sj['views'])} 个视图）")
     return written
+
+
+def sandbox(problem, out_dir, dpi=240, sheet_filter=None):
+    """单题规格/私有 JSON/公开 JSON/PNG 全部写到 out_dir；正式目录只读。"""
+    from advanced_parts import problem_data
+    out = drawing_common.sandbox_directory(out_dir)
+    data = problem_data(problem)
+    pid = data['problem']
+    reference = HERE/'参考答案'/f'第{pid}题.json'
+    before = drawing_common.assert_reference(reference, data['description'])
+    try:
+        report=delivery_problem((pid,out,dpi,False),sheet_filter=sheet_filter)
+        return [out/pid/(key+suffix) for key in report['sheets']
+                if not sheet_filter or key in sheet_filter for suffix in ('.png','.json')]
+    finally:
+        assert reference.read_bytes() == before, f'沙箱出图修改了参考答案：{reference}'
+
+
+def freeze_samples(out_dir, problems=('08', '13', '19', '21', '25')):
+    """冻结 HEAD 已生成的候选投影和标注；不出新图、不改正式材料。"""
+    from advanced_parts import problem_data
+    out = drawing_common.sandbox_directory(out_dir)
+    root = HERE.parents[2]
+    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
+    for problem in problems:
+        data = problem_data(problem)
+        pid = data['problem']
+        drawing_common.assert_reference(HERE/'参考答案'/f'第{pid}题.json', data['description'])
+        spec, candidates, dimensions = plan_problem(data['spec'], data['description'])
+        by_key = {v['view_key']: v for v in candidates}
+        by_id = {d['_id']: d for d in dimensions}
+        projections = {}
+        projection_keys = {}
+        for sheet in spec['sheets']:
+            relative = (HERE/'图纸几何'/f"{sheet['id']}.json").relative_to(root).as_posix()
+            head = json.loads(subprocess.check_output(['git', 'show', f'{revision}:{relative}'], cwd=root))
+            by_name = {v['name']: v for v in head['views']}
+            for definition in sheet['views']:
+                candidate = by_key[definition['view_key']]
+                view = by_name[candidate['name']]
+                scale = view['placement']['scale']
+                projection = {key: view[key] for key in ('lines', 'hatches')}
+                encoded = json.dumps(projection, ensure_ascii=False, separators=(',', ':'))
+                if encoded not in projection_keys:
+                    projection_keys[encoded] = f'P{len(projections)+1}'
+                    projections[projection_keys[encoded]] = projection
+                candidate['projection_key'] = projection_keys[encoded]
+                candidate['head_placement'] = view['placement']
+                candidate['geometry_bbox'] = project.geometry_bounds(projection)
+                geometry_box = [v*scale for v in candidate['geometry_bbox']]
+                bbox = box_union(geometry_box, drawing_common.marks_bounds(view['annotations'], scale))
+                candidate['head_annotations'] = view['annotations']
+                for dimension in view['dimensions']:
+                    target = by_id[dimension['id']]
+                    assert target['value'] == dimension['value'], (pid, target['_id'])
+                    dim_box = drawing_common.marks_bounds(dimension['draw'], scale)
+                    target['head_layout'] = dict(draw=dimension['draw'], bbox=dim_box,
+                        text=dimension['text'], scale=scale)
+                    bbox = box_union(bbox, dim_box)
+                candidate['head_bbox'] = bbox
+        frozen = dict(format='机械图纸接缝冻结样例', version=1, head=revision,
+            problem=pid, title=spec['title'], units='mm', parts=data['description']['parts'],
+            candidates=candidates, projections=projections, dimensions=dimensions, head_sheets=data['spec']['sheets'])
+        (out/f'{pid}.json').write_text(json.dumps(frozen, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+        print(f'冻结 {pid}：{len(candidates)} 个候选，{len(dimensions)} 条尺寸')
+
+
+def prepare_delivery(problem, out, handoff):
+    """三维规格与实测投影的输入校验；缓存只写在指定沙箱。"""
+    from advanced_parts import problem_data
+    data=problem_data(problem)
+    drawing_common.assert_reference(HERE/'参考答案'/f'第{problem}题.json',data['description'])
+    views,aliases,owners=drawing_views.delivery_views(data,handoff,HERE/'图纸几何',
+        baseline=(HERE.parents[2], 'b383021e5fa8eb4bc458f79acaa1e28368657c9e'))
+    assigned,missing=drawing_dimensions.resolve_delivery(data,views,aliases,owners,handoff)
+    used={d['view_key'] for d in assigned.values()}
+    for k,idx in views.items():
+        c=idx.c
+        if c.get('kind')=='basic' and not c.get('section') and not c.get('keep') and c.get('spec',{}).get('type') in BASIC:
+            used.add(k)
+    def save(name,value):
+        (out/name).write_text(json.dumps(value,ensure_ascii=False,separators=(',',':')),encoding='utf8')
+    out.mkdir(parents=True,exist_ok=True)
+    save('views.json',{k:dict(c={field:v for field,v in idx.c.items() if field not in ('_a_features','witness_elements','_candidate')},
+                              g={f:idx.geometry[f] for f in ('lines','hatches')}) for k,idx in views.items() if k in used})
+    save('dimensions.json',list(assigned.values()))
+    save('missing.json',missing)
+    print(problem,len(assigned),'已归属；未归属',missing,flush=True)
+    return missing
+
+
+def export_delivery(problem,out,views,dimensions,dpi=240,sheet_filter=None):
+    """同一次布局产生私有图元、公开目录和 PNG，逐个 D 核对实际文字和数值。"""
+    from advanced_parts import problem_data
+    data=problem_data(problem)
+    ref=HERE/'参考答案'/f'第{problem}题.json'
+    original=drawing_common.assert_reference(ref,data['description'])
+    catalog={d['_id']:d for sh in data['spec']['sheets'] for d in sh['dimensions']}
+    if {d['_id']:d['value'] for d in dimensions}!={k:d['value'] for k,d in catalog.items()} or len(dimensions)!=len(catalog):
+        raise SpecError(f'{problem} 尺寸目录不完整')
+    part_names={str(i):p.title for i,p in enumerate(data['parts'],1)}
+    pages=drawing_layout.delivery_pages(views,dimensions)
+    exceptions=[]
+    # 装配总图另配完整明细和两个实投影；零件尺寸页保留序号。
+    if len(part_names)>1:
+        overall=[]
+        for key,v in views.items():
+            c=v['c']
+            if c['frame']=='assembly' and c.get('kind')=='basic' and not c.get('section') and not c.get('keep') and c.get('direction') not in [views[p['key']]['c']['direction'] for p in overall]:
+                balloons=[b for b in data['spec']['sheets'][0].get('balloons',[]) if b['view']==c['name']]
+                overall.append(dict(key=key,dims=[],rows=0,frame='assembly',balloons=balloons))
+            if len(overall)==2:break
+        if len(overall)==2:pages.insert(0,[overall])
+    def info_for(page_no,rows):
+        assembly=rows[0][0]['frame']=='assembly'
+        info=dict(title=data['name']+(' · 装配' if assembly else ''),drawing_no=f'JX-{problem}-{page_no}',
+                  material='',quantity='',scale_text='各视图见图注')
+        bom=data['spec']['sheets'][0].get('parts_list',[]) if assembly and page_no==1 else []
+        notes=[]
+        if page_no==(2 if len(part_names)>1 else 1):
+            notes=list(dict.fromkeys(n for sh in data['spec']['sheets'] for n in sh.get('notes',[]) if n!='技术要求'))
+            notes.append('图中字母标出测点，两点间按所注方向量取。')
+        if any(any(l['type']=='phantom' for l in views[p['key']]['g']['lines'])
+               and ('工序断面' in views[p['key']]['c']['name'] or '回转母线' in views[p['key']]['c']['name'])
+               for row in rows for p in row):
+            notes.append('双点画线为工序轮廓或回转母线，实线为成品断面。')
+        owners={str(views[p['key']]['c'].get('part')) for row in rows for p in row}
+        if not assembly and len(owners)==1:
+            info['material']=next((s.get('material','') for s in data['spec']['sheets'] if str(s.get('part')) in owners),'')
+        return info,bom,notes
+    def draw(page_no,rows,count):
+        info,bom,notes=info_for(page_no,rows)
+        frame,box,_=drawing_layout.sheet_frame('A3',info,page_no,count,bom,notes)
+        x0,y0,x1,y1=box; bands=len(rows);pitch=(y1-y0)/bands
+        actual=[]
+        for r,row in enumerate(rows):
+            top=y1-r*pitch;bottom=top-pitch
+            if r:frame.line([x0,top],[x1,top],'thin',role='panel-divider')
+            for j,panel in enumerate(row):
+                dx=(x1-x0)/len(row)
+                cell=[x0+j*dx,bottom+1,x0+(j+1)*dx,top-1]
+                if j:frame.line([cell[0],cell[1]],[cell[0],cell[3]],'thin',role='panel-divider')
+                try:
+                    trial=dict(panel,occupied_names={u['name'] for u in actual})
+                    v=drawing_layout.delivery_panel(views,trial,cell,len(row)>1,part_names)
+                except drawing_layout.LayoutError as error:
+                    error.panel=panel
+                    raise
+                actual.append(v)
+        frame_type=rows[0][0]['frame']
+        owner={str(views[p['key']]['c'].get('part')) for row in rows for p in row}
+        doc=dict(format='机械结构重建·图纸',version=1,problem=problem,sheet=f'{problem}-{page_no}',sheet_index=page_no,
+                 sheet_count=count,title=info['title'],frame=frame_type,part=next(iter(owner)) if len(owner)==1 and frame_type=='part' else None,
+                 paper=dict(size='A3',width=420,height=297),dpi=dpi,projection='第一角画法',units='毫米',
+                 scale=info['scale_text'],title_block=info,parts_list=bom,notes=notes,conventions=CONVENTIONS,
+                 views=actual,sheet_marks=frame.to_view(1))
+        return protect_hatch_text(doc)
+    # 真纸面容不下的图组二分，最多到单个原 D；不丢标注。
+    docs=[];i=0
+    while i<len(pages):
+        rows=pages[i]
+        if len(rows)==1 and i+1<len(pages):
+            following=pages[i+1]
+            first=following[0]
+            if (first[0]['frame']==rows[0][0]['frame']
+                    and sum(len(p['dims']) for row in (rows[0],first) for p in row)<=25):
+                rows.append(following.pop(0))
+                if not following:pages.pop(i+1)
+        if sum(map(len,rows))==1:
+            panel=rows[0][0]; c=views[panel['key']]['c']
+            locator=next((k for k,rec in views.items() if k!=panel['key'] and rec['c']['frame']==c['frame']
+                          and rec['c'].get('part')==c.get('part') and rec['c'].get('role')=='overview'
+                          and rec['c']['direction']!=c['direction']),None)
+            if locator:rows.append([dict(key=locator,dims=[],rows=0,frame=c['frame'])])
+        try:
+            doc=draw(i+1,rows,len(pages))
+        except drawing_layout.LayoutError as error:
+            failed=getattr(error,'panel',None)
+            if failed is None:raise
+            row_i=next(j for j,row in enumerate(rows) if any(p is failed for p in row))
+            if len(rows[row_i])>1:
+                split=rows[:row_i]+[[p] for p in rows[row_i]]+rows[row_i+1:]
+            else:
+                ds=failed['dims']
+                if len(ds)<2:raise
+                n=(len(ds)+1)//2
+                split=rows[:row_i]+[[dict(failed,dims=a,rows=len(a))] for a in (ds[:n],ds[n:])]+rows[row_i+1:]
+            pages[i:i+1]=[split[j:j+2] for j in range(0,len(split),2)]
+            exceptions.append(str(error))
+            continue
+        docs.append(doc)
+        i+=1
+    public_dir=out/problem;private=out/'出题端几何';spec_dir=out/'出图规格'
+    for path in (public_dir,private,spec_dir):path.mkdir(parents=True,exist_ok=True)
+    proof_dir=out/'看图'/problem
+    if problem in ('03','08','13','16','19','21','22','25'):proof_dir.mkdir(parents=True,exist_ok=True)
+    manifest=out/'工作'/problem/'report.json'
+    previous=json.loads(manifest.read_bytes()) if manifest.is_file() else {}
+    seen={}; plans=[]; methods={}
+    def write(path,obj):path.write_text(json.dumps(obj,ensure_ascii=False,separators=(',',':')),encoding='utf8')
+    for i,(doc,rows) in enumerate(zip(docs,pages),1):
+        info,bom,notes=info_for(i,rows)
+        if doc['sheet_count']!=len(pages):
+            marks,_,_=drawing_layout.sheet_frame('A3',info,i,len(pages),bom,notes)
+            doc['sheet_marks']=marks.to_view(1)+[m for m in doc['sheet_marks'] if m.get('role')=='panel-divider']
+            doc['sheet_count']=len(pages)
+        sheet_id=doc['sheet']
+        for view in doc['views']:
+            for d in view['dimensions']:
+                ident=d['id']
+                label=''.join(m['text'] for m in d['draw'] if m.get('role')=='dimension-text')
+                if ident in seen or ident not in label or d['value']!=catalog[ident]['value']:raise SpecError((sheet_id,ident,label))
+                seen[ident]=sheet_id
+                method=d['_dimension_witness']['method'];methods[method]=methods.get(method,0)+1
+        write(private/(sheet_id+'.json'),doc)
+        if not sheet_filter or sheet_id in sheet_filter:
+            write_delivery_page(doc,public_dir,proof_dir if proof_dir.is_dir() else None)
+        plans.append(dict(id=sheet_id,frame=doc['frame'],paper='A3',views=[dict(name=v['name'],definition=v['definition'],
+                          placement=v['placement'],view_key=v['view_key']) for v in doc['views']],
+                          dimensions=[d for row in rows for p in row for d in p['dims']],private_file='出题端几何/'+sheet_id+'.json'))
+    if set(seen)!=set(catalog):raise SpecError((problem,'绘制 D 缺项',set(catalog)-set(seen)))
+    assert ref.read_bytes()==original
+    write(spec_dir/(problem+'.json'),dict(problem=problem,title=data['name'],format='终稿实测图元',sheets=plans))
+    report=dict(problem=problem,head=len(data['spec']['sheets']),pages=len(pages),drawn=len(seen),total=len(catalog),
+                methods=methods,exceptions=list(dict.fromkeys(exceptions)),sheets={s['id']:{'views':len(s['views']),'dimensions':len(s['dimensions'])} for s in plans})
+    if not sheet_filter:
+        for stale in previous.get('sheets',{}).keys()-report['sheets'].keys():
+            if not re.fullmatch(re.escape(problem)+r'-[1-9]\d*',stale):
+                raise SpecError(f'旧沙箱图号无效 {stale}')
+            for directory,suffix in ((public_dir,'.png'),(public_dir,'.json'),(private,'.json'),(proof_dir,'.png')):
+                (directory/(stale+suffix)).unlink(missing_ok=True)
+    write(manifest,report)
+    print(problem,'已出图',len(pages),len(seen),'/',len(catalog),flush=True)
+    return report
+
+
+def delivery_problem(job, *, sheet_filter=None):
+    problem,out,dpi,reuse=job
+    out=drawing_common.sandbox_directory(out)
+    stage=out/'工作'/problem
+    handoff=HERE.parents[2]/'调研/机械图纸重画/沙箱/C/交付'/problem
+    if not reuse or not all((stage/name).is_file() for name in ('views.json','dimensions.json','missing.json')):
+        prepare_delivery(problem,stage,handoff)
+    missing=json.loads((stage/'missing.json').read_bytes())
+    if missing:raise SpecError(f'{problem} 原尺寸未解决：{missing}')
+    return export_delivery(problem,out,json.loads((stage/'views.json').read_bytes()),
+                           json.loads((stage/'dimensions.json').read_bytes()),dpi,sheet_filter)
+
+
+def delivery_suite(out,dpi,problems=None,reuse=False):
+    from concurrent.futures import ProcessPoolExecutor,as_completed
+    out=drawing_common.sandbox_directory(out)
+    pids=problems or [f'{n:02d}' for n in range(1,26)]
+    jobs=[(pid,out,dpi,reuse) for pid in pids]
+    if len(jobs)==1:return [delivery_problem(jobs[0])]
+    results=[];errors=[]
+    with ProcessPoolExecutor(max_workers=min(6,len(jobs))) as pool:
+        tasks={pool.submit(delivery_problem,job):job[0] for job in jobs}
+        for future in as_completed(tasks):
+            try:results.append(future.result())
+            except Exception as exc:
+                errors.append((tasks[future],str(exc)))
+                print(tasks[future],str(exc),file=sys.stderr,flush=True)
+    if errors:raise SpecError(errors)
+    return sorted(results,key=lambda item:item['problem'])
+
+
+def write_delivery_page(doc, public_dir, proof_dir=None):
+    from PIL import Image
+    public = public_sheet(doc)
+    validate_public(public)
+    public_dir.mkdir(parents=True, exist_ok=True)
+    path = public_dir / doc['sheet']
+    path.with_suffix('.json').write_text(json.dumps(public, ensure_ascii=False, separators=(',',':')), encoding='utf8')
+    with drawing_common.render_style(drawing_layout.drawing_style(doc['paper']['size'])):
+        image = render.render_sheet(doc).image()
+    dpi = doc['dpi']
+    image.save(path.with_suffix('.png'),dpi=(dpi,dpi),compress_level=3)
+    if proof_dir:
+        image.thumbnail((1300,1300),Image.Resampling.LANCZOS)
+        image.save(proof_dir / (doc['sheet']+'.png'),compress_level=3)
+    return [path.with_suffix('.png'),path.with_suffix('.json')]
+
+
+def replay_delivery(spec_path, spec, reference, out_dir, dpi, sheet_filter):
+    """终稿规格以同一交付根目录内的私有图元为依据，支持逐张重绘与重设 DPI。"""
+    from advanced_parts import problem_data
+    if out_dir is None:
+        raise SpecError('终稿沙箱重绘须指定 --out')
+    out = drawing_common.sandbox_directory(out_dir)
+    pid = spec['problem']
+    data = problem_data(pid)
+    drawing_common.assert_reference(reference,data['description'])
+    catalog = {d['_id']:d['value'] for s in data['spec']['sheets'] for d in s['dimensions']}
+    planned = [d for s in spec['sheets'] for d in s['dimensions']]
+    if len(planned)!=len(catalog) or {d['_id']:d['value'] for d in planned}!=catalog:
+        raise SpecError(f'{pid} 终稿规格尺寸目录与原题不一致')
+    sources = Path(spec_path).resolve().parent.parent
+    results = []
+    for i,sheet in enumerate(spec['sheets'],1):
+        sid = f'{pid}-{i}'
+        relative = sheet['private_file']
+        if sheet['id']!=sid or relative not in ('出题端几何/'+sid+'.json','图纸几何/'+sid+'.json'):
+            raise SpecError(f'{sid} 私有图纸索引不符')
+        if sheet_filter and sid not in sheet_filter:
+            continue
+        doc = json.loads((sources / relative).read_bytes())
+        public = public_sheet(doc)
+        if (doc['sheet']!=sid or doc['problem']!=pid or doc['sheet_count']!=len(spec['sheets'])
+                or {d['id']:d['value'] for d in public['dimensions']}!={d['_id']:d['value'] for d in sheet['dimensions']}
+                or [(v['name'],v['view_key'],v['definition'],v['placement']) for v in doc['views']]
+                    !=[(v['name'],v['view_key'],v['definition'],v['placement']) for v in sheet['views']]):
+            raise SpecError(f'{sid} 私有图纸与规格不一致')
+        doc['dpi']=dpi
+        (out/'出题端几何').mkdir(exist_ok=True)
+        (out/'出题端几何'/(sid+'.json')).write_text(json.dumps(doc,ensure_ascii=False,separators=(',',':')),encoding='utf8')
+        results.extend(write_delivery_page(doc,out/pid))
+    return results
+
+
+def audit_delivery_problem(job):
+    """从 Git 原目录和已落盘的 PNG/两份 JSON 独立复核一个题号。"""
+    import csv
+    from collections import Counter
+    from PIL import Image, ImageChops
+    from advanced_parts import problem_data
+    root, pid, approved = job
+    repo = HERE.parents[2]
+    def head_file(relative):
+        return subprocess.check_output(['git','show','HEAD:'+relative.relative_to(repo).as_posix()], cwd=repo)
+    original = json.loads(head_file(HERE/'出图规格'/(pid+'.json')))
+    catalog = {d['_id']:d for d in drawing_common.ensure_dimension_ids(original)}
+    ref = HERE/'参考答案'/f'第{pid}题.json'
+    data = problem_data(pid)
+    exact = drawing_common.assert_reference(ref,data['description'])
+    # Git 索引通常存 LF，工作区按 checkout 属性展开后再逐字节对照。
+    head_ref = subprocess.check_output(['git','cat-file','--filters','HEAD:'+ref.relative_to(repo).as_posix()],cwd=repo)
+    if exact!=head_ref:
+        raise SpecError(f'{pid} 参考答案与 HEAD checkout 字节不同')
+    plan=json.loads((root/'出图规格'/f'{pid}.json').read_bytes())
+    ids=[s['id'] for s in plan['sheets']]
+    gallery_pid=pid in ('03','08','13','16','19','21','22','25')
+    def stems(folder,pattern):
+        return {f.stem for f in folder.glob(pattern)}
+    if (set(ids)!=stems(root/pid,'*.png') or set(ids)!=stems(root/pid,'*.json')
+            or set(ids)!=stems(root/'出题端几何',pid+'-*.json')
+            or gallery_pid and set(ids)!=stems(root/'看图'/pid,'*.png')):
+        raise SpecError(f'{pid} 页目录与图纸文件不一致')
+    records={}; counts=Counter(); specials=[]; view_counts=[];loads=[];sections=0;process=[]
+    for page_no,sheet in enumerate(plan['sheets'],1):
+        sid=sheet['id']
+        doc=json.loads((root/sheet['private_file']).read_bytes())
+        pub=json.loads((root/pid/(sid+'.json')).read_bytes())
+        validate_public(pub)
+        if pub!=public_sheet(doc) or doc['sheet_count']!=len(ids) or doc['sheet_index']!=page_no:
+            raise SpecError(f'{sid} 公开目录或页码与私有图纸不一致')
+        n=len(pub['dimensions'])
+        if not 2<=len(doc['views'])<=4 or n>25:
+            raise SpecError(f'{sid} 图数或尺寸数超限')
+        view_counts.append(len(doc['views']));loads.append(n)
+        if {d['_id']:d['value'] for d in sheet['dimensions']}!={d['id']:d['value'] for d in pub['dimensions']}:
+            raise SpecError(f'{sid} 规格尺寸与图纸不符')
+        canvas=render.Canvas(doc['paper']['width'],doc['paper']['height'],doc['dpi'],'L')
+        for v in doc['views']:
+            scale,origin=render.view_xf(v)
+            panel=v['_panel_bounds']
+            texts=v['annotations']+[m for d in v['dimensions'] for m in d['draw']]
+            for m in texts:
+                if m['kind']!='text':continue
+                at=np.asarray(m['at'])*scale+origin
+                box=text_box(m['text'],at,m['height'],m.get('anchor','mm'),m.get('angle',0))
+                if not drawing_layout._contains([panel[0]-.5,panel[1]-.5,panel[2]+.5,panel[3]+.5],box):
+                    raise SpecError(f"{sid} 文字越出所属图位：{m['text']}")
+            drawn_letters={m['text'] for d in v['dimensions'] for m in d['draw'] if m.get('role')=='dimension-datum'}
+            idx=drawing_dimensions.ProjectedDatums({},v)
+            idx.lines.extend(c for c in v['lines'] if c['type']=='phantom')
+            if v['definition'].get('section'):
+                if not any(m.get('role')=='cut-trace' for m in v['annotations']):
+                    raise SpecError(f"{sid} {v['name']} 缺少剖切位置")
+                sections+=1
+            for d in v['dimensions']:
+                key=d['id']; proof=d['_dimension_witness']; method=proof['method']
+                marks=[m for m in d['draw'] if m.get('role')=='dimension-text']
+                message=''.join(m['text'] for m in marks)
+                numbers=re.findall(r'(?<![\d.])-?\d+(?:\.\d+)?',re.sub(r'D\d+','',message))
+                correct=any(abs(float(x)-d['value'])<1e-6 for x in numbers)
+                if (key in records or key not in catalog or d['value']!=catalog[key]['value']
+                        or d['category']!=catalog[key]['category'] or not re.search(r'(?<![A-Za-z0-9])'+key+r'(?!\d)',message)
+                        or not correct or not all(m['height']>=7 for m in marks)):
+                    raise SpecError(f'{sid} {key} 数值、原义或标注文字不符：{message}')
+                if not set(d['_datum_labels'])<=drawn_letters:
+                    raise SpecError(f'{sid} {key} 缺测点字母')
+                qs=drawing_layout.delivery_targets(d)
+                if not all(idx.hit(q) for q in qs):
+                    raise SpecError(f'{sid} {key} 测点离开本图曲线')
+                if proof['mode']=='linear' and abs(abs((qs[1]-qs[0])@proof['direction'])-d['value'])>.035:
+                    raise SpecError(f'{sid} {key} 投影长度与原值不符')
+                if key in approved:
+                    if approved[key] not in ''.join(message.split()):
+                        raise SpecError(f'{sid} {key} 加工深度标注与批准文本不同：{message}')
+                    process.append(key)
+                if method=='operation' or '过原回转轴的成品断面' in proof.get('derivation',''):
+                    specials.append((key,sid,v['name'],d['text']))
+                visual='测点字母' if d['_datum_labels'] else ('双箭头' if proof['mode']=='linear' else '短引线')
+                records[key]=(pid,key,sid,v['name'],d['value'],d['category'],method,visual,message)
+                counts[method]+=1
+                letters=[m for m in d['draw'] if m.get('role')=='dimension-datum']
+                render.draw_marks(canvas,marks+letters,*render.view_xf(v))
+        with Image.open(root/pid/(sid+'.png')) as img:
+            mask=np.asarray(canvas.image())
+            if img.size!=canvas.size or np.any((mask<24)&(np.asarray(img.convert('L'))>88)):
+                raise SpecError(f'{sid} 实际 PNG 缺少标注字形')
+            if gallery_pid:
+                thumb=img.copy()
+                thumb.thumbnail((1300,1300),Image.Resampling.LANCZOS)
+                with Image.open(root/'看图'/pid/(sid+'.png')) as preview:
+                    if max(preview.size)!=1300 or preview.size!=thumb.size or ImageChops.difference(thumb,preview).getbbox():
+                        raise SpecError(f'{sid} 缩图与原页不同')
+    if set(records)!=set(catalog) or set(process)!=set(approved):
+        raise SpecError(f'{pid} 原 D 或加工深度缺项')
+    order=lambda k:int(k[1:])
+    with (root/'工作'/pid/'逐D核对.csv').open('w',encoding='utf-8-sig',newline='') as f:
+        w=csv.writer(f);w.writerow(['题号','原D','页号','视图','原数值','原类别','见证方法','图上标法','实际绘制文字'])
+        w.writerows(records[k] for k in sorted(records,key=order))
+    return dict(pid=pid,head=len(original['sheets']),pages=len(ids),dimensions=len(records),counts=counts,
+                specials=sorted(specials,key=lambda x:order(x[0])),process=[(k,records[k][2]) for k in sorted(process,key=order)],
+                loads=loads,views=view_counts,sections=sections,gallery=gallery_pid,
+                letters=sum(row[7]=='测点字母' for row in records.values()))
+
+
+def audit_delivery(root):
+    from concurrent.futures import ProcessPoolExecutor
+    root=drawing_common.sandbox_directory(root)
+    approved={}
+    notes=HERE.parents[2]/'调研/机械图纸重画/沙箱/C/交付/加工深度21项.md'
+    for line in notes.read_text(encoding='utf8').splitlines():
+        cells=line.strip('|').split('|')
+        if len(cells)==6 and cells[0].isdigit():
+            approved.setdefault(cells[0],{})[cells[1]]=''.join(cells[3].split())
+    if sum(map(len,approved.values()))!=21:raise SpecError('原加工深度清单不是 21 项')
+    jobs=[(root,f'{i:02}',approved.get(f'{i:02}',{})) for i in range(1,26)]
+    with ProcessPoolExecutor(max_workers=4) as pool:
+        rows=list(pool.map(audit_delivery_problem,jobs))
+    total=sum(r['dimensions'] for r in rows);sheets=sum(r['pages'] for r in rows);head=sum(r['head'] for r in rows)
+    letter_count=sum(r['letters'] for r in rows)
+    widths=[v for r in rows for v in r['views']]
+    loads=[n for r in rows for n in r['loads']]
+    gallery=sum(r['pages'] for r in rows if r['gallery'])
+    body=['# 机械结构重建逐题复核','',
+          f'25 题共 {sheets} 张，HEAD 共 {head} 张。原有 {total} 个 D 全部落图。每张 {min(widths)}–{max(widths)} 个主图位，最多 {max(loads)} 个尺寸。装配首页提供总图和零件明细。','',
+          f'从 HEAD 逐 D 读取原编号、类别和值，与终稿规格、公开目录和私有标注交叉核对。每个引出点都落在该图的有限曲线上。双端标注另核对沿测量方向的投影长度。复核程序在相同纸面位置独立栅格化尺寸文字与测点字母，逐张检查存盘 PNG 对应的墨迹。25 份参考答案与原生成文本及 HEAD 检出字节一致。','',
+          f'其中 {letter_count} 个尺寸用短引线标字母，数值和测量方向列在同一视图内，其余尺寸就近标值。加工深度 21 项按 C 的原文逐项核对。八题全部 {gallery} 张预览均由完整 PNG 等比缩到长边 1300 px，已逐像素对照。','',
+          '## 各题','',
+          '| 题号 | 新张数 / HEAD | 图上 D / 原 D | 每页最多 D | 身份见证 | 几何双端 | 局部引线说明 | 补剖 | 工序断面 | 逐 D 明细 |',
+          '|---|---:|---:|---:|---:|---:|---:|---:|---:|---|']
+    for r in rows:
+        p=r['pid'];c=r['counts'];n=r['dimensions']
+        link=f'[{p}](看图/{p}/)' if r['gallery'] else p
+        body.append(f'| {link} | {r["pages"]} / {r["head"]} | {n} / {n} | {max(r["loads"])} | '
+                    +' | '.join(str(c.get(k,0)) for k in ('identity','geometry','callout','section','operation'))
+                    +f' | [核对表](工作/{p}/逐D核对.csv) |')
+    body+=['','## 例外与读图','','原图中的加工行程和已被后续加工消除的轮廓需要结合工序理解。下表列出逐项页号。其余局部引线、补剖和字母标法均可在逐 D 明细按方法或页号筛选。','',
+           '| 题号 | 原 D | 图号 | 说明 |','|---|---|---|---|']
+    for r in rows:
+        for k,sid,name,msg in r['specials']:
+            body.append(f'| {r["pid"]} | {k} | [{sid}]({r["pid"]}/{sid}.png) | {name}。{msg} |')
+        for k,sid in r['process']:
+            body.append(f'| {r["pid"]} | {k} | [{sid}]({r["pid"]}/{sid}.png) | {approved[r["pid"]][k]} |')
+    body+=['','工序断面以双点画线给出原工序边界，实线表示成品。20 题回转剖面也用双点画线给出原母线，用于判读轴线闭合与内锥。带“剖位”的小图给出对应剖面的剖切位置和观察方向。字母仅在本图位内有效。','',
+           '部分铸件的页数超过早期张数目标。以 19 题为例，213 个尺寸按每页上限 25 项至少需要 9 张，实际还须给斜接口、内部通道和长加工说明留出图位。各题的实际页数和例外以表中数据为准。','']
+    (root/'逐题报告.md').write_text('\n'.join(body),encoding='utf8')
+    gallery_index=['# 整页看图','',f'长边 1300 px，共 {gallery} 张。每行按纸面张次排列。','']
+    for r in rows:
+        if r['gallery']:
+            pid=r['pid']
+            links=' · '.join(f'[{i}]({pid}/{pid}-{i}.png)' for i in range(1,r['pages']+1))
+            gallery_index.extend([f'**第 {pid} 题**（共 {r["pages"]} 张）  ',links,''])
+    (root/'看图'/'目录.md').write_text('\n'.join(gallery_index),encoding='utf8')
+    print(f'独立回读通过：{sheets}/{head} 张，{total}/{total} D，{gallery} 张缩图，{sum(len(r["specials"]) for r in rows)} 项工序或回转说明',flush=True)
+    return rows
 
 
 def main():
@@ -1440,7 +2317,33 @@ def main():
     ap.add_argument("--dpi", type=int, default=240, help="PNG 分辨率；200—300 dpi，默认240")
     ap.add_argument("--all", action="store_true", help="处理 出图规格/ 下全部规格")
     ap.add_argument("--sheets", help="只重出指定图号，逗号分隔；尺寸编号仍按完整题目分配")
+    ap.add_argument('--sandbox', help='只生成指定题号到 --out，正式材料只读')
+    ap.add_argument('--delivery',help='按终稿口径一次生成沙箱；all 或逗号分隔题号')
+    ap.add_argument('--audit-delivery',action='store_true',help='回读 --out 中全部 25 题图纸并生成逐题报告')
+    ap.add_argument('--reuse-projections',action='store_true',help='沿用同一沙箱已核对的逐题投影和归属')
+    ap.add_argument('--freeze-samples', action='store_true', help='冻结 08/13/19/21/25 的 HEAD 投影及尺寸到 --out')
     args = ap.parse_args()
+    if args.audit_delivery:
+        if not args.out or args.delivery or args.sandbox or args.spec or args.all or args.freeze_samples:
+            ap.error('--audit-delivery 须单独指定 --out')
+        audit_delivery(args.out)
+        return
+    if args.delivery:
+        if not args.out or args.spec or args.all or args.sandbox or args.ref or not 200<=args.dpi<=300:
+            ap.error('--delivery 须单独指定 --out 和 200–300 dpi')
+        problems=None if args.delivery=='all' else [f'{int(x):02d}' for x in args.delivery.split(',')]
+        delivery_suite(args.out,args.dpi,problems,args.reuse_projections)
+        return
+    if args.sandbox or args.freeze_samples:
+        if not args.out:ap.error('沙箱/样例必须指定 --out')
+        if args.sandbox and args.freeze_samples:ap.error('--sandbox 与 --freeze-samples 不能同时使用')
+        if args.spec or args.all or args.ref:ap.error('沙箱/样例不能混用规格、--all 或 --ref')
+        if not 200<=args.dpi<=300:ap.error('图纸分辨率必须为200—300 dpi')
+        if args.sandbox:
+            sandbox(args.sandbox, args.out, args.dpi, set(args.sheets.split(',')) if args.sheets else None)
+        else:
+            freeze_samples(args.out)
+        return
     specs = [Path(p) for p in args.spec]
     if args.all:
         specs = sorted((HERE / "出图规格").glob("*.json"))

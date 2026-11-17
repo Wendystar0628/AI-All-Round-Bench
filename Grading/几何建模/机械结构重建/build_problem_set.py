@@ -6,8 +6,11 @@
 import argparse
 import json
 import math
+import copy
 from pathlib import Path
 import numpy as np
+from drawing_common import freeze_dimensions, assert_reference, check_assembly_relation
+from drawkit import model
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -16,6 +19,14 @@ ROOT = HERE.parents[2]
 def save(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def save_reference(path, value):
+    """已有参考答案只做逐字断言，禁止出图开发重写几何。"""
+    if path.exists():
+        assert_reference(path, value)
+    else:
+        save(path, value)
 
 
 def fmt(v):
@@ -33,7 +44,10 @@ class Part:
     def dimension(self, view, at, text, values, category='尺寸组合', angle=45):
         self.measures.append(dict(view=view, type='leader', at=at, text=text, value=values,
                                   category=category, angle=angle, source_feature=len(self.features),
-                                  covers_features=[len(self.features)]))
+                                  covers_features=[len(self.features)],
+                                  _witness_3d=dict(coordinate_system='part',
+                                      feature=copy.deepcopy(self.features[-1]) if self.features else None,
+                                      projected_anchor=dict(view=view, at=copy.deepcopy(at)))))
 
     def coord(self, axis, value, point):
         if abs(value)<1e-8: return
@@ -41,6 +55,7 @@ class Part:
         if key in self.coordinates:
             m=self.coordinates[key]
             if len(self.features) not in m['covers_features']:m['covers_features'].append(len(self.features))
+            m['_witness_3d']['shared_points'].append(dict(feature=len(self.features), point=list(point)))
             return
         x,y,z=point
         view='俯视图' if axis=='Y' else '主视图'
@@ -49,6 +64,8 @@ class Part:
         m=self.measures[-1]
         m['_axis']=axis
         m['_point']=point
+        m['_witness_3d'].update(axis=axis, point=list(point),
+            shared_points=[dict(feature=len(self.features), point=list(point))])
         self.coordinates[key]=m
 
     def chain_dimensions(self):
@@ -65,6 +82,7 @@ class Part:
                     m.update(type='linear', **{'from':at(previous_point),'to':at(point)},
                         dir='h' if axis=='X' else 'v', snap=True,
                         text=fmt(abs(value-previous)),value=round(abs(value-previous),6),category='链式或相对定位尺寸')
+                    m['_witness_3d'].update(axis=axis, **{'from':list(previous_point), 'to':list(point)})
                     m.pop('at',None)
                     m.pop('_axis',None); m.pop('_point',None)
                     previous,previous_point=value,point
@@ -124,6 +142,7 @@ class Part:
         self.datum(pa)
         self.datum(pb)
         self.dimension(view, at, [f'Φ{fmt(d)}'],d, '孔径' if cut else '直径')
+        self.measures[-1]['_witness_3d'].update(axis=axis, **{'from':pa, 'to':pb})
         return self
 
     def slant(self, name, center, d, depth, angle=45, azimuth=0):
@@ -598,6 +617,95 @@ REASONS = [
 ]
 
 
+class MateFeature:
+    """Named source feature, with analytic datums expressed in its part and assembly frames."""
+
+    def __init__(self, parts, no, name):
+        part = parts[no-1]
+        matches = [(i, f) for i, f in enumerate(part.features, 1) if f['name'] == name]
+        if len(matches) != 1:
+            raise ValueError(f'件{no}的装配特征 {name!r} 匹配到 {len(matches)} 项')
+        self.index, self.feature = matches[0]
+        self.no = str(no)
+        self.pose = model.placement_matrix(part.desc(no).get('placement'))
+        self.sketch = model.sketch_frame(self.feature)
+        if self.feature['type'] == 'hole':
+            self.loop = dict(circle=self.feature['at'], d=self.feature['d'])
+            self.depth = (-self.feature['depth'], 0.)
+        else:
+            self.loop = self.feature['loops'][0]
+            self.depth = model.depth_range(self.feature, None)
+
+    def world(self, local):
+        return (self.pose[:3,:3] @ local + self.pose[:3,3]).tolist()
+
+    def element(self, kind, selector, point, direction=None):
+        point = np.asarray(point, float)
+        out = dict(part=self.no, feature=self.index, name=self.feature['name'], selector=selector,
+                   kind=kind, local_point=point.tolist(), point=self.world(point))
+        if direction is not None:
+            out.update(local_direction=direction.tolist(), direction=(self.pose[:3,:3] @ direction).tolist())
+        return out
+
+    def axis(self):
+        base = self.sketch.to3(self.loop['circle'])
+        ends = [base + self.sketch.n*t for t in self.depth]
+        return dict(self.element('axis', 'cylinder', ends[0], self.sketch.n),
+                    radius=self.loop['d']/2, endpoints=[self.world(p) for p in ends],
+                    local_endpoints=[p.tolist() for p in ends])
+
+    def corners(self):
+        if 'rect' in self.loop:
+            x0, y0, x1, y1 = self.loop['rect']
+            path = [(x0,y0), (x1,y0), (x1,y1), (x0,y1)]
+        else:
+            path = self.loop['path']
+        return np.array([[self.sketch.to3(p) + self.sketch.n*t for p in path] for t in self.depth])
+
+    def face(self, side):
+        if side in ('start', 'end'):
+            normal = self.sketch.n * (1 if side == 'end' else -1)
+        else:
+            normal = np.eye(3)['XYZ'.index(side[0])] * {'+':1, '-':-1}[side[1]]
+        if 'circle' in self.loop:
+            dot = normal @ self.sketch.n
+            if abs(dot) < 1-1e-8:
+                raise ValueError(f"{self.feature['name']} 的 {side} 不是圆柱端面")
+            point = self.sketch.to3(self.loop['circle']) + self.sketch.n*self.depth[int(dot > 0)]
+        else:
+            vertices = self.corners().reshape(-1, 3)
+            distances = vertices @ normal
+            boundary = vertices[np.isclose(distances, distances.max(), atol=1e-8, rtol=0)]
+            point = boundary.mean(axis=0)
+            if np.linalg.matrix_rank(boundary-point, tol=1e-8) != 2:
+                raise ValueError(f"{self.feature['name']} 的 {side} 没有平面")
+        return self.element('plane', side, point, normal)
+
+    def vertex(self, index, end=0):
+        return self.element('point', f'profile[{index}]@depth[{end}]', self.corners()[end,index])
+
+def mate_frame(parts, no=None):
+    pose = model.placement_matrix(parts[no-1].desc(no).get('placement') if no else None)
+    return dict(kind='frame', part=str(no) if no else None, feature=None, name='零件坐标系' if no else '装配总坐标系',
+                selector='frame', local_point=[0,0,0], point=pose[:3,3].tolist(), axes=pose[:3,:3].T.tolist())
+
+
+def mate(kind, *elements, **parameters):
+    return dict(kind=kind, elements=list(elements), **parameters)
+
+
+def assembly_witness(*relations):
+    for relation in relations:
+        if not check_assembly_relation(relation):
+            raise ValueError(f"原装配几何不满足 {relation['kind']}：{relation['elements']}")
+    features = [e for r in relations for e in r['elements'] if e['feature'] is not None]
+    primary = features[0]
+    return dict(source_part=primary['part'], source_feature=primary['feature'],
+                covers_features=list(dict.fromkeys(e['feature'] for e in features if e['part'] == primary['part'])),
+                _witness_3d=dict(kind='assembly_relation', coordinate_system='assembly', source_part=primary['part'],
+                                 relations=list(relations)))
+
+
 def assembly_dimensions(pid):
     """只标配合基准与安装尺寸；位置由装配关系和零件图联立推出。"""
     if pid=='11':
@@ -629,21 +737,107 @@ def assembly_dimensions(pid):
     ]
 
 
+def legacy_assembly_witnesses(pid, parts):
+    """Same row order as assembly_dimensions (original problem numbers 11/12)."""
+    def feature(no, name):
+        return MateFeature(parts, no, name)
+
+    def offset(a, b, axis, value):
+        return mate('offset', a, b, direction=axis, value=value)
+
+    x, y, z = [1,0,0], [0,1,0], [0,0,1]
+    world = mate_frame(parts)
+    aligned = [mate('aligned_frames', mate_frame(parts, no), world) for no in range(1, len(parts)+1)]
+    if pid == '11':
+        base = feature(1, '基板')
+        seats = [feature(1, side+'导柱座') for side in ('左','右')]
+        feet = [feature(no, '下定位段') for no in (2,3)]
+        guide_fits = []
+        for seat, foot in zip(seats, feet):
+            guide_fits.extend([mate('coaxial', foot.axis(), seat.axis()),
+                               mate('contact', foot.face('Z-'), seat.face('Z-')),
+                               mate('coplanar', foot.face('Z+'), base.face('Z+')),
+                               mate('parallel', foot.axis(), direction=z)])
+        def guide_axes(no, bore_suffix, journal):
+            return [mate('coaxial', feature(no, side+bore_suffix).axis(), feature(pin, journal).axis())
+                    for side, pin in (('左',2), ('右',3))]
+        wedge, groove = feature(6, '楔体'), feature(5, '斜槽')
+        stop = feature(7, '止推座')
+        return [
+            assembly_witness(offset(world, seats[0].axis(), x, 35)),
+            assembly_witness(offset(world, seats[0].axis(), y, 25)),
+            assembly_witness(offset(seats[0].axis(), seats[1].axis(), x, 110)),
+            assembly_witness(offset(seats[0].axis(), seats[1].axis(), y, 60)),
+            assembly_witness(*guide_fits),
+            assembly_witness(offset(base.face('Z+'), feature(5,'压脚').face('Z-'), z, 28),
+                             *guide_axes(5, '导孔', '导向段')),
+            assembly_witness(offset(base.face('Z+'), feature(4,'横梁').face('Z-'), z, 84),
+                             *guide_axes(4, '柱孔', '上锁紧段')),
+            assembly_witness(mate('coincident', wedge.vertex(0), groove.vertex(0)),
+                             *[mate('contact', wedge.face(s), groove.face(s)) for s in ('Y-','Y+')]),
+            assembly_witness(offset(world, stop.face('X+'), x, 180), mate('contact', stop.face('Z-'), base.face('Z+'))),
+            assembly_witness(offset(world, stop.face('Y-'), y, 31)),
+            assembly_witness(mate('coaxial', feature(8,'推杆').axis(), feature(7,'调节轴孔').axis()),
+                             mate('coplanar', feature(8,'止推轴肩').face('Z+'), stop.face('X+'))),
+            assembly_witness(mate('angle', feature(8,'推杆').axis(), direction=z, value=90),
+                             mate('frame_axis', mate_frame(parts,8), axis='Z', direction=x),
+                             mate('frame_axis', mate_frame(parts,8), axis='X', direction=[0,0,-1]), *aligned[:-1]),
+        ]
+
+    base, rail = feature(1,'底板'), feature(1,'滑阀导轨')
+    front, rear = feature(2,'支架'), feature(3,'支架')
+    shaft, cam = feature(6,'主轴'), feature(6,'偏心轮')
+    window, fork = feature(7,'偏心轮滑窗'), feature(7,'外框')
+    ear, jaw = feature(7,'销孔'), feature(8,'连接销孔')
+    lid = feature(10,'压板')
+    bush_fits = []
+    for bush, stand in ((4,2), (5,3)):
+        flange, recess = feature(bush,'法兰'), feature(stand,'定位沉台')
+        bush_fits.append(mate('coaxial', feature(bush,'套筒').axis(), feature(stand,'轴承座孔').axis()))
+        bush_fits.append(mate('coaxial', flange.axis(), recess.axis()))
+        bush_fits.extend(mate('coplanar', flange.face(s), recess.face(s)) for s in ('Y-','Y+'))
+    return [
+        assembly_witness(offset(world, front.face('X-'), x, 24),
+                         *[mate('contact', f.face('Z-'), base.face('Z+')) for f in (front,rear)]),
+        assembly_witness(offset(world, front.face('Y-'), y, 16)),
+        assembly_witness(offset(front.face('Y-'), rear.face('Y+'), y, 88), mate('coplanar', front.face('X-'), rear.face('X-'))),
+        assembly_witness(*bush_fits),
+        assembly_witness(offset(world, shaft.face('Y-'), y, 10),
+                         *[mate('coaxial', shaft.axis(), feature(no,'轴孔').axis()) for no in (4,5)],
+                         mate('positive_side', shaft.axis(), cam.axis(), direction=x)),
+        assembly_witness(*[mate('tangent', cam.axis(), window.face(s)) for s in ('X-','X+','Z-','Z+')],
+                         mate('centered', fork.face('Y-'), fork.face('Y+'), front.face('Y+'), rear.face('Y-'), direction=y)),
+        assembly_witness(mate('contact', feature(8,'阀芯').face('Z-'), feature(1,'滑阀导槽').face('Z-')),
+                         mate('coaxial', jaw.axis(), ear.axis())),
+        assembly_witness(mate('coaxial', feature(9,'销体').axis(), jaw.axis()),
+                         mate('coaxial', feature(9,'销体').axis(), ear.axis()),
+                         mate('contact', feature(9,'挡头').face('Y+'), feature(8,'连接叉左').face('Y-'))),
+        assembly_witness(*[mate('coplanar', lid.face(s), rail.face(s)) for s in ('X+','Y-','Y+')],
+                         mate('contact', lid.face('Z-'), rail.face('Z+'))),
+        assembly_witness(mate('coincident', mate_frame(parts,1), world),
+                         *[offset(world, base.face(side), axis, 0) for side,axis in [('X-',x),('Y-',y),('Z-',z)]],
+                         *aligned),
+    ]
+
+
 def spec_for_parts(pid, title, parts):
     sheets=[]
+    number=0
     notes=['技术要求', '单位mm；尺寸由界线或引线指示，不是绝对坐标。',
            '位置由尺寸链、定形与定位尺寸联合推算。',
            '标注R、C须建模；未注锐边保持理论交线。',
            '孔深沿轴线；斜孔从所标入口向体内加工。']
     if len(parts)>1:
         rows=[dict(no=str(i),name=p.title,qty=1,material='钢',note='') for i,p in enumerate(parts,1)]
-        dims=[dict(view=v,type='leader',at=at,text=text,value=val,category='装配配合及定位尺寸')
-              for v,at,text,val in assembly_dimensions(pid)]
+        dims=[dict(view=v,type='leader',at=at,text=text,value=val,category='装配配合及定位尺寸', **witness)
+              for (v,at,text,val), witness in zip(assembly_dimensions(pid), legacy_assembly_witnesses(pid,parts), strict=True)]
+        number=freeze_dimensions(dims,number)
         for k in range(0,len(dims),4):
             sheets.append(dict(paper='A1',scale=[1.5,1.25,1],frame='assembly',title=title,drawing_no=f'JX-{pid}-Z{k//4+1}',
                 views=[dict(type='front'),dict(type='top')],dimensions=dims[k:k+4],parts_list=rows,notes=notes,
                 balloons=[dict(view='主视图',part=str(i),at=[p.position[0]+3,p.position[2]+3],text=str(i)) for i,p in enumerate(parts,1)]))
     for no,p in enumerate(parts,1):
+        number=freeze_dimensions(p.measures,number)
         for k in range(0,len(p.measures),16):
             dims=[dict(m) for m in p.measures[k:k+16]]
             views=[dict(type='front'),dict(type='top'),dict(type='left')]
@@ -687,7 +881,7 @@ def build_legacy():
         for p in parts:p.chain_dimensions()
         desc=dict(problem=pid,parts=[p.desc(n) for n,p in enumerate(parts,1)])
         spec=spec_for_parts(pid,NAMES[i-1],parts)
-        save(HERE/'参考答案'/f'第{pid}题.json',desc)
+        save_reference(HERE/'参考答案'/f'第{pid}题.json',desc)
         save(HERE/'出图规格'/f'{pid}.json',spec)
         tier='简单档' if i<=3 else '中档' if i<=8 else '困难档'
         records.append(dict(id=pid,tier=tier,name=NAMES[i-1],kind='part' if len(parts)==1 else 'assembly',
@@ -711,4 +905,13 @@ def build():
 
 
 if __name__=='__main__':
-    build()
+    parser=argparse.ArgumentParser(description='规格生成；单题试图请使用 --sandbox')
+    parser.add_argument('--sandbox', help='仅生成指定题号到沙箱，必须配 --out')
+    parser.add_argument('--out', help='沙箱输出目录')
+    args=parser.parse_args()
+    if args.sandbox:
+        if not args.out:parser.error('--sandbox 必须配 --out')
+        from make_drawing import sandbox
+        sandbox(args.sandbox,args.out)
+    else:
+        build()

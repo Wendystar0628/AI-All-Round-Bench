@@ -248,8 +248,8 @@ def validate_manifest(manifest, hidden=False):
         if not isinstance(x['baseline_exceptions'],int) or x['baseline_exceptions']<0: raise ValueError('baseline exceptions not calibrated')
         anchors=anchors_for(x)
         if anchors:
-            if anchors[0]!=[1,0] or anchors[-1][1]!=100 or any(a[0]>=b[0] or a[1]>=b[1] for a,b in zip(anchors,anchors[1:])):
-                raise ValueError('anchors must start at [1,0], strictly increase, and end at 100')
+            if anchors[0]!=[0.2,0] or anchors[-1][1]!=100 or any(a[0]>=b[0] or a[1]>=b[1] for a,b in zip(anchors,anchors[1:])):
+                raise ValueError('anchors must start at [0.2,0], strictly increase, and end at 100')
     if hidden:
         for x in perf:
             if not any(h.get('for')==x['id'] for h in manifest.get('hidden',[])):

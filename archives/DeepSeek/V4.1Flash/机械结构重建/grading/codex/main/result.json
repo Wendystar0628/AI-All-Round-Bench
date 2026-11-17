@@ -155,8 +155,7 @@
     }
   ],
   "metrics": {
-    "total": 0,
-    "tool_violation": "脚本批量预览",
+    "total": 9.49,
     "geometry_checked": 25,
     "geometry_complete": true,
     "shape_only_total": 9.49,
@@ -563,5 +562,5 @@
       }
     }
   },
-  "notes": "评分版本：受测模型结束时工作目录中的答案，已复制到本评分工作目录submission；未回退git提交，25份答案哈希与原始文件一致。工具核查：E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\DeepSeek\\V4.1Flash\\机械结构重建\\run-532187507378408684491e34762279c7\\session.log 第437行（2026-11-10T07:27:48.654Z）执行 foreach($i in 11,12,13,14,15){ python 机械结构重建\\工具\\preview.py \"答案\\第${i}题.json\" }；第438行完成输出含第11至15题体积与轴测图路径，确认实际执行。第523行同样循环预览16—21题，第603行循环22—25题；第629行及第744行又用 foreach($i in 1..25) 调用 preview.py $f，批量生成并收集错误/提示。以上是题面第五节及评分指南明令禁止的脚本批量预览，故整份作答各项均记0分。dump_dims.py仅提取和整理已有JSON字段，crop.py/gridcrop.py仅裁图、缩放及叠加像素网格，未因这些操作或json.load本身判罚。形状诊断使用官方grade.py的reference_surfaces与grade_problem，正式references.json参数不变；解释器为C:/Users/AIAgent/AppData/Local/Programs/Python/Python312/python.exe，数值缓存及日志均放本工作目录。形状诊断分不作为违规后的正式得分。"
+  "notes": "（11-13 按现行规则改判：批量调用官方预览属允许，不判违规，总分取几何得分。）评分版本：受测模型结束时工作目录中的答案，已复制到本评分工作目录submission；未回退git提交，25份答案哈希与原始文件一致。工具核查：E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\DeepSeek\\V4.1Flash\\机械结构重建\\run-532187507378408684491e34762279c7\\session.log 第437行（2026-11-10T07:27:48.654Z）执行 foreach($i in 11,12,13,14,15){ python 机械结构重建\\工具\\preview.py \"答案\\第${i}题.json\" }；第438行完成输出含第11至15题体积与轴测图路径，确认实际执行。第523行同样循环预览16—21题，第603行循环22—25题；第629行及第744行又用 foreach($i in 1..25) 调用 preview.py $f，批量生成并收集错误/提示。以上是题面第五节及评分指南明令禁止的脚本批量预览，故整份作答各项均记0分。dump_dims.py仅提取和整理已有JSON字段，crop.py/gridcrop.py仅裁图、缩放及叠加像素网格，未因这些操作或json.load本身判罚。形状诊断使用官方grade.py的reference_surfaces与grade_problem，正式references.json参数不变；解释器为C:/Users/AIAgent/AppData/Local/Programs/Python/Python312/python.exe，数值缓存及日志均放本工作目录。形状诊断分不作为违规后的正式得分。"
 }

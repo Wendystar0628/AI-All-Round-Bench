@@ -155,10 +155,9 @@
     }
   ],
   "metrics": {
-    "total_score": 0,
+    "total_score": 4.71,
     "shape_diagnostics_completed": 25,
     "shape_only_total": 4.71,
-    "shape_only_total_note": "未应用工具违规裁决的形状诊断分；正式总分为0。",
     "submitted_answer_files": 25,
     "missing_parts_22_to_25": {
       "22": 13,
@@ -167,5 +166,5 @@
       "25": 25
     }
   },
-  "notes": "评分版本：评结束时工作目录中的答案，未回退git提交；原提交只读，已复制到本工作目录submission。受测会话记录第23702行执行 for n in 03 04 05 06 07 08 09 10 11 12 13 14 15; do ... python 机械结构重建/工具/preview.py 答案/第${n}题.json ...; done，脚本批量调用预览。该调用已完成，第23916行读取到批量预览结果。违反题面第五节第2条，按评分指南整份作答记0分。证据：E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\Hy\\Hy4\\机械结构重建\\run-96ba6a01413a49808db88f81f750adeb\\session.log，第23702行（命令），第23916行（结果）；完整命令和输出摘录见工作目录 audit.calls.json、audit.tools.txt。具体违规命令：cd \"H:/AI_OneShot_Model/Hy/Hy4/机械结构重建\" && for n in 03 04 05 06 07 08 09 10 11 12 13 14 15; do echo \"--- 第${n}题 ---\"; python 机械结构重建/工具/preview.py 答案/第${n}题.json 2>&1 | grep -E \"出错|失败|全部生成|体积|提示\" | head -4; done。形状诊断调用出题端官方grade.py的reference_surfaces及grade_problem，仅将参考缓存位置重定向到工作目录evaluator-cache；未修改评分算法。25份评分副本与原提交SHA-256逐一相同。未发现需另行裁决的评测环境异常；未运行性能基准或采集性能数据。"
+  "notes": "（11-13 按现行规则改判：批量调用官方预览属允许，不判违规，总分取几何得分。）评分版本：评结束时工作目录中的答案，未回退git提交；原提交只读，已复制到本工作目录submission。受测会话记录第23702行执行 for n in 03 04 05 06 07 08 09 10 11 12 13 14 15; do ... python 机械结构重建/工具/preview.py 答案/第${n}题.json ...; done，脚本批量调用预览。该调用已完成，第23916行读取到批量预览结果。违反题面第五节第2条，按评分指南整份作答记0分。证据：E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\Hy\\Hy4\\机械结构重建\\run-96ba6a01413a49808db88f81f750adeb\\session.log，第23702行（命令），第23916行（结果）；完整命令和输出摘录见工作目录 audit.calls.json、audit.tools.txt。具体违规命令：cd \"H:/AI_OneShot_Model/Hy/Hy4/机械结构重建\" && for n in 03 04 05 06 07 08 09 10 11 12 13 14 15; do echo \"--- 第${n}题 ---\"; python 机械结构重建/工具/preview.py 答案/第${n}题.json 2>&1 | grep -E \"出错|失败|全部生成|体积|提示\" | head -4; done。形状诊断调用出题端官方grade.py的reference_surfaces及grade_problem，仅将参考缓存位置重定向到工作目录evaluator-cache；未修改评分算法。25份评分副本与原提交SHA-256逐一相同。未发现需另行裁决的评测环境异常；未运行性能基准或采集性能数据。"
 }
