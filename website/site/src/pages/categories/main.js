@@ -12,11 +12,9 @@ import { dur, isInView } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
 import { createBoard, VIEWS } from './board.js';
 import { createJumpBar } from './jumpbar.js';
-import { mountSky } from '../../decor/skyclock.js';
 
 boot(({ data }) => {
   const main = document.querySelector('main');
-  mountSky(main.querySelector('.cat-head-decor'), 'mansions');
   const slot = main.querySelector('[data-slot="page"]');
   if (!data) {
     slot.replaceChildren();
@@ -70,7 +68,7 @@ boot(({ data }) => {
       const cats = data.categories.filter((x) => x.kind === c.kind);
       const nTasks = cats.reduce((a, x) => a + x.tasks.length, 0);
       const weight = cats.reduce((a, x) => a + x.weight, 0);
-      if (prevKind) groupEls.push(mountSky(h('div.cat-divider', { 'aria-hidden': 'true', dataset: { flip: '' } }), 'ruler'));
+      if (prevKind) groupEls.push(h('div.cat-divider', { 'aria-hidden': 'true', dataset: { flip: '' } }));
       groupEls.push(
         h(
           'header.cat-group-head',

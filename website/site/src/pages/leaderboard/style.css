@@ -75,16 +75,19 @@
   color: var(--st-ink-2);
   font-size: 0.72rem;
 }
-/* the header banner (星钟): the last hour of star trails, the pole off the top right corner, under everything */
+/* the header banner: a quarter dial in the top right corner, under everything */
 .lb-banner {
   position: absolute;
   z-index: -1;
-  top: -1rem;
+  top: -2rem;
   right: calc(-1 * var(--gutter));
-  width: 22rem;
-  height: 15rem;
-  -webkit-mask: radial-gradient(130% 130% at 100% 0, #000 45%, transparent 80%);
-  mask: radial-gradient(130% 130% at 100% 0, #000 45%, transparent 80%);
+  width: 15rem;
+  aspect-ratio: 1;
+  background: var(--st-ink-2);
+  opacity: 0.5;
+  pointer-events: none;
+  -webkit-mask: url('/decor/dial/dial-quarter-tr.svg') right top / contain no-repeat;
+  mask: url('/decor/dial/dial-quarter-tr.svg') right top / contain no-repeat;
 }
 
 .lb-notice-slot:empty {
@@ -1007,8 +1010,7 @@
     gap: 1.25rem;
   }
   .lb-banner {
-    width: 14rem;
-    height: 10rem;
+    width: 10rem;
   }
   .lb-figs {
     grid-template-columns: repeat(3, minmax(0, 1fr));

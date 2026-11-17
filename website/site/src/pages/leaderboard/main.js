@@ -25,11 +25,9 @@ import { createCompare } from './compare.js';
 import { createSandbox } from './sandbox.js';
 import { createMatrix } from '../../ui/matrix.js';
 import { createFrontier } from './frontier.js';
-import { mountSky } from '../../decor/skyclock.js';
 
 boot(async ({ data }) => {
   const main = document.querySelector('main');
-  mountSky(main.querySelector('.lb-banner'), 'trails');
   const slot = main.querySelector('[data-slot="page"]');
   const factsEl = main.querySelector('[data-slot="facts"]');
   const figsEl = main.querySelector('[data-slot="figs"]');

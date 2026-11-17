@@ -10,7 +10,6 @@ import { plainText } from '../../reading/rich.js';
 import { aside, wireToc, wireAnchors, jumpToHash, pairTitle, sweep } from '../../reading/reading.js';
 import { loadFaq, rich } from './model.js';
 import { exportPanel } from './export-panel.js';
-import { mountSky } from '../../decor/skyclock.js';
 
 const no2 = (i) => String(i).padStart(2, '0');
 
@@ -24,7 +23,7 @@ boot(async ({ data }) => {
   // ---- page head ----
   const head = paper.querySelector('.rd-head');
   sweep(head.querySelector('.st-tri'));
-  head.prepend(mountSky(h('span.rd-banner.faq-banner'), 'pointers'));
+  head.prepend(h('span.rd-banner.faq-banner', { 'aria-hidden': 'true', style: { '--decor': `url("${links.asset('decor/star/star-cluster.svg')}")` } }));
   head.append(
     faq.lede ? rich('p.rd-lede.st-read', faq.lede, vars) : null,
     h('ul.st-facts.st-field', h('li', t('faq.fields.questions', { n: faq.questions })), h('li', t('faq.fields.sections', { n: faq.sections.length }))),

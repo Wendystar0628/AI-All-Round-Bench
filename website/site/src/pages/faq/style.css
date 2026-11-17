@@ -1,12 +1,17 @@
 /* /faq/ 猜你想问: the reading frame (reading.css) with one entry per question:
    number │ tag, question, answer. Ruled entries, no cards (about.md 的题目条目同理). */
 
-/* 星钟: the pointer stars of the Dipper on to Polaris, turned to now */
 .rd-banner.faq-banner {
-  top: -0.5rem;
-  right: 0.5rem;
-  width: min(13rem, 34%);
-  aspect-ratio: 1;
+  top: -0.75rem;
+  right: 0;
+  width: min(9rem, 28%);
+  aspect-ratio: 40 / 26;
+  opacity: 0.5;
+  background: var(--v-300);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 /* words joined by ~ in the content stay on one line (model.js rich) */

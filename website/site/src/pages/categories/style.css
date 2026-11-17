@@ -9,16 +9,19 @@
 .cat-head .st-head {
   margin-bottom: 0.6rem;
 }
-/* header banner (星钟, visual.md 六): the 28 lunar mansions on a great arc of the equator, today's sun the violet notch */
+/* header banner: dial/dial-arc-wide, single colour at 0.5 (visual.md 六) */
 .cat-head-decor {
   position: absolute;
   z-index: -1;
   right: 0;
   bottom: -1.25rem;
-  width: min(70%, 56rem);
-  height: 10.5rem;
-  -webkit-mask: linear-gradient(90deg, transparent, #000 22%);
-  mask: linear-gradient(90deg, transparent, #000 22%);
+  width: min(62%, 52rem);
+  aspect-ratio: 960 / 96;
+  background: var(--st-ink-2);
+  opacity: 0.5;
+  pointer-events: none;
+  -webkit-mask: url('/decor/dial/dial-arc-wide.svg') center / 100% 100% no-repeat;
+  mask: url('/decor/dial/dial-arc-wide.svg') center / 100% 100% no-repeat;
 }
 
 /* ---------- loading skeleton ---------- */
@@ -136,41 +139,11 @@
   padding-top: 0.5rem;
 }
 .cat-group-head {
-  position: relative;
-  isolation: isolate;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 0.5rem 1.5rem;
   margin: 2rem 0 1rem;
-}
-/* each group's own colour: a full-width, very pale band under its title only (green 100, violet 100) */
-.cat-group-head::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: -0.85rem calc(-1 * var(--gutter)) -0.75rem;
-  background: var(--cat-band);
-}
-#group-standard {
-  --cat-band: var(--g-100);
-}
-#group-design {
-  --cat-band: var(--v-100);
-}
-:root[data-theme='dark'] #group-standard {
-  --cat-band: color-mix(in srgb, #d1ff57 9%, var(--st-paper));
-}
-:root[data-theme='dark'] #group-design {
-  --cat-band: color-mix(in srgb, #9859ff 14%, var(--st-paper));
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) #group-standard {
-    --cat-band: color-mix(in srgb, #d1ff57 9%, var(--st-paper));
-  }
-  :root:not([data-theme]) #group-design {
-    --cat-band: color-mix(in srgb, #9859ff 14%, var(--st-paper));
-  }
 }
 .cat-group-head h2 {
   margin: 0;
@@ -179,10 +152,13 @@
 .cat-group-head .st-facts {
   padding-bottom: 0.15rem;
 }
-/* between the two groups (星钟): the circuit of the sky pulled straight, the mansions long ticks, today's sun the violet notch */
+/* between the two groups: rays/rays-divider, single colour */
 .cat-divider {
-  height: 46px;
+  height: 48px;
   margin: 2.5rem 0 0;
+  background: var(--v-300);
+  -webkit-mask: url('/decor/rays/rays-divider.svg') center / 100% 100% no-repeat;
+  mask: url('/decor/rays/rays-divider.svg') center / 100% 100% no-repeat;
 }
 
 /* ---------- a board ---------- */
@@ -538,17 +514,6 @@ a.cbt-name:is(:hover, :focus-visible) {
 
 /* ---------- phone width: the boards stay inside the window ---------- */
 @media (max-width: 599px) {
-  /* the arc drops below the fields, clear of the words */
-  .cat-head-decor {
-    left: 0;
-    width: auto;
-    height: 6.5rem;
-    -webkit-mask: none;
-    mask: none;
-  }
-  .cat-head {
-    padding-bottom: 4.5rem;
-  }
   .cat-jump.m-wrap .cat-jump-group {
     flex: 1 1 100%;
     min-width: 0;

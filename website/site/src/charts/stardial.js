@@ -14,7 +14,6 @@
 //   const dial = createStarDial(container, { data, model: 'gpt-6-astra', entrance: 'edge' });
 //   dial.setModel('gpt-6-1-sol');   // home: switch with the three-stage motion
 //   dial.wipeTag({ delay: 420 })     // 紫盘标签擦入（钩子）：页面编排入场时自己定时机
-//   dial.enter()                     // 静止画好的星盘补一次入场（不含星位飞出）：首页开屏交棒时用
 //   dial.svg                         // for chartBody() (存为图片)
 //   dial.destroy()
 //
@@ -614,18 +613,6 @@ export function createStarDial(target, opts) {
     },
     /** 紫盘标签擦入 (hook for a page's own entrance timing). */
     wipeTag,
-    /**
-     * The entrance without the star flight, for a dial drawn at rest (entrance: false) whose stars
-     * are already in place — the home splash hands them over: disc and plates assemble, the
-     * constellation is drawn from 12 o'clock, the total settles.
-     */
-    enter() {
-      if (!durIn('come')) return;
-      svg.classed('is-entering', true);
-      drawLines({ entrance: true, delay: 520 });
-      if (dur('scrambleLoad')) setTimeout(() => scramble(bigText.node(), dur('scrambleLoad')), 120);
-      setTimeout(() => svg.classed('is-entering', false), 1000);
-    },
     /** Highlight a category from outside (null clears). */
     focus(key) {
       focusCategory(key);

@@ -16,7 +16,6 @@ import { loadContent, contentVars } from '../../reading/content.js';
 import { blocks, inline, fold, deliverableHTML, repoFile, repoDir } from '../../reading/rich.js';
 import { aside, wireToc, wireAnchors, jumpToHash, pairTitle, sweep, emptyState } from '../../reading/reading.js';
 import { makeFigure } from '../../reading/figs/index.js';
-import { mountSky } from '../../decor/skyclock.js';
 
 const TOP = 10;
 /** This block's faint grid (ticks 0/25/50/75/100). */
@@ -39,7 +38,7 @@ boot(
 
     // ---- head (all from data) ----
     const head = paper.querySelector('.rd-head');
-    head.prepend(mountSky(h('span.rd-banner.tk-banner'), 'louke'));
+    head.prepend(h('span.rd-banner.tk-banner', { 'aria-hidden': 'true', style: { '--decor': `url("${links.asset('decor/constellation/constellation-pair.svg')}")` } }));
     paper.querySelector('[data-slot="crumb"]').append(h('a', { href: links.tasks(cat.key) }, pick(cat, 'name')));
     paper
       .querySelector('[data-slot="ids"]')

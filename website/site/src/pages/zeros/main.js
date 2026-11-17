@@ -8,7 +8,6 @@ import { boot } from '../../shell/index.js';
 import { h, t, lang, pick, links, fmtNo, fmtDate, fetchJSON, vendorIcon, categoryIcon, modelName, modelLabel, getParam, setParams } from '../../core/index.js';
 import { aside, wireToc, wireAnchors, jumpToHash, emptyState } from '../../reading/reading.js';
 import { attachTip } from '../../ui/tip.js';
-import { mountSky } from '../../decor/skyclock.js';
 
 const KINDS = ['none', 'crash', 'wrong', 'slow', 'rule', 'other'];
 const rowId = (task, id) => `z-${task.key}-${id}`;
@@ -39,7 +38,7 @@ boot(async ({ data }) => {
 
   // ---- head ----
   const head = paper.querySelector('.rd-head');
-  head.prepend(mountSky(h('span.rd-banner.zr-banner'), 'lunation'));
+  head.prepend(h('span.rd-banner.zr-banner', { 'aria-hidden': 'true', style: { '--decor': `url("${links.asset('decor/orbit/orbit-nested.svg')}")` } }));
   paper.querySelector('[data-slot="count"]').textContent = t('zeros.count', { n: all.length, count: all.length });
   head.append(
     h(

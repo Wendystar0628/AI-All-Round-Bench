@@ -7,7 +7,6 @@ import { dur, durIn, stagger, reduced, calm } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
 import { repoLink } from '../../ui/repo.js';
 import { tn } from './util.js';
-import { wantsSplash, playSplash } from './splash.js';
 
 /** The entrance plays (not under reduced motion or the calm variant). */
 const entering = () => !reduced() && !calm() && durIn('come') > 0;
@@ -200,10 +199,9 @@ function dialBlock(data, page) {
   const el = h('figure.hero-dial', h('div.hero-dial-stack', box, h('figcaption.hero-dial-foot', legend, h('p.hero-dial-acts', detail, exp))));
   return {
     el,
-    /** `entrance: false` draws the dial at rest (the splash hands its stars over in place). */
-    mount({ entrance = 'edge' } = {}) {
+    mount() {
       // 名字接力 from a star to its task page is built into the dial
-      dial = createStarDial(box, { data, model: page.id, entrance });
+      dial = createStarDial(box, { data, model: page.id, entrance: 'edge' });
       page.on((id) => {
         dial.setModel(id);
         setDetail();
@@ -243,32 +241,18 @@ export function renderHero(data, page, top) {
       });
       five.place(false);
 
-      // 开屏 (splash.js): the first page of a visit opens with the star-trail exposure; the dial is
-      // drawn at rest under it and the entrance below starts at the handover, without the star flight
-      const splash = entering() && wantsSplash();
-      const d = dial.mount({ entrance: splash ? false : 'edge' });
+      const d = dial.mount();
       if (!entering()) return d;
 
       // 入场 (home.md 入场顺序): dial at 0 (inside the shared dial: disc, plates, stars,
       // constellation); wordmark a little later; readouts from 120 ms; rows from 300 ms;
       // disc tag wipes in; bars grow; the marker and the constellation finish.
-      const enter = () => {
-        root.classList.add('is-entering');
-        const figs = [...el.querySelectorAll('.hero-fig'), ...five.figs];
-        const gap = stagger('row', figs.length);
-        figs.forEach((f, i) => setTimeout(() => scramble(f, dur('scrambleLoad')), 120 + i * gap));
-        d.wipeTag({ delay: 420 });
-        setTimeout(() => root.classList.remove('is-entering'), 1100);
-      };
-      if (splash)
-        playSplash({
-          dial: d.svg,
-          onHandoff: () => {
-            enter();
-            d.enter();
-          },
-        });
-      else enter();
+      root.classList.add('is-entering');
+      const figs = [...el.querySelectorAll('.hero-fig'), ...five.figs];
+      const gap = stagger('row', figs.length);
+      figs.forEach((f, i) => setTimeout(() => scramble(f, dur('scrambleLoad')), 120 + i * gap));
+      d.wipeTag({ delay: 420 });
+      setTimeout(() => root.classList.remove('is-entering'), 1100);
       return d;
     },
   };

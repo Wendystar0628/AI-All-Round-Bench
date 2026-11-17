@@ -16,11 +16,9 @@ import { createHead } from './head.js';
 import { createBarChart } from './bars.js';
 import { createStrengths } from './strengths.js';
 import { createPicker } from './picker.js';
-import { mountSky } from '../../decor/skyclock.js';
 
 boot(({ data }) => {
   const main = document.querySelector('main');
-  mountSky(main.querySelector('.md-head-decor'), 'sundial');
   const slot = main.querySelector('[data-slot="page"]');
   const header = main.querySelector('.md-head');
   const side = main.querySelector('.md-side');

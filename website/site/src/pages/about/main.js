@@ -8,7 +8,6 @@ import { loadContent, contentVars } from '../../reading/content.js';
 import { blocks, inline, inlineHTML, fold, fill, deliverableHTML } from '../../reading/rich.js';
 import { aside, wireToc, wireAnchors, jumpToHash, pairTitle, sweep } from '../../reading/reading.js';
 import { makeFigure, categoryFigure, dirStats } from '../../reading/figs/index.js';
-import { mountSky } from '../../decor/skyclock.js';
 
 const SECTIONS = ['intro', 'overview', 'tasks', 'format', 'scoring', 'principles'];
 const no2 = (i) => String(i).padStart(2, '0');
@@ -46,7 +45,7 @@ boot(async ({ data }) => {
   // ---- page head ----
   const head = paper.querySelector('.rd-head');
   sweep(head.querySelector('.st-tri'));
-  head.prepend(mountSky(h('span.rd-banner.ab-banner'), 'lighttime'));
+  head.prepend(h('span.rd-banner', { 'aria-hidden': 'true', style: { '--decor': `url("${links.asset('decor/trails/trails-wide.svg')}")` } }));
   head.append(
     inline('p.rd-lede.st-read', c.lede, vars),
     h(
