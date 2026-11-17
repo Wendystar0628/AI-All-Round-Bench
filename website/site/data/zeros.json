@@ -11,6 +11,11 @@
         "zh": "只写了第 1 题的部分证明和辅助引理，其中几处条件用错，编译失败，结尾仍是证明占位符；其余七题未交，没有一题完成。",
         "en": "Submitted a partial proof and supporting lemmas for problem 1, but with several conditions wrong; it failed to compile and still ended in a proof placeholder. The other seven problems were missing, so none is complete."
       },
+      "minimax-m3-1-flash": {
+        "kind": "none",
+        "zh": "只留下查询有限集合计数用法的草稿，没有八题中的任何正式定理；结束前仍在反复推敲第 1 题，思路始终没写成可检查的证明。",
+        "en": "Left only a scratch file querying finite-set counting functions, with none of the eight required theorems. At the end it was still reworking problem 1, without turning its ideas into a verifiable proof."
+      },
       "mimo-v2-6-pro": {
         "kind": "none",
         "zh": "八份文件都只抄了命题声明，证明用占位符留空，连所需数学库也没有导入；逐题检查全部出现语法或未知符号错误，没有一份完整证明可计分。",
@@ -30,11 +35,6 @@
         "kind": "none",
         "zh": "只交第 1 题的证明框架，留有 12 处未证明的占位符，还写错积分工具名称、调用不存在的求导方法；编译未能建立主定理，其余七题也没有提交。",
         "en": "Submitted only a Problem 1 outline with 12 proof placeholders, an incorrect integration namespace name and nonexistent differentiation methods. Compilation failed to establish the main theorem, and the remaining seven problems were not submitted."
-      },
-      "minimax-m3-1-flash": {
-        "kind": "none",
-        "zh": "只留下查询有限集合计数用法的草稿，没有八题中的任何正式定理；结束前仍在反复推敲第 1 题，思路始终没写成可检查的证明。",
-        "en": "Left only a scratch file querying finite-set counting functions, with none of the eight required theorems. At the end it was still reworking problem 1, without turning its ideas into a verifiable proof."
       },
       "doubao-seed-2-1-pro": {
         "kind": "none",
@@ -80,6 +80,11 @@
         "zh": "提交了 GPU 渲染程序，但把三角形包围范围的下界当成上界，漏算大量交点；5 次画面检查全失败，每次约 63 万个像素与标准画面不符，耗时还达到原程序约 76 倍。",
         "en": "Submitted a GPU renderer, but used triangles' lower bounds as upper bounds, causing missed intersections. All five image checks failed, with about 630,000 pixels outside tolerance per run; it also took roughly 76 times as long as the original."
       },
+      "minimax-m3-1-flash": {
+        "kind": "crash",
+        "zh": "提交了 GPU 渲染源码，把节点数据改成“中心加半长”，遍历和数据打包却仍访问旧字段，相关函数参数也未同步；编译报 33 处错误，未能生成可运行程序。",
+        "en": "Submitted GPU rendering source with node bounds changed to centers and half-extents, but traversal and packing still referenced old fields, and function arguments were inconsistent. Compilation reported 33 errors, leaving no runnable program."
+      },
       "grok-4-7": {
         "kind": "slow",
         "zh": "提交了完整的 GPU 渲染实现，每个像素的采样仍由单个线程依次计算；画面检查全部通过，但渲染需 3177 毫秒，原程序仅 514 毫秒，耗时为其 6.18 倍，未达计分门槛。",
@@ -89,11 +94,6 @@
         "kind": "wrong",
         "zh": "提交的并行建树程序把根节点和首个子节点都编号为 0，子节点覆盖根节点，导致大量物体漏渲染；虽快约 2.83 倍，5 次画面检查仍全失败，每次约 97 万个像素与标准画面不符。",
         "en": "The parallel scene-tree builder assigned index 0 to both the root and its first child, overwriting the root and omitting much of the scene. Despite a 2.83× speedup, all five image checks failed, with about 970,000 pixels outside tolerance each time."
-      },
-      "minimax-m3-1-flash": {
-        "kind": "crash",
-        "zh": "提交了 GPU 渲染源码，把节点数据改成“中心加半长”，遍历和数据打包却仍访问旧字段，相关函数参数也未同步；编译报 33 处错误，未能生成可运行程序。",
-        "en": "Submitted GPU rendering source with node bounds changed to centers and half-extents, but traversal and packing still referenced old fields, and function arguments were inconsistent. Compilation reported 33 errors, leaving no runnable program."
       },
       "doubao-seed-2-1-pro": {
         "kind": "crash",
@@ -156,6 +156,11 @@
         "zh": "交齐八份路线，但第 1 题只有两次位移，没有把零件移出；其余七题第一步就发生碰撞。八题均未完成一次合法分离，没有有效拆解进展可计分。",
         "en": "Submitted eight routes, but the first contained only two shifts without separating any pieces; the other seven collided on their first move. None achieved even one valid separation, leaving no disassembly progress eligible for credit."
       },
+      "minimax-m3-1-flash": {
+        "kind": "wrong",
+        "zh": "只留下第 1 题一份三步试答，第三条指令移出 A 零件时发生碰撞，尚未完成任何分离；其余七题未交，八题均无可计分的拆解进展。",
+        "en": "Left only one three-move trial route for puzzle 1. Its third instruction collided while removing piece A, before any separation; the other seven puzzles were unanswered, leaving no disassembly progress eligible for credit."
+      },
       "longcat-2-5": {
         "kind": "wrong",
         "zh": "只留下第 1 题的试答文件，第 4 条指令把 A 零件向外移出时发生碰撞，此前没有完成任何分离；其余七题未交，八题均无可计分的拆解进展。",
@@ -170,11 +175,6 @@
         "kind": "none",
         "zh": "反复读取第 1 题零件数据、整理摘要并处理命令和编码问题，86 次工具调用后仍未创建答案目录，也没有检查拆解路线；八题全部缺交。",
         "en": "Repeatedly reread the first puzzle's piece data, wrote summaries, and dealt with command and encoding issues. After 86 tool calls, no answer directory or route checks existed; all eight puzzles remained unanswered."
-      },
-      "minimax-m3-1-flash": {
-        "kind": "wrong",
-        "zh": "只留下第 1 题一份三步试答，第三条指令移出 A 零件时发生碰撞，尚未完成任何分离；其余七题未交，八题均无可计分的拆解进展。",
-        "en": "Left only one three-move trial route for puzzle 1. Its third instruction collided while removing piece A, before any separation; the other seven puzzles were unanswered, leaving no disassembly progress eligible for credit."
       }
     },
     "drawing": {

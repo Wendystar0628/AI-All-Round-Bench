@@ -22,6 +22,7 @@
     "qwen4-max",
     "hy4",
     "ernie-5-5-flash",
+    "minimax-m3-1-flash",
     "gpt-6-luna",
     "grok-4-7",
     "mimo-v2-6-pro",
@@ -29,7 +30,6 @@
     "step-5-preview",
     "dots3-note-preview",
     "claude-fable-5-2",
-    "minimax-m3-1-flash",
     "glm-5-3",
     "doubao-seed-2-1-pro"
   ],
@@ -1946,7 +1946,7 @@
         "game": 15,
         "physics": 14,
         "visual": 10,
-        "system": 17
+        "system": 18
       },
       "task_ranks": {
         "formal-proof": 11,
@@ -1961,7 +1961,7 @@
         "jelly-tank": 14,
         "harbor": 12,
         "starship": 10,
-        "nested-os": 17
+        "nested-os": 18
       }
     },
     "hy4": {
@@ -2324,6 +2324,194 @@
         "nested-os": 12
       }
     },
+    "minimax-m3-1-flash": {
+      "total": 22.4,
+      "kinds": {
+        "standard": 10.3,
+        "design": 34.6
+      },
+      "categories": {
+        "reason": 1.2,
+        "algo": 18.1,
+        "battle": 16.1,
+        "spatial": 0.0,
+        "drawing": 16.1,
+        "interact": 31.9,
+        "game": 52.2,
+        "physics": 4.5,
+        "visual": 55.2,
+        "system": 29.0
+      },
+      "tasks": {
+        "formal-proof": 0.0,
+        "math-olympiad": 2.4,
+        "raytracing": 0.0,
+        "circuit": 36.2,
+        "conquest": 16.1,
+        "luban": 0.0,
+        "drawing": 16.1,
+        "ae-editor": 31.9,
+        "tower-defense": 52.2,
+        "jelly-tank": 4.5,
+        "harbor": 62.9,
+        "starship": 47.6,
+        "nested-os": 29.0
+      },
+      "status": "ranked",
+      "done": 13,
+      "task_info": {
+        "formal-proof": {
+          "anomaly": [
+            {
+              "text": "会话末尾仍在推敲证明，最终只留接口查询草稿，未提交主定理。"
+            }
+          ]
+        },
+        "ae-editor": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 34.3
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 29.5
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "评分过程中未自然发现绕过评测、伪造输出或篡改评分规则的作弊迹象。"
+            }
+          ]
+        },
+        "tower-defense": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 56.8
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 47.5
+            }
+          ]
+        },
+        "harbor": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 67.1
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 58.7
+            }
+          ]
+        },
+        "starship": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 54.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 40.6
+            }
+          ]
+        },
+        "raytracing": {
+          "anomaly": [
+            {
+              "text": "最终节点布局改写未同步调用端，源码残留旧字段并编译失败。"
+            }
+          ]
+        },
+        "jelly-tank": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 9.0
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 0.0
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "水体容量先用后赋值导致启动崩溃，果冻表面为空，独立导出仍越界。"
+            }
+          ]
+        },
+        "nested-os": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 29.6
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 28.4
+            }
+          ]
+        },
+        "luban": {
+          "anomaly": [
+            {
+              "text": "未提交八题答案，唯一测试路线在首次分离前碰撞。"
+            }
+          ]
+        }
+      },
+      "cost": {
+        "cny": 12.9,
+        "basis": "subscription",
+        "tokens": 183218927,
+        "tasks": 13,
+        "method": "quota_usage",
+        "api_usd": 4.0,
+        "api_cny": 26.7,
+        "hours": 15.2,
+        "tps": 106.8,
+        "tps_replies": 612,
+        "plan": {
+          "name": "MiniMax M Plan Explore",
+          "name_en": "MiniMax M Plan Explore",
+          "price": 119,
+          "currency": "CNY",
+          "period": "month"
+        }
+      },
+      "rank": 15,
+      "category_ranks": {
+        "reason": 18,
+        "algo": 15,
+        "battle": 10,
+        "spatial": 17,
+        "drawing": 7,
+        "interact": 12,
+        "game": 17,
+        "physics": 19,
+        "visual": 15,
+        "system": 16
+      },
+      "task_ranks": {
+        "formal-proof": 16,
+        "math-olympiad": 17,
+        "raytracing": 20,
+        "circuit": 10,
+        "conquest": 10,
+        "luban": 17,
+        "drawing": 7,
+        "ae-editor": 12,
+        "tower-defense": 17,
+        "jelly-tank": 19,
+        "harbor": 14,
+        "starship": 15,
+        "nested-os": 16
+      }
+    },
     "gpt-6-luna": {
       "total": 22.2,
       "kinds": {
@@ -2458,7 +2646,7 @@
           "period": "month"
         }
       },
-      "rank": 15,
+      "rank": 16,
       "category_ranks": {
         "reason": 12,
         "algo": 14,
@@ -2469,7 +2657,7 @@
         "game": 20,
         "physics": 13,
         "visual": 19,
-        "system": 16
+        "system": 17
       },
       "task_ranks": {
         "formal-proof": 11,
@@ -2484,7 +2672,7 @@
         "jelly-tank": 13,
         "harbor": 18,
         "starship": 20,
-        "nested-os": 16
+        "nested-os": 17
       }
     },
     "grok-4-7": {
@@ -2644,7 +2832,7 @@
           "period": "month"
         }
       },
-      "rank": 16,
+      "rank": 17,
       "category_ranks": {
         "reason": 16,
         "algo": 20,
@@ -2829,7 +3017,7 @@
           "name": "MiMo API"
         }
       },
-      "rank": 17,
+      "rank": 18,
       "category_ranks": {
         "reason": 20,
         "algo": 18,
@@ -2840,7 +3028,7 @@
         "game": 19,
         "physics": 15,
         "visual": 17,
-        "system": 19
+        "system": 20
       },
       "task_ranks": {
         "formal-proof": 16,
@@ -2855,7 +3043,7 @@
         "jelly-tank": 15,
         "harbor": 17,
         "starship": 14,
-        "nested-os": 19
+        "nested-os": 20
       }
     },
     "longcat-2-5": {
@@ -3038,7 +3226,7 @@
           "name_en": "LongCat API"
         }
       },
-      "rank": 18,
+      "rank": 19,
       "category_ranks": {
         "reason": 20,
         "algo": 21,
@@ -3049,7 +3237,7 @@
         "game": 22,
         "physics": 17,
         "visual": 18,
-        "system": 18
+        "system": 19
       },
       "task_ranks": {
         "formal-proof": 16,
@@ -3064,7 +3252,7 @@
         "jelly-tank": 17,
         "harbor": 19,
         "starship": 18,
-        "nested-os": 18
+        "nested-os": 19
       }
     },
     "step-5-preview": {
@@ -3259,7 +3447,7 @@
           "period": "month"
         }
       },
-      "rank": 19,
+      "rank": 20,
       "category_ranks": {
         "reason": 19,
         "algo": 22,
@@ -3478,7 +3666,7 @@
           "name_en": "Dots API"
         }
       },
-      "rank": 20,
+      "rank": 21,
       "category_ranks": {
         "reason": 20,
         "algo": 19,
@@ -3489,7 +3677,7 @@
         "game": 23,
         "physics": 21,
         "visual": 21,
-        "system": 19
+        "system": 20
       },
       "task_ranks": {
         "formal-proof": 16,
@@ -3504,7 +3692,7 @@
         "jelly-tank": 21,
         "harbor": 22,
         "starship": 21,
-        "nested-os": 19
+        "nested-os": 20
       }
     },
     "claude-fable-5-2": {
@@ -3609,185 +3797,6 @@
         "jelly-tank": null,
         "harbor": null,
         "starship": null,
-        "nested-os": null
-      }
-    },
-    "minimax-m3-1-flash": {
-      "total": null,
-      "kinds": {
-        "standard": 10.3,
-        "design": null
-      },
-      "categories": {
-        "reason": 1.2,
-        "algo": 18.1,
-        "battle": 16.1,
-        "spatial": 0.0,
-        "drawing": 16.1,
-        "interact": 31.9,
-        "game": 52.2,
-        "physics": 4.5,
-        "visual": 55.2,
-        "system": null
-      },
-      "tasks": {
-        "formal-proof": 0.0,
-        "math-olympiad": 2.4,
-        "raytracing": 0.0,
-        "circuit": 36.2,
-        "conquest": 16.1,
-        "luban": 0.0,
-        "drawing": 16.1,
-        "ae-editor": 31.9,
-        "tower-defense": 52.2,
-        "jelly-tank": 4.5,
-        "harbor": 62.9,
-        "starship": 47.6,
-        "nested-os": null
-      },
-      "status": "testing",
-      "done": 12,
-      "task_info": {
-        "formal-proof": {
-          "anomaly": [
-            {
-              "text": "会话末尾仍在推敲证明，最终只留接口查询草稿，未提交主定理。"
-            }
-          ]
-        },
-        "ae-editor": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 34.3
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 29.5
-            }
-          ],
-          "anomaly": [
-            {
-              "text": "评分过程中未自然发现绕过评测、伪造输出或篡改评分规则的作弊迹象。"
-            }
-          ]
-        },
-        "tower-defense": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 56.8
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 47.5
-            }
-          ]
-        },
-        "harbor": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 67.1
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 58.7
-            }
-          ]
-        },
-        "starship": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 54.5
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 40.6
-            }
-          ]
-        },
-        "raytracing": {
-          "anomaly": [
-            {
-              "text": "最终节点布局改写未同步调用端，源码残留旧字段并编译失败。"
-            }
-          ]
-        },
-        "jelly-tank": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 9.0
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 0.0
-            }
-          ],
-          "anomaly": [
-            {
-              "text": "水体容量先用后赋值导致启动崩溃，果冻表面为空，独立导出仍越界。"
-            }
-          ]
-        },
-        "nested-os": {
-          "state": "testing"
-        },
-        "luban": {
-          "anomaly": [
-            {
-              "text": "未提交八题答案，唯一测试路线在首次分离前碰撞。"
-            }
-          ]
-        }
-      },
-      "cost": {
-        "cny": 10.7,
-        "basis": "subscription",
-        "tokens": 182414297,
-        "tasks": 12,
-        "method": "quota_usage",
-        "api_usd": 4.0,
-        "api_cny": 26.5,
-        "hours": 13.7,
-        "tps": 106.8,
-        "tps_replies": 607,
-        "plan": {
-          "name": "MiniMax M Plan Explore",
-          "name_en": "MiniMax M Plan Explore",
-          "price": 119,
-          "currency": "CNY",
-          "period": "month"
-        }
-      },
-      "rank": null,
-      "category_ranks": {
-        "reason": 18,
-        "algo": 15,
-        "battle": 10,
-        "spatial": 17,
-        "drawing": 7,
-        "interact": 12,
-        "game": 17,
-        "physics": 19,
-        "visual": 15,
-        "system": null
-      },
-      "task_ranks": {
-        "formal-proof": 16,
-        "math-olympiad": 17,
-        "raytracing": 20,
-        "circuit": 10,
-        "conquest": 10,
-        "luban": 17,
-        "drawing": 7,
-        "ae-editor": 12,
-        "tower-defense": 17,
-        "jelly-tank": 19,
-        "harbor": 14,
-        "starship": 15,
         "nested-os": null
       }
     },
