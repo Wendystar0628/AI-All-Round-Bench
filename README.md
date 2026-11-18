@@ -1,5 +1,9 @@
 <p align="center"><img src="assets/readme/hero.png" width="100%" alt="AI十项全能·定时挑战赛（AI Decathlon · Timed Challenge）：10 个类别、13 道题及各题限时"></p>
 
+<p align="center"><b>在线排行榜：<a href="https://octathlon.wendystars.com">octathlon.wendystars.com</a></b></p>
+
+<p align="center">简体中文 | <a href="README.en.md">English</a></p>
+
 <p align="center">当前正式赛程为 13 道题、10 个类别：AI 编程智能体在 60–100 分钟内独立作答，到时直接中止。</p>
 
 ---
