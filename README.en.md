@@ -19,6 +19,7 @@
 - [Scoring](#scoring)
 - [Repository Layout](#repository-layout)
 - [Design Principles](#design-principles)
+- [License](#license)
 
 ## Introduction
 
@@ -789,3 +790,7 @@ What each task's folder under `Grading/` contains (see [`Grading/README.md`](Gra
 - **Discrimination sits in the strong-model range**: the performance tasks interpolate piecewise on anchor tables, with the slope increasing segment by segment from the low range to the upper-middle range. Conventional methods only reach the low range, and works at an upper-middle level pull clearly ahead.
 
 Process lifecycles all go through `H:\AI_OneShot_Model\.oneshot\process_job.py`: one anonymous, non-inheritable Windows Job per piece of work, and ending the work ends the Job. Tested sessions and bench share session-host and the administrator session_owner; grading, dispatching and publishing use the same underlying runner; exports install the original CPU, memory and affinity limits on the same base. Only registered identities or this run's child process objects already held are ended; there is no sweeping by account, name, directory or process tree.
+
+## License
+
+This project is open-sourced under the [MIT License](LICENSE).
