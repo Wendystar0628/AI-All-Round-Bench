@@ -36,11 +36,6 @@
       "tested": "2026-11-12"
     },
     {
-      "id": "deepseek-v4-1-flash",
-      "key": "DeepSeek/V4.1Flash",
-      "tested": "2026-11-12"
-    },
-    {
       "id": "hy4",
       "key": "Hy/Hy4",
       "tested": "2026-11-13"
@@ -96,11 +91,6 @@
       "tested": "2026-11-17"
     },
     {
-      "id": "minimax-m3-1-flash",
-      "key": "MiniMax/M3.1Flash",
-      "tested": "2026-11-17"
-    },
-    {
       "id": "gpt-6-2-astra",
       "key": "GPT/6.2Astra",
       "tested": "2026-11-18"
@@ -124,10 +114,20 @@
       "id": "gemini-4-neon",
       "key": "Gemini/4Neon",
       "tested": "2026-11-19"
+    },
+    {
+      "id": "deepseek-v4-1-flash",
+      "key": "DeepSeek/V4.1Flash",
+      "tested": "2026-11-12"
+    },
+    {
+      "id": "minimax-m3-1-flash",
+      "key": "MiniMax/M3.1Flash",
+      "tested": "2026-11-17"
     }
   ],
   "scores": {
-    "updated": "2026-11-19",
+    "updated": "2026-11-21",
     "order": [
       "gpt-6-2-astra",
       "gpt-6-2-sol",
@@ -142,12 +142,12 @@
       "gpt-6-1-terra",
       "claude-haiku-5-5",
       "kimi-k3-1-pro",
-      "gpt-5-6-sol",
       "deepseek-v4-1-flash",
+      "gpt-5-6-sol",
       "qwen4-max",
       "hy4",
-      "ernie-5-5-flash",
       "minimax-m3-1-flash",
+      "ernie-5-5-flash",
       "gpt-6-luna",
       "grok-4-7",
       "mimo-v2-6-pro",
@@ -1128,7 +1128,7 @@
         "task_ranks": {
           "formal-proof": 11,
           "math-olympiad": 6,
-          "raytracing": 11,
+          "raytracing": 12,
           "circuit": 10,
           "conquest": 12,
           "luban": 9,
@@ -1253,7 +1253,7 @@
         "rank": 12,
         "category_ranks": {
           "reason": 13,
-          "algo": 14,
+          "algo": 16,
           "battle": 11,
           "spatial": 19,
           "drawing": 9,
@@ -1266,7 +1266,7 @@
         "task_ranks": {
           "formal-proof": 12,
           "math-olympiad": 13,
-          "raytracing": 18,
+          "raytracing": 20,
           "circuit": 15,
           "conquest": 11,
           "luban": 19,
@@ -1388,10 +1388,10 @@
             ]
           }
         },
-        "rank": 14,
+        "rank": 15,
         "category_ranks": {
           "reason": 12,
-          "algo": 12,
+          "algo": 13,
           "battle": 23,
           "spatial": 11,
           "drawing": 12,
@@ -1404,7 +1404,7 @@
         "task_ranks": {
           "formal-proof": 12,
           "math-olympiad": 7,
-          "raytracing": 12,
+          "raytracing": 13,
           "circuit": 14,
           "conquest": 23,
           "luban": 11,
@@ -1418,14 +1418,14 @@
         }
       },
       "deepseek-v4-1-flash": {
-        "total": 31.9,
+        "total": 34.7,
         "kinds": {
-          "standard": 7.3,
+          "standard": 13.1,
           "design": 56.4
         },
         "categories": {
           "reason": 10.1,
-          "algo": 0.0,
+          "algo": 28.9,
           "battle": 8.8,
           "spatial": 8.0,
           "drawing": 9.5,
@@ -1438,8 +1438,8 @@
         "tasks": {
           "formal-proof": 12.5,
           "math-olympiad": 7.7,
-          "raytracing": 0.0,
-          "circuit": 0.0,
+          "raytracing": 44.6,
+          "circuit": 13.2,
           "conquest": 8.8,
           "luban": 8.0,
           "drawing": 9.5,
@@ -1501,20 +1501,6 @@
               }
             ]
           },
-          "raytracing": {
-            "anomaly": [
-              {
-                "text": "最终GPU建树把三角形下界当上界，导致大量交点漏检。"
-              }
-            ]
-          },
-          "circuit": {
-            "anomaly": [
-              {
-                "text": "末段修改寄存器融合后自测仍有根值不一致，最终源码保留该缺陷。"
-              }
-            ]
-          },
           "jelly-tank": {
             "graders": [
               {
@@ -1547,10 +1533,10 @@
             ]
           }
         },
-        "rank": 15,
+        "rank": 14,
         "category_ranks": {
           "reason": 17,
-          "algo": 24,
+          "algo": 15,
           "battle": 19,
           "spatial": 15,
           "drawing": 13,
@@ -1563,8 +1549,8 @@
         "task_ranks": {
           "formal-proof": 14,
           "math-olympiad": 18,
-          "raytracing": 22,
-          "circuit": 22,
+          "raytracing": 14,
+          "circuit": 16,
           "conquest": 19,
           "luban": 15,
           "drawing": 13,
@@ -1707,7 +1693,7 @@
         "rank": 17,
         "category_ranks": {
           "reason": 22,
-          "algo": 16,
+          "algo": 18,
           "battle": 21,
           "spatial": 19,
           "drawing": 18,
@@ -1720,8 +1706,8 @@
         "task_ranks": {
           "formal-proof": 19,
           "math-olympiad": 21,
-          "raytracing": 15,
-          "circuit": 17,
+          "raytracing": 17,
+          "circuit": 18,
           "conquest": 21,
           "luban": 19,
           "drawing": 18,
@@ -1852,7 +1838,7 @@
         "rank": 20,
         "category_ranks": {
           "reason": 15,
-          "algo": 17,
+          "algo": 19,
           "battle": 20,
           "spatial": 15,
           "drawing": 16,
@@ -1865,8 +1851,8 @@
         "task_ranks": {
           "formal-proof": 14,
           "math-olympiad": 15,
-          "raytracing": 16,
-          "circuit": 19,
+          "raytracing": 18,
+          "circuit": 20,
           "conquest": 20,
           "luban": 15,
           "drawing": 16,
@@ -2022,7 +2008,7 @@
         "rank": 22,
         "category_ranks": {
           "reason": 22,
-          "algo": 20,
+          "algo": 21,
           "battle": 17,
           "spatial": 15,
           "drawing": 23,
@@ -2035,8 +2021,8 @@
         "task_ranks": {
           "formal-proof": 19,
           "math-olympiad": 21,
-          "raytracing": 19,
-          "circuit": 20,
+          "raytracing": 21,
+          "circuit": 21,
           "conquest": 17,
           "luban": 15,
           "drawing": 23,
@@ -2160,7 +2146,7 @@
         "rank": 13,
         "category_ranks": {
           "reason": 14,
-          "algo": 13,
+          "algo": 14,
           "battle": 10,
           "spatial": 18,
           "drawing": 15,
@@ -2173,7 +2159,7 @@
         "task_ranks": {
           "formal-proof": 14,
           "math-olympiad": 14,
-          "raytracing": 14,
+          "raytracing": 16,
           "circuit": 11,
           "conquest": 10,
           "luban": 18,
@@ -2315,7 +2301,7 @@
         "rank": 16,
         "category_ranks": {
           "reason": 16,
-          "algo": 19,
+          "algo": 20,
           "battle": 22,
           "spatial": 14,
           "drawing": 17,
@@ -2328,8 +2314,8 @@
         "task_ranks": {
           "formal-proof": 14,
           "math-olympiad": 17,
-          "raytracing": 17,
-          "circuit": 21,
+          "raytracing": 19,
+          "circuit": 22,
           "conquest": 22,
           "luban": 14,
           "drawing": 17,
@@ -2476,10 +2462,10 @@
             ]
           }
         },
-        "rank": 18,
+        "rank": 19,
         "category_ranks": {
           "reason": 18,
-          "algo": 15,
+          "algo": 17,
           "battle": 18,
           "spatial": 19,
           "drawing": 23,
@@ -2492,8 +2478,8 @@
         "task_ranks": {
           "formal-proof": 19,
           "math-olympiad": 16,
-          "raytracing": 13,
-          "circuit": 18,
+          "raytracing": 15,
+          "circuit": 19,
           "conquest": 18,
           "luban": 19,
           "drawing": 23,
@@ -2646,7 +2632,7 @@
         "rank": 21,
         "category_ranks": {
           "reason": 19,
-          "algo": 22,
+          "algo": 23,
           "battle": 16,
           "spatial": 13,
           "drawing": 20,
@@ -2659,8 +2645,8 @@
         "task_ranks": {
           "formal-proof": 14,
           "math-olympiad": 21,
-          "raytracing": 22,
-          "circuit": 16,
+          "raytracing": 24,
+          "circuit": 17,
           "conquest": 16,
           "luban": 13,
           "drawing": 20,
@@ -2839,7 +2825,7 @@
         "rank": 23,
         "category_ranks": {
           "reason": 22,
-          "algo": 23,
+          "algo": 24,
           "battle": 15,
           "spatial": 19,
           "drawing": 23,
@@ -2852,8 +2838,8 @@
         "task_ranks": {
           "formal-proof": 19,
           "math-olympiad": 21,
-          "raytracing": 21,
-          "circuit": 22,
+          "raytracing": 23,
+          "circuit": 23,
           "conquest": 15,
           "luban": 19,
           "drawing": 23,
@@ -3042,7 +3028,7 @@
         "rank": 25,
         "category_ranks": {
           "reason": 22,
-          "algo": 21,
+          "algo": 22,
           "battle": 24,
           "spatial": 19,
           "drawing": 19,
@@ -3055,8 +3041,8 @@
         "task_ranks": {
           "formal-proof": 19,
           "math-olympiad": 21,
-          "raytracing": 20,
-          "circuit": 22,
+          "raytracing": 22,
+          "circuit": 23,
           "conquest": 24,
           "luban": 19,
           "drawing": 19,
@@ -3244,7 +3230,7 @@
         "rank": 24,
         "category_ranks": {
           "reason": 21,
-          "algo": 24,
+          "algo": 25,
           "battle": 24,
           "spatial": 19,
           "drawing": 22,
@@ -3257,8 +3243,8 @@
         "task_ranks": {
           "formal-proof": 19,
           "math-olympiad": 20,
-          "raytracing": 22,
-          "circuit": 22,
+          "raytracing": 24,
+          "circuit": 23,
           "conquest": 24,
           "luban": 19,
           "drawing": 22,
@@ -3271,14 +3257,14 @@
         }
       },
       "minimax-m3-1-flash": {
-        "total": 22.4,
+        "total": 24.8,
         "kinds": {
-          "standard": 10.3,
+          "standard": 15.1,
           "design": 34.6
         },
         "categories": {
           "reason": 1.2,
-          "algo": 18.1,
+          "algo": 42.3,
           "battle": 16.1,
           "spatial": 0.0,
           "drawing": 16.1,
@@ -3291,7 +3277,7 @@
         "tasks": {
           "formal-proof": 0.0,
           "math-olympiad": 2.4,
-          "raytracing": 0.0,
+          "raytracing": 48.4,
           "circuit": 36.2,
           "conquest": 16.1,
           "luban": 0.0,
@@ -3366,13 +3352,6 @@
               }
             ]
           },
-          "raytracing": {
-            "anomaly": [
-              {
-                "text": "最终节点布局改写未同步调用端，源码残留旧字段并编译失败。"
-              }
-            ]
-          },
           "jelly-tank": {
             "graders": [
               {
@@ -3410,10 +3389,10 @@
             ]
           }
         },
-        "rank": 19,
+        "rank": 18,
         "category_ranks": {
           "reason": 20,
-          "algo": 18,
+          "algo": 12,
           "battle": 13,
           "spatial": 19,
           "drawing": 11,
@@ -3426,7 +3405,7 @@
         "task_ranks": {
           "formal-proof": 19,
           "math-olympiad": 19,
-          "raytracing": 22,
+          "raytracing": 11,
           "circuit": 13,
           "conquest": 13,
           "luban": 19,
