@@ -1,7 +1,8 @@
 // Route plugin: turns pages/<type>.html + data/*.json into every page of the
 // site, for `vite build` (virtual HTML inputs) and the dev server (middleware).
 //
-//   zh at the root, en under /en/:
+//   Paths below are relative to the base (vite.config.js `base`, /decathlon/ on the domain:
+//   /leaderboard/ means /decathlon/leaderboard/). zh at the base, en under <base>en/:
 //     /                      home          /en/
 //     /leaderboard/          leaderboard   /en/leaderboard/
 //     /categories/           categories    /en/categories/
@@ -99,7 +100,15 @@ function makeT(i18nDir, lang) {
 }
 
 export function routePlugin({ root, dataDir: customDataDir }) {
-  const dataDir = customDataDir || process.env.ONESHOT_SITE_DATA_DIR?.trim() || join(root, 'data');
+  const fixedDir = customDataDir || process.env.ONESHOT_SITE_DATA_DIR?.trim();
+  const defaultDir = join(root, 'data');
+  // The dev server prefers data-local/ while the export writes one: the same data plus models under a vendor NDA
+  // (orchestrator/private_models.json), git-excluded and never built (website/tools/export_data.py LOCAL_OUT).
+  const localDir = join(root, 'data-local');
+  let serving = false;
+  const dataDirNow = () =>
+    fixedDir || (serving && existsSync(join(localDir, 'models.json')) ? localDir : defaultDir);
+  let dataDir = fixedDir || defaultDir;
   const pagesDir = join(root, 'pages');
   const i18nDir = join(root, 'src', 'i18n');
   let base = '/';
@@ -110,6 +119,7 @@ export function routePlugin({ root, dataDir: customDataDir }) {
   const idOf = (path) => posix.join(root.replace(/\\/g, '/'), path, 'index.html');
 
   const refresh = () => {
+    dataDir = dataDirNow();
     routes = new Map(listRoutes(dataDir).map((r) => [idOf(r.path), r]));
   };
 
@@ -153,7 +163,8 @@ export function routePlugin({ root, dataDir: customDataDir }) {
         name = `${m.name}${m.effort ? ` (${m.effort})` : ''}`;
         title = `${name} │ ${pageTitle} │ ${site}`;
         const color = colorSet.has(m.logo);
-        const icon = `<span class="icon icon-vendor${color ? ' is-color' : ''}" style="--icon:url(&quot;${base}logos/mark/${esc(m.logo)}${color ? '-color' : ''}.svg&quot;)" aria-hidden="true"></span>`;
+        // root-absolute public path: Vite adds the base to url() in style attributes (dev and build)
+        const icon = `<span class="icon icon-vendor${color ? ' is-color' : ''}" style="--icon:url(&quot;/logos/mark/${esc(m.logo)}${color ? '-color' : ''}.svg&quot;)" aria-hidden="true"></span>`;
         const effort = m.effort ? `<span class="mname-effort">(${esc(m.effort)})</span>` : '';
         nameHTML = `${icon}<span class="mname md-mname" title="${esc(name)}"><span class="mname-text">${esc(m.name)}</span>${effort}</span>`;
       }
@@ -193,7 +204,8 @@ export function routePlugin({ root, dataDir: customDataDir }) {
   return {
     name: 'octathlon-routes',
     enforce: 'pre',
-    config() {
+    config(_, { command }) {
+      serving = command === 'serve';
       refresh();
       const input = {};
       for (const [id, r] of routes) input[r.path ? r.path.replace(/\/$/, '').replace(/\//g, '__') : 'index'] = id;
@@ -223,13 +235,14 @@ export function routePlugin({ root, dataDir: customDataDir }) {
       }
     },
     configureServer(server) {
-      const watched = [dataDir, pagesDir, join(i18nDir), join(root, 'src', 'shell', 'markup.js')];
+      const watched = [dataDir, localDir, pagesDir, join(i18nDir), join(root, 'src', 'shell', 'markup.js')];
       server.watcher.add(watched);
+      const isData = (f) => (f.includes('/data/') || f.includes('/data-local/')) && f.endsWith('.json');
       const onChange = async (file) => {
         const f = file.replace(/\\/g, '/');
-        if (f.includes('/data/') && f.endsWith('.json')) refresh();
+        if (isData(f)) refresh();
         if (f.endsWith('/src/shell/markup.js')) await loadMarkup();
-        if (f.includes('/pages/') || f.includes('/data/') || f.includes('/src/i18n/') || f.endsWith('/src/shell/markup.js')) {
+        if (f.includes('/pages/') || isData(f) || f.includes('/src/i18n/') || f.endsWith('/src/shell/markup.js')) {
           server.ws.send({ type: 'full-reload' });
         }
       };
@@ -246,11 +259,29 @@ export function routePlugin({ root, dataDir: customDataDir }) {
       };
       server.watcher.on('add', onLogo);
       server.watcher.on('unlink', onLogo);
+      server.watcher.on('unlink', (file) => { if (file.replace(/\\/g, '/').includes('/data-local/')) refresh(); });
+
+      // <base>data/* from the current data folder (data-local/ while it exists)
+      server.middlewares.use((req, res, next) => {
+        const p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+        if (dataDir === defaultDir || !p.startsWith(`${base}data/`)) return next();
+        const file = join(dataDir, p.slice(`${base}data/`.length));
+        if (!file.startsWith(dataDir) || !existsSync(file)) return next();
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.end(readFileSync(file));
+      });
 
       server.middlewares.use(async (req, res, next) => {
         try {
           const url = new URL(req.url, 'http://x');
           let p = decodeURIComponent(url.pathname);
+          // /decathlon -> /decathlon/
+          if (base !== '/' && p === base.slice(0, -1)) {
+            res.statusCode = 301;
+            res.setHeader('Location', base + url.search);
+            return res.end();
+          }
           if (!p.startsWith(base)) return next();
           p = p.slice(base.length);
           if (p.endsWith('index.html')) p = p.slice(0, -'index.html'.length);

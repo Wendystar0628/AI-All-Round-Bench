@@ -7,13 +7,13 @@
 ```sh
 cd website/site
 npm install            # 只需一次（vite@8、d3@7）
-npm run dev            # 开发服务器 http://localhost:5180/ ，改页面模板、i18n、数据会整页刷新
-npm run preview        # 本地看构建产物 site/dist/：http://localhost:5181/
+npm run dev            # 开发服务器 http://localhost:5180/decathlon/ ，改页面模板、i18n、数据会整页刷新
+npm run preview        # 本地看构建产物 site/dist/：http://localhost:5181/decathlon/
 npm run sync           # 只同步素材（dev 和构建前会自动跑）
 ```
 
 - 导出、构建和发布只用一条命令 `python website/tools/publish.py`（`--no-upload` 只导出和构建）；什么时候运行、发布到哪里见 `website/tools/README.md`。`package.json` 的 `build` 由它调用。
-- 网站挂在发布域名的根路径。代码里所有站内链接都经 `core/route.js`，不要手写 `/leaderboard/` 这类绝对路径。
+- 网站挂在发布域名的 `/decathlon/` 下（`vite.config.js` 的 `base`；根路径是总站首页 `website/hub`）。下文的路由都相对这个基础路径。代码里所有站内链接都经 `core/route.js`，不要手写 `/leaderboard/` 这类绝对路径；模板里给 Vite 处理的素材地址（脚本、样式、图标、`style` 里的 `url()`）写 `/favicon.svg` 这种不带基础路径的根路径，Vite 在开发和构建时都会补上。
 - 数据：`site/data/*.json`（连同子文件夹 `stems/` 里各题的题干）由 `website/tools/export_data.py` 生成，`publish.py` 每次先导出再构建。构建时把它们原样拷到 `dist/data/`，页面运行时再读。
 - 截图验收时第一次访问会按浏览器语言跳到中文或 `/en/`；地址加 `?stay` 不跳，加 `?theme=light|dark` 临时指定主题（不记住）。截图放在仓库外，看完删掉。
 

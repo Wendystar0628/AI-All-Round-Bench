@@ -27,7 +27,7 @@ export const pageHref = (base, lang, path = '') => base + (lang === 'en' ? 'en/'
 const dateDots = (d) => (d ? String(d).slice(0, 10).replace(/-/g, '.') : '');
 
 export function headHTML(ctx) {
-  const { lang, base, altHref } = ctx;
+  const { lang, altHref } = ctx;
   const here = lang === 'en' ? 'en' : 'zh';
   // Runs before the first paint: theme, first page of the visit, language choice,
   // and the receiving end of 名字接力 (motion.js RELAY): when the last page relayed a
@@ -48,7 +48,8 @@ el.style.viewTransitionName='name-relay';e.viewTransition.finished.finally(funct
     '<meta name="color-scheme" content="light dark" />',
     '<meta name="theme-color" content="#F2F1F6" media="(prefers-color-scheme: light)" />',
     '<meta name="theme-color" content="#121019" media="(prefers-color-scheme: dark)" />',
-    `<link rel="icon" type="image/svg+xml" href="${base}favicon.svg" />`,
+    // root-absolute like the stylesheet below: Vite adds the base in dev and build alike
+    '<link rel="icon" type="image/svg+xml" href="/favicon.svg" />',
     `<script>${pre}</script>`,
     '<link rel="stylesheet" href="/src/styles/site.css" />',
   ].join('\n    ');

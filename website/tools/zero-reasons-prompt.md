@@ -1,4 +1,4 @@
-任务：为成绩网站「0分盘点」页调查下列模型在指定题目上得 0 分的原因，写成给普通读者看的简短解释（中英各一句），加进 `E:\Project\AI_OneShot_Bench\website\tools\zero-reasons.json`。
+任务：为成绩网站「0分盘点」页调查下列模型在指定题目上得 0 分的原因，写成给普通读者看的简短解释（中英各一句），加进 `E:\Project\AI_OneShot_Bench\website\tools\topics\decathlon\zero-reasons.json`。
 
 材料位置（全部只读）：
 - 评分记录：`E:\Project\AI_OneShot_Bench\orchestrator\grading\<厂商>\<型号>\<题名>\<评分员>\<阶段>\`。prompt.txt 写明了作答目录和评分要求，result.json 是评分结果，session.log 和 work\ 是评分过程。评分表在 prompt.txt 指向的位置（评分表_6.1Sol.md 等）。

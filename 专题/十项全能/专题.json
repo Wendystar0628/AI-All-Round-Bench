@@ -1,0 +1,488 @@
+{
+  "id": "decathlon",
+  "name": "AI十项全能",
+  "name_en": "AI Decathlon",
+  "website_status": "online",
+  "categories": [
+    {
+      "key": "reason",
+      "name": "数学推理",
+      "weight": 10
+    },
+    {
+      "key": "algo",
+      "name": "性能优化",
+      "weight": 10
+    },
+    {
+      "key": "battle",
+      "name": "算法对抗",
+      "weight": 10
+    },
+    {
+      "key": "spatial",
+      "name": "空间推理",
+      "weight": 10
+    },
+    {
+      "key": "drawing",
+      "name": "几何建模",
+      "weight": 10
+    },
+    {
+      "key": "interact",
+      "name": "复杂交互应用",
+      "weight": 10
+    },
+    {
+      "key": "game",
+      "name": "游戏设计与开发",
+      "weight": 10
+    },
+    {
+      "key": "physics",
+      "name": "物理模拟",
+      "weight": 10
+    },
+    {
+      "key": "visual",
+      "name": "视觉设计与渲染",
+      "weight": 10
+    },
+    {
+      "key": "system",
+      "name": "系统架构与实现",
+      "weight": 10
+    }
+  ],
+  "groups": [
+    {
+      "key": "standard",
+      "name": "标准评判题"
+    },
+    {
+      "key": "design",
+      "name": "主动设计题"
+    }
+  ],
+  "scoring": {
+    "method": "weighted_mean",
+    "missing": 0
+  },
+  "ranking": "all_tasks",
+  "paths": {
+    "website": "website/site",
+    "url": "/decathlon/",
+    "video_template": "videos/template",
+    "films": "videos/films",
+    "video_work": "video"
+  },
+  "tasks": [
+    {
+      "name": "形式化证明题",
+      "website_key": "formal-proof",
+      "category": "reason",
+      "grading_type": "standard",
+      "weight": 5,
+      "statement": "专题/十项全能/题面/数学推理/形式化证明题.md",
+      "grading_dir": "专题/十项全能/评分/数学推理/形式化证明题",
+      "minutes": 60,
+      "deliverable": "Problem1.lean–Problem8.lean",
+      "version_file": null,
+      "materials": null,
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "xhigh",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": false
+    },
+    {
+      "name": "数学竞赛原创试题",
+      "website_key": "math-olympiad",
+      "category": "reason",
+      "grading_type": "standard",
+      "weight": 5,
+      "statement": "专题/十项全能/题面/数学推理/数学竞赛原创试题.md",
+      "grading_dir": "专题/十项全能/评分/数学推理/数学竞赛原创试题",
+      "minutes": 60,
+      "deliverable": "答案\\第01题.md–第24题.md",
+      "version_file": null,
+      "materials": {
+        "source": "专题/十项全能/题面/数学推理/数学竞赛原创试题",
+        "destination": "题目",
+        "skip_cache_scan": true
+      },
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "xhigh",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": false
+    },
+    {
+      "name": "AE风味动效设计编辑器",
+      "website_key": "ae-editor",
+      "category": "interact",
+      "grading_type": "design",
+      "weight": 10,
+      "statement": "专题/十项全能/题面/复杂交互应用/AE风味动效设计编辑器.md",
+      "grading_dir": "专题/十项全能/评分/复杂交互应用/AE风味动效设计编辑器",
+      "minutes": 60,
+      "deliverable": "网页项目",
+      "version_file": null,
+      "materials": null,
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": true
+    },
+    {
+      "name": "动态路由塔防",
+      "website_key": "tower-defense",
+      "category": "game",
+      "grading_type": "design",
+      "weight": 10,
+      "statement": "专题/十项全能/题面/游戏设计与开发/动态路由塔防.md",
+      "grading_dir": "专题/十项全能/评分/游戏设计与开发/动态路由塔防",
+      "minutes": 90,
+      "deliverable": "网页项目",
+      "version_file": null,
+      "materials": null,
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": true
+    },
+    {
+      "name": "太阳雨渔港3D渲染",
+      "website_key": "harbor",
+      "category": "visual",
+      "grading_type": "design",
+      "weight": 5,
+      "statement": "专题/十项全能/题面/视觉设计与渲染/太阳雨渔港3D渲染.md",
+      "grading_dir": "专题/十项全能/评分/视觉设计与渲染/太阳雨渔港3D渲染",
+      "minutes": 100,
+      "deliverable": "网页项目",
+      "version_file": null,
+      "materials": null,
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": true
+    },
+    {
+      "name": "星际战舰编队",
+      "website_key": "starship",
+      "category": "visual",
+      "grading_type": "design",
+      "weight": 5,
+      "statement": "专题/十项全能/题面/视觉设计与渲染/星际战舰编队.md",
+      "grading_dir": "专题/十项全能/评分/视觉设计与渲染/星际战舰编队",
+      "minutes": 90,
+      "deliverable": "网页项目",
+      "version_file": null,
+      "materials": null,
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": true
+    },
+    {
+      "name": "光线追踪渲染加速",
+      "website_key": "raytracing",
+      "category": "algo",
+      "grading_type": "standard",
+      "weight": 5,
+      "statement": "专题/十项全能/题面/性能优化/性能工程/光线追踪渲染加速.md",
+      "grading_dir": "专题/十项全能/评分/性能优化/性能工程/光线追踪渲染加速",
+      "minutes": 60,
+      "deliverable": "solution.cu",
+      "version_file": "solution.cu",
+      "materials": {
+        "source": "专题/十项全能/题面/性能优化/性能工程/光线追踪渲染加速",
+        "destination": "."
+      },
+      "material_data": [],
+      "material_cleanup": [
+        "数据/inputs",
+        "数据/expected",
+        "数据/boundary",
+        "数据/boundary_expected"
+      ],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "performance",
+        "exclusive_machine": true,
+        "cpus": "16-27"
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": true,
+      "grading_effort": "high",
+      "grading_cpus": "16-27",
+      "performance_items": {},
+      "opus_pair": false
+    },
+    {
+      "name": "数字电路仿真器加速",
+      "website_key": "circuit",
+      "category": "algo",
+      "grading_type": "standard",
+      "weight": 5,
+      "statement": "专题/十项全能/题面/性能优化/性能工程/数字电路仿真器加速.md",
+      "grading_dir": "专题/十项全能/评分/性能优化/性能工程/数字电路仿真器加速",
+      "minutes": 60,
+      "deliverable": "solution.cpp",
+      "version_file": null,
+      "materials": {
+        "source": "专题/十项全能/题面/性能优化/性能工程/数字电路仿真器加速",
+        "destination": "数据",
+        "skip_cache_scan": true
+      },
+      "material_data": [
+        "inputs",
+        "expected"
+      ],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "performance",
+        "exclusive_machine": true,
+        "cpus": "0-15"
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": true,
+      "grading_effort": "high",
+      "grading_cpus": "0-15",
+      "performance_items": {},
+      "opus_pair": false
+    },
+    {
+      "name": "果冻冲击与造浪水槽",
+      "website_key": "jelly-tank",
+      "category": "physics",
+      "grading_type": "design",
+      "weight": 10,
+      "statement": "专题/十项全能/题面/物理模拟/果冻冲击与造浪水槽.md",
+      "grading_dir": "专题/十项全能/评分/物理模拟/果冻冲击与造浪水槽",
+      "minutes": 60,
+      "deliverable": "网页项目",
+      "version_file": null,
+      "materials": null,
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": true
+    },
+    {
+      "name": "操作系统嵌套",
+      "website_key": "nested-os",
+      "category": "system",
+      "grading_type": "design",
+      "weight": 10,
+      "statement": "专题/十项全能/题面/系统架构与实现/操作系统嵌套.md",
+      "grading_dir": "专题/十项全能/评分/系统架构与实现/操作系统嵌套",
+      "minutes": 90,
+      "deliverable": "Windows 桌面项目",
+      "version_file": null,
+      "materials": null,
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": true
+    },
+    {
+      "name": "鲁班锁拆解",
+      "website_key": "luban",
+      "category": "spatial",
+      "grading_type": "standard",
+      "weight": 10,
+      "statement": "专题/十项全能/题面/空间推理/鲁班锁拆解.md",
+      "grading_dir": "专题/十项全能/评分/空间推理/鲁班锁拆解",
+      "minutes": 60,
+      "deliverable": "答案\\第01题.json–第08题.json",
+      "version_file": null,
+      "materials": {
+        "source": "专题/十项全能/题面/空间推理/鲁班锁拆解",
+        "destination": "鲁班锁拆解"
+      },
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": false
+    },
+    {
+      "name": "机械结构重建",
+      "website_key": "drawing",
+      "category": "drawing",
+      "grading_type": "standard",
+      "weight": 10,
+      "statement": "专题/十项全能/题面/几何建模/机械结构重建.md",
+      "grading_dir": "专题/十项全能/评分/几何建模/机械结构重建",
+      "minutes": 60,
+      "deliverable": "答案\\第01题.json–第25题.json",
+      "version_file": null,
+      "materials": {
+        "source": "专题/十项全能/题面/几何建模/机械结构重建",
+        "destination": "机械结构重建"
+      },
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": false,
+      "grading_effort": "high",
+      "grading_cpus": null,
+      "performance_items": {},
+      "opus_pair": false
+    },
+    {
+      "name": "攻城略地",
+      "website_key": "conquest",
+      "category": "battle",
+      "grading_type": "standard",
+      "weight": 10,
+      "statement": "专题/十项全能/题面/算法对抗/攻城略地.md",
+      "grading_dir": "专题/十项全能/评分/算法对抗/攻城略地",
+      "minutes": 60,
+      "deliverable": "bot.cpp",
+      "version_file": null,
+      "materials": {
+        "source": "专题/十项全能/题面/算法对抗/攻城略地",
+        "destination": "数据",
+        "skip_cache_scan": true
+      },
+      "material_data": [],
+      "material_cleanup": [],
+      "test_method": "timed_agent_workspace",
+      "answer_resources": {
+        "batch": "parallel",
+        "exclusive_machine": false,
+        "cpus": null
+      },
+      "graders": [
+        "codex"
+      ],
+      "grading_exclusive": true,
+      "grading_effort": "high",
+      "grading_cpus": "0-15",
+      "performance_items": {},
+      "opus_pair": false
+    }
+  ]
+}

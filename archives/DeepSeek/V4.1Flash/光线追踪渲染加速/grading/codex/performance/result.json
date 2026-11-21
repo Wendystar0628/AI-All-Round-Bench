@@ -1,77 +1,87 @@
 {
-    "task":  "光线追踪渲染加速",
-    "complete":  true,
-    "grader":  "GPT 6.1 Sol",
-    "items":  [
-                  {
-                      "name":  "渲染加速",
-                      "max":  100,
-                      "score":  0,
-                      "reason":  "官方正式评测：R=517.0508 ms、C=39387.7735 ms，s=0.0131271903，q=0；5次性能图均失败，c=0，12个隐藏仅hidden_11通过，h=1/12。性能图每次630186–630189个例外像素，上限3232；solution.cu第279–281、352行以q.lo合并上界，形成错误包围盒。"
-                  }
-              ],
-    "metrics":  {
-                    "R_ms":  517.0508,
-                    "C_ms":  39387.7735,
-                    "speedup":  0.013127190344993732,
-                    "q":  0,
-                    "c":  0,
-                    "h":  0.08333333333333333,
-                    "score_unrounded":  0.0,
-                    "timing_factors":  [
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           0
-                                       ],
-                    "timing_ms":  [
-                                      41976.8675,
-                                      41032.6894,
-                                      40428.6382,
-                                      39985.2568,
-                                      39387.7735
-                                  ],
-                    "timing_exception_pixels":  [
-                                                    630188,
-                                                    630187,
-                                                    630189,
-                                                    630186,
-                                                    630186
-                                                ],
-                    "performance_exception_limit":  3232,
-                    "hidden_factors":  [
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           0,
-                                           1,
-                                           0
-                                       ],
-                    "hidden_pass_ids":  [
-                                            "hidden_11"
-                                        ],
-                    "public_boundary_factors":  [
-                                                    0,
-                                                    0,
-                                                    0
-                                                ],
-                    "baseline_factors":  [
-                                             1,
-                                             1,
-                                             1,
-                                             1,
-                                             1
-                                         ],
-                    "report_path":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json",
-                    "solution_sha256":  "2DB626695FEDD12A201774A806021402D6B1E9B108C546ABFC517963A9F0CB5C"
-                },
-    "notes":  "评分版本：评的是作答结束时工作目录的完整副本中的solution.cu，不看git提交。使用评分材料官方evaluate.py一次完整正式评测；逻辑处理器16–27、高优先级、5次取最小值；valid=true、formal=true，基线5次全部通过。源码与rule_scan.json核查未发现实质性违规，静态资源、join线程和4字节任务计数回传均属允许行为。原始提交除指定评分表外未改动；评测及其子进程已退出，未启动浏览器或服务器。",
-    "anomaly":  "最终GPU建树把三角形下界当上界，导致大量交点漏检。"
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 44.6,
+      "reason": "最近一个历史交付版本正式评测：R=510.9580 ms，C=145.9269 ms，s=3.501465，q=44.622848，c=1.000000，h=1.000000，qch=44.62284797，记 44.6 分。最终版本正式 0 分，依指南回退；五轮性能判定为 [1, 1, 1, 1, 1]，12 个隐藏判定为 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]。"
+    }
+  ],
+  "metrics": {
+    "R_ms": 510.958,
+    "C_ms": 145.9269,
+    "speedup": 3.5014654597610178,
+    "q": 44.62284796993468,
+    "c": 1,
+    "h": 1,
+    "raw_score": 44.62284796993468,
+    "timing_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_factors": [
+      1,
+      1,
+      1
+    ],
+    "timing_exception_pixels": [
+      808,
+      808,
+      808,
+      808,
+      808
+    ],
+    "timing_exception_limit": 3232,
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_previous_01\\results.json",
+    "final_score": 0,
+    "final_R_ms": 514.6553,
+    "final_C_ms": 39254.3687,
+    "final_speedup": 0.013110777654666499,
+    "final_q": 0,
+    "final_c": 0,
+    "final_h": 0.08333333333333333,
+    "final_timing_factors": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "final_hidden_factors": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "final_results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_final\\results.json"
+  },
+  "notes": "首先评的是作答结束时工作目录内容的副本，不看 git 提交。最终版本为 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\submission\\solution.cu，正式得分为 0；五轮性能画面全部不通过，例外像素约 630185–630188，上限 3232，隐藏输入仅 1/12 通过。依指南仅回退 1 个版本，取首个正式得分大于 0 的历史交付版本即停，未搜索最高分。实际计分源为 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\history\\previous_01\\solution.cu。还原来源为 E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\run-fe3fdaacd84c43a1b5212f804636b439\\session.log 第 799 行完整补丁及第 812 行修正锚点后执行补丁的命令；没有版本快照或原始备份，静态反转该次对 solution.cu 的四处替换得到其紧邻前版，再正向重放确认与最终副本完全一致（统一换行）；详见 history/reconstruction.json。规则扫描命中已逐项人工核对：D2H 仅少量建树控制计数，主机线程均 join，每次调用重建场景，无预存图像、少采样、外部光追库、计时干扰或作弊迹象。所有编译及评测命令经 process_job.py --cpus 16-27 包装，官方入口继续保留 --cpus 16-27；两次完整评测串行，官方每次运行前 NVML 检查未见其他 CUDA 计算进程。评分使用官方未舍入结果计算，评分表与 items 得分保留一位小数。"
 }

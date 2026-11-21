@@ -1,0 +1,12 @@
+{
+  "name": "ai-bench-hub",
+  "private": true,
+  "version": "0.1.0",
+  "description": "总站首页：各测评专题的入口（静态页，无依赖）",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve.mjs --dist"
+  }
+}

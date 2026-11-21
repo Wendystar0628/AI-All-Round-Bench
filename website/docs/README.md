@@ -13,6 +13,8 @@
 
 ## 页面
 
+下表及各页设计文档中的路径均相对于十项全能专题根目录 `/decathlon/`。例如表内的 `/` 对应 `/decathlon/`，正式域名的根目录 `/` 是总站首页。
+
 | 页面 | 路径 | 类型 | 文档 |
 |---|---|---|---|
 | 首页 | `/` | 展示 | [home.md](home.md) |
@@ -71,7 +73,7 @@
 
 ## 英文版
 
-- 中文在根路径，英文加 `/en/` 前缀（`/en/leaderboard/`）。命令栏右端「中 │ EN」切换，切换后停在同一页、同一位置；选择记在 localStorage，第一次访问按浏览器语言。
+- 中文在 `/decathlon/` 下，英文再加 `en/`（`/decathlon/en/leaderboard/`）。命令栏右端「中 │ EN」切换，切换后停在同一页、同一位置；选择记在 localStorage，第一次访问按浏览器语言。
 - 界面文字全部放在 `site/src/i18n/zh.json`、`en.json`，页面和脚本里不写死文案。
 - 数据双语：tasks.json 的类别已有 `en`，题目加 `name_en`、`short_en`、`brief_en`、`deliverable_en`；模型名本来是英文。
 - 说明页和题目页的长文各写一份英文正文；英文还没写好的段落显示中文原文。
@@ -109,21 +111,21 @@
 
 ## 数据
 
-网站只读 `site/data/` 下的静态 JSON，由 `website/tools/export_data.py` 从评分结果生成（发布时自动运行，见 `website/tools/README.md`）。分数一律 0–100，保留一位小数。
+十项全能读取本专题的静态 JSON。开发时优先使用 `website/site/data-local/`，缺少时使用 `website/site/data/`。正式构建读取该专题确认快照导出的独立数据。分数一律 0–100，保留一位小数。总站另读 `website/hub/data/topics.json`，开发时优先读 `website/hub/data-local/topics.json`。导出和拼站命令见 `website/tools/README.md`。
 
 ```text
-models.json   [{ id, name, short, vendor, logo, agent, effort, tested }]
+models.json   [{ id, key, name, short, aliases, vendor, region, logo, agent, effort, tested }]
               例：{ "id": "gpt-6-1-sol", "name": "GPT 6.1 Sol", "short": "6.1Sol", "vendor": "OpenAI",
                     "logo": "openai", "agent": "Codex", "effort": "xhigh", "tested": "2026-11-04" }
 tasks.json    [{ key, name, en, weight, tasks: [{ key, name, short, weight, minutes, kind, brief, deliverable }] }]
               short：放不下全名处用的短名（如「光线追踪加速」）；brief：一句定位；deliverable：交付物
               brief、deliverable 取自项目 README 的题目总览和题目卡片
               kind：standard（标准评判题，程序校验生成分数）或 design（主动设计题，两位评分员取平均）
-scores.json   { updated, scores: { <模型id>: { total, kinds: { standard, design },
+scores.json   { updated, order, notice, cost_source, scores: { <模型id>: { total, rank, status, done, kinds: { standard, design },
                                        categories: { <类别>: 分 | null }, tasks: { <题目>: 分 | null } } } }
               kinds：标准评判题（50%）和主动设计题（50%）各自折成 0–100 的分；类别里的题没出齐时类别分为 null
-              测试开销：顶层 cost_source { name, url, fetched, usd_cny }，每个模型 cost { cny, basis, plan, tokens,
-              fitted, method, api_usd }（orchestrator/docs/测试开销.md 第五节）；排行总榜和侧面板显示（leaderboard.md）
+              测试开销：顶层 cost_source { name, name_en, url, fetched, usd_cny }，每个模型 cost 按公开字段导出
+              { cny, basis, plan, tokens, tasks, method, api_usd, api_cny, hours, tps, tps_replies }（orchestrator/docs/测试开销.md 第五节）；排行总榜和侧面板显示（leaderboard.md）
 stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections: [{ title, blocks, sections }] }
               题目页的题干，导出时从题面原件按 STEM_RULE 摘录（tasks.md「题干的摘录规则」）；只有题目页读取
               statement：题面在仓库里的路径；materials：题目材料文件夹或 null；omitted：没收的章节标题
@@ -132,7 +134,7 @@ stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections
 
 - 13 道题按 tasks.json 的顺序统一编号 01–13，矩阵、题目类别榜和题目页都用这套编号。
 
-- 模型全名用 `name`（如 Claude Opus 5.5、GPT 6.1 Sol），有哪些模型只看登记表 `website/tools/models.json`。
+- 模型全名用 `name`（如 Claude Opus 5.5、GPT 6.1 Sol），共用身份取自 `website/tools/models.json`，参测信息取自 `website/tools/topics/decathlon/participants.json`，正式上榜名单按专题确认快照筛选。
 - 凡是显示受测模型名的地方（榜单行、侧面板、模型得分页、首页前五名、题目页得分、搜索结果、对比视图），名字后面用半角括号标推理强度，取 `effort`：`Claude Opus 5.5 (xhigh)`。括号部分用 Saira，比名字小一级，次要墨色；名字放不下省略时，括号部分照常显示。评分员名不加。
 - 厂商图标从 `website/logos/mark/` 取：有彩色版 `<logo>-color.svg` 的用彩色版，深色主题也不反色；没有的（OpenAI 等）用单色版 `<logo>.svg`，跟随文字颜色。
 - 13 题没测完的模型标「评测中」，排在已排名模型之后，不参与总榜名次；某个类别的题出齐了，就参加这个类别的排名。
@@ -158,7 +160,9 @@ stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections
 ```text
 website/
   docs/              设计文档（本目录）
-  site/              网站源码：各页 HTML、src/、data/、public/
+  hub/               总站首页和专题摘要
+  site/              十项全能网页项目
+  dist/              拼好的整站
   tools/             登记表、数据导出和发布脚本
   stellar-ui-skill/  设计系统
   decor/             装饰 SVG

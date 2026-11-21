@@ -6,15 +6,15 @@
         "zh": "只留下两份查询求和写法、收敛定义等用法的试验脚本，时间耗在检索现成定理和推敲思路上；八道题均未写出正式定理，没有任何可核验的证明。",
         "en": "Left only two scripts probing summation syntax, convergence definitions and other library features, spending time searching for existing theorems and considering approaches. None of the eight required theorems was written, leaving no proofs to verify."
       },
-      "ernie-5-5-flash": {
-        "kind": "none",
-        "zh": "只写了第 1 题的部分证明和辅助引理，其中几处条件用错，编译失败，结尾仍是证明占位符；其余七题未交，没有一题完成。",
-        "en": "Submitted a partial proof and supporting lemmas for problem 1, but with several conditions wrong; it failed to compile and still ended in a proof placeholder. The other seven problems were missing, so none is complete."
-      },
       "minimax-m3-1-flash": {
         "kind": "none",
         "zh": "只留下查询有限集合计数用法的草稿，没有八题中的任何正式定理；结束前仍在反复推敲第 1 题，思路始终没写成可检查的证明。",
         "en": "Left only a scratch file querying finite-set counting functions, with none of the eight required theorems. At the end it was still reworking problem 1, without turning its ideas into a verifiable proof."
+      },
+      "ernie-5-5-flash": {
+        "kind": "none",
+        "zh": "只写了第 1 题的部分证明和辅助引理，其中几处条件用错，编译失败，结尾仍是证明占位符；其余七题未交，没有一题完成。",
+        "en": "Submitted a partial proof and supporting lemmas for problem 1, but with several conditions wrong; it failed to compile and still ended in a proof placeholder. The other seven problems were missing, so none is complete."
       },
       "mimo-v2-6-pro": {
         "kind": "none",
@@ -75,16 +75,6 @@
       }
     },
     "raytracing": {
-      "deepseek-v4-1-flash": {
-        "kind": "wrong",
-        "zh": "提交了 GPU 渲染程序，但把三角形包围范围的下界当成上界，漏算大量交点；5 次画面检查全失败，每次约 63 万个像素与标准画面不符，耗时还达到原程序约 76 倍。",
-        "en": "Submitted a GPU renderer, but used triangles' lower bounds as upper bounds, causing missed intersections. All five image checks failed, with about 630,000 pixels outside tolerance per run; it also took roughly 76 times as long as the original."
-      },
-      "minimax-m3-1-flash": {
-        "kind": "crash",
-        "zh": "提交了 GPU 渲染源码，把节点数据改成“中心加半长”，遍历和数据打包却仍访问旧字段，相关函数参数也未同步；编译报 33 处错误，未能生成可运行程序。",
-        "en": "Submitted GPU rendering source with node bounds changed to centers and half-extents, but traversal and packing still referenced old fields, and function arguments were inconsistent. Compilation reported 33 errors, leaving no runnable program."
-      },
       "grok-4-7": {
         "kind": "slow",
         "zh": "提交了完整的 GPU 渲染实现，每个像素的采样仍由单个线程依次计算；画面检查全部通过，但渲染需 3177 毫秒，原程序仅 514 毫秒，耗时为其 6.18 倍，未达计分门槛。",
@@ -102,11 +92,6 @@
       }
     },
     "circuit": {
-      "deepseek-v4-1-flash": {
-        "kind": "wrong",
-        "zh": "写出了可运行的仿真程序，末段为减少内存读写合并相邻计算，但自测仍显示关键结果不一致，结束前未修好；正式评测 9 项性能输出全错，没有有效加速成绩。",
-        "en": "Produced a runnable simulator, then fused adjacent computations to reduce memory traffic. Its final self-check still found mismatched key results, and the defect remained; all nine performance outputs were wrong, leaving no valid acceleration result."
-      },
       "longcat-2-5": {
         "kind": "wrong",
         "zh": "提交了批量并行仿真程序，却先更新存储电路状态的触发器，再读取输出，读成了下一时刻的值；9 项性能输出虽通过，7 项正确性检查全错，无法获得分数。",
@@ -151,15 +136,15 @@
         "zh": "只交了第 1 题一条 8 步路线，其余七题缺交；这条路线是用自编搜索脚本批量试探移动、再调检查器筛掉碰撞得到的，违反手工推理要求，不能计分。",
         "en": "Handed in one eight-move route for puzzle 1 and left the other seven blank. That route came from a custom search script that tried moves in bulk and used the checker to weed out collisions, against the manual-reasoning rule, so it earns nothing."
       },
-      "ernie-5-5-flash": {
-        "kind": "wrong",
-        "zh": "交齐八份路线，但第 1 题只有两次位移，没有把零件移出；其余七题第一步就发生碰撞。八题均未完成一次合法分离，没有有效拆解进展可计分。",
-        "en": "Submitted eight routes, but the first contained only two shifts without separating any pieces; the other seven collided on their first move. None achieved even one valid separation, leaving no disassembly progress eligible for credit."
-      },
       "minimax-m3-1-flash": {
         "kind": "wrong",
         "zh": "只留下第 1 题一份三步试答，第三条指令移出 A 零件时发生碰撞，尚未完成任何分离；其余七题未交，八题均无可计分的拆解进展。",
         "en": "Left only one three-move trial route for puzzle 1. Its third instruction collided while removing piece A, before any separation; the other seven puzzles were unanswered, leaving no disassembly progress eligible for credit."
+      },
+      "ernie-5-5-flash": {
+        "kind": "wrong",
+        "zh": "交齐八份路线，但第 1 题只有两次位移，没有把零件移出；其余七题第一步就发生碰撞。八题均未完成一次合法分离，没有有效拆解进展可计分。",
+        "en": "Submitted eight routes, but the first contained only two shifts without separating any pieces; the other seven collided on their first move. None achieved even one valid separation, leaving no disassembly progress eligible for credit."
       },
       "longcat-2-5": {
         "kind": "wrong",

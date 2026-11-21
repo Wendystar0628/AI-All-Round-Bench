@@ -38,19 +38,19 @@ The 7 tasks in Math Reasoning, Performance Optimization, Algorithm Battle, Spati
 
 | Category | Task | Time limit | Deliverable | Weight |
 |---|---|:---:|---|---:|
-| <img src="assets/readme/icon-reason.svg" height="18" alt=""> Math Reasoning | [Formal Proofs](数学推理/形式化证明题.md) | 60 min | `Problem1.lean`–`Problem8.lean` | 5% |
-| <img src="assets/readme/icon-reason.svg" height="18" alt=""> Math Reasoning | [Original Math Olympiad Problems](数学推理/数学竞赛原创试题.md) | 60 min | `答案\第01题.md`–`第24题.md`, one file per problem | 5% |
-| <img src="assets/readme/icon-algo.svg" height="18" alt=""> Performance Optimization | [Ray Tracing Render Acceleration](性能优化/性能工程/光线追踪渲染加速.md) | 60 min | `solution.cu` | 5% |
-| <img src="assets/readme/icon-algo.svg" height="18" alt=""> Performance Optimization | [Digital Circuit Simulator Acceleration](性能优化/性能工程/数字电路仿真器加速.md) | 60 min | `solution.cpp` | 5% |
-| <img src="assets/readme/icon-battle.svg" height="18" alt=""> Algorithm Battle | [Siege & Conquest](算法对抗/攻城略地.md) | 60 min | `bot.cpp` | 10% |
-| <img src="assets/readme/icon-spatial.svg" height="18" alt=""> Spatial Reasoning | [Luban Lock Disassembly](空间推理/鲁班锁拆解.md) | 60 min | `答案\第01题.json`–`第08题.json`, one disassembly tree per puzzle | 10% |
-| <img src="assets/readme/icon-drawing.svg" height="18" alt=""> Geometric Modeling | [Mechanical Structure Reconstruction](几何建模/机械结构重建.md) | 60 min | `答案\第01题.json`–`第25题.json`, one model description per problem | 10% |
-| <img src="assets/readme/icon-interact.svg" height="18" alt=""> Complex Interactive Apps | [AE-Style Motion Design Editor](复杂交互应用/AE风味动效设计编辑器.md) | 60 min | Web project, entry `index.html` | 10% |
-| <img src="assets/readme/icon-game.svg" height="18" alt=""> Game Design & Development | [Dynamic-Routing Tower Defense](游戏设计与开发/动态路由塔防.md) | 90 min | Web project, entry `index.html` | 10% |
-| <img src="assets/readme/icon-physics.svg" height="18" alt=""> Physics Simulation | [Jelly Impact and Wave Tank](物理模拟/果冻冲击与造浪水槽.md) | 60 min | Web project, entry `index.html` | 10% |
-| <img src="assets/readme/icon-visual.svg" height="18" alt=""> Visual Design & Rendering | [Sunshower Fishing Harbor in 3D](视觉设计与渲染/太阳雨渔港3D渲染.md) | 100 min | Web project, entry `index.html` | 5% |
-| <img src="assets/readme/icon-visual.svg" height="18" alt=""> Visual Design & Rendering | [Interstellar Battle Fleet](视觉设计与渲染/星际战舰编队.md) | 90 min | Web project, entry `index.html` | 5% |
-| <img src="assets/readme/icon-system.svg" height="18" alt=""> System Architecture & Implementation | [Nested Operating Systems](系统架构与实现/操作系统嵌套.md) | 90 min | Windows desktop project, single launch entry | 10% |
+| <img src="assets/readme/icon-reason.svg" height="18" alt=""> Math Reasoning | [Formal Proofs](专题/十项全能/题面/数学推理/形式化证明题.md) | 60 min | `Problem1.lean`–`Problem8.lean` | 5% |
+| <img src="assets/readme/icon-reason.svg" height="18" alt=""> Math Reasoning | [Original Math Olympiad Problems](专题/十项全能/题面/数学推理/数学竞赛原创试题.md) | 60 min | `答案\第01题.md`–`第24题.md`, one file per problem | 5% |
+| <img src="assets/readme/icon-algo.svg" height="18" alt=""> Performance Optimization | [Ray Tracing Render Acceleration](专题/十项全能/题面/性能优化/性能工程/光线追踪渲染加速.md) | 60 min | `solution.cu` | 5% |
+| <img src="assets/readme/icon-algo.svg" height="18" alt=""> Performance Optimization | [Digital Circuit Simulator Acceleration](专题/十项全能/题面/性能优化/性能工程/数字电路仿真器加速.md) | 60 min | `solution.cpp` | 5% |
+| <img src="assets/readme/icon-battle.svg" height="18" alt=""> Algorithm Battle | [Siege & Conquest](专题/十项全能/题面/算法对抗/攻城略地.md) | 60 min | `bot.cpp` | 10% |
+| <img src="assets/readme/icon-spatial.svg" height="18" alt=""> Spatial Reasoning | [Luban Lock Disassembly](专题/十项全能/题面/空间推理/鲁班锁拆解.md) | 60 min | `答案\第01题.json`–`第08题.json`, one disassembly tree per puzzle | 10% |
+| <img src="assets/readme/icon-drawing.svg" height="18" alt=""> Geometric Modeling | [Mechanical Structure Reconstruction](专题/十项全能/题面/几何建模/机械结构重建.md) | 60 min | `答案\第01题.json`–`第25题.json`, one model description per problem | 10% |
+| <img src="assets/readme/icon-interact.svg" height="18" alt=""> Complex Interactive Apps | [AE-Style Motion Design Editor](专题/十项全能/题面/复杂交互应用/AE风味动效设计编辑器.md) | 60 min | Web project, entry `index.html` | 10% |
+| <img src="assets/readme/icon-game.svg" height="18" alt=""> Game Design & Development | [Dynamic-Routing Tower Defense](专题/十项全能/题面/游戏设计与开发/动态路由塔防.md) | 90 min | Web project, entry `index.html` | 10% |
+| <img src="assets/readme/icon-physics.svg" height="18" alt=""> Physics Simulation | [Jelly Impact and Wave Tank](专题/十项全能/题面/物理模拟/果冻冲击与造浪水槽.md) | 60 min | Web project, entry `index.html` | 10% |
+| <img src="assets/readme/icon-visual.svg" height="18" alt=""> Visual Design & Rendering | [Sunshower Fishing Harbor in 3D](专题/十项全能/题面/视觉设计与渲染/太阳雨渔港3D渲染.md) | 100 min | Web project, entry `index.html` | 5% |
+| <img src="assets/readme/icon-visual.svg" height="18" alt=""> Visual Design & Rendering | [Interstellar Battle Fleet](专题/十项全能/题面/视觉设计与渲染/星际战舰编队.md) | 90 min | Web project, entry `index.html` | 5% |
+| <img src="assets/readme/icon-system.svg" height="18" alt=""> System Architecture & Implementation | [Nested Operating Systems](专题/十项全能/题面/系统架构与实现/操作系统嵌套.md) | 90 min | Windows desktop project, single launch entry | 10% |
 | **Total** | **13 tasks** | | | **100%** |
 
 All five web tasks must run fully in Chrome by double-clicking `index.html`, without a web server; Nested Operating Systems uses Electron 45.2.1 or another host environment that can embed Chromium, and starts from a single entry. Each of the ten categories is worth 10 points, split equally among its tasks (the two tasks in Math Reasoning, Performance Optimization and Visual Design & Rendering are worth 5 points each; every other category has one task worth 10 points):
@@ -67,7 +67,7 @@ Tests depth and rigor in mathematical reasoning. One task has the Lean kernel ch
 
 <p align="center"><img src="assets/readme/tasks-std-reason.png" width="100%" alt="How the two math reasoning tasks are judged: a formal proof that compiles on its own with no errors and no sorry warnings earns 12.5 points; the math competition task has 24 problems, each worth 0–7 points by standard grading practice, 168 in total"></p>
 
-#### [Formal Proofs](数学推理/形式化证明题.md) (形式化证明题)
+#### [Formal Proofs](专题/十项全能/题面/数学推理/形式化证明题.md) (形式化证明题)
 
 > Write Lean 4 + Mathlib formal proofs for eight theorems, either classic ones or ones from research papers; every one proved counts.
 
@@ -87,7 +87,7 @@ Tests depth and rigor in mathematical reasoning. One task has the Lean kernel ch
 
 </details>
 
-#### [Original Math Olympiad Problems](数学推理/数学竞赛原创试题.md) (数学竞赛原创试题)
+#### [Original Math Olympiad Problems](专题/十项全能/题面/数学推理/数学竞赛原创试题.md) (数学竞赛原创试题)
 
 > Without any computational tools, write solutions in Chinese that meet math competition answer standards for twenty-four original competition problems.
 
@@ -118,7 +118,7 @@ Tests performance engineering against hard metrics. Both performance tasks race 
 
 <p align="center"><img src="assets/readme/tasks-std-algo.png" width="100%" alt="Scoring curves for the two performance tasks: the anchor is looked up by speedup"></p>
 
-#### [Ray Tracing Render Acceleration](性能优化/性能工程/光线追踪渲染加速.md) (光线追踪渲染加速)
+#### [Ray Tracing Render Acceleration](专题/十项全能/题面/性能优化/性能工程/光线追踪渲染加速.md) (光线追踪渲染加速)
 
 > Use CUDA on an RTX 4080 to render a Jiangnan garden following the prescribed sampling process; the image must be within tolerance, and faster is better.
 
@@ -141,7 +141,7 @@ Tests performance engineering against hard metrics. Both performance tasks race 
 
 </details>
 
-#### [Digital Circuit Simulator Acceleration](性能优化/性能工程/数字电路仿真器加速.md) (数字电路仿真器加速)
+#### [Digital Circuit Simulator Acceleration](专题/十项全能/题面/性能优化/性能工程/数字电路仿真器加速.md) (数字电路仿真器加速)
 
 > Simulate a large synchronous sequential circuit on the CPU, computing output digests cycle by cycle for many random stimuli; faster is better.
 
@@ -170,7 +170,7 @@ Tests adversarial strategy algorithms. Write a game-playing program that moves s
 
 <p align="center"><img src="assets/readme/tasks-std-battle.png" width="100%" alt="Siege & Conquest format: 5 opponent tiers × 96 hidden maps, one game per map with seats alternating between adjacent maps, 480 games in all; 200 below the weakest tier scores 0, the five tiers' ratings correspond to 10, 20, 40, 60 and 80 points, and only 200 above the strongest tier scores 100"></p>
 
-#### [Siege & Conquest](算法对抗/攻城略地.md) (攻城略地)
+#### [Siege & Conquest](专题/十项全能/题面/算法对抗/攻城略地.md) (攻城略地)
 
 > Each turn, both sides simultaneously send troops from their own nodes to other nodes on a flat map, and troops grow with the nodes held; write the game-playing program in C++. The goal is to be clearly stronger than the strongest opponent tier: an equal rating earns 80 points, and a rating 200 higher earns 100.
 
@@ -201,7 +201,7 @@ Tests spatial reasoning and working things out by hand: from the exact structure
 
 <p align="center"><img src="assets/readme/tasks-std-spatial.png" width="100%" alt="Spatial reasoning: legality, step-count scoring, the three tiers' points and the allowed tools for Luban lock disassembly"></p>
 
-#### [Luban Lock Disassembly](空间推理/鲁班锁拆解.md) (鲁班锁拆解)
+#### [Luban Lock Disassembly](专题/十项全能/题面/空间推理/鲁班锁拆解.md) (鲁班锁拆解)
 
 > Given eight assembled Luban locks (burr puzzles), take each lock completely apart into separate pieces from the pieces' exact structure and starting positions, in as few steps as possible.
 
@@ -232,7 +232,7 @@ Read national-standard (GB) engineering drawings, work out the 3D shapes of part
 
 <p align="center"><img src="assets/readme/tasks-std-drawing.png" width="100%" alt="Geometric modeling: surface-match scoring, the three tiers' points and the allowed tools for mechanical structure reconstruction"></p>
 
-#### [Mechanical Structure Reconstruction](几何建模/机械结构重建.md) (机械结构重建)
+#### [Mechanical Structure Reconstruction](专题/十项全能/题面/几何建模/机械结构重建.md) (机械结构重建)
 
 > Twenty-five sets of mechanical parts and assemblies, 301 engineering drawings in all. The earlier fifteen problems are kept and ten harder ones added, with complex castings and assemblies of 14—26 parts; dimension chains, oblique holes in skew planes, nested cavities and fillet transitions require reasoning across views. The JSON dimension catalog may be displayed and tidied, but dimensions and geometry must be computed by hand; the preview gives only two axonometric views.
 
@@ -260,7 +260,7 @@ Tests building a large professional tool: dozens of features must give correct r
 
 <p align="center"><img src="assets/readme/tasks-design-interact.png" width="100%" alt="Scoring directions of the AE-Style Motion Design Editor: timeline, curves and expressions 14; shapes, text and procedural geometry 19; compositing, precomposition and motion blur 14; 3D scenes and rendering 17; particles and collisions 12; editing and project 5; interface design 5; showcase animation 14"></p>
 
-#### [AE-Style Motion Design Editor](复杂交互应用/AE风味动效设计编辑器.md) (AE风味动效设计编辑器)
+#### [AE-Style Motion Design Editor](专题/十项全能/题面/复杂交互应用/AE风味动效设计编辑器.md) (AE风味动效设计编辑器)
 > Build a motion design editor structured around compositions and layers: keyframes, curves, expressions, procedural geometry, deformation, 3D solids, materials and lights, and particle collisions all really work in an ordinary project; then use it to make a 15-second showcase animation on the theme 「锻字」 (forging a character): one character is written, becomes a block, is forged and cools.
 
 | Time limit | Deliverable | Weight | Scoring |
@@ -301,7 +301,7 @@ Tests the art and design thinking of a 3D game: the statement sets a cybersecuri
 
 <p align="center"><img src="assets/readme/tasks-design-game.png" width="100%" alt="Scoring directions of Dynamic-Routing Tower Defense: map and scene art 20, tower and enemy modeling and animation 20, effects and sound 12, UI and information 13, gameplay and design thinking 35"></p>
 
-#### [Dynamic-Routing Tower Defense](游戏设计与开发/动态路由塔防.md) (动态路由塔防)
+#### [Dynamic-Routing Tower Defense](专题/十项全能/题面/游戏设计与开发/动态路由塔防.md) (动态路由塔防)
 > Make a 3D tower defense game, *Network Security Battle* (《网络安全攻防战》): isolating network nodes forces enemies to reroute, some enemies attack towers, and when a tower is destroyed its device switches to bypass and passes traffic straight through, so the routes change.
 
 | Time limit | Deliverable | Weight | Scoring |
@@ -335,7 +335,7 @@ Tests a 3D physics simulation piece: ready-made physics libraries may be used, a
 
 <p align="center"><img src="assets/readme/tasks-design-physics.png" width="100%" alt="Scoring directions of Jelly Impact and Wave Tank: phenomena and layers of motion 47, materials and lighting 17, interactions 24, demo and delivery 12"></p>
 
-#### [Jelly Impact and Wave Tank](物理模拟/果冻冲击与造浪水槽.md) (果冻冲击与造浪水槽)
+#### [Jelly Impact and Wave Tank](专题/十项全能/题面/物理模拟/果冻冲击与造浪水槽.md) (果冻冲击与造浪水槽)
 > Build two 3D physics simulation scenes in a web page: heavy balls strike jellies on a table, deforming them hard and letting them spring back, and a heavy blow cracks them; equal-sized balls of several densities float and sink in a transparent wave tank, whose waves grow steeper and steeper until they curl over and break.
 
 | Time limit | Deliverable | Weight | Scoring |
@@ -367,7 +367,7 @@ Tests the technique and aesthetics of real-time graphics: a toon-shaded 3D minia
 
 <p align="center"><img src="assets/readme/tasks-design-visual.png" width="100%" alt="Scoring directions of the two visual design and rendering tasks: Sunshower Fishing Harbor in 3D has 6 directions and 19 items, with modeling and set dressing the largest at 34 points; Interstellar Battle Fleet has 5 directions and 23 items, with fleet design and scale the largest at 32 points"></p>
 
-#### [Sunshower Fishing Harbor in 3D](视觉设计与渲染/太阳雨渔港3D渲染.md) (太阳雨渔港3D渲染)
+#### [Sunshower Fishing Harbor in 3D](专题/十项全能/题面/视觉设计与渲染/太阳雨渔港3D渲染.md) (太阳雨渔港3D渲染)
 > Use Three.js to make a toon-shaded 3D miniature model: the embankment of a small Japanese fishing harbor in a sunshower, with no people and no UI, free to rotate and zoom for a closer look.
 
 | Time limit | Deliverable | Weight | Scoring |
@@ -394,7 +394,7 @@ Tests the technique and aesthetics of real-time graphics: a toon-shaded 3D minia
 
 </details>
 
-#### [Interstellar Battle Fleet](视觉设计与渲染/星际战舰编队.md) (星际战舰编队)
+#### [Interstellar Battle Fleet](专题/十项全能/题面/视觉设计与渲染/星际战舰编队.md) (星际战舰编队)
 > Render dozens of interstellar warships built from same-size voxels in real time in a web page: a flagship about 1000–1200 voxels long sits at the center, close-guard ships ring it and vanguard ships fan outward; escorts are about 1/5–1/7 of the flagship's length and small craft about 1/30–1/50. The camera sweeps from the formation into an enlarged bridge, a power-core atrium, a through-type small-craft hangar, and the energy-loading and conduit gallery. Four weapons shatter nearby voxel asteroids in one attack, then the whole fleet raises shields in turn and accelerates forward, looping back to the opening of continued cruising as the shield afterglow fades, and the asteroids do not restore themselves in view. A cycle usually lasts 70–80 seconds and at most 90; export chunks share one global timeline, with no 15-second cap per chunk.
 
 | Time limit | Deliverable | Weight | Items |
@@ -422,7 +422,7 @@ Tests a recursive system that actually runs: a child system's kernel is itself a
 
 <p align="center"><img src="assets/readme/tasks-design-system.png" width="100%" alt="Scoring directions of Nested Operating Systems: the kernel is a program 28, shared resources and isolation 12, recursive system tree 8, cross-level projection and live data 10, subtree snapshot, restore and fork 6, closed-loop flight and replay 14, desktop apps 5, interface design and graphics 17"></p>
 
-#### [Nested Operating Systems](系统架构与实现/操作系统嵌套.md) (操作系统嵌套)
+#### [Nested Operating Systems](专题/十项全能/题面/系统架构与实现/操作系统嵌套.md) (操作系统嵌套)
 > Build a nested graphical desktop operating system: systems can launch further systems inside them, forming a system tree at least four levels deep; a child system's kernel, scheduling, window management and apps are all programs stored in files and run by the system itself, and rewriting them changes the behavior. Data in the root system's spreadsheet is drawn live as charts in child systems; a child system plays a 3D helicopter takeoff-and-crash sequence, and can also have a flight-control process fly the helicopter under the scheduler to rehearse flights; both the charts and the player can project interactive windows onto ancestor desktops.
 
 | Time limit | Deliverable | Weight | Scoring |
@@ -711,50 +711,53 @@ Each task's guide has 4–8 directions and 19–30 items, giving only the points
 
 ## Repository Layout
 
-- Statements are kept in folders by category, one `.md` per task; the official schedule has 10 categories. When a test starts, only that one task's statement is copied into its work folder. Original Math Olympiad Problems also brings a folder of the 24 problems (named `题目` in the work folder); Luban Lock Disassembly also brings the eight locks' data and two tools (the folder keeps its original name `鲁班锁拆解`); Mechanical Structure Reconstruction also brings the 25 sets of drawings, 《建模描述》 (the model description spec) and the preview tool (the folder keeps its original name `机械结构重建`); ray tracing also brings the evaluation program, headers, baseline source and build script (in the root of the work folder) plus a `数据` folder (checking tool, compiled baseline, inputs and reference answers); the circuit task also brings a `数据` folder (evaluation program, checking tool, inputs and reference answers); and Siege & Conquest also brings a `数据` folder (resolution engine, main program, map generator, local match tool and sample program; still being made).
-- `Grading/` holds the grading materials: grading guides, blank grading sheets, reference answers, hidden test data and evaluation scripts.
+- Statements are kept under `专题/十项全能/题面/` in folders by category, one `.md` per task; the official schedule has 10 categories. When a test starts, only that one task's statement is copied into its work folder. Original Math Olympiad Problems also brings a folder of the 24 problems (named `题目` in the work folder); Luban Lock Disassembly also brings the eight locks' data and two tools (the folder keeps its original name `鲁班锁拆解`); Mechanical Structure Reconstruction also brings the 25 sets of drawings, 《建模描述》 (the model description spec) and the preview tool (the folder keeps its original name `机械结构重建`); ray tracing also brings the evaluation program, headers, baseline source and build script (in the root of the work folder) plus a `数据` folder (checking tool, compiled baseline, inputs and reference answers); the circuit task also brings a `数据` folder (evaluation program, checking tool, inputs and reference answers); and Siege & Conquest also brings a `数据` folder (resolution engine, main program, map generator, local match tool and sample program; still being made).
+- `专题/十项全能/评分/` holds the grading materials: grading guides, blank grading sheets, reference answers, hidden test data and evaluation scripts.
 - The scheduling programs that run the benchmark and the tested models' work folders live locally on the test machine, not in this repository.
 
 ```text
 AI-High-Pressure-Challenge/
 ├─ README.md
-├─ 数学推理/           Statements in folders by category, one .md per task
-│  ├─ 形式化证明题.md
-│  ├─ 数学竞赛原创试题.md
-│  └─ 数学竞赛原创试题/     24 problems, one file each
-├─ 性能优化/
-│  └─ 性能工程/
-│     ├─ 光线追踪渲染加速.md
-│     ├─ 光线追踪渲染加速/        evaluation program grader.cu, headers, baseline reference.cu, build.py; 数据/ holds the checking tool, compiled baseline, inputs and reference answers
-│     ├─ 数字电路仿真器加速.md
-│     └─ 数字电路仿真器加速/      evaluation program grader.cpp, checking tool check.py, compiled baseline reference.exe (inputs and reference answers are in the grading folder)
-├─ 算法对抗/
-│  └─ 攻城略地.md
-├─ 空间推理/
-│  ├─ 鲁班锁拆解.md
-│  └─ 鲁班锁拆解/        layered drawings and voxel data for the eight locks; 工具/ holds the route checker check.py and the position bookkeeping tool positions.py
-├─ 几何建模/
-│  ├─ 机械结构重建.md
-│  └─ 机械结构重建/      25 sets of drawings (PNG plus JSON dimension and view metadata), 建模描述.md; 工具/ holds only the preview tool preview.py and drawkit
-├─ 复杂交互应用/
-│  └─ AE风味动效设计编辑器.md
-├─ 游戏设计与开发/
-│  └─ 动态路由塔防.md
-├─ 物理模拟/
-│  └─ 果冻冲击与造浪水槽.md
-├─ 视觉设计与渲染/
-│  ├─ 太阳雨渔港3D渲染.md
-│  └─ 星际战舰编队.md
-├─ 系统架构与实现/
-│  └─ 操作系统嵌套.md
-├─ Grading/            grading materials
-│  ├─ README.md        grading roles, scoring and totals
-│  └─ <category>/<task>/   one folder per task, matching the statements one to one
+├─ 专题/十项全能/
+│  ├─ 专题.json
+│  ├─ 题面/
+│  │  ├─ 数学推理/           Statements in folders by category, one .md per task
+│  │  │  ├─ 形式化证明题.md
+│  │  │  ├─ 数学竞赛原创试题.md
+│  │  │  └─ 数学竞赛原创试题/     24 problems, one file each
+│  │  ├─ 性能优化/
+│  │  │  └─ 性能工程/
+│  │  │     ├─ 光线追踪渲染加速.md
+│  │  │     ├─ 光线追踪渲染加速/        evaluation program grader.cu, headers, baseline reference.cu, build.py; 数据/ holds the checking tool, compiled baseline, inputs and reference answers
+│  │  │     ├─ 数字电路仿真器加速.md
+│  │  │     └─ 数字电路仿真器加速/      evaluation program grader.cpp, checking tool check.py, compiled baseline reference.exe (inputs and reference answers are in the grading folder)
+│  │  ├─ 算法对抗/
+│  │  │  └─ 攻城略地.md
+│  │  ├─ 空间推理/
+│  │  │  ├─ 鲁班锁拆解.md
+│  │  │  └─ 鲁班锁拆解/        layered drawings and voxel data for the eight locks; 工具/ holds the route checker check.py and the position bookkeeping tool positions.py
+│  │  ├─ 几何建模/
+│  │  │  ├─ 机械结构重建.md
+│  │  │  └─ 机械结构重建/      25 sets of drawings (PNG plus JSON dimension and view metadata), 建模描述.md; 工具/ holds only the preview tool preview.py and drawkit
+│  │  ├─ 复杂交互应用/
+│  │  │  └─ AE风味动效设计编辑器.md
+│  │  ├─ 游戏设计与开发/
+│  │  │  └─ 动态路由塔防.md
+│  │  ├─ 物理模拟/
+│  │  │  └─ 果冻冲击与造浪水槽.md
+│  │  ├─ 视觉设计与渲染/
+│  │  │  ├─ 太阳雨渔港3D渲染.md
+│  │  │  └─ 星际战舰编队.md
+│  │  └─ 系统架构与实现/
+│  │     └─ 操作系统嵌套.md
+│  └─ 评分/            grading materials
+│     ├─ README.md        grading roles, scoring and totals
+│     └─ <category>/<task>/   one folder per task, matching the statements one to one
 ├─ 调研/               research notes on task setting and benchmark design
 └─ assets/readme/      README figures and category icons; src/ holds the figures' source files
 ```
 
-What each task's folder under `Grading/` contains (see [`Grading/README.md`](Grading/README.md) for details):
+What each task's folder under `专题/十项全能/评分/` contains (see [`专题/十项全能/评分/README.md`](专题/十项全能/评分/README.md) for details):
 
 | Task | Files |
 |---|---|

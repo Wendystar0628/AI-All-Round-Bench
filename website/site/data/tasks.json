@@ -27,7 +27,7 @@
         "brief_en": "Write Lean 4 + Mathlib formal proofs for eight theorems, classic or taken from research papers; every proof that compiles counts.",
         "deliverable": "Problem1.lean–Problem8.lean",
         "deliverable_en": "Problem1.lean–Problem8.lean",
-        "statement": "数学推理/形式化证明题.md"
+        "statement": "专题/十项全能/题面/数学推理/形式化证明题.md"
       },
       {
         "key": "math-olympiad",
@@ -45,7 +45,7 @@
         "brief_en": "Without any computational tools, write competition-standard solutions, in Chinese, to twenty-four original olympiad problems.",
         "deliverable": "答案\\第01题.md–第24题.md：每题一个文件",
         "deliverable_en": "答案\\第01题.md–第24题.md, one file per problem",
-        "statement": "数学推理/数学竞赛原创试题.md"
+        "statement": "专题/十项全能/题面/数学推理/数学竞赛原创试题.md"
       }
     ]
   },
@@ -77,7 +77,7 @@
         "brief_en": "Render a Jiangnan garden of about 177,000 triangles in CUDA on an RTX 4080: compute a deterministic image by the given sampling, shadows, ambient occlusion and mirror reflections, within tolerance and as fast as possible; full marks from a 10× speedup over the baseline.",
         "deliverable": "solution.cu",
         "deliverable_en": "solution.cu",
-        "statement": "性能优化/性能工程/光线追踪渲染加速.md"
+        "statement": "专题/十项全能/题面/性能优化/性能工程/光线追踪渲染加速.md"
       },
       {
         "key": "circuit",
@@ -95,7 +95,7 @@
         "brief_en": "Accelerate CPU simulation of 9 performance inputs across 3 circuit classes: deep chains, array multipliers and register files, computing cycle-by-cycle output digests for many random stimuli; full marks require a 12× baseline speedup on each deep-chain and array-multiplier input, and 8× on each register-file input.",
         "deliverable": "solution.cpp",
         "deliverable_en": "solution.cpp",
-        "statement": "性能优化/性能工程/数字电路仿真器加速.md"
+        "statement": "专题/十项全能/题面/性能优化/性能工程/数字电路仿真器加速.md"
       }
     ]
   },
@@ -127,7 +127,7 @@
         "brief_en": "Write a C++ program for a two-player, simultaneous-move node-capture game: each turn it sends troops from its own nodes, and troops grow with the nodes held. On each of 96 hidden maps it plays one game against each of five tiers of fixed opponents, alternating seats, 480 games in all; the results give it a rating: matching the strongest tier earns 80, and full marks take a rating 200 above it.",
         "deliverable": "bot.cpp",
         "deliverable_en": "bot.cpp",
-        "statement": "算法对抗/攻城略地.md"
+        "statement": "专题/十项全能/题面/算法对抗/攻城略地.md"
       }
     ]
   },
@@ -159,7 +159,7 @@
         "brief_en": "Given eight assembled Luban locks with the exact shape and starting position of every piece, take each lock fully apart into single pieces in as few moves as possible.",
         "deliverable": "答案\\第01题.json–第08题.json：每题一棵拆解树",
         "deliverable_en": "答案\\第01题.json–第08题.json, one disassembly tree per puzzle",
-        "statement": "空间推理/鲁班锁拆解.md"
+        "statement": "专题/十项全能/题面/空间推理/鲁班锁拆解.md"
       }
     ]
   },
@@ -191,7 +191,7 @@
         "brief_en": "Read the engineering drawings of 25 mechanical parts and assemblies (301 sheets), work out their shapes by hand, and write each part as a JSON model description, with every part's position and orientation for the assemblies.",
         "deliverable": "答案\\第01题.json–第25题.json：每题一份建模描述",
         "deliverable_en": "答案\\第01题.json–第25题.json, one model description per problem",
-        "statement": "几何建模/机械结构重建.md"
+        "statement": "专题/十项全能/题面/几何建模/机械结构重建.md"
       }
     ]
   },
@@ -223,7 +223,7 @@
         "brief_en": "Build a motion design editor built around compositions and layers, where keyframes, curves, expressions, procedural geometry, deformation, 3D solids, materials and lights, and particle collisions all really work in an ordinary project; then use it to make a 15-second showcase on the theme 「锻字」 (forging a character): one character is written, becomes a block, is forged and cools.",
         "deliverable": "网页项目，入口 index.html",
         "deliverable_en": "Web project, entry index.html",
-        "statement": "复杂交互应用/AE风味动效设计编辑器.md"
+        "statement": "专题/十项全能/题面/复杂交互应用/AE风味动效设计编辑器.md"
       }
     ]
   },
@@ -255,7 +255,7 @@
         "brief_en": "Make a 3D cybersecurity tower defense game: isolating network nodes forces enemies to reroute, some enemies attack towers, and a destroyed tower leaves its device in bypass, so the routes change again.",
         "deliverable": "网页项目，入口 index.html",
         "deliverable_en": "Web project, entry index.html",
-        "statement": "游戏设计与开发/动态路由塔防.md"
+        "statement": "专题/十项全能/题面/游戏设计与开发/动态路由塔防.md"
       }
     ]
   },
@@ -287,7 +287,7 @@
         "brief_en": "Build two 3D physics scenes in the browser: heavy balls strike jellies on a table, squashing them hard and letting them spring back, and a heavy enough blow cracks them; equal-sized balls of different densities float and sink in a transparent wave tank whose waves grow steeper until they curl over and break.",
         "deliverable": "网页项目，入口 index.html",
         "deliverable_en": "Web project, entry index.html",
-        "statement": "物理模拟/果冻冲击与造浪水槽.md"
+        "statement": "专题/十项全能/题面/物理模拟/果冻冲击与造浪水槽.md"
       }
     ]
   },
@@ -319,7 +319,7 @@
         "brief_en": "Build a toon-shaded 3D miniature in Three.js: a small Japanese fishing-harbor embankment in a sunshower, with no people or UI, free to rotate and zoom in for detail.",
         "deliverable": "网页项目，入口 index.html",
         "deliverable_en": "Web project, entry index.html",
-        "statement": "视觉设计与渲染/太阳雨渔港3D渲染.md"
+        "statement": "专题/十项全能/题面/视觉设计与渲染/太阳雨渔港3D渲染.md"
       },
       {
         "key": "starship",
@@ -337,7 +337,7 @@
         "brief_en": "Render a fleet of dozens of shared-size voxel ships around a 1000–1200-voxel flagship. Tour four vast interiors, fire four weapon types at nearby voxel asteroids, then raise shields across the fleet and accelerate into a continuous loop. A cycle normally lasts 70–80 seconds, at most 90; export chunks share one global timeline.",
         "deliverable": "网页项目，入口 index.html",
         "deliverable_en": "Web project, entry index.html",
-        "statement": "视觉设计与渲染/星际战舰编队.md"
+        "statement": "专题/十项全能/题面/视觉设计与渲染/星际战舰编队.md"
       }
     ]
   },
@@ -369,7 +369,7 @@
         "brief_en": "Build a nested graphical desktop OS: systems launch systems, forming a tree at least four levels deep, and a child system's kernel, scheduling, window management and apps are all programs stored in files and run by the system itself, so rewriting them changes how it behaves. Spreadsheet data in the root system feeds live charts in child systems, a child plays a 3D helicopter takeoff-and-crash sequence and can also rehearse flights with a flight-control process flying the helicopter under the scheduler, and both the charts and the player can project interactive windows onto ancestor desktops.",
         "deliverable": "Windows 桌面项目，单一启动入口",
         "deliverable_en": "Windows desktop project, single launch entry",
-        "statement": "系统架构与实现/操作系统嵌套.md"
+        "statement": "专题/十项全能/题面/系统架构与实现/操作系统嵌套.md"
       }
     ]
   }

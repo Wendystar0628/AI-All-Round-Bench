@@ -1,6 +1,6 @@
 // Route info from <body data-page data-lang data-id>, and links inside the site.
 // Every link the site writes goes through href()/links so the base path
-// (GitHub Pages) and the /en/ prefix are always right.
+// (vite.config.js `base`: /decathlon/) and the /en/ prefix are always right.
 
 export const BASE = import.meta.env.BASE_URL || '/';
 

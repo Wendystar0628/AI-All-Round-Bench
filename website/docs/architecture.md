@@ -2,41 +2,30 @@
 
 本文是实现约定，给并行开发的各方共用。设计以 README.md 和各页文档为准，这里只定代码怎么分、数据怎么来、谁改哪些文件。
 
-## 一、加模型只改登记表
+## 一、型号与参测登记
 
-- `website/tools/models.json` 是登记表，网站只显示登记了的模型。
-  - 每项写 `id`、`key`、`name`、`short`、`vendor`、`logo`、`agent`、`effort`、`tested`。
-  - `key` 是评测记录里的型号，例如 `GPT/6.1Sol`；`id` 是网址用的名字，例如 `gpt-6-1-sol`。
-- 加一个模型只在登记表里加一行（写法见 `website/tools/README.md`），之后的导出、构建和上线都走发布流程（二之一）。
-- 页面、榜单、搜索和模型得分页都随数据生成，不写死模型数、模型名和厂商；新厂商只需 `website/logos/mark/` 里有它的图标。
+- 共用型号身份和出片字段放在 `website/tools/models.json`。`key` 对应评测记录里的型号，例如 `GPT/6.1Sol`，`id` 用在网址里，例如 `gpt-6-1-sol`。厂商图标放在 `website/logos/mark/`。
+- 各专题在 `website/tools/topics/<id>/participants.json` 按 `key` 登记参测型号、作答工具、推理强度、测评日期和审核状态。专题清单 `专题/<专题名>/专题.json` 的 `paths.website`、`paths.url` 指定独立网页项目和站内路径。
 
-## 二、数据
+## 二、数据与发布
 
-- `website/tools/export_data.py` 只读评测结果，生成以下文件。生成的文件提交进仓库，网站构建时不需要访问评测目录。
-  - `site/data/models.json`、`tasks.json`、`scores.json`：格式见 README.md「数据」一节，可以加字段，不能删改已定字段。
-  - `site/data/search.json`：全站搜索索引，拼音事先算好。
-  - `site/data/stems/<类别>/<题目>.json`：题目页的题干，从题面原件摘录；摘录规则只在导出脚本的 `STEM_RULE` 一处（`tasks.md`「题干的摘录规则」）。
-- 分数的算法和 `orchestrator/grading.py` 的 `task_scores`、`model_scores` 一致，直接只读调用这两个函数。权重和题目顺序取 `orchestrator/tasks.py`。
-- 题目和类别的双语文案（短名、一句定位、交付物、英文名）写在 `website/tools/tasks_meta.json`，由导出脚本合进 `tasks.json`。中文从项目 README 摘取。
-
-## 二之一、成绩自动同步
-
-- 唯一的发布命令是 `python website/tools/publish.py`：导出数据 → 构建 → 推送到 GitHub 的 gh-pages 分支。
-- 一个模型的评分全部结束时，调度（`orchestrator/grading.py`）在后台自动运行它，结果以事件送给指挥；用户改分后、网站代码改动后手动运行同一条命令。
-- 正式测评的新型号在开测前写进登记表，所以评完一发布就上线；没登记的模型不会出现。
-- 发布目标只在 `website/tools/publish.json` 里规定；托管、加速和一次性准备见 `website/tools/README.md`。
+- `website/tools/export_data.py` 按专题调用 `orchestrator/grading.py` 的 `task_scores`、`model_scores`。各专题的题序、权重、限时取自清单，双语文案和搜索别名取自 `website/tools/topics/<id>/tasks_meta.json`。
+- 十项全能的实时数据写到 `website/site/data/`，包含 `models.json`、`scores.json`、`tasks.json`、`search.json`、`zeros.json` 和题干 `stems/<类别>/<题目>.json`。开发服务器优先读取包含本地私有型号的 `data-local/`。题干摘录规则见 `tasks.md`。
+- 总站从 `data/topics.json` 读各专题的入口、题数、类别数、已上榜型号数、更新日期和总分前三名。正式摘要来自上线专题的确认成绩，开发摘要来自各专题本地数据，并包含草稿专题。
+- 评分完成或改分后，调度通过 `orchestrator/site_publish.py` 刷新本专题与总站的本地数据。正式成绩保存在各专题的 `confirmed-scores.json`，用户明确确认指定型号后，用 `publish.py --confirm <专题> <型号>` 更新。
+- `python website/tools/publish.py --no-upload` 构建各上线专题和总站，按清单路径拼到 `website/dist/`。普通 `publish.py` 还会按全站 `hold` 开关推送。专题构建失败时取上次成功的正式成品，成绩摘要随实际使用的成品。具体命令、预览入口和托管配置见 `website/tools/README.md`。
 
 ## 三、页面与路由
 
 - 每种页面一个 HTML 模板，放在 `site/pages/<类型>.html`；对应一个脚本入口 `site/src/pages/<类型>/main.js`。
   - 页面类型：`home`、`leaderboard`、`categories`、`about`、`faq`、`tasks`、`task`、`model`、`zeros`。
 - 构建时由 `vite.config.js` 里的路由插件，按模板和 `site/data/*.json` 生成每个路由的 HTML：
-  - 中文版和 `/en/` 下的英文版各一份；
-  - 每道题一页 `/tasks/<类别>/<题目>/`；
-  - 每个登记模型一页 `/models/<id>/`（模型得分）；入口页 `/models/` 是总分第 1 名的那一页。
+  - 中文版在 `/decathlon/`，英文版在 `/decathlon/en/`；
+  - 中文题目页位于 `/decathlon/tasks/<类别>/<题目>/`；
+  - 每个导出的模型一页 `/decathlon/models/<id>/`（中文模型得分）；入口页 `/decathlon/models/` 是总分第 1 名的那一页。
   - 开发服务器用同一套规则。
 - 生成的页面在 `<body>` 上写 `data-page`、`data-lang`、`data-id`（模型 id 或题目路径），页面脚本据此渲染。
-- 网站挂在发布域名的根路径，站内链接一律经 `core/route.js` 生成。
+- 网站挂在发布域名的 `/decathlon/` 下（`vite.config.js` 的 `base`；根路径是总站首页 `website/hub`），站内链接一律经 `core/route.js` 生成。
 
 ## 四、目录与分工
 
@@ -57,7 +46,8 @@ site/
     pages/<类型>/         各页自己的脚本、样式和部件（各页负责人）
   content/               说明页、猜你想问和题目页的长文，中英各一份（阅读页负责人）
 tools/
-  models.json  tasks_meta.json  export_data.py   （数据方）
+  models.json  export_data.py                    共用登记与导出
+  topics/<id>/                                   专题参测登记、快照、题目文案和 0 分原因
   publish.py  publish.json                       发布（README.md）
 ```
 
