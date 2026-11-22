@@ -1,0 +1,100 @@
+// boot(): the one call every page entry makes.
+//
+//   import { boot } from '../../shell/index.js';
+//   boot(async ({ data, route, t }) => { …render the page… }, { ns: ['extra-namespace'] });
+//
+// Order: load i18n (common + the page's namespace + ns) → wire the shell
+// (bar, search, shortcuts, side panel) → load data → render(ctx) → restore
+// the reading position after a language switch → open ?model= panel →
+// <html class="is-ready"> and document event 'octa:ready' { detail: ctx }.
+import { route, links } from '../core/route.js';
+import { loadNamespaces, t, lang, applyI18n } from '../core/i18n.js';
+import { loadData } from '../core/data.js';
+import { h } from '../core/dom.js';
+import { ensureShellMarkup, wireBar, restoreScroll, switchLang, toggleTheme } from './bar.js';
+import { wireShortcuts, registerShortcut, openKeys } from './shortcuts.js';
+import { openSearch } from './search.js';
+import { wirePanel, openPanelFromURL } from './panel.js';
+import { wireTitleTips } from '../ui/tip.js';
+
+export { openSearch, closeSearch } from './search.js';
+export { registerShortcut, openKeys } from './shortcuts.js';
+export { openModelPanel, closeModelPanel, setPanelOrder, getPanelModel } from './panel.js';
+export { switchLang, toggleTheme } from './bar.js';
+
+let wired = false;
+
+function wireShell() {
+  if (wired) return;
+  wired = true;
+  ensureShellMarkup();
+  wireBar({ openSearch: () => openSearch(), openKeys });
+  wireShortcuts();
+  registerShortcut({ key: '/', group: 'global', handler: () => openSearch() });
+  registerShortcut({ key: 'k', ctrl: true, group: 'global', handler: () => openSearch() });
+  registerShortcut({ key: 't', group: 'global', handler: () => toggleTheme() });
+  registerShortcut({ key: 'l', group: 'global', handler: () => switchLang() });
+  registerShortcut({ key: '?', group: 'global', handler: () => openKeys() });
+  wirePanel();
+  wireTitleTips();
+}
+
+// 暂停公示（publish/notice.json 的 notice）：这些页面只画成绩和模型，打开时换成一条提示，页面自己的脚本不运行；
+// 题目页、说明页和猜你想问照常。
+const HOLD_PAGES = new Set(['home', 'leaderboard', 'categories', 'model', 'zeros']);
+
+function showHold(notice) {
+  const main = document.querySelector('main') ?? document.body;
+  for (const el of main.querySelectorAll('.md-side, .md-head, [data-slot="facts"], [data-slot="figs"]')) el.hidden = true;
+  const slot = main.querySelector('[data-slot="page"]') ?? main;
+  slot.replaceChildren(
+    h(
+      'section.site-hold',
+      h('p.st-notice', { 'data-flag': t('common.hold.flag'), role: 'status' }, (lang === 'en' ? notice.en : notice.zh) || notice.zh),
+      h(
+        'p.st-actions',
+        h('a.st-btn.go', { href: links.tasks() }, t('common.pages.tasks.title')),
+        h('a.st-btn', { href: links.about() }, t('common.pages.about.title')),
+      ),
+    ),
+  );
+}
+
+function showLoadError() {
+  const main = document.querySelector('main') ?? document.body;
+  if (main.querySelector('.site-load-error')) return;
+  main.prepend(h('p.st-notice.st-in-wipe.site-load-error', { 'data-flag': t('common.shell.errorFlag'), role: 'alert' }, t('common.shell.loadError')));
+}
+
+/**
+ * Start a page. render(ctx) gets { route, data, t, lang }; data is null when
+ * the data files could not be read (the shell shows the error notice then and
+ * render is still called, so static parts can show).
+ * Options: { ns: [...] } extra i18n namespaces; { data: false } skips loading data.
+ */
+export async function boot(render, { ns = [], data: wantData = true } = {}) {
+  await loadNamespaces('common', route.page, ...ns);
+  wireShell();
+  applyI18n(document.querySelector('main') ?? document);
+  let data = null;
+  if (wantData) {
+    try {
+      data = await loadData();
+    } catch (e) {
+      console.error(e);
+      showLoadError();
+    }
+  }
+  const ctx = { route, data, t, lang };
+  try {
+    if (data?.notice && HOLD_PAGES.has(route.page)) showHold(data.notice);
+    else if (render) await render(ctx);
+  } catch (e) {
+    console.error(e);
+  }
+  restoreScroll();
+  if (data) openPanelFromURL();
+  document.documentElement.classList.add('is-ready');
+  document.dispatchEvent(new CustomEvent('octa:ready', { detail: ctx }));
+  return ctx;
+}

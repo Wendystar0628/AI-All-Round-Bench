@@ -1,5 +1,5 @@
-/* 总站首页：中性浅底，墨色为骨架；每个专题卡片只用左边一道标识色（site.config.mjs accents）呼应它自己的网页。
-   母题是页头下的一条刻度尺：计时与测量。 */
+/* 总站首页：中性浅底，墨色为骨架；每个专题卡片只用左边一道标识色（卡片数据的 accent）呼应它自己的网页。
+   母题是页头下的一条刻度尺：计时与测量。字体自带（fonts/Saira.ttf），不取任何专题的设计系统。 */
 
 @font-face {
   font-family: 'Saira';
@@ -17,7 +17,7 @@
   --ink-3: #a3a8b1; /* ruler ticks */
   --rule: #dfe2e7; /* hairlines */
   --track: #eceef1; /* empty part of a score bar */
-  --topic: #6b7180; /* a topic's mark when site.config.mjs gives none */
+  --topic: #6b7180; /* a topic's mark when its card gives no accent */
   --font: 'Saira', 'Microsoft YaHei UI', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', 'Hiragino Sans GB', sans-serif;
   --page: 72rem;
   --gutter: clamp(16px, 4vw, 48px);
@@ -207,8 +207,8 @@ main:focus {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   grid-template-areas:
-    'id top'
-    'foot top';
+    'id feature'
+    'foot feature';
   grid-template-rows: auto 1fr;
   column-gap: clamp(1.5rem, 5vw, 4rem);
   padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 3vw, 2.5rem) clamp(1.5rem, 3vw, 2.25rem) calc(clamp(1.25rem, 3vw, 2.5rem) + 6px);
@@ -216,6 +216,14 @@ main:focus {
   border: 1px solid var(--rule);
   border-radius: 4px;
   transition: border-color 160ms ease;
+}
+
+/* a card without a feature block (none given, or a kind the hub does not draw) */
+.topic:not(.has-feature) {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'id'
+    'foot';
 }
 
 /* the topic's own colour: one stripe on the left edge */
@@ -348,33 +356,33 @@ main:focus {
   background: var(--topic);
 }
 
-/* top 3 */
-.topic-top {
-  grid-area: top;
+/* the feature block (feature.kind), right half of the card */
+.topic-feature {
+  grid-area: feature;
   min-width: 0;
   padding-left: clamp(1.5rem, 4vw, 3rem);
   border-left: 1px solid var(--rule);
 }
 
-.topic-top-head {
+.feature-head {
   margin: 0 0 0.25rem;
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--ink-2);
 }
 
-.topic-none {
+.feature-none {
   margin: 0.75rem 0 0;
   color: var(--ink-2);
 }
 
-.top-list {
+.rank-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.top-row {
+.rank-row {
   display: grid;
   grid-template-columns: 1.5rem 1.375rem minmax(0, 1fr) auto;
   align-items: center;
@@ -384,11 +392,11 @@ main:focus {
   border-top: 1px solid var(--rule);
 }
 
-.top-row:first-child {
+.rank-row:first-child {
   border-top: 0;
 }
 
-.top-rank {
+.rank-n {
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1;
@@ -396,7 +404,7 @@ main:focus {
   font-variant-numeric: tabular-nums;
 }
 
-.top-row:first-child .top-rank {
+.rank-row:first-child .rank-n {
   color: var(--ink);
 }
 
@@ -437,14 +445,14 @@ main:focus {
   color: var(--ink-2);
 }
 
-.top-score {
+.rank-value {
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.top-bar {
+.rank-bar {
   grid-column: 3 / 5;
   height: 3px;
   border-radius: 2px;
@@ -452,7 +460,7 @@ main:focus {
   overflow: hidden;
 }
 
-.top-bar i {
+.rank-bar i {
   display: block;
   height: 100%;
   background: var(--topic);
@@ -461,15 +469,15 @@ main:focus {
   transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.top-row:nth-child(2) .top-bar i {
+.rank-row:nth-child(2) .rank-bar i {
   transition-delay: 60ms;
 }
 
-.top-row:nth-child(3) .top-bar i {
+.rank-row:nth-child(3) .rank-bar i {
   transition-delay: 120ms;
 }
 
-.is-ready .top-bar i {
+.is-ready .rank-bar i {
   transform: scaleX(var(--v));
 }
 
@@ -523,11 +531,11 @@ main:focus {
 @media (max-width: 760px) {
   .topic {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'id' 'top' 'foot';
+    grid-template-areas: 'id' 'feature' 'foot';
     grid-template-rows: auto;
   }
 
-  .topic-top {
+  .topic-feature {
     margin-top: 1.5rem;
     padding: 1rem 0 0;
     border-left: 0;
@@ -542,7 +550,7 @@ main:focus {
     font-size: 1.75rem;
   }
 
-  .top-row {
+  .rank-row {
     grid-template-columns: 1.125rem 1.25rem minmax(0, 1fr) auto;
     column-gap: 0.6rem;
   }
@@ -556,7 +564,7 @@ main:focus {
     font-size: 1rem;
   }
 
-  .top-score {
+  .rank-value {
     font-size: 1.3rem;
   }
 
@@ -573,7 +581,7 @@ main:focus {
 @media (prefers-reduced-motion: reduce) {
   .topic,
   .topic-go,
-  .top-bar i {
+  .rank-bar i {
     transition: none;
   }
 }

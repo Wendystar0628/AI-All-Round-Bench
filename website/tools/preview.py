@@ -34,7 +34,7 @@ def main():
         raise SystemExit('先运行 python website/tools/publish.py --no-upload 构建整站')
     with ThreadingHTTPServer(('127.0.0.1', args.port), partial(PagesHandler, directory=str(DIST))) as server:
         url = f'http://127.0.0.1:{server.server_port}/'
-        print(f'成绩网站预览 {url}', flush=True)
+        print(f'总站与专题站预览 {url}', flush=True)
         if args.open:
             webbrowser.open(url)
         try:

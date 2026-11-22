@@ -1,0 +1,2833 @@
+{
+  "schema": 1,
+  "model": "DeepSeek/V4.1Flash",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 436,
+      "sha256": "63f7cd69d48832dd5e0e8bf2987b536d45d5d5ccbf2e498f4f2d327bc391fc95"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\claude\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/claude/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7013,
+      "sha256": "12ffd474abca338352224bdbcdc1ceff1ee39688299f386bc338ab57e8be9667"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9818,
+      "sha256": "e0eed780a78304ede8d17380ad62fc534635a4417d62b27adcdd865701a2346b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6078,
+      "sha256": "a2c3cd777bfcd9bee8513cee2e97363a4582770d536b1e1a9efb67c830b357a9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\评分表_Opus5.5.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6115,
+      "sha256": "5b80adfa4e5e2dfd627d23952165807f0731bb00b8c22c9d27070f2e0ebb4ae9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\css\\app.css",
+      "path": "AE风味动效设计编辑器/submission/css/app.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 38696,
+      "sha256": "f1073793a7fb528b750445ade686597b8267f919c847ed494b78e3239ac45797"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 16543,
+      "sha256": "44925932b6b0baf13d5ce5c30d20224d1d9b07a6df3038f1b1f59060fc9ff38b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\anim.js",
+      "path": "AE风味动效设计编辑器/submission/js/anim.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 18447,
+      "sha256": "59b10735a88665e7bea3a1d40ae504a1ba8ed9d49415247511637f3c7e60ec56"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\app.js",
+      "path": "AE风味动效设计编辑器/submission/js/app.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 27414,
+      "sha256": "9f1d0108295725caaaed9fd9c9be6baf985f61cca13ebbcbac987776ba6dd2b7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\audio.js",
+      "path": "AE风味动效设计编辑器/submission/js/audio.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 14901,
+      "sha256": "47dbfef1cfb1c26940d9727198264a4c8c15998b9e314a165dc4043cc59556a8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\compositor.js",
+      "path": "AE风味动效设计编辑器/submission/js/compositor.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 30785,
+      "sha256": "af4c955f5d35c77c32e0432050128ad59c3a2a258b527611703ad76a0c661565"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\curve.js",
+      "path": "AE风味动效设计编辑器/submission/js/curve.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 17985,
+      "sha256": "528e07a472cf8f872dc948bda45883f027d2819a40fc9306dc5dde977b824902"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\demo.js",
+      "path": "AE风味动效设计编辑器/submission/js/demo.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 33394,
+      "sha256": "4e872e9cebca26424db2decdce570330e644a7c558bc3bbd59cea00d9aaabf19"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\expr.js",
+      "path": "AE风味动效设计编辑器/submission/js/expr.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22477,
+      "sha256": "78ba8911335b3d5413d7770bdd8147a52318855c2954abab2164a908fac5d5f7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\fields.js",
+      "path": "AE风味动效设计编辑器/submission/js/fields.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 4667,
+      "sha256": "0dccac9b31cddcac8d528beb0e0fb9780503d273d31b597419dffa6cf3231099"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\geom.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 43636,
+      "sha256": "52f9142aa76ad15dc1f83c46876adb78549e01cc795b9a5cb0dbdaa51beda565"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\gl.js",
+      "path": "AE风味动效设计编辑器/submission/js/gl.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 44966,
+      "sha256": "b095bb40f7e87d3aa2022b555dfe081301c7efa190b40a7b9490f7eb462b4902"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\model.js",
+      "path": "AE风味动效设计编辑器/submission/js/model.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 36287,
+      "sha256": "5757815b556dad6b3e51fc7d2e2426b1d6b9c52894a03e1a2e3a2d4882e10cf5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\nodes.js",
+      "path": "AE风味动效设计编辑器/submission/js/nodes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 26267,
+      "sha256": "485fe9d05e3ab4bb08f4029626c1f23baeac7574b478345ae986832e9b27d49a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\nodeui.js",
+      "path": "AE风味动效设计编辑器/submission/js/nodeui.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 26495,
+      "sha256": "324bf4de3ec3e23ce98cb233fab6e4cea1e7a422da991b7f1d713c64688ab0ab"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\particles.js",
+      "path": "AE风味动效设计编辑器/submission/js/particles.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 28573,
+      "sha256": "c0ea58ae779d325861dff05a4a19d44b1b100c4273c0935ccabf819efb401c83"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\pick.js",
+      "path": "AE风味动效设计编辑器/submission/js/pick.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3881,
+      "sha256": "68886646d753ae5c8c6beaa44aad675ddaa8fedfe22e075b845ae29dfdc81029"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\props.js",
+      "path": "AE风味动效设计编辑器/submission/js/props.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 61482,
+      "sha256": "09d505d09379219c843fa62376a497464bd9957d58a1cc5a2c55f5b92fb173cd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\text.js",
+      "path": "AE风味动效设计编辑器/submission/js/text.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12233,
+      "sha256": "d6ec26a8b0bb8eef855c980167e8688ba9c291f6e2f3d6c690220a7ade1f3bd5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\timeline.js",
+      "path": "AE风味动效设计编辑器/submission/js/timeline.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 43834,
+      "sha256": "6f7e05aa57940deaeb72973cd543faeef0e8066f72096665e6ab0353176bf8cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\ui.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 33455,
+      "sha256": "74fe4cfbc1c7f085bb09d26948baa5fae28c233b095ff0cba8b0ceec5c7546c9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\util.js",
+      "path": "AE风味动效设计编辑器/submission/js/util.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 16947,
+      "sha256": "951bc3c447a7f9e51543aa515b6b1bd5a69d31ab1be49d8a706e354a4fc9c9b0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\js\\viewport.js",
+      "path": "AE风味动效设计编辑器/submission/js/viewport.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 48598,
+      "sha256": "43ea4e2ffd5caa1f77e6febb3591ecfd1e827d980297722a6d13407f769854ac"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 559,
+      "sha256": "0ccd818ebaa24b89f49906e4189a0bb91ca588ada61a2b8728d057dce30dceaf"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 3625,
+      "sha256": "9c17914384084d4570bd059e1d1e3e2d4ee84714363136a87681480bdc766f63"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2252,
+      "sha256": "fc60e7d8762ecaf6051d09bd26d917dd3f9db5342db054b6c5d921e11c098aa1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 34001,
+      "sha256": "2db626695fedd12a201774a806021402d6b1e9b108c546abfc517963a9f0cb5c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 368,
+      "sha256": "65f838b79f423ea022fa502bfc1c8c6d40cb3d70178f7146950c23ee6d19b991"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\claude\\main\\result.json",
+      "path": "动态路由塔防/grading/claude/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 5308,
+      "sha256": "73f7ad4a68f41679fa4e7581defffd8b7bc2e0a56a4a9f13a4c038937b3a1947"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 6733,
+      "sha256": "0fb7201c4156391f1f26ef2304ecb1431835e1b16fc6ac16407220cecd7dc898"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4074,
+      "sha256": "f0b00f78f54252d48b67e8afa41552923797b31542f7935bad24ef3b30a08699"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\评分表_Opus5.5.md",
+      "path": "动态路由塔防/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4157,
+      "sha256": "f9cbf4202667f08a55ddd428bcc6ef22d39c76d536a57365a8a71b177fc9f7c6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\README.md",
+      "path": "动态路由塔防/submission/README.md",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1812,
+      "sha256": "e107303c82e7823148a736ed7eb5c106051ef577c89e41e6222ba18a03b32b9c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 56732,
+      "sha256": "96b4c7e8eba563fed9c01c657b583e39959a1269dd33e76fce71e9e756900a09"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\audio.js",
+      "path": "动态路由塔防/submission/js/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 13051,
+      "sha256": "956fffd6aa7f3f55218ca034be30d420d884965d587485532392d9bb3a3f3246"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\data.js",
+      "path": "动态路由塔防/submission/js/data.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 32435,
+      "sha256": "a00435bc79f085534da7ca19671622e68b70c90d35624e77bca209db9469cb7e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\demo.js",
+      "path": "动态路由塔防/submission/js/demo.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 27776,
+      "sha256": "78432cbe683b8a4d181693d7ae3e6fd9859f218183fbf0988f0db75516416f18"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\engine.js",
+      "path": "动态路由塔防/submission/js/engine.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 97567,
+      "sha256": "70104fb7bde2ea6ad2730d0a436eb1b324639c2ecb5c580f8d08d409f9f5faed"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\game.js",
+      "path": "动态路由塔防/submission/js/game.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 82105,
+      "sha256": "4db07c3e234df93300dd31f8408e86fc00582e4e4164f60e0ff83b6769371719"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\main.js",
+      "path": "动态路由塔防/submission/js/main.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1859,
+      "sha256": "8cce270fd8d284f838835ae27393ff1df655096ab9f40e9158b973910a0b810b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\models.js",
+      "path": "动态路由塔防/submission/js/models.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 35954,
+      "sha256": "ebcfe448c6a06f8b3f916818a6e653c666dbf3dda5203659ef336b83f70cfe07"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\js\\ui.js",
+      "path": "动态路由塔防/submission/js/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 84731,
+      "sha256": "08d5f099082bd37febc25bd217d903be6a2badf92c1da929184f6e389cd67253"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\ascii.txt",
+      "path": "动态路由塔防/submission/tools/ascii.txt",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1874,
+      "sha256": "83b7d1cb37ee6d6e3e9f12c9d1ff115f568ccb14421866043c500829519be386"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\balance1.js",
+      "path": "动态路由塔防/submission/tools/balance1.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3670,
+      "sha256": "1d36b033308bcfee26610fb001a2d059983aafdfb10d0a38fc41cba4c6cff97b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\balance2.js",
+      "path": "动态路由塔防/submission/tools/balance2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 5453,
+      "sha256": "fc8a09c7db042722ce6b79c95c2eb5587972ca1b11183a8f4b8c0c5aa27a0189"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\balance3.js",
+      "path": "动态路由塔防/submission/tools/balance3.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 299,
+      "sha256": "25915288d02deef6990bca26f946a8e05eb5924edf840641c39d2623d82f2534"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\balance4.js",
+      "path": "动态路由塔防/submission/tools/balance4.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3279,
+      "sha256": "35e267b01e6c2f420ebfeb87eeebc7cb91ec5af44cb795ab959c722fc608c598"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\balance5.js",
+      "path": "动态路由塔防/submission/tools/balance5.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 578,
+      "sha256": "0f8d8c9a5185736e925080df00c042d06706761223dec6ecdb82498e9a085c85"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\balance6.js",
+      "path": "动态路由塔防/submission/tools/balance6.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2716,
+      "sha256": "fa468f8a26213ecaad7e534f7018efbfb3aef81327c72269d2a516347a920cae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\boss2.js",
+      "path": "动态路由塔防/submission/tools/boss2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 724,
+      "sha256": "24835d6d452bf90c3c4ac83da1ef51e189bd7fb8a4022db6da7d4e161bcbbaf5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\boss3.js",
+      "path": "动态路由塔防/submission/tools/boss3.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 326,
+      "sha256": "1e5ab7ed281ca940348b6833e51721079ed392d237d216c944e03804132ed65c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\boss4.js",
+      "path": "动态路由塔防/submission/tools/boss4.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 326,
+      "sha256": "d22976614cefdc78123209d431fee41829a485b65afe4773c1c9aaa240ae2f0b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\bossbalance.js",
+      "path": "动态路由塔防/submission/tools/bossbalance.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1646,
+      "sha256": "0b1ac7d8031f57c159d0e705394a8230d7d230486d4d04fe216d5140df15a275"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\chosen.js",
+      "path": "动态路由塔防/submission/tools/chosen.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2241,
+      "sha256": "53f624a51462e665814bcb81f987e9778ec0b245a3b4e0e615edf5a4420a67aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\confirmcss.js",
+      "path": "动态路由塔防/submission/tools/confirmcss.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 568,
+      "sha256": "ee5f9ea5157493bfb752408bf7de95deb896f1e05ed0a8980d7c79bbfeae8657"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\css2.js",
+      "path": "动态路由塔防/submission/tools/css2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 987,
+      "sha256": "cced0ca6fd0468755edf6075d1f172867095c021023ab0aaf6ae1907b6e35b08"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\css3.js",
+      "path": "动态路由塔防/submission/tools/css3.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 920,
+      "sha256": "20fd3590996c961aa52914a5cf76ada8bca37f75f5747717ae6c935799a3340d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demo1.js",
+      "path": "动态路由塔防/submission/tools/demo1.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1511,
+      "sha256": "2cdee97cb068751dd1d0ae40cec23d9ea9ca688865810ba8ddd50fa9b5f05b74"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demo1a.js",
+      "path": "动态路由塔防/submission/tools/demo1a.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 705,
+      "sha256": "967e88996c1c4a50a58ce90d44f6ac062473008359e59c7c43de12fc90299396"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demo2fix.js",
+      "path": "动态路由塔防/submission/tools/demo2fix.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1944,
+      "sha256": "762ce20dd867e3b2b6f077b1a63f05c778774ab43e775c0259eac99d41f922ca"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demo3fw.js",
+      "path": "动态路由塔防/submission/tools/demo3fw.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 253,
+      "sha256": "866cce9f68c90773aabc3d898f5d38a64095ad428b8af8dc0f19abcbb31ea715"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demo3swap.js",
+      "path": "动态路由塔防/submission/tools/demo3swap.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 624,
+      "sha256": "2f125b456c45ecfcaad994f3fd27a887a1957c27d0bc5a629f845ac1b00ad11c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\democam.js",
+      "path": "动态路由塔防/submission/tools/democam.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 868,
+      "sha256": "61070b8e1d0c081123e20eaa1e5e19b9b349058250696fd230fa23c5bfa63cb2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\democoords.js",
+      "path": "动态路由塔防/submission/tools/democoords.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3702,
+      "sha256": "5adadb5dd4e069ee9339382c459aba72c9644d6f3ec1d3c4f21733cffb8f7bca"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demoplat.js",
+      "path": "动态路由塔防/submission/tools/demoplat.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 393,
+      "sha256": "1cc9741c938db970e2bfa52f7b62ba808d5ee01850f699759bcfb3b0a524abbe"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demoplat2.js",
+      "path": "动态路由塔防/submission/tools/demoplat2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1324,
+      "sha256": "4a4b928b2c0531ad7cb247d1966441562add2d4cd25f71bf1f7962114d863755"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\demotweak.js",
+      "path": "动态路由塔防/submission/tools/demotweak.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 655,
+      "sha256": "be3937c2d861c9a20f085982ab18c4f31cc3c3042e16e7ea875e36b110f18c48"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\design.js",
+      "path": "动态路由塔防/submission/tools/design.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 5583,
+      "sha256": "e206599d57842d5dcb20e50a6ddf6459ca6bf1967ebb0f32476ee0acde49a5a3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\extra.js",
+      "path": "动态路由塔防/submission/tools/extra.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2193,
+      "sha256": "3b6a15ba8c4eb6314fbfa77940a9d4259bf06946f2c17391d436b513d75a4d9a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\fix1.js",
+      "path": "动态路由塔防/submission/tools/fix1.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 458,
+      "sha256": "0aba282d4aaa17601a86b639e7db18f837e37d00bf4ebf617f53d900ddc174b3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\fix2.js",
+      "path": "动态路由塔防/submission/tools/fix2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 359,
+      "sha256": "6c275d37a14d99cc1047a18124d0a3b8527498d0b391eda94c07cfb67173773b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\fix3.js",
+      "path": "动态路由塔防/submission/tools/fix3.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1260,
+      "sha256": "6bed2d0c636aed6f4c1466b0edb4dfb5d9660e491eb23e210f8348aa7cb9172d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\fixui.js",
+      "path": "动态路由塔防/submission/tools/fixui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1648,
+      "sha256": "d5ab71613f79f67b092a698040b7fe77345e3bfe5a6a4b8a70f69b5cf3fea81b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\hpbar.js",
+      "path": "动态路由塔防/submission/tools/hpbar.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3719,
+      "sha256": "16dda139fdbc49c3b5d45383baac98488005bb9ba94b30ed5f356a5ba7956015"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\hpbarsize.js",
+      "path": "动态路由塔防/submission/tools/hpbarsize.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 674,
+      "sha256": "01890fdb5aed5f49db75ea03d50d3140543b359064d163ba6810f301f997fa0f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\layouts.json",
+      "path": "动态路由塔防/submission/tools/layouts.json",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1118,
+      "sha256": "a96eb861c9095f2586aebbf7f3a94b33bb9b8f921d18e9ed37cb4a06453d5843"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\leakdmg.js",
+      "path": "动态路由塔防/submission/tools/leakdmg.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1486,
+      "sha256": "7c8cb0bfcd5bcbd280182ba7150627d3b5ebea9181655cc084e0692bde0e5b0b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\lock2.js",
+      "path": "动态路由塔防/submission/tools/lock2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3737,
+      "sha256": "b5d8b0898d7156163b773b72c414e3b1fd2982d835339e407f6fc9a7fe4a94eb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\lockfix.js",
+      "path": "动态路由塔防/submission/tools/lockfix.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 876,
+      "sha256": "b9d1c09f6be7a238352fe78369383da006e4216c6aab20c3e95844bb9e83c40b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\map3plat.js",
+      "path": "动态路由塔防/submission/tools/map3plat.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 951,
+      "sha256": "605edad69ee21e7cb880ce5b16151cbef9d853785bc459194273a22bdf021196"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\mapcheck.js",
+      "path": "动态路由塔防/submission/tools/mapcheck.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4783,
+      "sha256": "0a8a00e4f3ba4b4a0b48e2e018f9bfc267926af1c13c62e98cc0c90dfc4eec71"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\models2.js",
+      "path": "动态路由塔防/submission/tools/models2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1837,
+      "sha256": "3b335d2a0020ddf4284ad8a2efa1a48cadf70e95525b5457aac657acfda11621"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\patch.js",
+      "path": "动态路由塔防/submission/tools/patch.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 483,
+      "sha256": "0a75ef8bf4beed2ead0742f881f728b03734cdaa259b8aed1a390141302dad1d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\patch2.js",
+      "path": "动态路由塔防/submission/tools/patch2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 632,
+      "sha256": "246c4d68e603e7eb2626661d0f9eb333526f914ac9453a4ab5b2d94540dbb6ff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\patch3.js",
+      "path": "动态路由塔防/submission/tools/patch3.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 494,
+      "sha256": "18cfc7ffdf34869904d2c0b1212c72859d094f69aee12c4f54502e7607c63edc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\patch4.js",
+      "path": "动态路由塔防/submission/tools/patch4.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 458,
+      "sha256": "8d1607fcfd52e6be59bcb61f1eab8dc5b28b121f5f64884dc03fefd3b8307d15"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\pick.js",
+      "path": "动态路由塔防/submission/tools/pick.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2501,
+      "sha256": "a8b57c579688b84e8746255c3df33be7f12b72a89a0a75a8671001223abf400f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\pick2.js",
+      "path": "动态路由塔防/submission/tools/pick2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2645,
+      "sha256": "6e82adf34c787e5602193c47472e28cee8c4a1ed86deced45574da2552449af3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\pointerfix.js",
+      "path": "动态路由塔防/submission/tools/pointerfix.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 307,
+      "sha256": "34dd765219c68f1d209f6af77f9a8e239f0118146cdef9c3f37691c88ab288f4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\polish1.js",
+      "path": "动态路由塔防/submission/tools/polish1.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1054,
+      "sha256": "f7cf1769f3e3591fcddfe1eb0ee26469e9041c1a0dcfe82b3ba18134d089206b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\previewstrong.js",
+      "path": "动态路由塔防/submission/tools/previewstrong.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1689,
+      "sha256": "af4724c509b851f5039f872c646373d1edd5e623fcb1a728541e9ba88dc599c1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\responsive1660.js",
+      "path": "动态路由塔防/submission/tools/responsive1660.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 179,
+      "sha256": "eefc38a8da8a9b2aa9a499ee86cb7f40705499f7ba0c8465bd0e1ffb147a5210"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\roads.js",
+      "path": "动态路由塔防/submission/tools/roads.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1965,
+      "sha256": "6620eac16aae8007497ecc640b80dc8edb52c04ec25d719f6895dce612cb84cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\routes.js",
+      "path": "动态路由塔防/submission/tools/routes.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4682,
+      "sha256": "b6d8c34b14e1e723033aaca8b722999743af64295b522472dbb07030dc3f1788"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\routesig.js",
+      "path": "动态路由塔防/submission/tools/routesig.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 698,
+      "sha256": "c447deba1e00fd3399e84c128c6320b5bcd96673e2473bf01d76160c6fb2e059"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\rows.js",
+      "path": "动态路由塔防/submission/tools/rows.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 452,
+      "sha256": "9adbbfd0fd4591c3aba353db6b72d2a4487473e9933fd7c861ab6bf7ece8240b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\rules.js",
+      "path": "动态路由塔防/submission/tools/rules.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2680,
+      "sha256": "26f1dcef4c25ae5582dfc6ce64a6043a17613a4ef8e0ec1c4a4cdbb94b8472e3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\scripted.js",
+      "path": "动态路由塔防/submission/tools/scripted.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 277,
+      "sha256": "2f896c69a2974f7b9f2aa3676b4ad5e9304841503680b54502ceab2b48ba419e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\scriptguard.js",
+      "path": "动态路由塔防/submission/tools/scriptguard.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 242,
+      "sha256": "dda4151c0c1287bbe008c9f78bcd0df82f3f3132301dcd7b02049ed50ea1f009"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\sharedfix.js",
+      "path": "动态路由塔防/submission/tools/sharedfix.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1030,
+      "sha256": "63d976b35fcdeb39afe06112627d52d1fb76c1740b1693afb32f8681ad3dcd77"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\skillcss.js",
+      "path": "动态路由塔防/submission/tools/skillcss.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 370,
+      "sha256": "960d2996bd645b7e5c0d5cb5d66fb90eb35147a4c1bf96dae249d55bbbe2b437"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\skillui.js",
+      "path": "动态路由塔防/submission/tools/skillui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1123,
+      "sha256": "434ee23c312cae5080fd2e310b39975d604054564bf77968c6097425fc7df922"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\subfix.js",
+      "path": "动态路由塔防/submission/tools/subfix.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 255,
+      "sha256": "36519b21cc32210178b4a2d4dc4d32e7625196c14bc3870ef09d56f3e0aaa939"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\syntax.js",
+      "path": "动态路由塔防/submission/tools/syntax.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1114,
+      "sha256": "7112c837bd5b992048a824dabe62a2421ab608b00f86458c10987aa226d965bc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\toastfix.js",
+      "path": "动态路由塔防/submission/tools/toastfix.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1231,
+      "sha256": "608b28b3fb5a4af2f2bd912732c60ff3b8ca907929a03a9215bf864a5f768579"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\ui2.js",
+      "path": "动态路由塔防/submission/tools/ui2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4424,
+      "sha256": "0d82dbcdb0c469910c1bb4bd3b8ca6c73c69e88eafc0d0c45288e888288a499d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\visual1.js",
+      "path": "动态路由塔防/submission/tools/visual1.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2756,
+      "sha256": "656527c32274079ff7ca4cb59117dc9d6abbab8a535e60e1cfb35d87f390a4a2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\visual2.js",
+      "path": "动态路由塔防/submission/tools/visual2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1777,
+      "sha256": "0b9846080189bd231bd552cdb4637b2dca6a95d86a9db8096c6490e62f5aaf1f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\visual3.js",
+      "path": "动态路由塔防/submission/tools/visual3.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1689,
+      "sha256": "0dfd18892e72236662d9f87f801b49e3ed868e12da6a4fcb24618e473f502ae2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\tools\\visual4.js",
+      "path": "动态路由塔防/submission/tools/visual4.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3253,
+      "sha256": "3cf38a6c31d352d8ed795114a2e660b84546affc9cb640eb6cdb15fcb5537edb"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 379,
+      "sha256": "3612a8f0aaa7f5aa14a8de9e6827ef6ec5d67071edeab9fed233da398e3d39e2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\claude\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/claude/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4854,
+      "sha256": "18a824e32c33a7612ac5c5292175deaaecf482f763305c0e30fffd06d3b7ba70"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5966,
+      "sha256": "ca2e85e77b644908206ca7cbac775de30562b907e9487f5cf43c90f0e6950041"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4058,
+      "sha256": "392809e3f3c4218b89fb07750c24f08c6eea33f2377b911f202573527427c2da"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\评分表_Opus5.5.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4137,
+      "sha256": "7eaec23cb5fb286055a1d5e3b058a2ceceadd4ac0a55978fd1415e1c628f83ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\README.md",
+      "path": "太阳雨渔港3D渲染/submission/README.md",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1080,
+      "sha256": "b8ed9c0723a9ca4875cece768190fad0fda71fc1fa9c6ea3d3e9e14f34bfe872"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 926,
+      "sha256": "774aa42fef9fbe2c494ea402462dd5874d5970224d25a598ed7bfbe715c274e9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\boats.js",
+      "path": "太阳雨渔港3D渲染/submission/js/boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 32597,
+      "sha256": "227b0a65e6092aad78fb9389e38e868d01d583a6e880a615b4194412f844c00f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/js/buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 28018,
+      "sha256": "e886c695d72ef7d6a5d7ed3297044342b3eb1f845248a1d1fec36a49eace6fbc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\life.js",
+      "path": "太阳雨渔港3D渲染/submission/js/life.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 41660,
+      "sha256": "2a2e4499489a4288e633166cdfdfcdcc009967fea6e672fb655301e4dbb4f069"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\main.js",
+      "path": "太阳雨渔港3D渲染/submission/js/main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 19980,
+      "sha256": "5c78f5af4872e45550aed8f7584f09330c3ff456a7f0a1879f1e67396ba8a79a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\props.js",
+      "path": "太阳雨渔港3D渲染/submission/js/props.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 48326,
+      "sha256": "b9f53305b4878db1b7dcd5df94518c8d149c16444c45415f520ee455b53c860d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\textures.js",
+      "path": "太阳雨渔港3D渲染/submission/js/textures.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 35610,
+      "sha256": "89dd57d73d4677dd13b257e941899732bd2fc37600ba43249f25e7e2e7d4113f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\tour.js",
+      "path": "太阳雨渔港3D渲染/submission/js/tour.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5366,
+      "sha256": "45165c5878df32d1f344e9ec4989e11f583e49e295400bd39a928a0c45235862"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\util.js",
+      "path": "太阳雨渔港3D渲染/submission/js/util.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 12314,
+      "sha256": "a8ad81942c3a6c71a2ec6bf1de4826956c4b89d173511ed090a727ad93b3aff0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\js\\world.js",
+      "path": "太阳雨渔港3D渲染/submission/js/world.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 48697,
+      "sha256": "3565fa206655acf8b73c57a7260b349c72924768beaa9edf7db5484e14914b3a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\lib\\three.min.js",
+      "path": "太阳雨渔港3D渲染/submission/lib/three.min.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 603445,
+      "sha256": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 394,
+      "sha256": "5d306e27818d7434fbf9547a0038e1c3475bef1bb60b32c59af8f3234c4e35b0"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 1864,
+      "sha256": "f062c9f428ac34910214bdeb896d9a113ce60ee4844b20e5d21f27c6eecd0a55"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1130,
+      "sha256": "6aa93395bdca898e9028028162d75691f1150d0850db8b25488e8a19171c5af3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\Problem6.lean",
+      "path": "形式化证明题/submission/Problem6.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 19601,
+      "sha256": "9c3e6b3d3b52b98694df10116545b77b63c86ffad62490868ba7cbe01067092a"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 514,
+      "sha256": "3678a27ce59e1a6738a483c00a3de6e013bfe6b9897dea771b19aaf853c87c6e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\claude\\main\\result.json",
+      "path": "操作系统嵌套/grading/claude/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 8226,
+      "sha256": "bf61b2112dbe1285ec2228f8dcfea72afb80c886e233ee59737619b5188381d3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 11386,
+      "sha256": "88576323011f08b61051b30667e70b56ed20a8af5fe9856d86a6dfab11965ee8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10535,
+      "sha256": "064e48082b8933c944172378c7905ede76e7b354188069a3b82a808c80acef96"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\评分表_Opus5.5.md",
+      "path": "操作系统嵌套/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10661,
+      "sha256": "da45bed74529500b5081b8dc45f37422a9cadaee53fa09102f6baebc116b3016"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\.gitignore",
+      "path": "操作系统嵌套/submission/.gitignore.txt",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 36,
+      "sha256": "b9156ab60a19a869f4edc17640dec1f349ae821935461912be3f4497f8f3c40a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\README.md",
+      "path": "操作系统嵌套/submission/README.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5179,
+      "sha256": "bb3599cfd1ab6a0482f12638582d93690b2edfd9b4fb17d1eef1713d0ccae287"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\automation.json",
+      "path": "操作系统嵌套/submission/automation.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3122,
+      "sha256": "74fde52e856afa039cf4f9840260c3f1b00427ca968406b05bcdc6c07d918a32"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\index.html",
+      "path": "操作系统嵌套/submission/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1035,
+      "sha256": "1e3671fa43f9980b57003bebba3c3641a01c559a517eac377c709b24dfc514ec"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\main.js",
+      "path": "操作系统嵌套/submission/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5917,
+      "sha256": "d2fc8bfdeb6dd3aac16aca9cf03fdf5d8d475f6b75f0c14da969bc144d2612db"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6108,
+      "sha256": "b3a5299ffb94bf3edb358b17671c7ccccc8e0ee5e85015d790ec99280a57d080"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 339,
+      "sha256": "9136fdc064d6de937cb3a47dba1a58bbe46935f088a1b7e650b66e8e196c6d92"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\preload.js",
+      "path": "操作系统嵌套/submission/preload.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1041,
+      "sha256": "b8ad071cd6c73b862c1d2d6b8deca1285a81c02bcbb403666d2ea68cccf26c37"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\browser.js",
+      "path": "操作系统嵌套/submission/src/apps/browser.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 19119,
+      "sha256": "adb232cc604eead19753c0f0b47dabfa623e0ec72ed72389e1d9381503ff2afa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\charts.js",
+      "path": "操作系统嵌套/submission/src/apps/charts.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 39776,
+      "sha256": "4cabcf6442330d3c2ea801762794ef89163e7d4b77b169661eb872cc67dc5830"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\editor.js",
+      "path": "操作系统嵌套/submission/src/apps/editor.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 20721,
+      "sha256": "9d7b75610b7451f42ce02d370488a1cf1252a8aee2d80f9b5881cff946e6470c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\files.js",
+      "path": "操作系统嵌套/submission/src/apps/files.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 31294,
+      "sha256": "ae9d3b6ea87e4d76900f485bf280fc3a56cb35f2f769fe7ddff401643f1e3791"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\help.js",
+      "path": "操作系统嵌套/submission/src/apps/help.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5046,
+      "sha256": "9be4d43758984e300273df43464291f234818b2533f0082514baf2b5e6c7ae0d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\index.js",
+      "path": "操作系统嵌套/submission/src/apps/index.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1218,
+      "sha256": "eb99eb15173e1715b1bc1562b1028355bc52e71d33c0949d5d95826530d7df8d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\player.js",
+      "path": "操作系统嵌套/submission/src/apps/player.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 69054,
+      "sha256": "8201fb703731db385f21dc9c4446e13ca70f928a3a21e6d5dd74f9e632f5d4b5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\settings.js",
+      "path": "操作系统嵌套/submission/src/apps/settings.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10251,
+      "sha256": "7f2244b2b9c0689795582b459dc4c5aaf75c16ee78360af0f2249e73428dee7e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\spreadsheet.js",
+      "path": "操作系统嵌套/submission/src/apps/spreadsheet.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 41848,
+      "sha256": "84a47c43d4c6187dff8ed8ef37f0159621d7f4eae32d43e3559fa04105a2adef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\systems.js",
+      "path": "操作系统嵌套/submission/src/apps/systems.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 24753,
+      "sha256": "95d9cab573d732acd59e9250eeacf62b4815bf7d19a21e7faa3f428983f12ff3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\tasks.js",
+      "path": "操作系统嵌套/submission/src/apps/tasks.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 25298,
+      "sha256": "6e3a10def102d0cc6774e33e3697cba99e239a1412325ddbd381a82643e7c823"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\apps\\widgets.js",
+      "path": "操作系统嵌套/submission/src/apps/widgets.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18125,
+      "sha256": "579f48a3ed11fdc81f6538d546c7be2fb7e5f0678c5cf40422ddca744829f0c0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\core\\bindings.js",
+      "path": "操作系统嵌套/submission/src/core/bindings.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18944,
+      "sha256": "6ffd06a0c97529cb9dc874ba96205d2c5c30902c634d02c290bd70751260c24b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\core\\fs.js",
+      "path": "操作系统嵌套/submission/src/core/fs.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9677,
+      "sha256": "62e5cc87194a58d3368c6de7895c81795d816c1d0c5e0ffed56578096b5cba5d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\core\\os.js",
+      "path": "操作系统嵌套/submission/src/core/os.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 82250,
+      "sha256": "79db977f2cb94b7ec9494bf4819df219a4bd3542b2064e287fdce0d44e733eaa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\core\\programs.js",
+      "path": "操作系统嵌套/submission/src/core/programs.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7249,
+      "sha256": "4ae9f3423b8b7996b3e7ec95a2c7e66b75d2494e83eb006ad2e3a6c629392816"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\core\\seed.js",
+      "path": "操作系统嵌套/submission/src/core/seed.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 32738,
+      "sha256": "0dd9b883a095971091c71075c097f872d9506b1076a20d650000d2b10cc4c026"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\lang\\vm.js",
+      "path": "操作系统嵌套/submission/src/lang/vm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 31170,
+      "sha256": "9542f598728bed109e49b973348b90e86c2e8e9db3d7d522994b79ab8d630fec"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\renderer.js",
+      "path": "操作系统嵌套/submission/src/renderer.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3537,
+      "sha256": "842fcaeec3a1de5ee8d451d7f387a036595edb951ca748ef134196af64ac8b6c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\scene\\heliScene.js",
+      "path": "操作系统嵌套/submission/src/scene/heliScene.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 40736,
+      "sha256": "cecc43749fc8329ae5780665d7fc1209b22a4cc4bcb5f5243c3b17dbe65fe40d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\scene\\renderer.js",
+      "path": "操作系统嵌套/submission/src/scene/renderer.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3261,
+      "sha256": "34a4417fd3d6e461eb295650bc117af1fb8dba6487fdfdc4716c9c49455c8aa4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\ui\\common.js",
+      "path": "操作系统嵌套/submission/src/ui/common.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2746,
+      "sha256": "b0ac0727d060907411e6af6506bdc834a4a8f7ff283341dd56f0fc7d0776cc3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\ui\\icons.js",
+      "path": "操作系统嵌套/submission/src/ui/icons.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11969,
+      "sha256": "16a82ea60c19df20238b59f47d36ee93f129f04a930945e2be1a16491c2fceb1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\ui\\shell.js",
+      "path": "操作系统嵌套/submission/src/ui/shell.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 85324,
+      "sha256": "4ddbbf72a9dd02348e5de0b9a0feb153191adde0d5fba3014bc47474416459e0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\src\\ui\\wallpaper.js",
+      "path": "操作系统嵌套/submission/src/ui/wallpaper.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 12785,
+      "sha256": "fb98a4328556c40c3ed1466c078e0ff30caa56e0d13cb9276c2f646e88080f5a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\styles-player.css",
+      "path": "操作系统嵌套/submission/styles-player.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 21325,
+      "sha256": "efd59a68fac478dd12e4e5746c5bd262b4573cbee077e10f9219fb4a03b4eca4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\styles-systems.css",
+      "path": "操作系统嵌套/submission/styles-systems.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17550,
+      "sha256": "9690d37616c17788cef252cebdd2d8b8baa8c589f0c1444defc86c38c2e608b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\styles.css",
+      "path": "操作系统嵌套/submission/styles.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 90889,
+      "sha256": "d9866717dc1e99c48031b979d66e70f866055b6c29ecaecce77a37ae410c7f39"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\cdp.mjs",
+      "path": "操作系统嵌套/submission/tools/cdp.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4504,
+      "sha256": "8361a671009c7563d4d887a1a3d719c4f214b05cfce42581d3fd6bb8cf00f1b3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\check-syntax.mjs",
+      "path": "操作系统嵌套/submission/tools/check-syntax.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 392,
+      "sha256": "d8e9f9bf326a370533b4aaf86c48b15a202011711b91de717d9e21f324f1a10a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\test-compiler.mjs",
+      "path": "操作系统嵌套/submission/tools/test-compiler.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 825,
+      "sha256": "73d172db6b8f285be9896d7e9b52e0851947649ae7534964c8189091d2819318"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\test-dump.mjs",
+      "path": "操作系统嵌套/submission/tools/test-dump.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 235,
+      "sha256": "3010d765984ea3b472bb8b8813e827355c02722f6dc75737e8c838c5b9852890"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\test-msg.mjs",
+      "path": "操作系统嵌套/submission/tools/test-msg.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 662,
+      "sha256": "31b78f72594e8d5f8181764b90bd384c8a64156a7b48a91d7bcd6491b1e08feb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\test-os.mjs",
+      "path": "操作系统嵌套/submission/tools/test-os.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1258,
+      "sha256": "08206a5ef9c5e255386102baabeaa91e3693ec7d40a2f987d6c658f693072dba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\test-os2.mjs",
+      "path": "操作系统嵌套/submission/tools/test-os2.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 536,
+      "sha256": "e2064af568ee91151a119f7a7a49abae3bb56f391e4821c28b1ada55bee86b59"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\test-snapshot.mjs",
+      "path": "操作系统嵌套/submission/tools/test-snapshot.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1174,
+      "sha256": "871131e4f3075b7c6351ea33baf63e0d4192741887caef3ac5e23d5236e28baf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\tools\\test-vm.mjs",
+      "path": "操作系统嵌套/submission/tools/test-vm.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1014,
+      "sha256": "ab160e17a9f0831dc6129e2e2f63ee43399270741d95539adf6aa6a8c46d1538"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 402,
+      "sha256": "6658aaac69263b65a655a33c0f1d9eacd16cb8dcdb667c26b134a45e7176bb54"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 5002,
+      "sha256": "2d880835bce99e5d4563337948697b77a9337febe83fe6ad7faae6b92cb97eff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1754,
+      "sha256": "9549777c2278681adef3a8e93d6071c1eeb4e2636f6324e2aa4401ef299d329b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 26351,
+      "sha256": "508f4403ae513231396aa52b8704201b36b7fd004423fd8dbec5f4c0d152a911"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 565,
+      "sha256": "061e239faa724a1c07b25046237c36e7db996db4dcbcf4ff734e3e603e7ef128"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 5372,
+      "sha256": "3b228ad3ed0cab87ce615e1c87f2d3d09d68f94642357be327b06afc5b373c70"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 2407,
+      "sha256": "f88a5c75f344de9d19b35ff89b0e520ade52c237093a2a2c35d0c747bf490d83"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 18601,
+      "sha256": "7f752058862e29becce2f839660302b85bbc57ba2510aca5515d2e66cfe979e0"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 400,
+      "sha256": "22dc435613763dd7d947bc4c23181dcf52627d21d07ec88d94eeeb5ae9244248"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 5302,
+      "sha256": "fa1bb6eaea83dbd5450daa7504fd0444332912b2d98b30c7d07d556a9da9bbcd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3368,
+      "sha256": "7df2f268c7a1a2b6d710e08cda5c33190ad9bc60afd893d5d59b14fa00950a32"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2643,
+      "sha256": "e6d12ed6344a7a064fa6e28f0f9b7bc96b8f5835e2c1b8ea20e9151263bb0600"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 6338,
+      "sha256": "8477fd9741699d3fd2e0d12429b2b18906dcd45f35baafe0c82ef2578859be5e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\答案\\第13题.md",
+      "path": "数学竞赛原创试题/submission/答案/第13题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5719,
+      "sha256": "98203599533f0e0e7788eed47cadd3d43a1700d188b04e5cbaeac8dc694ae025"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\答案\\第15题.md",
+      "path": "数学竞赛原创试题/submission/答案/第15题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 7621,
+      "sha256": "4d6694635c880063685e860296c3c8b6f499720312e4513ab0972d05ce57ec95"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\答案\\第20题.md",
+      "path": "数学竞赛原创试题/submission/答案/第20题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5840,
+      "sha256": "64f58f9af03a154ba4f66c6d50d98ce73f019adfa5569c7221c54d6d6f27e4ca"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 390,
+      "sha256": "a3501117b0410e47873489c13aa1124f091e7ee97de17d211a948fd56951b315"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\claude\\main\\result.json",
+      "path": "星际战舰编队/grading/claude/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 6435,
+      "sha256": "c43ce97674ac253e8b9b99fafe80e1a3c0cf5b358343f5011fdb7e6fbe2dd631"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 7802,
+      "sha256": "7ef2d6ef680edc5e540964971f361598ff12efd4401583ef1ec170f19bd5f441"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7239,
+      "sha256": "834d15fd237a57eb9c41cb3093b55e985bf2f674990b7aa2f1a0b9ec43b2621b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\评分表_Opus5.5.md",
+      "path": "星际战舰编队/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7308,
+      "sha256": "e152a886879c70428c535d97cccca608a577f30033cc57c0aba57d8650b7074e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 787,
+      "sha256": "046c6ee59a5c8deaf05bcf188aa8e37108be995fed8ba424b7b2c8c3005731a0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\asteroids.js",
+      "path": "星际战舰编队/submission/js/asteroids.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 14958,
+      "sha256": "d3bfb1eecec47160bffbf08340f240afc52821063a77aab17e35b54bde7c1271"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\camera.js",
+      "path": "星际战舰编队/submission/js/camera.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 5375,
+      "sha256": "6dcf80d252d6956082251a1270e32b3556c0e21f83cee2cea3ff1c0a87cf25b5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\effects.js",
+      "path": "星际战舰编队/submission/js/effects.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 21800,
+      "sha256": "05e29c7ae2e1d80ef34e9a5bd3d92d36d193072cc62146f47f5dacd5c1062ce6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\gfx.js",
+      "path": "星际战舰编队/submission/js/gfx.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 45850,
+      "sha256": "868fa2c8ff72b8055ac969a11672775b4aa073518b0e4b168c6212292d56fc1c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\interiors.js",
+      "path": "星际战舰编队/submission/js/interiors.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 52517,
+      "sha256": "5eecd1d31f6a18655262d2d80bd24d8096637417a104c1a82adfa1e38b623bcc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4786,
+      "sha256": "7b3fac4711d428e6d23a64d0ca15a219a0f24e1f6c4f3f78606311db721a177c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\math.js",
+      "path": "星际战舰编队/submission/js/math.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9238,
+      "sha256": "9db63d21d175bbf00402a647bb4aba6314658e5d13b476ab9a133b6395d418b5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\models.js",
+      "path": "星际战舰编队/submission/js/models.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 46020,
+      "sha256": "7c76fc9f749166b3a37ac5ca5b33315306bb228aaf3da6d07f59e180ca704daa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\js\\scene.js",
+      "path": "星际战舰编队/submission/js/scene.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 7588,
+      "sha256": "4bf366b4dcce234f670a836b5e9e4c70a285fbb51f30fca9b6155456c6989b11"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 2260,
+      "sha256": "ec907317b05bf1a5e409b29c84d08ad236cfa40152a9d638296d9f56252d036e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 415,
+      "sha256": "8533dbe2f7e485501cdd4f9cab4a4678a03a9d9a821280bb46522b2f42dbe235"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 18767,
+      "sha256": "2496921011f9528b1c45268e4fc002a693e2d421a127c698bb2d2680e3965be4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 2912,
+      "sha256": "ea42e2161d1e5adb522d14fe67ce3ef253faeb98e1e0a8327f22f327d92b00e2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4729,
+      "sha256": "1325b4c45df9aafda260388d888f16d0e216bb2c207977bb696c905fa236cdcf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3498,
+      "sha256": "8e17362c904ebeddd359c100b499ed1f4451b6222413008766b68b7ea43736a4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1587,
+      "sha256": "fb8ccb00fed4340045fd3fc6c7fd4f0c1f4de0ebe175d0e40f10f2212475a8b0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 915,
+      "sha256": "87deb53dcc032110bbf3476ab899c98523a3637d9d32aaf61a6f49857f020d64"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1564,
+      "sha256": "5a06a43899ad76a44b60a111f5d117d1c5cb21725476b7733972c721dccbbc77"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1412,
+      "sha256": "21c6459348f630e46947feac28caad7ea0299ba659057ef5f1739a7e3b5c805d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2209,
+      "sha256": "b043b30ddcb18ed1134f8d3678e30d376b2e2802b9c0b1f328547f98bb30659a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1498,
+      "sha256": "0a9b608e3ee66e3a44099735f7d3f50673e8f83b75397f3b6b1426953d3c63a3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1951,
+      "sha256": "48ac0d52a43a7643695e1d3bab847a30b8dbfb31e81f4af9e9db25beeba5838a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2025,
+      "sha256": "6414b23400c63ceede149541e1195ed6aab5644c4eb1a80e8cf72163e373cd3a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1965,
+      "sha256": "5e989fe347911559791e36cb042a39f4333a9e49d6a6299b4e4be76b63c529d1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1564,
+      "sha256": "00fec7860fac3ab026c66428f34b903bd468147db96c16a8389e61253c237afb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1830,
+      "sha256": "9744fc4c5be62fbd311840d747cae2bd3c6cde1b6dba6867419bce8bac061e06"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1980,
+      "sha256": "5a900a66e5d5232d8f0c019e62eb13eb05b3559eaa29afed23ec34c0414da973"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2113,
+      "sha256": "250b3d937ae316229e9786ef2194912466b78c7c9320d46c9f010e922fa62df9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1968,
+      "sha256": "bf250abbfdc7fbd9dd4386cb682dac2c26a17f5aaafcaa21a5cadb8cbadd343f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2329,
+      "sha256": "f19bd7c34f840dc5571643c1a8f646e5283e3b71bc97f9a8e85db742ec013c74"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1952,
+      "sha256": "9526fd8506110ab1ca3c25915113a23461de8f435cb5f9213f5e832ebe1a931b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2305,
+      "sha256": "5d10f04de49903413bdb0cda221ca6fa74400c4cec13308a2e26365e5b7591ce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1712,
+      "sha256": "be76caebafd74403aec6d82bd3aa7b01540d660bd2dcf4b66557b7e114864111"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2465,
+      "sha256": "b8e6f5c074cb4ecb5ea1d3d39d2f0b8986b5be559c0700bde2b5a189ac6ca8ef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2129,
+      "sha256": "c3ad1dbc72cb2a195db7d9257dcb3a9a6e2cf1770240ba9daa63d6aff1c84ad1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2440,
+      "sha256": "161037da6fde65e6191aa9df9ced8ba231300e2e560d88c88404ff003eda7e56"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2504,
+      "sha256": "5f6e2a8f43a45e8679ad1425ac338aafb94ea606ac3250be17508bb4a3d804b3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2806,
+      "sha256": "08d85763eb6f5543eca2bd63e8450682f180d65877b83d2ad756ebd60d40f5f4"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 433,
+      "sha256": "fe22a477e7ba7d396497a0e1b8c2546749971a92501d01d29db34eed7c3dcda8"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\claude\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/claude/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5860,
+      "sha256": "17654367f6157896533b7a2e56d3298394aaeeb28dbe7f1ccd9b4db3e02daf31"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6860,
+      "sha256": "f840d40459d70ae38c61077690ff322949ff6ca7806c4818f350b757eb80b4e4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4786,
+      "sha256": "0085cd658614d2f67603b78fde87d824e85a02374ee953935e140ec165a7b8d8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\评分表_Opus5.5.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4921,
+      "sha256": "47b70a1f4025dfd61cd8c7708ba2f40a34fff9dfe22f352b46e9132b4b9b3655"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\_wgt.html",
+      "path": "果冻冲击与造浪水槽/submission/_wgt.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 718,
+      "sha256": "44f568e3488424c5841b59b46deff2b12994acda7e2abfbae2a9ef7daaff1fd6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\css\\style.css",
+      "path": "果冻冲击与造浪水槽/submission/css/style.css",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 18762,
+      "sha256": "30367bd334dd3aacbf27dda4c1ac18ce6dcb7700bd9b24361a7fa175a7d7e986"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 11727,
+      "sha256": "57b01dc58372f7d732471ae3828a83d31ce009897171200e783896c0efd1c05b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\app.js",
+      "path": "果冻冲击与造浪水槽/submission/js/app.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 29245,
+      "sha256": "10e37123762b4061bc63129352b222d318ec5b807e31cdd3acaed16c3368180c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\audio.js",
+      "path": "果冻冲击与造浪水槽/submission/js/audio.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 8322,
+      "sha256": "6e6659b15e87efebba9515a289461acda71783183fc7eab3c44e0fdcc3b53e6a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\fluid.js",
+      "path": "果冻冲击与造浪水槽/submission/js/fluid.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 32693,
+      "sha256": "1072849fa43ca739af80d7df66623bbdecc35013b636f59e1356df4ee1740759"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\glutil.js",
+      "path": "果冻冲击与造浪水槽/submission/js/glutil.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 17480,
+      "sha256": "0f5a3890ea86e91ec3d6e22693db99bd55ec9da18cfe34c7e4e01dda54a40463"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/js/jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 45531,
+      "sha256": "d82a5b2301a3afffcbaacdd177365cd4b5c024a8c6767b4b8a17b9b20e30a587"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\math3d.js",
+      "path": "果冻冲击与造浪水槽/submission/js/math3d.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5898,
+      "sha256": "be5fc1a347d2239fd9f96fe2f140e490b0f44804c35f2e95bff0b2c8e4c9158c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\renderer.js",
+      "path": "果冻冲击与造浪水槽/submission/js/renderer.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 21288,
+      "sha256": "1858d1812deba2b6fa720ee43b5c68b3fc088bf845415baf6b63154437d02a49"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\scene_jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene_jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 15471,
+      "sha256": "1efbc344ab164a1a1f94c01e1a467132b3936650727c2245809859b184583223"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\js\\scene_tank.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene_tank.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 42068,
+      "sha256": "7b699b877277364c4820537e0c35122f945f0b01cd6a934015980a88c42b8f33"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 362,
+      "sha256": "6538bc2d386697aa425bc20853d1d2202e48960e8dae9bd79a777aedd7f0e9a0"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\DeepSeek\\V4.1Flash\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 4185,
+      "sha256": "bf3240175dadb0db04fe434af986b15d9ff7117e8ce77400cd437d4e9ee559ac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 1403,
+      "sha256": "239532d2f0bf51f78fc7b430d74931cb953cf844e6d40cd9f8d17699e34459c6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\鲁班锁拆解\\答案\\第01题.json",
+      "path": "鲁班锁拆解/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 630,
+      "sha256": "af06929b0b7196f1a743517ded802c324e246ed5aff9c2078966703b4b0e4e72"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\.git",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\.git",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\.git",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\Work1.lean",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\Work1probe.lean",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\Work6.lean",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\形式化证明题\\形式化证明题.md",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\bot.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\bot_base.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\dummy_bot.cpp",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\dummy_bot.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\logs",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\sample_bot.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\tools",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_F2.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_F4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_a0r0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_a0r0d10.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_a0r0e1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_a0r0f1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_a0r0m10.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_a0r0n20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_asm.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_assume0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_atk3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_b3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_b4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_base.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_bd3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_best.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_best2.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_c0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_c005.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_c02.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_c02m0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_c05.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_c15.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_c50.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_con3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_d1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_dc20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_dc35.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_dc50.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_dc80.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_de1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_de20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_de6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_decay10.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e12.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e20n20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e4n20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e6n20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e8.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_e8n20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_eg100.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_eg25.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_eg5.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_eg50b0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_eg75.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_ep2.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_ep3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_ep4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_ev.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f0m6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f1b.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f1m6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f2a0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f2b.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f2m6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f3b6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_f3h.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_ff7.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_flow1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_h20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_h4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_h5.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_h6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_inb.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_inb0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_inb0ep3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_loc.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_loc_fl.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_loc_m6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_loc_m6f.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_m100.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_m25.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_m50.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_m50e4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_margin10.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_md12.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_md4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_md6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_md6e3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_md8.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_md8e3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mg20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mg3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mg30.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mg40.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mg50.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mg50e6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mg70.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_mn.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_na3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_na3f0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_na3t2.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_nf.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_nf5.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_nf_t0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_nfm10.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_noatk.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_noatk_m6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_noev.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_pess.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_rf3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_rfrac0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_rfrac25.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_rr20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sc0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sc1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sc1c3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sc2.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sc3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sc3c3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sg3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sg5.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sg8.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sl0.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sl05.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sl1.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sv3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sv4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_sv5.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_t03f6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_t0f20.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_t0f6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_t1f6.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_test.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_th2.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_th2rf3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_th4.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_tw05.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_tw15.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_w2.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_w2f5.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_w3.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\v_wf5.exe",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\攻城略地.md",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\攻城略地\\数据",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\数学竞赛原创试题\\题目",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\工作笔记",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\机械结构重建",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\机械结构重建.md",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\机械结构重建\\预览",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\鲁班锁拆解\\.git",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\鲁班锁拆解\\推演笔记.md",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "标准题只取交付答案"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\DeepSeek\\V4.1Flash\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "标准题只取交付答案"
+    }
+  ],
+  "missing_answers": []
+}

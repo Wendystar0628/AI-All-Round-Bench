@@ -43,47 +43,57 @@ class PublishTests(unittest.TestCase):
         self.version = 1
         self.failed = set()
         self.missing_output = set()
-        states = {'decathlon': 'online', 'second': 'online', 'draft': 'draft'}
-        self.topics = {k: {'website_status': s} for k, s in states.items()}
-        self.projects = {k: self.root / k for k in states}
+        states = {'first': 'online', 'second': 'online', 'draft': 'draft', 'absent': 'none'}
+        self.topics = {key: SimpleNamespace(id=key, website_status=state) for key, state in states.items()}
+        self.projects = {k: self.root / k for k in states if states[k] != 'none'}
         for project in [self.hub, *self.projects.values()]:
             project.mkdir()
             write(project / 'package.json', '{}')
-        def card(topic, models, scores):
-            return {'id': topic, 'name': topic.title(), 'url': f'/{topic}/', 'updated': scores['updated']}
+        self.declaration = {'title': '旧站', 'link_text': '前往新址',
+                            'routes': ['en/models/sample/index.html', 'about/index.html', 'custom.html'],
+                            'fallback': True}
+        write(self.projects['first'] / 'publish/legacy-routes.json', json.dumps(self.declaration))
+
+        def context(key):
+            return SimpleNamespace(topic=self.topics[key], project=self.projects[key])
+
+        def export(ctx, dest, formal):
+            key = ctx.topic.id
+            self.assertTrue(formal)
+            self.assertEqual(ctx.topic.website_status, 'online')
+            write(dest / 'content.json', json.dumps({'version': self.version}))
+            return {'id': key, 'url': f'/{key}/', 'updated': self.version}
+
         def hub_data(directory, cards):
             write(directory / 'topics.json', json.dumps({'topics': cards}))
-        api = SimpleNamespace(TOPICS=self.topics, project_dir=self.projects.__getitem__,
-                              topic_summary=card, write_hub=hub_data)
+
+        plugin = SimpleNamespace(export=export, summary=lambda card, out: [f"[{card['id']}]"])
+        api = SimpleNamespace(context=context, plugin=lambda ctx: plugin, write_hub=hub_data)
+        stack.enter_context(patch.object(publish, 'topics', return_value=self.topics))
         stack.enter_context(patch.multiple(publish, CACHE=self.root / 'cache', HUB=self.hub, DIST=self.dist))
         stack.enter_context(patch.object(publish, 'exporter', return_value=api))
         stack.enter_context(patch.object(publish, 'run', side_effect=self.run_command))
         stack.enter_context(redirect_stdout(StringIO()))
 
     def run_command(self, cmd, cwd=None, env=None):
-        if '--confirmed' in cmd:
-            dest = Path(cmd[cmd.index('--out') + 1])
-            topic = cmd[cmd.index('--topic') + 1]
-            self.assertEqual(self.topics[topic]['website_status'], 'online')
-            write(dest / 'models.json', '[]')
-            write(dest / 'scores.json', json.dumps({'order': [], 'scores': {}, 'updated': self.version}))
-            return
         self.assertEqual(cmd[1:], ['run', 'build'])
         self.assertFalse((cwd / 'dist').exists())
         source = Path(env['ONESHOT_SITE_DATA_DIR'])
         self.assertTrue(source.is_absolute())
+        self.assertEqual(env['ONESHOT_SITE_BASE'], '/' if cwd == self.hub else f'/{cwd.name}/')
         dist = cwd / 'dist'
         shutil.copytree(source, dist / 'data')
         if cwd.name in self.failed:
             raise subprocess.CalledProcessError(2, cmd)
+        write(dist / 'index.html', f'{cwd.name} {self.version}')
         if cwd.name in self.missing_output:
             return
-        write(dist / 'index.html', f'{cwd.name} {self.version}')
         write(dist / 'en/index.html', f'{cwd.name} English {self.version}')
         if cwd != self.hub:
             write(dist / 'en/models/sample/index.html', 'topic model')
             write(dist / 'about/index.html', 'topic about')
             write(dist / 'custom.html', 'topic standalone route')
+            write(dist / 'new/index.html', 'topic-only route')
 
     def cards(self):
         data = json.loads((self.dist / 'data/topics.json').read_text(encoding='utf-8'))
@@ -95,44 +105,61 @@ class PublishTests(unittest.TestCase):
         self.assertIn('3 个旧网址跳转页', lines[-1])
         self.assertEqual((self.dist / 'index.html').read_text(), 'hub 1')
         self.assertEqual((self.dist / 'en/index.html').read_text(), 'hub English 1')
-        self.assertEqual((self.dist / 'decathlon/index.html').read_text(), 'decathlon 1')
-        self.assertEqual((self.dist / 'decathlon/en/index.html').read_text(), 'decathlon English 1')
+        self.assertEqual((self.dist / 'first/index.html').read_text(), 'first 1')
+        self.assertEqual((self.dist / 'first/en/index.html').read_text(), 'first English 1')
         self.assertTrue((self.dist / '.nojekyll').is_file())
         domain = (self.dist / 'CNAME').read_text().strip()
-        self.assertEqual(self.cards(), {'decathlon': 1, 'second': 1})
+        self.assertEqual(self.cards(), {'first': 1, 'second': 1})
         self.assertFalse((self.dist / 'draft').exists())
         self.assertFalse((self.projects['draft'] / 'dist').exists())
-        for name, target in [('en/models/sample/index.html', '/decathlon/en/models/sample/'),
-                             ('custom.html', '/decathlon/custom.html')]:
+        for name, target in [('en/models/sample/index.html', '/first/en/models/sample/'),
+                             ('custom.html', '/first/custom.html')]:
             page = self.dist / name
             self.assertIn(f'<link rel="canonical" href="https://{domain}{target}">', page.read_text(encoding='utf-8'))
             self.assertEqual(script_result(page, '/' + name)['url'], target + '?w=3%2F2#rubric')
+        self.assertFalse((self.dist / 'new/index.html').exists())
+        self.assertIn('<title>旧站</title>', (self.dist / 'about/index.html').read_text(encoding='utf-8'))
         missing = self.dist / '404.html'
         self.assertEqual(script_result(missing, '/retired/item'), {
-            'url': '/decathlon/retired/item?w=3%2F2#rubric', 'canonical': f'https://{domain}/decathlon/retired/item'})
+            'url': '/first/retired/item?w=3%2F2#rubric', 'canonical': f'https://{domain}/first/retired/item'})
         self.assertEqual(script_result(missing, '/en/retired/item/'), {
-            'url': '/decathlon/en/retired/item/?w=3%2F2#rubric', 'canonical': f'https://{domain}/decathlon/en/retired/item/'})
-        for current in ('/', '/index.html', '/en', '/en/', '/en/index.html', '/decathlon', '/decathlon/retired/item', '/second/dead/'):
+            'url': '/first/en/retired/item/?w=3%2F2#rubric', 'canonical': f'https://{domain}/first/en/retired/item/'})
+        for current in ('/', '/index.html', '/en', '/en/', '/en/index.html', '/first', '/first/retired/item', '/second/dead/'):
             self.assertIsNone(script_result(missing, current)['url'])
+
+    def test_routes_cannot_shadow_mounts_existing_files_or_the_404_page(self):
+        path = self.projects['first'] / 'publish/legacy-routes.json'
+        for route in ('second/not-built.html', 'en/index.html', '404.html', 'custom.html', '../outside.html'):
+            with self.subTest(route=route):
+                declaration = self.declaration | {'routes': self.declaration['routes'] + [route]}
+                write(path, json.dumps(declaration))
+                with self.assertRaises(ValueError):
+                    publish.build()
+                self.assertFalse(self.dist.exists())
+
+    def test_only_one_topic_can_claim_unknown_paths(self):
+        write(self.projects['second'] / 'publish/legacy-routes.json', json.dumps(self.declaration))
+        with self.assertRaisesRegex(ValueError, '多个专题'):
+            publish.build()
 
     def test_one_topic_falls_back_including_its_hub_card(self):
         publish.build()
         self.version = 2
-        self.failed.add('decathlon')
+        self.failed.add('first')
         publish.build()
-        self.assertEqual(self.cards(), {'decathlon': 1, 'second': 2})
-        self.assertEqual((self.dist / 'decathlon/index.html').read_text(), 'decathlon 1')
+        self.assertEqual(self.cards(), {'first': 1, 'second': 2})
+        self.assertEqual((self.dist / 'first/index.html').read_text(), 'first 1')
         self.assertEqual((self.dist / 'second/index.html').read_text(), 'second 2')
         self.assertEqual((self.dist / 'index.html').read_text(), 'hub 2')
 
     def test_first_failure_without_cache_cannot_publish_an_empty_site(self):
         self.failed.add('second')
         publish.build()
-        self.assertEqual(self.cards(), {'decathlon': 1})
-        self.topics['decathlon']['website_status'] = 'draft'
+        self.assertEqual(self.cards(), {'first': 1})
+        self.topics['first'].website_status = 'draft'
         with self.assertRaises(SystemExit):
             publish.build()
-        self.assertEqual(self.cards(), {'decathlon': 1})
+        self.assertEqual(self.cards(), {'first': 1})
 
     def test_failed_hub_build_keeps_previous_assembled_site(self):
         publish.build()
@@ -141,7 +168,7 @@ class PublishTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'index.html'):
             publish.build()
         self.assertEqual((self.hub / 'dist/index.html').read_text(), 'hub 1')
-        self.assertEqual(self.cards(), {'decathlon': 1, 'second': 1})
+        self.assertEqual(self.cards(), {'first': 1, 'second': 1})
 
 
 if __name__ == '__main__':

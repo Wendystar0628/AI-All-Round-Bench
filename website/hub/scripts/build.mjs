@@ -1,7 +1,7 @@
 // npm run build -> website/hub/dist (served at the site root /):
 //   index.html  en/index.html  hub.css  hub.js  favicon.svg
-//   fonts/Saira.ttf (+ licence)   logos/<name>.svg (website/logos/mark)
-//   data/*.json from data/ (or ONESHOT_HUB_DATA_DIR); data-local/ never goes into a build
+//   fonts/Saira.ttf (+ licence, the hub's own fonts/)   logos/<name>.svg (平台/厂商图标/mark)
+//   data/*.json from ONESHOT_SITE_DATA_DIR (publish.py sets it), else data/; data-local/ never goes into a build
 import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';

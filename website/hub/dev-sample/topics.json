@@ -7,15 +7,22 @@
       "name_en": "AI Decathlon",
       "status": "online",
       "url": "/decathlon/",
-      "tasks": 13,
-      "categories": 10,
-      "ranked": 25,
+      "accent": "#7a3cf0",
       "updated": "2026-11-21",
-      "top": [
-        { "id": "gpt-6-2-astra", "name": "GPT 6.2 Astra", "short": "6.2Astra", "vendor": "OpenAI", "logo": "openai", "effort": "xhigh", "total": 84.0 },
-        { "id": "gpt-6-2-sol", "name": "GPT 6.2 Sol", "short": "6.2Sol", "vendor": "OpenAI", "logo": "openai", "effort": "xhigh", "total": 74.3 },
-        { "id": "gemini-4-neon", "name": "Gemini 4 Neon", "short": "4Neon", "vendor": "Google", "logo": "gemini", "effort": "xhigh", "total": 70.6 }
-      ]
+      "stats": [
+        { "label": { "zh": "题目", "en": "Tasks" }, "value": 13 },
+        { "label": { "zh": "类别", "en": "Categories" }, "value": 10 },
+        { "label": { "zh": "上榜型号", "en": "Ranked models" }, "value": 25 }
+      ],
+      "feature": {
+        "kind": "ranking",
+        "title": { "zh": "前 3 名", "en": "Top 3" },
+        "items": [
+          { "model": { "id": "gpt-6-2-astra", "name": "GPT 6.2 Astra", "vendor": "OpenAI", "logo": "openai", "effort": "xhigh" }, "value": 84.0, "max": 100 },
+          { "model": { "id": "gpt-6-2-sol", "name": "GPT 6.2 Sol", "vendor": "OpenAI", "logo": "openai", "effort": "xhigh" }, "value": 74.3, "max": 100 },
+          { "model": { "id": "gemini-4-neon", "name": "Gemini 4 Neon", "vendor": "Google", "logo": "gemini", "effort": "xhigh" }, "value": 70.6, "max": 100 }
+        ]
+      }
     }
   ]
 }

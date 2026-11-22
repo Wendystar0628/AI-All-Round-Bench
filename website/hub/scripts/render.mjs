@@ -7,9 +7,10 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const HUB = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const WEB = resolve(HUB, '..');
-export const LOGO_DIR = join(WEB, 'logos', 'mark');
-export const FONT_DIR = join(WEB, 'stellar-ui-skill', 'assets', 'fonts');
+export const BENCH = resolve(HUB, '..', '..');
+// vendor marks are shared by the whole platform; the font is the hub's own (fonts/), no topic's design system
+export const LOGO_DIR = join(BENCH, '平台/厂商图标/mark');
+export const FONT_DIR = join(HUB, 'fonts');
 export const PAGES = { zh: { path: '', root: './', alt: './en/' }, en: { path: 'en/', root: '../', alt: '../' } };
 
 export async function loadConfig() {
@@ -50,7 +51,7 @@ export function renderPage(lang, cfg, v = {}) {
 try{var p=localStorage.getItem('octa.lang'),inside=false;try{inside=!!document.referrer&&new URL(document.referrer).origin===location.origin}catch(e){}
 if(p!=='zh'&&p!=='en'){p=/^zh/i.test(navigator.language||'')?'zh':'en';localStorage.setItem('octa.lang',p)}
 if(p!==here&&!inside&&!(q&&q.has('stay')))location.replace(alt+location.search+location.hash)}catch(e){}})();`;
-  const runtime = { lang, text: T, accents: cfg.accents ?? {}, colorLogos: colorLogos() };
+  const runtime = { lang, text: T, colorLogos: colorLogos() };
   const langLink = (l, label, href) =>
     `<a href="${href}" hreflang="${l === 'en' ? 'en' : 'zh-CN'}" lang="${l === 'en' ? 'en' : 'zh-CN'}" data-lang-switch="${l}"${l === lang ? ' aria-current="true"' : ''}>${label}</a>`;
 
@@ -96,9 +97,10 @@ if(p!==here&&!inside&&!(q&&q.has('stay')))location.replace(alt+location.search+l
 `;
 }
 
-/** Folder the page data comes from. Dev: ONESHOT_HUB_DATA_DIR, else data-local/ when it has topics.json, else data/. Build never reads data-local/. */
+/** Folder the page data comes from (site project contract, website/README.md). ONESHOT_SITE_DATA_DIR when set;
+ *  else dev: data-local/ when it has topics.json, else data/. Build never reads data-local/. */
 export function dataDir({ dev }) {
-  const fixed = process.env.ONESHOT_HUB_DATA_DIR?.trim();
+  const fixed = process.env.ONESHOT_SITE_DATA_DIR?.trim();
   if (fixed) return resolve(HUB, fixed);
   const local = join(HUB, 'data-local');
   if (dev && existsSync(join(local, 'topics.json'))) return local;

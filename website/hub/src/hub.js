@@ -1,17 +1,22 @@
-// Topic cards from data/topics.json (format: website/hub/README.md). Static text and settings
-// come from the page (<script id="hub-data">, written from site.config.mjs).
+// Topic cards from data/topics.json (card format: website/hub/README.md). The hub knows no topic:
+// every card is drawn from its own fields, and its feature block by `feature.kind` (FEATURES below).
+// Static text and settings come from the page (<script id="hub-data">, written from site.config.mjs).
 const html = document.documentElement;
 const root = html.dataset.root || './';
-const { lang, text: T, accents, colorLogos } = JSON.parse(document.getElementById('hub-data').textContent);
+const { lang, text: T, colorLogos } = JSON.parse(document.getElementById('hub-data').textContent);
 const en = lang === 'en';
 const colour = new Set(colorLogos);
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const fill = (s, vars) => String(s).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
 const dots = (d) => (d ? String(d).slice(0, 10).replace(/-/g, '.') : '');
-const score = (v) => (v == null || !Number.isFinite(+v) ? '—' : (+v).toFixed(1));
-const int = (v) => (Number.isFinite(+v) ? String(+v) : '—');
+const num = (v) => (v != null && v !== '' && Number.isFinite(+v) ? +v : null);
+const one = (v) => (num(v) == null ? '—' : num(v).toFixed(1));
+const shown = (v) => (v == null || v === '' ? '—' : String(v));
 const safeUrl = (u) => (/^(\/|\.{0,2}\/|https?:)/.test(String(u ?? '')) ? String(u) : '#');
+const safeColour = (c) => (/^#[0-9a-f]{3,8}$/i.test(String(c ?? '')) ? String(c) : '');
+/** A {zh, en} label in the page's language (a plain string is taken as is). */
+const say = (l) => (l && typeof l === 'object' ? (en ? l.en ?? l.zh : l.zh ?? l.en) : l) ?? '';
 
 // the language switch remembers the choice (the topic sites read the same key)
 document.addEventListener('click', (e) => {
@@ -23,46 +28,66 @@ document.addEventListener('click', (e) => {
 });
 
 function logo(m) {
-  const name = String(m.logo || '').replace(/[^\w-]/g, '');
+  const name = String(m?.logo || '').replace(/[^\w-]/g, '');
   if (!name) return '<span class="logo" aria-hidden="true"></span>';
   const c = colour.has(name);
   return `<span class="logo${c ? ' is-color' : ''}" style="--icon:url(&quot;${root}logos/${name}${c ? '-color' : ''}.svg&quot;)" aria-hidden="true"></span>`;
 }
 
-function topRow(m, i) {
-  const label = `${m.name ?? ''}${m.effort ? ` (${m.effort})` : ''}`;
-  const v = Number.isFinite(+m.total) ? Math.max(0, Math.min(100, +m.total)) : 0;
-  const sr = [fill(T.rank, { n: i + 1 }), label, fill(T.score, { score: score(m.total) })].join(en ? ', ' : '，');
-  return `<li class="top-row" style="--v:${v / 100}">
-    <span class="top-rank" aria-hidden="true">${i + 1}</span>
+/** kind "ranking": ordered rows { model, value, max } — rank, vendor mark, "name (effort)", value and a bar of value / max. */
+function ranking(f) {
+  const items = Array.isArray(f.items) ? f.items : [];
+  if (!items.length) return `<p class="feature-none">${esc(T.featureEmpty)}</p>`;
+  const row = (it, i) => {
+    const m = it.model ?? {};
+    const label = `${m.name ?? ''}${m.effort ? ` (${m.effort})` : ''}`;
+    const value = num(it.value);
+    const max = num(it.max);
+    const share = value != null && max ? Math.max(0, Math.min(1, value / max)) : 0;
+    const sr = [fill(T.rank, { n: i + 1 }), label, max ? fill(T.of, { value: one(value), max: shown(it.max) }) : one(value)].join(en ? ', ' : '，');
+    return `<li class="rank-row" style="--v:${share}">
+    <span class="rank-n" aria-hidden="true">${i + 1}</span>
     ${logo(m)}
     <span class="mname" title="${esc(label)}" aria-hidden="true"><span class="mname-text">${esc(m.name)}</span>${m.effort ? `<span class="mname-effort">(${esc(m.effort)})</span>` : ''}</span>
-    <span class="top-score" aria-hidden="true">${score(m.total)}</span>
-    <span class="top-bar" aria-hidden="true"><i></i></span>
+    <span class="rank-value" aria-hidden="true">${one(value)}</span>
+    ${max ? '<span class="rank-bar" aria-hidden="true"><i></i></span>' : ''}
     <span class="sr-only">${esc(sr)}</span>
   </li>`;
+  };
+  return `<ol class="rank-list">${items.map(row).join('')}</ol>`;
+}
+
+// One drawing per feature kind. A new kind (e.g. a gallery for a showcase topic) is one more entry here.
+const FEATURES = { ranking };
+
+function feature(f) {
+  const draw = f && FEATURES[f.kind];
+  if (!draw) return '';
+  const title = say(f.title);
+  return `<div class="topic-feature" data-kind="${esc(f.kind)}">
+      ${title ? `<h4 class="feature-head">${esc(title)}</h4>` : ''}
+      ${draw(f)}
+    </div>`;
 }
 
 function card(t) {
   const draft = t.status !== 'online';
   const name = en ? t.name_en || t.name : t.name;
   const other = en ? t.name : t.name_en;
-  const href = en ? t.url_en || `${String(t.url ?? '').replace(/\/?$/, '/')}en/` : t.url;
-  const accent = accents?.[t.id];
-  const top = Array.isArray(t.top) ? t.top.slice(0, 3) : [];
-  const stat = (n, label) => `<div><dt>${esc(label)}</dt><dd>${int(n)}</dd></div>`;
-  return `<li class="topic${draft ? ' is-draft' : ''}"${accent ? ` style="--topic:${esc(accent)}"` : ''}>
+  const href = en ? `${String(t.url ?? '').replace(/\/?$/, '/')}en/` : t.url;
+  const accent = safeColour(t.accent);
+  const stats = Array.isArray(t.stats) ? t.stats : [];
+  const block = feature(t.feature);
+  const stat = (s) => `<div><dt>${esc(say(s.label))}</dt><dd>${esc(shown(s.value))}</dd></div>`;
+  return `<li class="topic${draft ? ' is-draft' : ''}${block ? ' has-feature' : ''}"${accent ? ` style="--topic:${accent}"` : ''}>
     <div class="topic-id">
       <h3 class="topic-name"><a class="topic-link" href="${esc(safeUrl(href))}">${esc(name)}</a></h3>
       ${other ? `<p class="topic-other" lang="${en ? 'zh-CN' : 'en'}">${esc(other)}</p>` : ''}
       ${draft ? `<p class="topic-draft"><b>${esc(T.draft)}</b>${esc(T.draftNote)}</p>` : ''}
-      <dl class="topic-stats">${stat(t.tasks, T.tasks)}${stat(t.categories, T.categories)}${stat(t.ranked, T.ranked)}</dl>
+      ${stats.length ? `<dl class="topic-stats">${stats.map(stat).join('')}</dl>` : ''}
     </div>
-    <div class="topic-top">
-      <h4 class="topic-top-head">${esc(T.top)}</h4>
-      ${top.length ? `<ol class="top-list">${top.map(topRow).join('')}</ol>` : `<p class="topic-none">${esc(T.noTop)}</p>`}
-    </div>
-    <p class="topic-foot"><span>${esc(fill(T.updated, { date: dots(t.updated) }))}</span><span class="topic-go" aria-hidden="true">${esc(T.open)}</span></p>
+    ${block}
+    <p class="topic-foot"><span>${t.updated ? esc(fill(T.updated, { date: dots(t.updated) })) : ''}</span><span class="topic-go" aria-hidden="true">${esc(T.open)}</span></p>
   </li>`;
 }
 
@@ -83,7 +108,7 @@ async function main() {
     slot.innerHTML = note(T.failed);
   }
   slot.removeAttribute('aria-busy');
-  // the score bars grow once, after the first frame
+  // the bars grow once, after the first frame
   requestAnimationFrame(() => requestAnimationFrame(() => html.classList.add('is-ready')));
 }
 

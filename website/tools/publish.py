@@ -11,6 +11,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+sys.dont_write_bytecode = True
 TOOLS = Path(__file__).resolve().parent
 HUB = TOOLS.parent / 'hub'
 DIST = TOOLS.parent / 'dist'
@@ -18,6 +19,11 @@ CACHE = TOOLS.parent / '.build-cache'
 REPO = TOOLS.parent.parent
 CONFIG = TOOLS / 'publish.json'
 SITE_CONFIG = TOOLS / 'site.json'
+sys.path.insert(0, str(REPO / 'orchestrator'))
+sys.path.insert(0, str(TOOLS))
+
+from topic import topics
+import common
 
 
 def config():
@@ -38,14 +44,12 @@ def run(cmd, cwd=None, env=None):
 
 
 def exporter():
-    if str(TOOLS) not in sys.path:
-        sys.path.insert(0, str(TOOLS))
-    import export_data
-    return export_data
+    import export
+    return export
 
 
-def build_project(project, data, work):
-    """Run the project's native build and require a freshly generated dist/index.html."""
+def build_project(project, data, work, base):
+    """Run the project's native build and require a freshly generated dist/index.html and dist/en/index.html."""
     if not (project / 'package.json').is_file():
         raise FileNotFoundError(f'没有找到网页项目 {project / "package.json"}')
     npm = shutil.which('npm') or 'npm'
@@ -56,12 +60,11 @@ def build_project(project, data, work):
     if dist.exists():
         dist.rename(previous)
     try:
-        env = os.environ | {'ONESHOT_SITE_DATA_DIR': str(data.resolve())}
-        if project == HUB:
-            env['ONESHOT_HUB_DATA_DIR'] = str(data.resolve())
+        env = os.environ | {'ONESHOT_SITE_DATA_DIR': str(data.resolve()), 'ONESHOT_SITE_BASE': base}
         run([npm, 'run', 'build'], cwd=project, env=env)
-        if not (dist / 'index.html').is_file():
-            raise ValueError(f'构建没有产出 {dist / "index.html"}')
+        for entry in ('index.html', 'en/index.html'):
+            if not (dist / entry).is_file():
+                raise ValueError(f'构建没有产出 {dist / entry}')
     except BaseException:
         if dist.exists():
             dist.rename(work / 'failed-project-dist')
@@ -94,26 +97,32 @@ def replace_tree(source, destination):
 def build_topic(topic, work):
     data = work / 'data'
     site = exporter()
-    run([sys.executable, '-B', TOOLS / 'export_data.py', '--topic', topic, '--confirmed', '--out', data])
-    models = json.loads((data / 'models.json').read_text(encoding='utf-8'))
-    scores = json.loads((data / 'scores.json').read_text(encoding='utf-8'))
-    card = site.topic_summary(topic, models, scores)
-    dist = build_project(site.project_dir(topic), data, work)
+    ctx = site.context(topic)
+    plugin = site.plugin(ctx)
+    card = plugin.export(ctx, data, formal=True)
+    base = f'/{topic}/'
+    if card['id'] != topic or card['url'] != base:
+        raise ValueError(f'专题 {topic} 的卡片与挂载路径 {base} 不一致')
+    dist = build_project(ctx.project, data, work, base)
     artifact = work / 'artifact'
     shutil.copytree(dist, artifact / 'site')
-    metadata = {'card': card, 'summary': summary(card, models, scores)}
+    declaration = ctx.project / 'publish' / 'legacy-routes.json'
+    metadata = {
+        'card': card, 'summary': plugin.summary(card, data),
+        'legacy': json.loads(declaration.read_text(encoding='utf-8')) if declaration.is_file() else None,
+    }
     (artifact / 'result.json').write_text(json.dumps(metadata, ensure_ascii=False), encoding='utf-8')
     return artifact
 
 
-def redirect_page(target, domain):
+def redirect_page(target, domain, title, link_text):
     canonical = html.escape(f'https://{domain}{target}', quote=True)
     link = html.escape(target, quote=True)
     return f'''<!doctype html>
-<html lang="zh-CN"><meta charset="utf-8"><title>十项全能 · 页面已迁移</title>
+<html lang="zh-CN"><meta charset="utf-8"><title>{html.escape(title)}</title>
 <link rel="canonical" href="{canonical}">
 <script>location.replace({json.dumps(target)} + location.search + location.hash);</script>
-<a href="{link}">前往十项全能新地址</a>
+<a href="{link}">{html.escape(link_text)}</a>
 </html>
 '''
 
@@ -142,32 +151,41 @@ if (!hubHome && !mounts.some(base => path === base.slice(0, -1) || path.startsWi
 '''
 
 
-def assemble(hub_dist, topics, out, domain):
-    """Mount complete artifacts first, then generate old URLs from the shipped Decathlon pages."""
+def assemble(hub_dist, packages, out, domain):
+    """Mount online projects and emit the old paths frozen in their declarations."""
     shutil.copytree(hub_dist, out)
-    legacy = None
-    legacy_source = None
     mounts = []
-    for topic, url, source in topics:
-        if not re.fullmatch(r'/(?:[a-z0-9]+(?:-[a-z0-9]+)*/)+', url):
-            raise ValueError(f'专题 {topic} 的站内路径无效：{url}')
-        shutil.copytree(source, out / url.strip('/'))
-        mounts.append(url)
-        if topic == 'decathlon':
-            legacy = url
-            legacy_source = source
+    for topic, source, declaration in packages:
+        mount = out / topic
+        if mount.exists():
+            raise ValueError(f'专题路径与总站或其他专题冲突：/{topic}/')
+        shutil.copytree(source, mount)
+        mounts.append(f'/{topic}/')
+
+    legacy = None
     count = 0
-    if legacy_source:
-        for page in sorted(legacy_source.rglob('*.html')):
-            relative = page.relative_to(legacy_source).as_posix()
-            if relative in ('index.html', 'en/index.html', '404.html'):
-                continue
+    for topic, source, declaration in packages:
+        if declaration is None:
+            continue
+        base = f'/{topic}/'
+        if declaration['fallback']:
+            if legacy is not None:
+                raise ValueError(f'多个专题声明了 404 兜底：{legacy}、{base}')
+            legacy = base
+        for relative in declaration['routes']:
+            parts = relative.split('/')
+            if (not relative.endswith('.html') or any(part in ('', '.', '..') for part in parts)
+                    or re.search(r'[\\:?#<>|"*%\x00-\x1f]', relative)):
+                raise ValueError(f'专题 {topic} 的旧网址无效：{relative}')
             dest = out / relative
-            if dest.exists():
-                raise ValueError(f'十项全能旧网址与总站或专题冲突：/{relative}')
-            route = relative.removesuffix('index.html') if page.name == 'index.html' else relative
+            if (dest.exists() or dest == out / '404.html'
+                    or any(dest.is_relative_to(out / name) for name, _, _ in packages)
+                    or any(parent.is_file() for parent in dest.parents if parent.is_relative_to(out))):
+                raise ValueError(f'旧网址与总站、专题或其他旧网址冲突：/{relative}')
+            route = relative.removesuffix('index.html') if parts[-1] == 'index.html' else relative
             dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_text(redirect_page(legacy + route, domain), encoding='utf-8')
+            dest.write_text(redirect_page(base + route, domain, declaration['title'], declaration['link_text']),
+                            encoding='utf-8')
             count += 1
     (out / '404.html').write_text(not_found_page(legacy, mounts, domain), encoding='utf-8')
     (out / 'CNAME').write_text(domain + '\n', encoding='utf-8')
@@ -178,8 +196,8 @@ def assemble(hub_dist, topics, out, domain):
 def build():
     site = exporter()
     CACHE.mkdir(parents=True, exist_ok=True)
-    cards, topics, lines = [], [], []
-    online = [key for key, manifest in site.TOPICS.items() if manifest['website_status'] == 'online']
+    cards, packages, lines = [], [], []
+    online = [topic.id for topic in topics().values() if topic.website_status == 'online']
     with tempfile.TemporaryDirectory(prefix='build-', dir=CACHE) as folder:
         work = Path(folder)
         for topic in online:
@@ -190,7 +208,7 @@ def build():
             try:
                 artifact = build_topic(topic, topic_work)
                 replace_tree(artifact, cache)
-            except (OSError, KeyError, ValueError, subprocess.CalledProcessError) as exc:
+            except (Exception, SystemExit) as exc:
                 if not cache.exists() and cache.with_name(topic + '.previous').exists():
                     cache.with_name(topic + '.previous').rename(cache)
                 if not (cache / 'site/index.html').is_file():
@@ -199,16 +217,16 @@ def build():
                 print(f'[{topic}] 构建失败，沿用上次成功的成品：{exc}', flush=True)
             saved = json.loads((cache / 'result.json').read_text(encoding='utf-8'))
             cards.append(saved['card'])
-            topics.append((topic, saved['card']['url'], cache / 'site'))
+            packages.append((topic, cache / 'site', saved['legacy']))
             lines.extend(saved['summary'])
-        if online and not topics:
+        if online and not packages:
             raise SystemExit('所有上线专题均构建失败且没有缓存，保留原整站成品')
         hub_work = work / 'hub'
         hub_work.mkdir()
         hub_data = hub_work / 'data'
         site.write_hub(hub_data, cards)
-        hub_dist = build_project(HUB, hub_data, hub_work)
-        count = assemble(hub_dist, topics, work / 'site', config()['domain'])
+        hub_dist = build_project(HUB, hub_data, hub_work, '/')
+        count = assemble(hub_dist, packages, work / 'site', config()['domain'])
         replace_tree(work / 'site', DIST)
         site.write_hub(HUB / 'data', cards)
     return lines + [f'整站已生成至 {DIST}，含 {count} 个旧网址跳转页。']
@@ -235,32 +253,24 @@ def deploy(cfg):
     print(pushed_note(cfg) + '。', flush=True)
 
 
-def summary(card, models, scores):
-    """Print the actual built ranking under this topic's name."""
-    models = {m['id']: m['name'] for m in models}
-    lines = [f'[{card["id"]}] {card["name"]}  成绩日期 {scores["updated"]}，{len(models)} 个模型']
-    for mid in scores['order']:
-        s = scores['scores'][mid]
-        lines.append(f'  {s["rank"] or "评测中"}  {models[mid]}  {"—" if s["total"] is None else s["total"]}'
-                     + ('' if s['rank'] else f'（已出 {s["done"]} 题）'))
-    return lines
-
-
 def main(argv=()):
     sys.stdout.reconfigure(encoding='utf-8')
     ap = argparse.ArgumentParser(description='只发布已确认成绩；新成绩须用户明确确认')
     ap.add_argument('--no-upload', action='store_true')
     ap.add_argument('--confirm', nargs=2, metavar=('专题', '厂商/型号'))
     args = ap.parse_args(argv)
-    sys.path.insert(0, str(REPO / 'orchestrator'))
-    import common
     CACHE.mkdir(parents=True, exist_ok=True)
     with common.singleton(CACHE / 'publish.lock', 600):
         if args.confirm:
-            if args.confirm[0] not in exporter().TOPICS:
-                ap.error(f'没有登记这个专题：{args.confirm[0]}')
-            with common.locked():
-                exporter().confirm_model(*args.confirm)
+            topic, model = args.confirm
+            registry = topics()
+            if topic not in registry:
+                ap.error(f'没有登记这个专题：{topic}')
+            if registry[topic].website_status == 'none':
+                ap.error(f'专题 {topic} 没有站点，无法确认发布')
+            site = exporter()
+            ctx = site.context(topic)
+            site.plugin(ctx).confirm(ctx, model)
         print('\n'.join(build()), flush=True)
         if args.no_upload:
             print('按 --no-upload 仅构建已确认正式成绩，没有推送。', flush=True)

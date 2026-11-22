@@ -1,5 +1,5 @@
 // npm run dev      -> http://localhost:5187/ : pages rendered on each request, data from data-local/ when it
-//                     has topics.json, else data/ (ONESHOT_HUB_DATA_DIR overrides both); refresh to see edits
+//                     has topics.json, else data/ (ONESHOT_SITE_DATA_DIR overrides both); refresh to see edits
 // npm run preview  -> http://localhost:5186/ : the built dist/
 // --port <n> picks another port.
 import http from 'node:http';

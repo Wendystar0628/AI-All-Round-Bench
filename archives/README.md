@@ -1,7 +1,15 @@
 # 模型核心归档
 
-用户确认模型的视频和封面后运行 `python videos/tools/archive_model.py run --model <厂商>/<型号>`，按题保存核心提交物、评分表和各评分阶段的 `result.json`，并生成带 SHA256 的 `manifest.json`。完整规则见 [文件存放与归档](../videos/docs/storage.md)。
+模型核心归档按 `archives/<专题>/<厂商>/<型号>/` 存放。每个型号有一份 `manifest.json`，逐文件记录来源、题名、相对路径、字节数和 SHA256。
 
-本目录纳入 Git，不加入任何 ignore/exclude。以后提交 Git 时，随其他改动一起提交、推送。模型提交的 `.gitignore`、`.gitattributes` 加 `.txt` 保存原文，避免其规则在归档中生效；归档根目录自有的 `.gitattributes` 用 `* -text` 禁止换行转换，保证检出后仍能通过原 SHA256 校验。
+具备专题规定的归档条件后，在仓库根目录运行以下命令。对需要确认成片和封面的专题，请先完成确认。
 
-归档不收题面、题目数据、依赖包、构建缓存、可再生成产物和视频中间产物。用 `python videos/tools/archive_model.py verify --model <厂商>/<型号>` 校验已有归档。归档通过后，H 上原作答与视频中间产物按清理流程移入同盘待删除区，核心归档始终保留。
+```powershell
+python orchestrator/archive.py archive <专题> "<厂商>/<型号>"
+python orchestrator/archive.py verify <专题> "<厂商>/<型号>"
+python orchestrator/archive.py verify <专题>
+```
+
+每道题的 `submission/` 保存清单指定的交付文件。清单省略 `archive.files` 时，平台按排除规则选取作答文件，跳过题面、材料、依赖、缓存及构建产物。题目声明的出片素材保存在 `assets/`，测试开销保存在 `cost.json`。打分评法提供的公开评分表和分段证据分别保存在 `scores/` 和 `grading/`。私有配对证据由专题插件单独保存。
+
+本目录纳入 Git。提交物内的 `.gitignore` 和 `.gitattributes` 加 `.txt` 后缀保存原文，归档根的 `.gitattributes` 禁用换行转换，保证检出后仍可校验。清理前请先核验归档，并按专题说明保留后续出片需要的工程。
