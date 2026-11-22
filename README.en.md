@@ -124,7 +124,7 @@ The "规定" (rules) section of every statement states the three rules below; ot
 ## Repository Layout
 
 ```text
-AI-High-Pressure-Challenge/
+AI-All-Round-Bench/
 ├─ README.md  README.en.md  LICENSE   platform README
 ├─ 平台/
 │  ├─ 型号.json        model identities shared by the whole platform

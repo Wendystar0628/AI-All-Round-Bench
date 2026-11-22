@@ -5,7 +5,7 @@ export default {
   name_en: 'AI All-Round Bench',
   intro: '给 AI 编程智能体出的限时挑战测评，分成若干专题，每个专题有自己的题目。',
   intro_en: 'Timed challenges for AI coding agents, grouped into topics, each with its own tasks.',
-  repo: 'https://github.com/Wendystar0628/AI-High-Pressure-Challenge',
+  repo: 'https://github.com/Wendystar0628/AI-All-Round-Bench',
   icp: { text: '蜀ICP备2025171371号-1', url: 'https://beian.miit.gov.cn/' },
 
   text: {

@@ -13,7 +13,7 @@
 - 页脚第二段写测试开销的说明，三行：
   1. 换算依据：订阅模型按每周额度（数据来自 `cost_source.name`）把用掉的额度折算成订阅费，没有额度数据的按官方 API 价格估算；API 模型按本地逐次请求用量及官方标价计算，按请求时间选择适用时段；1 美元 = `usd_cny` 元，额度数据 `fetched` 日期。
   2. 订阅额度数据来源：完整写出 `cost_source.url`（现为 `https://modeldial.com/subscriptions?period=week&view=insights`，从数据读，不写死），可点，新窗口打开。
-  3. 复测说明（用户指定）：“如对模型实测消耗量有疑惑，可自行从 GitHub 下载试题及其隔离环境，自行测试后对比。”后接仓库地址 `github.com/Wendystar0628/AI-High-Pressure-Challenge`（可点，新窗口）。英文版：“If you doubt the measured usage, download the tasks and their isolated environments from GitHub and run them yourself to compare.”
+  3. 复测说明（用户指定）：“如对模型实测消耗量有疑惑，可自行从 GitHub 下载试题及其隔离环境，自行测试后对比。”后接仓库地址 `github.com/Wendystar0628/AI-All-Round-Bench`（可点，新窗口）。英文版：“If you doubt the measured usage, download the tasks and their isolated environments from GitHub and run them yourself to compare.”
   长网址在手机宽度下任意处折行，不撑出横向滚动。
 - 数据里一条 cost 都没有（老数据）时不出这一列和这句页脚，版面照旧。
 

@@ -122,7 +122,7 @@
 ## 仓库结构
 
 ```text
-AI-High-Pressure-Challenge/
+AI-All-Round-Bench/
 ├─ README.md  README.en.md  LICENSE   平台说明
 ├─ 平台/
 │  ├─ 型号.json        全平台共用的型号身份
