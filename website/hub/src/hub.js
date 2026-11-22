@@ -1,8 +1,9 @@
-// The hub: one star chart. Every topic card in data/topics.json (format: website/hub/README.md) becomes a
-// region of the plate with its own constellation in the card's accent. The hub knows no topic: a region is
-// drawn from the card's own fields, its feature block by `feature.kind` (FEATURES below), and a card with
-// status "soon" (a topic announced in its manifest, no site yet) is drawn as a sky still being charted.
-// Static text and settings come from the page (<script id="hub-data">, written from site.config.mjs).
+// The hub: two facing pages of a star atlas. Every topic card in data/topics.json (format: website/hub/README.md)
+// becomes a page of the plate: a text column, and a framed window of sky holding the topic's constellation in the
+// card's accent. Everything drawn as sky stays inside the window; the rest of the page is plain paper. The hub
+// knows no topic: a page is drawn from the card's own fields, its feature block by `feature.kind` (FEATURES
+// below), and a card with status "soon" (a topic announced in its manifest, no site yet) gets a window still
+// being surveyed. Static text and settings come from the page (<script id="hub-data">, from site.config.mjs).
 const html = document.documentElement;
 const root = html.dataset.root || './';
 const { lang, text: T, colorLogos } = JSON.parse(document.getElementById('hub-data').textContent);
@@ -46,8 +47,11 @@ function seeded(text) {
 // The page's head marks <html class="is-entering"> and the moment it did (window.__hubT0) when motion is welcome.
 // Everything that comes in later is given a delay that keeps it on that one timeline (ms from the start);
 // if the topic data is late, the plate's part of the sequence starts when it arrives instead.
+// Order: ruler and wordmark → the plate opens → window frames draw → their grids sweep in → constellations
+// connect → the readout scale extends → the ranked stars light → stillness.
 const T0 = typeof window.__hubT0 === 'number' ? window.__hubT0 : performance.now();
-const PLATE = 360; // when the plate starts to open
+const PLATE = 220; // when the plate starts to open
+const PAGE = (i) => PLATE + 80 + i * 60; // when page i starts (its window frame begins to draw)
 let shift = 0;
 const since = () => performance.now() - T0;
 const at = (ms) => `${Math.round(ms + shift - since())}ms`;
@@ -75,7 +79,7 @@ document.addEventListener('click', (e) => {
   } catch {}
 });
 
-// ---------- the regions ----------
+// ---------- the pages ----------
 
 function logo(m) {
   const name = String(m?.logo || '').replace(/[^\w-]/g, '');
@@ -87,10 +91,10 @@ function logo(m) {
 const GREEK = 'αβγδεζηθικλμνξοπρστυφχψω';
 const STAR22 = 'M11 0Q11.72 10.28 22 11Q11.72 11.72 11 22Q10.28 11.72 0 11Q10.28 10.28 11 0Z';
 
-/** kind "ranking": ordered rows { model, value, max }. The rows are the constellation's brightest stars, named
- *  α, β, γ … in rank order: vendor mark, "name (effort)", a leader from 0 whose length is value / max with a
- *  star at its end, and the value. The first is the flare star. */
-function ranking(f, base) {
+/** kind "ranking": ordered rows { model, value, max }, read off a scale under the window (the window's width is
+ *  the scale from 0 to max). Rows are named α, β, γ … in rank order: vendor mark, "name (effort)", the value,
+ *  and a leader from 0 whose length is value / max with a star at its end; the first is the flare star. */
+function ranking(f, b) {
   const items = Array.isArray(f.items) ? f.items : [];
   if (!items.length) return `<p class="feature-none">${esc(T.featureEmpty)}</p>`;
   const max = num(items[0]?.max);
@@ -101,20 +105,21 @@ function ranking(f, base) {
     const top = num(it.max);
     const share = value != null && top ? Math.max(0, Math.min(1, value / top)) : 0;
     const sr = [fill(T.rank, { n: i + 1 }), label, top ? fill(T.of, { value: one(value), max: shown(it.max) }) : one(value)].join(en ? ', ' : '，');
-    const t = base + i * 38;
-    return `<li class="rank-row${i === 0 ? ' is-best' : ''}"${anim('come', t + 20, 0, `--v:${share};`)}>
-      <span class="rank-g" aria-hidden="true">${GREEK[i] ?? i + 1}</span>
-      ${logo(m)}
-      <span class="mname" title="${esc(label)}" aria-hidden="true"><span class="mname-text">${esc(m.name)}</span>${m.effort ? `<span class="mname-effort">(${esc(m.effort)})</span>` : ''}</span>
-      <span class="rank-track" aria-hidden="true">${top ? `<i class="rank-lead"${anim('extend', t + 60, 420)}></i><svg class="rank-star" viewBox="0 0 22 22"${anim('light', t + 480, 160)}><path d="${STAR22}"/></svg>` : ''}</span>
-      <span class="rank-value" aria-hidden="true">${one(value)}</span>
+    const t = b + i * 38;
+    return `<li class="rank-row${i === 0 ? ' is-best' : ''}"${anim('come', t, 0, `--v:${share};`)}>
+      <span class="rank-who" aria-hidden="true">
+        <span class="rank-g">${GREEK[i] ?? i + 1}</span>${logo(m)}
+        <span class="mname" title="${esc(label)}"><span class="mname-text">${esc(m.name)}</span>${m.effort ? `<span class="mname-effort">(${esc(m.effort)})</span>` : ''}</span>
+        <span class="rank-value">${one(value)}</span>
+      </span>
+      <span class="rank-track" aria-hidden="true">${top ? `<i class="rank-lead"${anim('extend', t + 20, 280)}></i><svg class="rank-star" viewBox="0 0 22 22"${anim('light', t + 300, 140)}><path d="${STAR22}"/></svg>` : ''}</span>
       <span class="sr-only">${esc(sr)}</span>
     </li>`;
   };
   const axis = max
-    ? `<div class="rank-axis" aria-hidden="true"${anim('wipe', base + 120, 420)}><span class="rank-axis-scale">${[0, 0.5, 1]
+    ? `<div class="rank-axis" aria-hidden="true"${anim('wipe', b + 40, 340)}>${[0, 0.5, 1]
         .map((p) => `<span style="--at:${p}">${shown(r1(max * p))}</span>`)
-        .join('')}</span></div>`
+        .join('')}</div>`
     : '';
   return `<ol class="rank-list">${items.map(row).join('')}</ol>${axis}`;
 }
@@ -122,13 +127,13 @@ function ranking(f, base) {
 // One drawing per feature kind. A new kind (e.g. a gallery for a showcase topic) is one more entry here.
 const FEATURES = { ranking };
 
-function feature(f, base) {
+function feature(f, b) {
   const draw = f && FEATURES[f.kind];
   if (!draw) return '';
   const title = say(f.title);
   return `<div class="topic-feature" data-kind="${esc(f.kind)}">
-      ${title ? `<h4 class="feature-head"${anim('wipe', base, 360)}><i aria-hidden="true">//</i>${esc(title)}</h4>` : ''}
-      ${draw(f, base)}
+      ${title ? `<h4 class="feature-head"${anim('wipe', b - 60, 300)}><i aria-hidden="true">//</i>${esc(title)}</h4>` : ''}
+      ${draw(f, b)}
     </div>`;
 }
 
@@ -140,36 +145,37 @@ function card(t, i) {
   const href = en ? `${String(t.url ?? '').replace(/\/?$/, '/')}en/` : t.url;
   const accent = safeColour(t.accent);
   const stats = soon || !Array.isArray(t.stats) ? [] : t.stats;
-  const b = PLATE + 240 + i * 100; // this region's part of the sequence
-  const block = soon ? '' : feature(t.feature, b + 100);
+  const b = PAGE(i);
+  const block = soon ? '' : feature(t.feature, b + 340);
   const about = say(t.about);
   const stat = (s) => `<div><dt>${esc(say(s.label))}</dt><dd>${esc(shown(s.value))}</dd></div>`;
-  const style = [accent ? `--topic:${accent}` : '', `--dl-tab:${at(b + 40)}`].filter(Boolean).join(';');
+  const style = [accent ? `--topic:${accent}` : '', `--dl-tab:${at(b)}`].filter(Boolean).join(';');
   return `<li class="topic ${soon ? 'is-soon' : 'is-open'}${draft ? ' is-draft' : ''}${block ? ' has-feature' : ''}" data-id="${esc(t.id)}" style="${style}">
-    <svg class="topic-sky" aria-hidden="true" focusable="false"></svg>
-    <div class="topic-id"${anim('wipe', b, 420)}>
+    <div class="topic-id"${anim('wipe', b + 60, 380)}>
       <p class="topic-tag"><span class="topic-no">No.${pad2(i + 1)}</span>${other ? `<span class="topic-eyebrow" lang="${en ? 'zh-CN' : 'en'}"><i aria-hidden="true">//</i>${esc(other)}</span>` : ''}</p>
       <h3 class="topic-name">${soon ? esc(name) : `<a class="topic-link" href="${esc(safeUrl(href))}">${esc(name)}</a>`}</h3>
       ${soon ? `<p class="topic-mark">${esc(T.soon)}</p>` : ''}
       ${draft ? `<p class="topic-draft"><b>${esc(T.draft)}</b>${esc(T.draftNote)}</p>` : ''}
       ${about ? `<p class="topic-about">${esc(about)}</p>` : ''}
     </div>
-    <div class="topic-skybox" aria-hidden="true"></div>
-    ${stats.length ? `<dl class="topic-stats"${anim('wipe', b + 60, 420)}>${stats.map(stat).join('')}</dl>` : ''}
+    <div class="topic-window" aria-hidden="true"><svg class="win" focusable="false"></svg></div>
+    ${stats.length ? `<dl class="topic-stats"${anim('wipe', b + 140, 380)}>${stats.map(stat).join('')}</dl>` : ''}
     ${block}
-    ${soon ? '' : `<p class="topic-foot"${anim('wipe', b + 420, 360)}><span class="topic-date">${t.updated ? esc(fill(T.updated, { date: dots(t.updated) })) : ''}</span><span class="topic-go" aria-hidden="true">${esc(T.open)}<svg viewBox="0 0 18 12"><path d="M0 6H16M11 1L16 6L11 11"/></svg></span></p>`}
+    ${soon ? '' : `<p class="topic-foot"${anim('wipe', b + 480, 320)}><span class="topic-date">${t.updated ? esc(fill(T.updated, { date: dots(t.updated) })) : ''}</span><span class="topic-go" aria-hidden="true">${esc(T.open)}<svg viewBox="0 0 18 12"><path d="M0 6H16M11 1L16 6L11 11"/></svg></span></p>`}
   </li>`;
 }
 
-// ---------- the sky: grid, boundaries and one constellation per region ----------
+// ---------- the windows: frame, grid, constellation ----------
 
-// Figures in a region's sky box (0–1 on both axes). `tail` is the star the brightest ranked star hangs from.
+// Figures relative to their brightest star (the tail, at 0,0): x in window widths (drawn to the left, mirrored
+// when there is more room on the right), y in window heights upwards. Edges join star indexes.
 const FIGURES = [
-  { stars: [[0.14, 0.2, 2], [0.4, 0.34, 1], [0.68, 0.16, 3], [0.9, 0.42, 2], [0.62, 0.6, 3], [0.36, 0.82, 2]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 1], [4, 5]], tail: 5 },
-  { stars: [[0.1, 0.46, 3], [0.3, 0.2, 2], [0.54, 0.34, 1], [0.8, 0.12, 3], [0.9, 0.56, 2], [0.6, 0.78, 2]], edges: [[0, 1], [1, 2], [2, 3], [2, 5], [5, 4], [4, 3]], tail: 5 },
-  { stars: [[0.2, 0.18, 2], [0.48, 0.08, 3], [0.76, 0.26, 1], [0.64, 0.56, 2], [0.36, 0.48, 3], [0.88, 0.8, 2]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [3, 5]], tail: 5 },
+  { stars: [[0, 0, 1], [-0.12, -0.3, 2], [-0.36, -0.22, 3], [-0.5, -0.52, 2], [-0.24, -0.62, 3], [-0.06, -0.72, 2]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 1], [4, 5]] },
+  { stars: [[0, 0, 1], [-0.2, -0.24, 2], [-0.44, -0.12, 3], [-0.56, -0.44, 2], [-0.3, -0.58, 2], [-0.08, -0.66, 3]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 1], [4, 5]] },
+  { stars: [[0, 0, 1], [-0.16, -0.36, 2], [-0.42, -0.3, 3], [-0.52, -0.62, 2], [-0.22, -0.7, 3], [0.04, -0.56, 2]], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 1]] },
 ];
-const MAG = { 1: 7.5, 2: 5.4, 3: 3.8 };
+const MAG = { 1: 8, 2: 5.2, 3: 3.7 };
+const INSET = 16; // nothing drawn closer than this to the frame
 
 const el = (name, attrs, cls) => {
   const e = document.createElementNS(NS, name);
@@ -177,7 +183,7 @@ const el = (name, attrs, cls) => {
   for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v);
   return e;
 };
-/** an element on the entrance timeline: `kind` draw | light, starting at `ms`, lasting `du` */
+/** an element on the entrance timeline: `kind` draw | light | wipe, starting at `ms`, lasting `du` */
 const timed = (e, kind, ms, du) => {
   e.dataset.in = kind;
   e.style.setProperty('--dl', at(ms));
@@ -197,7 +203,7 @@ function offset(node, host) {
   return { x, y, w: node.offsetWidth, h: node.offsetHeight };
 }
 
-/** a segment from a to b, stopped short of both stars */
+/** a segment from a to b, stopped short of both stars; `part` < 1 stops it part of the way */
 function segment(a, b, ga, gb, part = 1) {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
@@ -207,39 +213,116 @@ function segment(a, b, ga, gb, part = 1) {
   const x1 = a.x + ux * ga;
   const y1 = a.y + uy * ga;
   const len = Math.max(0, d - ga - gb) * part;
-  return { x1, y1, x2: x1 + ux * len, y2: y1 + uy * len, ux, uy, len };
+  return { x1, y1, x2: x1 + ux * len, y2: y1 + uy * len, ux, uy };
 }
 const pathOf = (s) => `M${r1(s.x1)} ${r1(s.y1)}L${r1(s.x2)} ${r1(s.y2)}`;
 
+let maskNo = 0;
 /** a mask that draws dashed lines in along their length during the entrance (dashes can't use pathLength) */
-function revealMask(svg, id, W, H) {
-  const mask = el('mask', { id, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: W, height: H });
+function revealMask(svg, W, H) {
+  const id = `reveal-${++maskNo}`;
+  const mask = el('mask', { id, maskUnits: 'userSpaceOnUse', x: -40, y: -40, width: W + 80, height: H + 80 });
   svg.append(mask);
-  return (d, ms, du, cls) => {
-    mask.append(timed(el('path', { d, fill: 'none', stroke: '#fff', 'stroke-width': 8, 'stroke-linecap': 'round' }, cls), 'draw', ms, du));
-  };
+  const add = (d, ms, du) =>
+    mask.append(timed(el('path', { d, fill: 'none', stroke: '#fff', 'stroke-width': 8, 'stroke-linecap': 'square' }), 'draw', ms, du));
+  return { url: `url(#${id})`, add };
 }
 
-let maskNo = 0;
+/** the frame, its ticks and labels, and an even grid inside; returns the grid pitch */
+function frame(svg, W, H, rand, { pitch, dashed, b }) {
+  const cols = Math.max(2, Math.round(W / pitch));
+  const step = W / cols;
+  const grid = el('g', {}, 'grid');
+  for (let k = 1; k < cols; k++) grid.append(el('path', { d: `M${r1(k * step)} 0V${r1(H)}` }));
+  const rows = [];
+  for (let y = H - step; y > step * 0.5; y -= step) rows.push(y);
+  rows.forEach((y) => grid.append(el('path', { d: `M0 ${r1(y)}H${r1(W)}` })));
+  svg.append(timed(grid, 'wipe', b + 200, 360));
 
-function drawRegion(li, i) {
-  const svg = li.querySelector('.topic-sky');
-  const skyEl = li.querySelector('.topic-skybox');
-  if (!svg || !skyEl) return;
-  const W = li.offsetWidth;
-  const H = li.offsetHeight;
+  // ticks outside the frame on all four edges, longer every fifth on top and bottom
+  const ticks = el('g', {}, 'ticks');
+  for (let k = 0; k <= cols; k++) {
+    const x = r1(k * step);
+    const len = k % 5 === 0 ? 7 : 4;
+    ticks.append(el('path', { d: `M${x} 0V${-len}M${x} ${r1(H)}V${r1(H + len)}` }));
+  }
+  rows.forEach((y) => ticks.append(el('path', { d: `M0 ${r1(y)}H-4M${r1(W)} ${r1(y)}H${r1(W + 4)}` })));
+  svg.append(timed(ticks, 'light', b + 300, 200));
+
+  // a few coordinates on the map frame: right ascension along the top (growing to the left), declination on the right
+  const h0 = Math.floor(rand() * 20);
+  const d0 = (Math.floor(rand() * 7) - 3) * 10;
+  const labels = el('g', {}, 'coord');
+  const nRa = cols >= 8 ? 3 : 2;
+  const ra = Array.from({ length: nRa }, (_, j) => Math.round((cols * (j + 1)) / (nRa + 1)));
+  ra.forEach((k, n) => {
+    const t = el('text', { x: r1(k * step), y: -12, 'text-anchor': 'middle' });
+    t.textContent = `${pad2((h0 + ra.length - 1 - n) % 24)}h`;
+    labels.append(t);
+  });
+  [rows[1], rows[3]].filter(Boolean).forEach((y, n) => {
+    const t = el('text', { x: r1(W + 9), y: r1(y + 3.5) });
+    const d = d0 + (n + 1) * 10;
+    t.textContent = `${d > 0 ? '+' : d < 0 ? '−' : ''}${Math.abs(d)}°`;
+    labels.append(t);
+  });
+  svg.append(timed(labels, 'light', b + 320, 200));
+
+  const box = `M0.5 0.5H${r1(W - 0.5)}V${r1(H - 0.5)}H0.5Z`;
+  if (dashed) {
+    const reveal = revealMask(svg, W, H);
+    svg.append(el('path', { d: box, mask: reveal.url }, 'frame is-dashed'));
+    reveal.add(box, b, 360);
+  } else {
+    svg.append(timed(el('path', { d: box }, 'frame'), 'draw', b, 360));
+  }
+  return step;
+}
+
+/** lay a figure out inside the window with its brightest star at (tx, ty) */
+function place(fig, tx, ty, W, H) {
+  const right = tx < W / 2; // more room on the right: mirror the figure
+  const xs = fig.stars.map(([x]) => (right ? -x : x) * W);
+  const ys = fig.stars.map(([, y]) => y * H);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const s = Math.min(
+    1,
+    minX < 0 ? (tx - INSET) / -minX : 1,
+    maxX > 0 ? (W - INSET - tx) / maxX : 1,
+    minY < 0 ? (ty - INSET) / -minY : 1,
+  );
+  return fig.stars.map(([, , m], k) => ({ x: tx + xs[k] * s, y: ty + ys[k] * s, m, r: MAG[m] }));
+}
+
+function drawWindow(li, i) {
+  const win = li.querySelector('.topic-window');
+  const svg = win?.querySelector('.win');
+  if (!svg) return;
+  const W = win.clientWidth;
+  const H = win.clientHeight;
   svg.replaceChildren();
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const soon = li.classList.contains('is-soon');
   const rand = seeded(li.dataset.id || i);
   const fig = FIGURES[Math.floor(rand() * FIGURES.length)];
-  const box = offset(skyEl, li);
-  const px = { x: box.x + 18, y: box.y + 10, w: Math.max(60, box.w - 36), h: Math.max(60, box.h - (soon ? 34 : 22)) };
-  const stars = fig.stars.map(([x, y, m]) => ({ x: px.x + x * px.w, y: px.y + y * px.h, m, r: MAG[m] }));
-  const b = PLATE + 240 + i * 100;
-  const F = b - (soon ? 20 : 80); // the figure starts drawing, just before the region's labels
+  const b = PAGE(i);
+  const rows = [...li.querySelectorAll('.rank-row')].slice(0, 3);
+  // with a ranking, the window's width is the readout's scale: one grid column per tenth of it
+  frame(svg, W, H, rand, { pitch: rows.length ? W / 10 : 34, dashed: soon, b });
 
-  // depth of each star from the first one, so the lines draw outwards star by star
+  const lines = el('g', {});
+  const marks = el('g', {});
+  svg.append(lines, marks);
+
+  // the brightest star stands right above the first ranked star, so one straight leader joins them
+  const first = rows[0];
+  const v = first ? Number(first.style.getPropertyValue('--v')) || 0 : soon ? 0.72 : 0.6;
+  const tx = Math.min(W - INSET - 6, Math.max(INSET + 6, v * W));
+  const stars = place(fig, tx, H * (soon ? 0.7 : 0.8), W, H);
+
+  // draw order: outwards from the brightest star, star by star
   const depth = stars.map(() => Infinity);
   depth[0] = 0;
   for (let changed = true; changed; ) {
@@ -249,94 +332,76 @@ function drawRegion(li, i) {
       if (depth[c] + 1 < depth[a]) (depth[a] = depth[c] + 1), (changed = true);
     }
   }
-  const STEP = 80;
-  const DU = 180;
-  const litAt = (k) => F + (depth[k] === 0 ? 0 : depth[k] * STEP + DU - STEP);
+  const F = b + 320; // the constellation starts to connect
+  const STEP = 60;
+  const DU = 140;
+  const litAt = (k) => F + depth[k] * STEP + (depth[k] ? DU - STEP : 0);
 
-  const lines = el('g', {});
-  const marks = el('g', {});
-  svg.append(lines, marks);
-
-  // a few faint loose stars around the figure
+  // a few faint stray stars, inside the window only
   const loose = [];
-  for (let k = 0, guard = 0; k < 5 && guard < 60; guard++) {
-    const p = { x: px.x + rand() * px.w, y: px.y + rand() * px.h };
-    if ([...stars, ...loose].some((s) => Math.hypot(s.x - p.x, s.y - p.y) < 26)) continue;
+  for (let guard = 0; loose.length < 5 && guard < 80; guard++) {
+    const p = { x: INSET + rand() * (W - 2 * INSET), y: INSET + rand() * (H - 2 * INSET) };
+    if ([...stars, ...loose].some((s) => Math.hypot(s.x - p.x, s.y - p.y) < 24)) continue;
     loose.push(p);
-    k++;
   }
 
   if (!soon) {
     for (const [a, c] of fig.edges) {
-      const [u, v] = depth[a] <= depth[c] ? [a, c] : [c, a];
-      const s = segment(stars[u], stars[v], stars[u].r + 4, stars[v].r + 4);
-      lines.append(timed(el('path', { d: pathOf(s) }, 'ln'), 'draw', F + depth[u] * STEP, DU));
+      const [u, w] = depth[a] <= depth[c] ? [a, c] : [c, a];
+      lines.append(timed(el('path', { d: pathOf(segment(stars[u], stars[w], stars[u].r + 4, stars[w].r + 4)) }, 'ln'), 'draw', F + depth[u] * STEP, DU));
     }
-    stars.forEach((s, k) => marks.append(timed(el('path', { d: star(s.x, s.y, s.r, s.m === 1 ? 0.32 : 0.38) }, `st m${s.m}`), 'light', litAt(k), 160)));
-    loose.forEach((p, k) => marks.append(timed(el('path', { d: star(p.x, p.y, 2 + (k % 2) * 0.6, 0.44), opacity: 0.55 }, 'st'), 'light', F + 120 + k * 45, 160)));
+    stars.forEach((s, k) => marks.append(timed(el('path', { d: star(s.x, s.y, s.r, s.m === 1 ? 0.32 : 0.38) }, `st m${s.m}`), 'light', litAt(k), 140)));
+    loose.forEach((p, k) => marks.append(timed(el('path', { d: star(p.x, p.y, 1.8 + (k % 2) * 0.6, 0.44) }, 'st faint'), 'light', F + 60 + k * 38, 140)));
 
-    // the tail: the brightest ranked stars (the leaders' ends) hang from the figure
-    const rows = [...li.querySelectorAll('.rank-row')].slice(0, 3);
-    const data = rows.map((row, k) => {
-      const tr = offset(row.querySelector('.rank-track'), li);
-      const v = Number(row.style.getPropertyValue('--v')) || 0;
-      return { x: tr.x + v * tr.w, y: tr.y + tr.h / 2, r: k === 0 ? 11 : 7.5, lit: b + 100 + k * 38 + 480 + 160 };
-    });
-    if (data.length && rows[0].querySelector('.rank-star')) {
-      const tail = stars[fig.tail];
-      const chain = [tail, ...data];
-      for (let k = 0; k < chain.length - 1; k++) {
-        const s = segment(chain[k], chain[k + 1], chain[k].r + 4, chain[k + 1].r + 4);
-        const start = k === 0 ? Math.max(litAt(fig.tail), data[0].lit - 400) : chain[k].lit - 120;
-        const end = k === 0 ? data[0].lit - 160 : chain[k + 1].lit;
-        lines.append(timed(el('path', { d: pathOf(s) }, 'ln'), 'draw', start, Math.max(120, end - start)));
-      }
+    // the one leader out of the window: from the brightest star straight down to α on the readout scale
+    if (first?.querySelector('.rank-star')) {
+      const tr = offset(first.querySelector('.rank-track'), li);
+      const wo = offset(win, li);
+      const ay = tr.y + tr.h / 2 - wo.y;
+      const ax = tr.x - wo.x + v * tr.w;
+      const lit = b + 340 + 300; // when α lights (the first row's star, see ranking())
+      const s = segment(stars[0], { x: ax, y: ay }, stars[0].r + 4, 14);
+      lines.append(timed(el('path', { d: pathOf(s) }, 'ln lead'), 'draw', lit - 200, 200));
     }
     return;
   }
 
-  // still being charted: stars plotted hollow, construction lines in starlight cyan, some of them stopped
-  // half way with a pencil tick, and one compass arc around the brightest star
-  const reveal = revealMask(svg, `reveal-${++maskNo}`, W, H);
-  const dashed = el('g', { mask: `url(#reveal-${maskNo})` });
+  // still being surveyed: hollow stars, construction lines in starlight cyan (some stopped half way with a
+  // pencil tick), and a protractor laid in the window's lower left corner
+  const reveal = revealMask(svg, W, H);
+  const dashed = el('g', { mask: reveal.url });
   lines.append(dashed);
   fig.edges.forEach(([a, c], k) => {
-    const [u, v] = depth[a] <= depth[c] ? [a, c] : [c, a];
-    const part = k % 3 === 1 ? 0.38 + rand() * 0.3 : 1;
-    const s = segment(stars[u], stars[v], stars[u].r + 5, stars[v].r + 5, part);
+    const [u, w] = depth[a] <= depth[c] ? [a, c] : [c, a];
+    const part = k % 3 === 1 ? 0.4 + rand() * 0.25 : 1;
+    const s = segment(stars[u], stars[w], stars[u].r + 5, stars[w].r + 5, part);
     const ms = F + depth[u] * STEP;
     const du = Math.round(DU * (0.4 + 0.6 * part));
     dashed.append(el('path', { d: pathOf(s) }, 'cl'));
-    reveal(pathOf(s), ms, du);
+    reveal.add(pathOf(s), ms, du);
     if (part < 1) {
-      const tx = -s.uy * 4;
-      const ty = s.ux * 4;
-      lines.append(timed(el('path', { d: `M${r1(s.x2 - tx)} ${r1(s.y2 - ty)}L${r1(s.x2 + tx)} ${r1(s.y2 + ty)}` }, 'ce'), 'light', ms + du, 120));
+      const tx2 = -s.uy * 4;
+      const ty2 = s.ux * 4;
+      lines.append(timed(el('path', { d: `M${r1(s.x2 - tx2)} ${r1(s.y2 - ty2)}L${r1(s.x2 + tx2)} ${r1(s.y2 + ty2)}` }, 'ce'), 'light', ms + du, 100));
     }
   });
-  // a protractor arc round the brightest star, on the side away from the rest of the figure
-  const bright = stars.find((s) => s.m === 1) ?? stars[0];
-  const cx = stars.reduce((t, s) => t + s.x, 0) / stars.length;
-  const cy = stars.reduce((t, s) => t + s.y, 0) / stars.length;
-  const away = Math.atan2(bright.y - cy, bright.x - cx);
-  const R = Math.max(36, Math.min(70, Math.min(px.w, px.h) * 0.34));
-  const span = (Math.PI * 7) / 9; // 140°
-  const a0 = away - span / 2;
-  const pt = (a, rr = R) => ({ x: bright.x + Math.cos(a) * rr, y: bright.y + Math.sin(a) * rr });
-  const p0 = pt(a0);
-  const p1 = pt(a0 + span);
-  const arc = `M${r1(p0.x)} ${r1(p0.y)}A${r1(R)} ${r1(R)} 0 0 1 ${r1(p1.x)} ${r1(p1.y)}`;
-  lines.append(timed(el('path', { d: arc }, 'arc'), 'draw', F + 120, 480));
-  for (let k = 0, n = 14; k <= n; k++) {
-    const a = a0 + (span * k) / n;
-    const p = pt(a);
-    const q = pt(a, R + (k % 7 === 0 ? 7 : 3.5));
-    marks.append(timed(el('path', { d: `M${r1(p.x)} ${r1(p.y)}L${r1(q.x)} ${r1(q.y)}` }, 'tick'), 'light', F + 120 + (480 * k) / n, 100));
+  const R = Math.min(W, H) * 0.36;
+  const arc = `M0 ${r1(H - R)}A${r1(R)} ${r1(R)} 0 0 1 ${r1(R)} ${r1(H)}`;
+  lines.append(timed(el('path', { d: arc }, 'arc'), 'draw', b + 420, 360));
+  const ticks = el('g', {}, 'arc-ticks');
+  for (let k = 1; k < 9; k++) {
+    const a = -Math.PI / 2 + (Math.PI / 2) * (k / 9);
+    const len = k % 3 === 0 ? 8 : 4;
+    const p = { x: Math.cos(a) * R, y: H + Math.sin(a) * R };
+    const q = { x: Math.cos(a) * (R - len), y: H + Math.sin(a) * (R - len) };
+    ticks.append(el('path', { d: `M${r1(p.x)} ${r1(p.y)}L${r1(q.x)} ${r1(q.y)}` }));
   }
-  stars.forEach((s, k) => marks.append(timed(el('path', { d: star(s.x, s.y, s.r + 0.8, 0.4) }, 'cs'), 'light', litAt(k), 160)));
-  loose.forEach((p, k) => marks.append(timed(el('path', { d: star(p.x, p.y, 2.2, 0.44) }, 'cs'), 'light', F + 160 + k * 45, 160)));
+  lines.append(timed(ticks, 'light', b + 700, 160));
+  stars.forEach((s, k) => marks.append(timed(el('path', { d: star(s.x, s.y, s.r + 0.6, 0.4) }, 'cs'), 'light', litAt(k), 140)));
+  loose.forEach((p, k) => marks.append(timed(el('path', { d: star(p.x, p.y, 2, 0.44) }, 'cs faint'), 'light', F + 60 + k * 38, 140)));
 }
 
+/** the plate: its edge (the top one is the ruler) and a binding line between neighbouring pages */
 function drawPlate() {
   const plate = document.querySelector('.plate');
   const svg = plate?.querySelector('.plate-sky');
@@ -345,57 +410,29 @@ function drawPlate() {
   const H = plate.clientHeight;
   svg.replaceChildren();
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  const grid = el('g', {});
-  svg.append(grid);
-
-  // the coordinate grid: parallels round a pole far above the plate, meridians running from it
-  const P = { x: W * 0.58, y: -W * 1.05 };
-  const far = Math.max(Math.hypot(P.x, H - P.y), Math.hypot(W - P.x, H - P.y));
-  const parallels = [];
-  for (let r = -P.y + 40; r < far; r += 72) parallels.push(r);
-  parallels.forEach((r, k) => {
-    const side = (x) => P.y + Math.sqrt(Math.max(0, r * r - (x - P.x) ** 2));
-    const x0 = Math.max(-20, P.x - r + 1);
-    const x1 = Math.min(W + 20, P.x + r - 1);
-    const d = `M${r1(x0)} ${r1(side(x0))}A${r1(r)} ${r1(r)} 0 0 0 ${r1(x1)} ${r1(side(x1))}`;
-    grid.append(timed(el('path', { d }, 'g soft'), 'draw', PLATE + 100 + (k * 300) / parallels.length, 560));
-  });
-  const meridians = [];
-  for (let x = W * 0.58 - Math.ceil((W * 0.7) / 150) * 150; x < W * 1.2; x += 150) meridians.push(x);
-  meridians.forEach((xt, k) => {
-    const dx = xt - P.x;
-    const dy = -P.y;
-    const t = H / dy;
-    const d = `M${r1(xt)} 0L${r1(xt + dx * t)} ${r1(H)}`;
-    grid.append(timed(el('path', { d }, 'g soft'), 'draw', PLATE + 140 + (k * 300) / meridians.length, 520));
-  });
-
-  // the plate's edge (the top one is the ruler), with its cut corner
   const cut = 52;
   svg.append(el('path', { d: `M${W - 0.5} 0V${H - cut}L${W - cut} ${H - 0.5}H0.5V0` }, 'edge'));
 
-  // boundaries between the regions, stepped like constellation borders
-  const reveal = revealMask(svg, `reveal-${++maskNo}`, W, H);
-  const dashed = el('g', { mask: `url(#reveal-${maskNo})` });
-  svg.append(dashed);
-  const regions = [...plate.querySelectorAll('.topic')];
-  regions.forEach((li, k) => {
+  const pages = [...plate.querySelectorAll('.topic')];
+  pages.forEach((li, k) => {
     if (!k) return;
-    const prev = regions[k - 1];
+    const side = Math.abs(pages[k - 1].offsetTop - li.offsetTop) < 2;
     const x = li.offsetLeft;
     const y = li.offsetTop;
-    const h = li.offsetHeight;
-    const w = li.offsetWidth;
-    const j = k % 2 ? 18 : -18;
-    const d =
-      Math.abs(prev.offsetTop - y) < 2
-        ? `M${x} ${y}V${r1(y + h * 0.3)}H${x + j}V${r1(y + h * 0.66)}H${x}V${y + h}`
-        : `M0 ${y}H${r1(w * 0.42)}V${y + j}H${r1(w * 0.7)}V${y}H${W}`;
-    dashed.append(el('path', { d }, 'b'));
-    reveal(d, PLATE + 220 + k * 100, 520);
+    const len = side ? li.offsetHeight : W;
+    const d = side ? `M${x} ${y + 24}V${y + len - 24}` : `M24 ${y}H${W - 24}`;
+    const bind = el('g', {}, 'bind');
+    bind.append(timed(el('path', { d }), 'draw', PLATE + 160, 460));
+    const marks = el('g', {});
+    const n = 6;
+    for (let j = 1; j < n; j++) {
+      const p = side ? { x, y: y + 24 + ((len - 48) * j) / n } : { x: 24 + ((W - 48) * j) / n, y };
+      marks.append(el('path', { d: side ? `M${p.x - 4} ${r1(p.y)}H${p.x + 4}` : `M${r1(p.x)} ${p.y - 4}V${p.y + 4}` }));
+    }
+    bind.append(timed(marks, 'light', PLATE + 520, 160));
+    svg.append(bind);
   });
-
-  regions.forEach(drawRegion);
+  pages.forEach(drawWindow);
 }
 
 // ---------- page ----------
@@ -437,16 +474,16 @@ async function main() {
   slot.removeAttribute('aria-busy');
   atlas.style.setProperty('--dl', at(PLATE));
   atlas.classList.add('is-on');
-  // the sky is drawn from the laid-out page: once the font is in, and again whenever the plate changes size
+  // the windows are drawn from the laid-out page: once the font is in, and again whenever the plate changes size
   await Promise.race([document.fonts?.ready, sleep(700)]);
   drawPlate();
-  let frame = 0;
+  let frameNo = 0;
   new ResizeObserver(() => {
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(drawPlate);
+    cancelAnimationFrame(frameNo);
+    frameNo = requestAnimationFrame(drawPlate);
   }).observe(document.querySelector('.plate'));
   // the sequence ends; from here on the page is still
-  setTimeout(() => html.classList.remove('is-entering'), Math.max(0, 1400 + shift + topics.length * 100 - since()));
+  setTimeout(() => html.classList.remove('is-entering'), Math.max(0, 1150 + shift + topics.length * 60 - since()));
 }
 
 main();
