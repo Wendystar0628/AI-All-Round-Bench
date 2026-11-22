@@ -1,0 +1,2 @@
+/* Platform README figures: the decathlon kit (tokens.css) plus the language switch. render.py sets <html lang>. */
+html:not([lang="en"]) .en, html[lang="en"] .zh { display: none !important; }

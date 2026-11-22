@@ -28,13 +28,15 @@ npm run preview   # http://localhost:5186/ ，看 dist/
  "topics": [{"id": "<id>", "name": "…", "name_en": "…", "status": "online", "url": "/<id>/", "accent": "#7a3cf0", "updated": "YYYY-MM-DD",
              "stats": [{"label": {"zh": "题目", "en": "Tasks"}, "value": 13}],
              "feature": {"kind": "ranking", "title": {"zh": "前 3 名", "en": "Top 3"},
-                         "items": [{"model": {"id": "…", "name": "…", "vendor": "…", "logo": "…", "effort": "…"}, "value": 84.0, "max": 100}]}}]}
+                         "items": [{"model": {"id": "…", "name": "…", "vendor": "…", "logo": "…", "effort": "…"}, "value": 84.0, "max": 100}]}},
+            {"id": "<id>", "name": "…", "name_en": "…", "status": "soon", "about": {"zh": "…", "en": "…"}}]}
 ```
 
-- 卡片由各专题的导出插件给出，按数组顺序排。英文页的卡片链到 `url` 后加 `en/`。
-- `status` 不是 `online` 的卡片显示「草稿」记号（只会出现在本地预览数据里）。
-- `accent`：卡片左边那道标识色，取该专题自己网页的主色；不写或不是 `#` 色值时用中性灰。
-- `stats`：卡片左栏的几个数，按顺序排；`value` 是数或短文字，原样显示。
-- `feature`：卡片右半边的展示块，按 `kind` 画，没有或认不出的 `kind` 就不画右半边。现在只有一种：
-  - `ranking`：名次表。`items` 按顺序就是名次，每行画名次、厂商图标、「名字 (推理强度)」、`value`（保留一位小数）和一根 `value / max` 的条；条目数由导出决定。
+- 每张卡片画成图版上的一片天区，按数组顺序排。英文页链到 `url` 后加 `en/`。
+- `status`：`online` 是已开放的专题，整片天区链到 `url`；`soon` 是筹备中的专题（`export.py` 按专题清单的 `coming_soon` 生成，见 `website/tools/README.md`），只有名字、`about` 和「筹备中」记号，没有链接和数字；其他值显示「草稿」记号（只会出现在本地预览数据里）。没有 `url` 的卡片也按筹备中画。
+- `about`：可选，一句话介绍，`{zh, en}`。
+- `accent`：天区的星座、引线和顶边页签用的颜色，取该专题自己网页的主色；不写或不是 `#` 色值时用中性灰。
+- `stats`：天区里的几个数，按顺序排；`value` 是数或短文字，原样显示。
+- `feature`：天区下半的展示块，按 `kind` 画，没有或认不出的 `kind` 就不画。现在只有一种：
+  - `ranking`：名次表。`items` 按顺序就是名次（α、β、γ…），每行画厂商图标、「名字 (推理强度)」、一根从 0 起长 `value / max` 的引线（末端一颗星，第 1 名是荧光绿星）和 `value`（保留一位小数）；前三颗星连进该专题的星座。条目数由导出决定。
 - 以后加一种展示块（例如展示型专题的作品墙）：在 `src/hub.js` 的 `FEATURES` 里加一种画法，在 `src/hub.css` 里加它的样式，并在这里写上格式。

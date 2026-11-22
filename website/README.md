@@ -17,7 +17,7 @@ website/
 
 | 东西 | 位置 |
 |---|---|
-| 专题清单（`website_status`：`online` 上线、`draft` 只在本地预览、`none` 没有站点项目） | `专题/<名>/专题.json` |
+| 专题清单（`website_status`：`online` 上线、`draft` 只在本地预览、`none` 没有站点项目；可选 `coming_soon`：还没有站点时在总站显示一张「筹备中」卡片，写一句 `{zh, en}` 介绍） | `专题/<名>/专题.json` |
 | 参测登记 | `专题/<名>/参测.json` |
 | 本专题的设计系统（品牌、装饰、类别图标、字体） | `专题/<名>/设计/` |
 | 型号身份（名字、厂商、图标名） | `平台/型号.json` |
@@ -53,6 +53,8 @@ website/
    - 生成物：`data/`（进 git）、`data-local/`、`dist/`、`node_modules/`（都不进 git）。
 
 ## 新增一个专题站
+
+建站之前想先在总站预告：在专题清单加 `coming_soon`（`website_status` 保持 `none`），再运行 `python website/tools/export.py`。
 
 1. 照上面的契约在 `website/topics/<id>/` 建站点项目，写导出插件 `export.py` 和 `meta/card.json`。
 2. 把 `专题/<名>/专题.json` 的 `website_status` 改为 `draft`，本地预览没问题后改为 `online`。

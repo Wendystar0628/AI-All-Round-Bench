@@ -50,6 +50,10 @@ def plugin(ctx):
 def write_hub(out, cards):
     cards = list(cards)
     updated = max((card['updated'] for card in cards), default=date.today().isoformat())
+    shown = {card['id'] for card in cards}
+    # topics announced in their manifest (coming_soon) but without a card yet: name and one line, no link or figures
+    cards += [{'id': key, 'name': item.name, 'name_en': item.name_en, 'status': 'soon', 'about': item.coming_soon}
+              for key, item in topics().items() if item.coming_soon and key not in shown]
     core.write_json(out / 'topics.json', {'updated': updated, 'topics': cards})
 
 

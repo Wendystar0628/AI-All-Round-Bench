@@ -721,8 +721,6 @@ What each task's folder under `评分/` contains (see [`评分/README.md`](评�
 
 ## Task-Setting and Grading Principles
 
-The general principles for setting and answering tasks are in the [platform README](../../README.en.md#general-principles); the ones below are specific to this topic.
-
 ### Setting the Tasks
 
 - **Workload deliberately exceeds the time limit**: design tasks contain more than can be finished in the time. What counts is what gets done first, how complete it is and how good it is.

@@ -18,8 +18,8 @@ class TopicExports(unittest.TestCase):
         stack = self.enterContext(ExitStack())
         self.root = Path(stack.enter_context(TemporaryDirectory()))
         self.hub = self.root / 'hub'
-        self.topics = {key: SimpleNamespace(id=key, website_status=status) for key, status in
-                       [('first', 'online'), ('second', 'draft'), ('hidden', 'none')]}
+        self.topics = {key: SimpleNamespace(id=key, name=key, name_en=key, website_status=status, coming_soon=None)
+                       for key, status in [('first', 'online'), ('second', 'draft'), ('hidden', 'none')]}
         stack.enter_context(patch.multiple(site, HUB=self.hub, CACHE=self.root / 'cache',
                                            topics=lambda: self.topics, topic=self.topics.__getitem__))
         stack.enter_context(patch.object(site.layout, 'site_project', side_effect=lambda key: self.root / key))
@@ -61,6 +61,15 @@ class TopicExports(unittest.TestCase):
         self.calls.clear()
         site.main(['--topic', 'hidden'])
         self.assertEqual(self.calls, [])
+
+    def test_coming_soon_topics_get_a_card_until_they_have_one(self):
+        line = {'zh': '一句', 'en': 'One line'}
+        self.topics['hidden'].coming_soon = self.topics['second'].coming_soon = line
+        site.refresh_previews()
+        soon = {'id': 'hidden', 'name': 'hidden', 'name_en': 'hidden', 'status': 'soon', 'about': line}
+        self.assertEqual(self.index('data'), [self.index('data')[0], soon | {'id': 'second', 'name': 'second', 'name_en': 'second'}, soon])
+        self.assertEqual([r['id'] for r in self.index('data-local')], ['first', 'second', 'hidden'])
+        self.assertNotIn('status', self.index('data-local')[1])
 
     def test_formal_requires_an_online_topic_and_separate_out(self):
         out = self.root / 'formal'

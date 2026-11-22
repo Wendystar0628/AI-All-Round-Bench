@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="960x694">
+<meta name="size-en" content="960x712">
+<title>一场作答怎样进行</title>
+<link rel="stylesheet" href="../../../../专题/十项全能/assets/readme/src/tokens.css">
+<link rel="stylesheet" href="../platform.css">
+<style>
+  .desc { margin-top: 10px; }
+  .plot { position: relative; margin-top: 20px; }
+  .plot > * { position: absolute; white-space: nowrap; }
+
+  .colh { font-size: 12px; line-height: 16px; color: var(--ink-2); }
+  .tl { font-size: 12px; line-height: 16px; color: var(--ink-2); transform: translateX(-50%); }
+  .tick { width: 1px; background: var(--ink-3); }
+  .axis { height: 1px; background: var(--ink-3); }
+  .hr { left: 0; right: 0; height: 1px; background: var(--rule); }
+  .hr.ink { background: var(--ink); }
+
+  .lane { font-size: 15px; font-weight: 700; line-height: 22px; }
+  .sub { font-family: var(--font-text); font-size: 13px; line-height: 18px; color: var(--ink-2); }
+
+  /* One bar per round; the idle tail is hatched; the deadline is an ink stop. */
+  .turn { height: 14px; background: var(--violet); }
+  .idle { height: 14px; background: var(--hatch); }
+  .last { background: var(--cyan-100); border-left: 1px solid var(--cyan-800); }
+  .minline { width: 0; border-left: 1px dashed var(--cyan-800); }
+  .minlab { font-size: 12px; line-height: 16px; color: var(--cyan-800); font-weight: 600; transform: translateX(-50%); }
+  .stop { width: 2px; background: var(--ink); }
+  .end { font-size: 14px; font-weight: 700; line-height: 20px; }
+  .cut { width: 12px; overflow: visible; }
+
+  /* Messages: a label, a 1px ink lead, a four-point star where it arrives on the bar. */
+  .msg { font-size: 13px; line-height: 18px; }
+  .msg.c { transform: translateX(-50%); }
+  .soft { font-family: var(--font-text); font-size: 13px; line-height: 18px; color: var(--ink-2); transform: translateX(-50%); }
+  .leadv { width: 1px; background: var(--ink); }
+  .plot .star.lv { color: var(--ink); width: 9px; height: 9px; }
+
+  .kb { height: 7px; border: 1px solid var(--ink); border-top: none; }
+  .kl { font-family: var(--font-text); font-size: 13px; line-height: 18px; color: var(--ink); }
+
+  .notes { display: grid; grid-template-columns: 1fr 1fr; column-gap: 36px; row-gap: 8px; margin-top: 14px; }
+  .notes div { font-family: var(--font-text); font-size: 13px; line-height: 20px; color: var(--ink-2); display: flex; align-items: flex-start; column-gap: 8px; }
+  .notes b { font-family: var(--font-ui); color: var(--ink); font-weight: 700; margin-right: 6px; }
+  .notes i { flex: none; display: inline-block; width: 22px; height: 14px; margin-top: 3px; }
+  .notes i.last { background: var(--hatch), var(--cyan-100); }
+  .notes .sw { flex: none; display: inline-flex; width: 22px; justify-content: center; margin-top: 5px; }
+  .notes .sw .star { color: var(--ink); width: 10px; height: 10px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="head">
+    <div class="pair"><span class="eyebrow slash">A Timed Run</span><h2 class="title"><span class="zh">一场作答怎样进行</span><span class="en">How a timed run goes</span></h2></div>
+    <i class="lead"></i>
+  </header>
+  <p class="desc"><span class="zh">示意图。条是模型的一轮工作，星是消息送达的时刻；限时和最短时长由专题清单定。开场和各条消息都不报时间，只有光追、电路两题题面写明限时，并给查看剩余时间的工具。</span><span class="en">Schematic. Bars are rounds of work, stars are messages arriving; limits come from the topic manifest. No prompt or message gives the time; only the ray-tracing and circuit statements state the limit and ship a time-left tool.</span></p>
+  <div class="plot" id="plot"></div>
+  <div class="notes" id="notes"></div>
+</div>
+<script>
+const EN = document.documentElement.lang === 'en';
+const T = (zh, en) => EN ? en : zh;
+// A schematic on a 60-minute scale. Rules: test.json host defaults (call back while more than 60 s are left, stop after
+// 3 idle calls), halfway reminders at half the full limit, min_minutes submission, resume with the time left rounded up.
+const LANES = [
+  { name: T('只设最长时长', 'Maximum time only'), sub: [T('以 60 分钟为例', 'e.g. 60 minutes')], end: 60,
+    turns: [[0, 21], [21, 38], [38, 59.4]], idle: [59.4, 60],
+    below: [[0, T('开场提示', 'Opening prompt')], [21, T('叫回', 'Call back')], [38, T('叫回', 'Call back')]],
+    above: [[30, T('半程提醒（专题可设）', 'Halfway reminder (if set)')]], note: [57.2, T('不再叫回', 'No call back')],
+    endText: T('到时中止', 'Stopped') },
+  { name: T('另设最短时长', 'With a minimum time'), sub: [T('最长 60、最短 40 分钟为例', 'e.g. max 60, min 40')], end: 47, min: 40,
+    turns: [[0, 24], [24, 47]],
+    below: [[0, T('开场提示', 'Opening prompt')], [24, T('叫回', 'Call back')]],
+    above: [], endText: T('一轮正常结束即交卷', 'Round ends: submitted') },
+  { name: T('中断后续做', 'Resumed after a failure'), sub: [T('同一道 60 分钟题', 'the same 60-minute task')], end: 60, cut: 22,
+    turns: [[0, 22], [22, 45], [45, 59.4]], idle: [59.4, 60],
+    below: [[0, T('开场提示', 'Opening prompt')], [22, T('续做提示', 'Resume prompt')], [45, T('叫回', 'Call back')]],
+    above: [[30, T('半程提醒', 'Halfway reminder')]], note: [57.2, T('不再叫回', 'No call back')],
+    endText: T('到时中止', 'Stopped'),
+    brackets: [[0, 22, T('API 错误、额度用尽或宿主崩溃', 'API error, quota out or host crash')],
+               [22, 60, T('用剩余的 38 分钟接回原会话，故障处理的时间不计', 'same session, the 38 minutes left; downtime not counted')]] },
+];
+
+const X0 = 210, X1 = 790, S = (X1 - X0) / 60, x = m => X0 + m * S;
+const plot = document.getElementById('plot');
+function put(cls, css, html = '') {
+  const d = document.createElement('div');
+  d.className = cls;
+  d.style.cssText = css;
+  d.innerHTML = html;
+  plot.appendChild(d);
+  return d;
+}
+const star = (cx, cy) => put('star lv', `left:${cx - 4.5}px;top:${cy - 4.5}px`);
+
+for (let m = 0; m <= 60; m += 5) {
+  const h = m % 10 === 0 ? 7 : 4;
+  put('tick', `left:${x(m) - 0.5}px;top:${24 - h}px;height:${h}px`);
+  if (m % 10 === 0) put('tl num', `left:${x(m)}px;top:0`, m);
+}
+put('colh', `left:${X1 + 22}px;top:0`, T('分钟', 'min'));
+put('axis', `left:${X0}px;top:24px;width:${X1 - X0}px`);
+
+let y = 30;
+LANES.forEach((L, li) => {
+  const t = y, barY = t + 46, BAR = 14, mid = barY + BAR / 2;
+  put(li ? 'hr' : 'hr ink', `top:${t}px`);
+  put('lane', `left:0;top:${barY - 16}px`, L.name);
+  L.sub.forEach((s, i) => put('sub', `left:0;top:${barY + 8 + i * 18}px`, s));
+
+  if (L.idle) put('last', `left:${x(L.end - 1)}px;top:${barY - 14}px;width:${S}px;height:${BAR + 28}px`);
+  if (L.min !== undefined) {
+    put('minline', `left:${x(L.min)}px;top:${barY - 16}px;height:${BAR + 32}px`);
+    put('minlab', `left:${x(L.min)}px;top:${barY - 34}px`, T('最短时长', 'minimum'));
+  }
+  L.turns.forEach(([a, b]) => put('turn', `left:${x(a) + (a ? 1.5 : 0)}px;top:${barY}px;width:${(b - a) * S - (a ? 3 : 1.5)}px`));
+  if (L.idle) put('idle', `left:${x(L.idle[0]) + 1.5}px;top:${barY}px;width:${(L.idle[1] - L.idle[0]) * S - 1.5}px`);
+  put('stop', `left:${x(L.end) - 1}px;top:${barY - 8}px;height:${BAR + 16}px`);
+  put('end', `left:${x(L.end) + 10}px;top:${mid - 10}px`, L.endText);
+
+  L.below.forEach(([m, text]) => {
+    const cx = x(m), lab = t + 80;
+    put('leadv', `left:${cx - 0.5}px;top:${barY + BAR + 4}px;height:${lab - 3 - (barY + BAR + 4)}px`);
+    star(cx, barY + BAR);
+    put('msg' + (m ? ' c' : ''), `left:${m ? cx : cx - 2}px;top:${lab}px`, text);
+  });
+  L.above.forEach(([m, text]) => {
+    const cx = x(m), lab = t + 8;
+    put('leadv', `left:${cx - 0.5}px;top:${lab + 21}px;height:${barY - 4 - (lab + 21)}px`);
+    star(cx, barY);
+    put('msg c', `left:${cx}px;top:${lab}px`, text);
+  });
+  if (L.note) put('soft', `left:${x(L.note[0])}px;top:${t + 80}px`, L.note[1]);
+
+  if (L.cut !== undefined) {
+    const NS = 'http://www.w3.org/2000/svg', s = document.createElementNS(NS, 'svg');
+    s.setAttribute('class', 'cut');
+    s.setAttribute('viewBox', '0 0 12 26');
+    s.setAttribute('height', 26);
+    s.style.cssText = `position:absolute;left:${x(L.cut) - 6}px;top:${barY - 6}px`;
+    s.innerHTML = '<path d="M1 26 L7 0 M5 26 L11 0" stroke="var(--ink)" stroke-width="1.5"/>';
+    plot.appendChild(s);
+  }
+  y += 112;
+  if (L.brackets) {
+    L.brackets.forEach(([a, b, text]) => {
+      put('kb', `left:${x(a) + (a ? 2 : 0)}px;top:${t + 106}px;width:${(b - a) * S - 2}px`);
+      put('kl', `left:${x(a) + (a ? 2 : 0)}px;top:${t + 118}px`, text);
+    });
+    y += 38;
+  }
+});
+put('hr ink', `top:${y}px`);
+plot.style.height = `${y + 1}px`;
+
+const NOTES = [
+  ['<span class="sw"><span class="star"></span></span>', T('叫回', 'Call back'),
+   T('星在条下方。一轮正常结束、剩余超过 1 分钟时，宿主几秒内发起下一轮；连续 3 次没有调用工具就不再叫回',
+     'Star under the bar: with over a minute left, the next round starts within seconds; stops after 3 calls with no tool use')],
+  ['<span class="sw"><span class="star"></span></span>', T('提醒', 'Reminder'),
+   T('星在条上方。运行中在下一次调用工具时插入（Claude Code 经钩子，Codex 经 turn/steer）；每种只发一次',
+     'Star over the bar: inserted at the next tool call (a hook in Claude Code, turn/steer in Codex); each kind once')],
+  ['<i class="last"></i>', T('最后 1 分钟', 'Last minute'),
+   T('一轮结束后不再叫回，会话空闲（斜线纹）到时', 'No call back; the session idles (hatched) until time')],
+  ['<span class="sw"><span class="star"></span></span>', T('续做', 'Resume'),
+   T('剩余时间 = 本段限时 − 已用，向上取整到分钟；续做提示说明故障、进度已保留，重申规则，不报时间',
+     'Time left = stretch limit − time used, rounded up; the prompt names the failure and kept work, restates the rules, gives no time')],
+];
+document.getElementById('notes').innerHTML = NOTES.map(([sw, b, s]) => `<div>${sw}<span><b>${b}</b>${s}</span></div>`).join('');
+</script>
+</body>
+</html>
