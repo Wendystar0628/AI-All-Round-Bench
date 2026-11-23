@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-21",
+  "updated": "2026-11-23",
   "cost_source": {
     "name": "ModelDial 订阅额度",
     "name_en": "ModelDial subscription quotas",
@@ -24,6 +24,7 @@
     "deepseek-v4-1-flash",
     "gpt-5-6-sol",
     "qwen4-max",
+    "glm-5-4",
     "hy4",
     "minimax-m3-1-flash",
     "ernie-5-5-flash",
@@ -1276,7 +1277,7 @@
         "algo": 9,
         "battle": 5,
         "spatial": 2,
-        "drawing": 14,
+        "drawing": 15,
         "interact": 8,
         "game": 8,
         "physics": 9,
@@ -1290,7 +1291,7 @@
         "circuit": 12,
         "conquest": 5,
         "luban": 2,
-        "drawing": 14,
+        "drawing": 15,
         "ae-editor": 8,
         "tower-defense": 8,
         "jelly-tank": 9,
@@ -1596,7 +1597,7 @@
         "algo": 10,
         "battle": 8,
         "spatial": 8,
-        "drawing": 22,
+        "drawing": 23,
         "interact": 7,
         "game": 9,
         "physics": 4,
@@ -1610,7 +1611,7 @@
         "circuit": 9,
         "conquest": 8,
         "luban": 8,
-        "drawing": 22,
+        "drawing": 23,
         "ae-editor": 7,
         "tower-defense": 9,
         "jelly-tank": 4,
@@ -1905,7 +1906,7 @@
       "rank": 12,
       "category_ranks": {
         "reason": 13,
-        "algo": 16,
+        "algo": 17,
         "battle": 11,
         "spatial": 20,
         "drawing": 9,
@@ -1918,7 +1919,7 @@
       "task_ranks": {
         "formal-proof": 12,
         "math-olympiad": 13,
-        "raytracing": 20,
+        "raytracing": 21,
         "circuit": 15,
         "conquest": 11,
         "luban": 20,
@@ -2065,7 +2066,7 @@
         "algo": 14,
         "battle": 10,
         "spatial": 19,
-        "drawing": 15,
+        "drawing": 16,
         "interact": 15,
         "game": 11,
         "physics": 10,
@@ -2075,11 +2076,11 @@
       "task_ranks": {
         "formal-proof": 14,
         "math-olympiad": 14,
-        "raytracing": 16,
+        "raytracing": 17,
         "circuit": 11,
         "conquest": 10,
         "luban": 19,
-        "drawing": 15,
+        "drawing": 16,
         "ae-editor": 15,
         "tower-defense": 11,
         "jelly-tank": 10,
@@ -2227,8 +2228,8 @@
       "rank": 14,
       "category_ranks": {
         "reason": 17,
-        "algo": 15,
-        "battle": 19,
+        "algo": 16,
+        "battle": 20,
         "spatial": 15,
         "drawing": 13,
         "interact": 12,
@@ -2240,9 +2241,9 @@
       "task_ranks": {
         "formal-proof": 14,
         "math-olympiad": 18,
-        "raytracing": 14,
-        "circuit": 16,
-        "conquest": 19,
+        "raytracing": 15,
+        "circuit": 17,
+        "conquest": 20,
         "luban": 15,
         "drawing": 13,
         "ae-editor": 12,
@@ -2384,28 +2385,28 @@
       "category_ranks": {
         "reason": 12,
         "algo": 13,
-        "battle": 23,
+        "battle": 24,
         "spatial": 11,
         "drawing": 12,
-        "interact": 20,
-        "game": 20,
+        "interact": 21,
+        "game": 21,
         "physics": 14,
-        "visual": 20,
+        "visual": 21,
         "system": 17
       },
       "task_ranks": {
         "formal-proof": 12,
         "math-olympiad": 7,
-        "raytracing": 13,
+        "raytracing": 14,
         "circuit": 14,
-        "conquest": 23,
+        "conquest": 24,
         "luban": 11,
         "drawing": 12,
-        "ae-editor": 20,
-        "tower-defense": 20,
+        "ae-editor": 21,
+        "tower-defense": 21,
         "jelly-tank": 14,
-        "harbor": 19,
-        "starship": 21,
+        "harbor": 20,
+        "starship": 22,
         "nested-os": 17
       }
     },
@@ -2557,30 +2558,209 @@
       "rank": 16,
       "category_ranks": {
         "reason": 16,
-        "algo": 20,
-        "battle": 22,
+        "algo": 21,
+        "battle": 23,
         "spatial": 14,
-        "drawing": 18,
+        "drawing": 19,
         "interact": 13,
-        "game": 19,
+        "game": 20,
         "physics": 18,
         "visual": 14,
-        "system": 22
+        "system": 23
       },
       "task_ranks": {
         "formal-proof": 14,
         "math-olympiad": 17,
-        "raytracing": 19,
-        "circuit": 23,
-        "conquest": 22,
+        "raytracing": 20,
+        "circuit": 24,
+        "conquest": 23,
         "luban": 14,
-        "drawing": 18,
+        "drawing": 19,
         "ae-editor": 13,
-        "tower-defense": 19,
+        "tower-defense": 20,
         "jelly-tank": 18,
         "harbor": 16,
         "starship": 14,
-        "nested-os": 22
+        "nested-os": 23
+      }
+    },
+    "glm-5-4": {
+      "total": 27.1,
+      "kinds": {
+        "standard": 11.6,
+        "design": 42.6
+      },
+      "categories": {
+        "reason": 6.2,
+        "algo": 32.3,
+        "battle": 11.2,
+        "spatial": 0.0,
+        "drawing": 8.3,
+        "interact": 32.7,
+        "game": 63.8,
+        "physics": 22.0,
+        "visual": 55.6,
+        "system": 39.1
+      },
+      "tasks": {
+        "formal-proof": 12.5,
+        "math-olympiad": 0.0,
+        "raytracing": 47.9,
+        "circuit": 16.7,
+        "conquest": 11.2,
+        "luban": 0.0,
+        "drawing": 8.3,
+        "ae-editor": 32.7,
+        "tower-defense": 63.8,
+        "jelly-tank": 22.0,
+        "harbor": 62.3,
+        "starship": 48.9,
+        "nested-os": 39.1
+      },
+      "status": "ranked",
+      "done": 13,
+      "task_info": {
+        "math-olympiad": {
+          "anomaly": [
+            {
+              "text": "一题未交：单次回复长时间推演第 1 题，撞上输出上限被截断，没有写出任何答案文件。"
+            }
+          ]
+        },
+        "luban": {
+          "anomaly": [
+            {
+              "text": "仅提交第01题，检查报碰撞后未修正，其余七题未交。"
+            }
+          ]
+        },
+        "drawing": {
+          "anomaly": [
+            {
+              "text": "用程序计算法向与装配坐标生成四题答案，并程序缩放另一题坐标。"
+            }
+          ]
+        },
+        "ae-editor": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 35.1
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 30.2
+            }
+          ]
+        },
+        "tower-defense": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 69.4
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 58.1
+            }
+          ]
+        },
+        "jelly-tank": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 27.3
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 16.8
+            }
+          ]
+        },
+        "harbor": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 66.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 58.1
+            }
+          ]
+        },
+        "starship": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 55.8
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 41.9
+            }
+          ]
+        },
+        "nested-os": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 40.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 37.7
+            }
+          ]
+        }
+      },
+      "cost": {
+        "cny": null,
+        "basis": "subscription",
+        "tokens": 407423108,
+        "tasks": 13,
+        "method": null,
+        "api_usd": null,
+        "api_cny": null,
+        "hours": 15.2,
+        "tps": 67.5,
+        "tps_replies": 905,
+        "plan": {
+          "name": "GLM Coding Plan Pro",
+          "name_en": "GLM Coding Plan Pro",
+          "price": 538,
+          "currency": "CNY",
+          "period": "month",
+          "credits": 260000
+        }
+      },
+      "rank": 16,
+      "category_ranks": {
+        "reason": 19,
+        "algo": 15,
+        "battle": 16,
+        "spatial": 20,
+        "drawing": 14,
+        "interact": 16,
+        "game": 15,
+        "physics": 19,
+        "visual": 19,
+        "system": 18
+      },
+      "task_ranks": {
+        "formal-proof": 14,
+        "math-olympiad": 22,
+        "raytracing": 12,
+        "circuit": 16,
+        "conquest": 16,
+        "luban": 20,
+        "drawing": 14,
+        "ae-editor": 16,
+        "tower-defense": 15,
+        "jelly-tank": 19,
+        "harbor": 19,
+        "starship": 19,
+        "nested-os": 18
       }
     },
     "hy4": {
@@ -2731,29 +2911,29 @@
           "credits": 9000
         }
       },
-      "rank": 17,
+      "rank": 18,
       "category_ranks": {
-        "reason": 23,
-        "algo": 18,
-        "battle": 21,
+        "reason": 24,
+        "algo": 19,
+        "battle": 22,
         "spatial": 20,
-        "drawing": 19,
-        "interact": 18,
-        "game": 15,
+        "drawing": 20,
+        "interact": 19,
+        "game": 16,
         "physics": 16,
         "visual": 15,
         "system": 14
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 22,
-        "raytracing": 17,
-        "circuit": 18,
-        "conquest": 21,
+        "raytracing": 18,
+        "circuit": 19,
+        "conquest": 22,
         "luban": 20,
-        "drawing": 19,
-        "ae-editor": 18,
-        "tower-defense": 15,
+        "drawing": 20,
+        "ae-editor": 19,
+        "tower-defense": 16,
         "jelly-tank": 16,
         "harbor": 13,
         "starship": 16,
@@ -2912,33 +3092,33 @@
           "period": "month"
         }
       },
-      "rank": 18,
+      "rank": 19,
       "category_ranks": {
-        "reason": 21,
+        "reason": 22,
         "algo": 12,
         "battle": 13,
         "spatial": 20,
         "drawing": 11,
-        "interact": 16,
-        "game": 21,
-        "physics": 23,
-        "visual": 19,
-        "system": 20
+        "interact": 17,
+        "game": 22,
+        "physics": 24,
+        "visual": 20,
+        "system": 21
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 20,
         "raytracing": 11,
         "circuit": 13,
         "conquest": 13,
         "luban": 20,
         "drawing": 11,
-        "ae-editor": 16,
-        "tower-defense": 21,
-        "jelly-tank": 23,
+        "ae-editor": 17,
+        "tower-defense": 22,
+        "jelly-tank": 24,
         "harbor": 18,
-        "starship": 19,
-        "nested-os": 20
+        "starship": 20,
+        "nested-os": 21
       }
     },
     "ernie-5-5-flash": {
@@ -3095,32 +3275,32 @@
           "period": "month"
         }
       },
-      "rank": 19,
+      "rank": 20,
       "category_ranks": {
         "reason": 18,
-        "algo": 17,
-        "battle": 18,
+        "algo": 18,
+        "battle": 19,
         "spatial": 20,
-        "drawing": 24,
-        "interact": 17,
-        "game": 17,
-        "physics": 24,
+        "drawing": 25,
+        "interact": 18,
+        "game": 18,
+        "physics": 25,
         "visual": 18,
         "system": 16
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 16,
-        "raytracing": 15,
-        "circuit": 19,
-        "conquest": 18,
+        "raytracing": 16,
+        "circuit": 20,
+        "conquest": 19,
         "luban": 20,
-        "drawing": 24,
-        "ae-editor": 17,
-        "tower-defense": 17,
-        "jelly-tank": 24,
+        "drawing": 25,
+        "ae-editor": 18,
+        "tower-defense": 18,
+        "jelly-tank": 25,
         "harbor": 17,
-        "starship": 19,
+        "starship": 20,
         "nested-os": 16
       }
     },
@@ -3258,33 +3438,33 @@
           "period": "month"
         }
       },
-      "rank": 20,
+      "rank": 21,
       "category_ranks": {
         "reason": 15,
-        "algo": 19,
-        "battle": 20,
+        "algo": 20,
+        "battle": 21,
         "spatial": 15,
-        "drawing": 17,
-        "interact": 21,
-        "game": 24,
+        "drawing": 18,
+        "interact": 22,
+        "game": 25,
         "physics": 17,
-        "visual": 23,
-        "system": 21
+        "visual": 25,
+        "system": 22
       },
       "task_ranks": {
         "formal-proof": 14,
         "math-olympiad": 15,
-        "raytracing": 18,
-        "circuit": 20,
-        "conquest": 20,
+        "raytracing": 19,
+        "circuit": 21,
+        "conquest": 21,
         "luban": 15,
-        "drawing": 17,
-        "ae-editor": 21,
-        "tower-defense": 24,
+        "drawing": 18,
+        "ae-editor": 22,
+        "tower-defense": 25,
         "jelly-tank": 17,
-        "harbor": 22,
-        "starship": 24,
-        "nested-os": 21
+        "harbor": 23,
+        "starship": 26,
+        "nested-os": 22
       }
     },
     "grok-4-7": {
@@ -3444,33 +3624,33 @@
           "period": "month"
         }
       },
-      "rank": 21,
+      "rank": 22,
       "category_ranks": {
         "reason": 19,
-        "algo": 24,
-        "battle": 16,
+        "algo": 25,
+        "battle": 17,
         "spatial": 13,
-        "drawing": 21,
-        "interact": 26,
-        "game": 17,
-        "physics": 22,
+        "drawing": 22,
+        "interact": 27,
+        "game": 18,
+        "physics": 23,
         "visual": 17,
-        "system": 18
+        "system": 19
       },
       "task_ranks": {
         "formal-proof": 14,
         "math-olympiad": 22,
-        "raytracing": 25,
-        "circuit": 17,
-        "conquest": 16,
+        "raytracing": 26,
+        "circuit": 18,
+        "conquest": 17,
         "luban": 13,
-        "drawing": 21,
-        "ae-editor": 26,
-        "tower-defense": 17,
-        "jelly-tank": 22,
-        "harbor": 20,
+        "drawing": 22,
+        "ae-editor": 27,
+        "tower-defense": 18,
+        "jelly-tank": 23,
+        "harbor": 21,
         "starship": 15,
-        "nested-os": 18
+        "nested-os": 19
       }
     },
     "mimo-v2-6-pro": {
@@ -3629,33 +3809,33 @@
           "name": "MiMo API"
         }
       },
-      "rank": 22,
+      "rank": 23,
       "category_ranks": {
-        "reason": 23,
-        "algo": 22,
-        "battle": 17,
+        "reason": 24,
+        "algo": 23,
+        "battle": 18,
         "spatial": 15,
-        "drawing": 24,
-        "interact": 22,
-        "game": 23,
-        "physics": 19,
-        "visual": 21,
-        "system": 24
+        "drawing": 25,
+        "interact": 23,
+        "game": 24,
+        "physics": 20,
+        "visual": 22,
+        "system": 26
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 22,
-        "raytracing": 22,
-        "circuit": 22,
-        "conquest": 17,
+        "raytracing": 23,
+        "circuit": 23,
+        "conquest": 18,
         "luban": 15,
-        "drawing": 24,
-        "ae-editor": 22,
-        "tower-defense": 23,
-        "jelly-tank": 19,
-        "harbor": 21,
+        "drawing": 25,
+        "ae-editor": 23,
+        "tower-defense": 24,
+        "jelly-tank": 20,
+        "harbor": 22,
         "starship": 18,
-        "nested-os": 24
+        "nested-os": 26
       }
     },
     "longcat-2-5": {
@@ -3838,33 +4018,33 @@
           "name_en": "LongCat API"
         }
       },
-      "rank": 23,
+      "rank": 24,
       "category_ranks": {
-        "reason": 23,
-        "algo": 25,
+        "reason": 24,
+        "algo": 26,
         "battle": 15,
         "spatial": 20,
-        "drawing": 24,
-        "interact": 23,
-        "game": 26,
-        "physics": 21,
-        "visual": 22,
-        "system": 23
+        "drawing": 25,
+        "interact": 24,
+        "game": 27,
+        "physics": 22,
+        "visual": 23,
+        "system": 24
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 22,
-        "raytracing": 24,
-        "circuit": 24,
+        "raytracing": 25,
+        "circuit": 25,
         "conquest": 15,
         "luban": 20,
-        "drawing": 24,
-        "ae-editor": 23,
-        "tower-defense": 26,
-        "jelly-tank": 21,
-        "harbor": 23,
-        "starship": 22,
-        "nested-os": 23
+        "drawing": 25,
+        "ae-editor": 24,
+        "tower-defense": 27,
+        "jelly-tank": 22,
+        "harbor": 24,
+        "starship": 23,
+        "nested-os": 24
       }
     },
     "step-5-preview": {
@@ -4059,33 +4239,33 @@
           "period": "month"
         }
       },
-      "rank": 24,
+      "rank": 25,
       "category_ranks": {
-        "reason": 22,
-        "algo": 26,
-        "battle": 24,
+        "reason": 23,
+        "algo": 27,
+        "battle": 25,
         "spatial": 20,
-        "drawing": 23,
-        "interact": 24,
-        "game": 25,
-        "physics": 20,
-        "visual": 24,
-        "system": 19
+        "drawing": 24,
+        "interact": 25,
+        "game": 26,
+        "physics": 21,
+        "visual": 26,
+        "system": 20
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 21,
-        "raytracing": 25,
-        "circuit": 24,
-        "conquest": 24,
+        "raytracing": 26,
+        "circuit": 25,
+        "conquest": 25,
         "luban": 20,
-        "drawing": 23,
-        "ae-editor": 24,
-        "tower-defense": 25,
-        "jelly-tank": 20,
-        "harbor": 25,
-        "starship": 23,
-        "nested-os": 19
+        "drawing": 24,
+        "ae-editor": 25,
+        "tower-defense": 26,
+        "jelly-tank": 21,
+        "harbor": 26,
+        "starship": 24,
+        "nested-os": 20
       }
     },
     "dots3-note-preview": {
@@ -4278,33 +4458,33 @@
           "name_en": "Dots API"
         }
       },
-      "rank": 25,
+      "rank": 26,
       "category_ranks": {
-        "reason": 23,
-        "algo": 23,
-        "battle": 24,
+        "reason": 24,
+        "algo": 24,
+        "battle": 25,
         "spatial": 20,
-        "drawing": 20,
-        "interact": 27,
-        "game": 27,
-        "physics": 25,
-        "visual": 25,
-        "system": 24
+        "drawing": 21,
+        "interact": 28,
+        "game": 28,
+        "physics": 26,
+        "visual": 27,
+        "system": 26
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 22,
-        "raytracing": 23,
-        "circuit": 24,
-        "conquest": 24,
+        "raytracing": 24,
+        "circuit": 25,
+        "conquest": 25,
         "luban": 20,
-        "drawing": 20,
-        "ae-editor": 27,
-        "tower-defense": 27,
-        "jelly-tank": 25,
-        "harbor": 26,
-        "starship": 25,
-        "nested-os": 24
+        "drawing": 21,
+        "ae-editor": 28,
+        "tower-defense": 28,
+        "jelly-tank": 26,
+        "harbor": 27,
+        "starship": 27,
+        "nested-os": 26
       }
     },
     "glm-5-3": {
@@ -4427,12 +4607,12 @@
       "rank": null,
       "category_ranks": {
         "reason": null,
-        "algo": 21,
+        "algo": 22,
         "battle": null,
         "spatial": null,
         "drawing": null,
-        "interact": 19,
-        "game": 16,
+        "interact": 20,
+        "game": 17,
         "physics": null,
         "visual": null,
         "system": null
@@ -4440,13 +4620,13 @@
       "task_ranks": {
         "formal-proof": null,
         "math-olympiad": 22,
-        "raytracing": 21,
-        "circuit": 21,
+        "raytracing": 22,
+        "circuit": 22,
         "conquest": null,
         "luban": null,
         "drawing": null,
-        "ae-editor": 19,
-        "tower-defense": 16,
+        "ae-editor": 20,
+        "tower-defense": 17,
         "jelly-tank": null,
         "harbor": null,
         "starship": null,
@@ -4468,8 +4648,8 @@
         "interact": 16.9,
         "game": 45.5,
         "physics": null,
-        "visual": null,
-        "system": null
+        "visual": 43.7,
+        "system": 17.8
       },
       "tasks": {
         "formal-proof": 0.0,
@@ -4483,11 +4663,11 @@
         "tower-defense": 45.5,
         "jelly-tank": null,
         "harbor": 49.6,
-        "starship": null,
-        "nested-os": null
+        "starship": 37.7,
+        "nested-os": 17.8
       },
       "status": "testing",
-      "done": 9,
+      "done": 11,
       "task_info": {
         "formal-proof": {
           "anomaly": [
@@ -4565,23 +4745,46 @@
           ]
         },
         "starship": {
-          "state": "testing"
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 44.6
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 30.8
+            }
+          ]
         },
         "nested-os": {
-          "state": "testing"
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 17.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 18.1
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "启动等待从未生成的素材，主窗口始终空白。"
+            }
+          ]
         }
       },
       "cost": {
         "cny": null,
         "basis": "subscription",
-        "tokens": 127925228,
-        "tasks": 9,
+        "tokens": 214918827,
+        "tasks": 11,
         "method": null,
-        "api_usd": 29.5,
-        "api_cny": 197.7,
-        "hours": 10.2,
-        "tps": 38.0,
-        "tps_replies": 661,
+        "api_usd": 47.8,
+        "api_cny": 320.6,
+        "hours": 13.2,
+        "tps": 40.2,
+        "tps_replies": 996,
         "plan": {
           "name": "火山方舟 Agent Plan Medium",
           "name_en": "Volcengine Ark Agent Plan Medium",
@@ -4593,31 +4796,31 @@
       },
       "rank": null,
       "category_ranks": {
-        "reason": 20,
-        "algo": 26,
+        "reason": 21,
+        "algo": 27,
         "battle": null,
         "spatial": 15,
-        "drawing": 16,
-        "interact": 25,
-        "game": 22,
+        "drawing": 17,
+        "interact": 26,
+        "game": 23,
         "physics": null,
-        "visual": null,
-        "system": null
+        "visual": 24,
+        "system": 25
       },
       "task_ranks": {
-        "formal-proof": 19,
+        "formal-proof": 20,
         "math-olympiad": 19,
-        "raytracing": 25,
-        "circuit": 24,
+        "raytracing": 26,
+        "circuit": 25,
         "conquest": null,
         "luban": 15,
-        "drawing": 16,
-        "ae-editor": 25,
-        "tower-defense": 22,
+        "drawing": 17,
+        "ae-editor": 26,
+        "tower-defense": 23,
         "jelly-tank": null,
-        "harbor": 24,
-        "starship": null,
-        "nested-os": null
+        "harbor": 25,
+        "starship": 25,
+        "nested-os": 25
       }
     }
   },

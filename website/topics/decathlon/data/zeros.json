@@ -43,6 +43,11 @@
       }
     },
     "math-olympiad": {
+      "glm-5-4": {
+        "kind": "none",
+        "zh": "作答时在一次回复里长时间推演第 1 题，想了约 35 分钟后撞上输出长度上限被截断；没写出任何答案文件，24 题全部缺交。",
+        "en": "It spent a single reply reasoning through problem 1 for about 35 minutes until it hit the output length limit and was cut off. No answer file was written, so all 24 problems were left blank."
+      },
       "hy4": {
         "kind": "none",
         "zh": "读完 24 题后没建答案目录，截止前还在反复推第 1 题，发现之前的推算不成立又重来；最终一份解答也没保存，24 题全部缺交。",
@@ -130,6 +135,11 @@
         "kind": "none",
         "zh": "读过题面和第 1 题零件数据后持续推演，直到触发输出长度上限报错；恢复会话后仍未写出任何答案，八题没有一条可验证的拆解路线。",
         "en": "After reading the instructions and first puzzle's piece data, prolonged reasoning hit the output limit. The resumed session still produced no answer files, leaving all eight puzzles without a verifiable disassembly route."
+      },
+      "glm-5-4": {
+        "kind": "wrong",
+        "zh": "只交了第 1 题一条拆解路线，自带检查器报第 2 步碰撞后没再修改；其余七题只读了材料、没有作答，八题无一有效。",
+        "en": "Handed in a route for puzzle 1 only. The bundled checker flagged a collision at the second move and the route was never fixed. The other seven puzzles were read but left unanswered, so none of the eight is valid."
       },
       "hy4": {
         "kind": "rule",
