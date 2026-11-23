@@ -8,6 +8,7 @@ export default {
   intro: '给 AI 编程智能体出的限时挑战测评，分成若干专题，每个专题有自己的题目。',
   intro_en: 'Timed challenges for AI coding agents, grouped into topics, each with its own tasks.',
   repo: 'https://github.com/Wendystar0628/AI-All-Round-Bench',
+  videos: 'https://space.bilibili.com/241360459/lists/9500819?type=season',
   icp: { text: '蜀ICP备2025171371号-1', url: 'https://beian.miit.gov.cn/' },
 
   text: {
@@ -26,6 +27,7 @@ export default {
       empty: '还没有上线的专题。',
       failed: '专题列表没有读出来，请刷新页面重试。',
       repo: 'GitHub 仓库',
+      videos: 'B站测评视频',
       langLabel: '语言',
       theme: '切换深浅',
       rank: '第 {n} 名',
@@ -47,6 +49,7 @@ export default {
       empty: 'No topics are online yet.',
       failed: 'Couldn’t load the topic list. Refresh the page to try again.',
       repo: 'GitHub repository',
+      videos: 'Videos on Bilibili',
       langLabel: 'Language',
       theme: 'Light / dark',
       rank: 'No. {n}',

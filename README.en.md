@@ -1,6 +1,6 @@
 <p align="center"><img src="平台/自述配图/hero-en.png" width="100%" alt="AI All-Round Bench: timed challenges for AI coding agents, organized by topic; topic online: AI Decathlon, 13 tasks in 10 categories, 60–100 minutes each"></p>
 
-<p align="center"><b>Website: <a href="https://octathlon.wendystars.com/en/">octathlon.wendystars.com</a></b></p>
+<p align="center"><b>Website: <a href="https://octathlon.wendystars.com/en/">octathlon.wendystars.com</a></b>　|　<b>Test videos: <a href="https://space.bilibili.com/241360459/lists/9500819?type=season">Bilibili collection</a></b></p>
 
 <p align="center"><a href="README.md">简体中文</a> | English</p>
 

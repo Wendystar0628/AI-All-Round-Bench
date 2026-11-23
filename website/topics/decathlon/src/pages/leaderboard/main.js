@@ -14,7 +14,7 @@
 import './style.css';
 import { boot, registerShortcut, setPanelOrder } from '../../shell/index.js';
 import { h, t, pick, links, getParam, setParams, fmtDate, fmtScore, fmtRank, progress, modelLabel, iconURL, DASH } from '../../core/index.js';
-import { createToolbar, createChoice, createModelList, scoreTable, getCompare, onCompareChange, onComparingChange, isShown, onFilterChange, filterCount, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, COST_MODES, getCostMode, setCostMode, repoLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
+import { createToolbar, createChoice, createModelList, scoreTable, getCompare, onCompareChange, onComparingChange, isShown, onFilterChange, filterCount, showTip, hideTip, hasCosts, hasApiCosts, costTip, costSourceNote, costLegend, COST_MODES, getCostMode, setCostMode, repoLink, videosLink, challengeFacts, guideLines, costOf, costKey, fmtCNY, fmtTokenValue } from '../../ui/index.js';
 import { exportButton, rankingArt, chartBody } from '../../charts/index.js';
 import { dur, css, reduced, stagger, isInView, play } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
@@ -73,6 +73,7 @@ boot(async ({ data }) => {
   factsEl.replaceChildren(
     h('li', h('time', { datetime: data.updated }, t('leaderboard.facts.updated', { date: fmtDate(data.updated) }))),
     h('li', repoLink()),
+    h('li', videosLink()),
   );
   // the scale of the challenge: models, tasks (and categories), the per-task time limit (ui/facts.js, also on the posters)
   figsEl.replaceChildren(...challengeFacts(data).map((f) => h('div', h('b.num', { 'data-fig': '' }, f.value), h('span', f.label), f.sub ? h('small', f.sub) : null)));

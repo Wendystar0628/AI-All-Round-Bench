@@ -5,7 +5,7 @@ import { createStarDial, exportButton, chartBody, starD } from '../../charts/ind
 import { modelFacts, guideLines } from '../../ui/facts.js';
 import { dur, durIn, stagger, reduced, calm } from '../../motion.js';
 import { scramble } from '../../vendor/stellar/fx.js';
-import { repoLink } from '../../ui/repo.js';
+import { repoLink, videosLink } from '../../ui/repo.js';
 import { tn } from './util.js';
 
 /** The entrance plays (not under reduced motion or the calm variant). */
@@ -23,6 +23,7 @@ function fields(data) {
     h('li', tn('home.hero.categories', { n: num(data.categories.length) }, data.categories.length)),
     range ? h('li', tn('home.hero.minutes', { range: num(range) })) : null,
     h('li', repoLink()),
+    h('li', videosLink()),
   ];
   return h('ul.hero-fields.st-field', items);
 }

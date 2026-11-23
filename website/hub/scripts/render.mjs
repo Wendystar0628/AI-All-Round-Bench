@@ -185,7 +185,7 @@ if(p!==here&&!inside&&!(q&&q.has('stay')))location.replace(alt+location.search+l
     </main>
     <footer class="foot">
       <p class="foot-name">${esc(name)}<span class="foot-date" data-slot="updated"></span></p>
-      <p class="foot-links"><a href="${esc(cfg.repo)}" target="_blank" rel="noopener">${esc(T.repo)}</a><a href="${esc(cfg.icp?.url)}" target="_blank" rel="noopener">${esc(cfg.icp?.text)}</a></p>
+      <p class="foot-links"><a href="${esc(cfg.repo)}" target="_blank" rel="noopener">${esc(T.repo)}</a><a href="${esc(cfg.videos)}" target="_blank" rel="noopener">${esc(T.videos)}</a><a href="${esc(cfg.icp?.url)}" target="_blank" rel="noopener">${esc(cfg.icp?.text)}</a></p>
     </footer>
   </body>
 </html>

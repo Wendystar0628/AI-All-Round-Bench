@@ -51,6 +51,9 @@ const taskPath = (t) => (typeof t === 'string' ? t : t?.path || `${t?.category}/
 /** The project repository on GitHub: public tasks, their isolated environments and the site. */
 export const REPO = 'https://github.com/Wendystar0628/AI-All-Round-Bench';
 
+/** The test videos, one per model, as a Bilibili collection. */
+export const VIDEOS = 'https://space.bilibili.com/241360459/lists/9500819?type=season';
+
 /** Named links. Each takes an optional last argument { lang }. */
 export const links = {
   home: (o) => href('', o),
