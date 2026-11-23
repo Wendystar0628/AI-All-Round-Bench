@@ -1,0 +1,21 @@
+{
+  "problem": "04",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏心双级迷宫泵盖",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"circle":[0,0],"d":144}],"depth":8},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,8],"loops":[{"rect":[-80,-8,-52,8]}],"depth":-8},
+        {"type":"extrude","plane":"XY","origin":[12,0,8],"loops":[{"circle":[0,0],"d":90}],"depth":8},
+        {"type":"extrude","plane":"XY","origin":[12,0,16],"loops":[{"circle":[0,0],"d":50}],"depth":14},
+        {"type":"hole","plane":"XY","origin":[0,0,8],"at":[[-41,-41],[41,-41],[-41,41],[41,41]],"d":9,"through":true},
+        {"type":"hole","plane":"XY","origin":[12,0,30],"at":[0,0],"d":30,"depth":30},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[12,0,16],"loops":[{"circle":[0,0],"d":74},{"circle":[0,0],"d":68}],"depth":-2},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[12,0,16],"loops":[{"circle":[0,0],"d":66},{"circle":[0,0],"d":62}],"depth":-2},
+        {"type":"hole","plane":"XZ","origin":[0,0,14],"at":[[12,0]],"d":8,"depth":24,"reverse":true},
+        {"type":"chamfer","distance":1,"edges":[[0,-72,0]]}
+      ]
+    }
+  ]
+}

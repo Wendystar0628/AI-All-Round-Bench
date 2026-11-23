@@ -1,0 +1,19 @@
+{
+  "problem": "10",
+  "parts": [
+    {"name": "1", "title": "双斜座多腔阀体铸件", "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0], "loops": [{"rect": [0, 0, 170, 121]}], "depth": 16},
+      {"type": "fillet", "radius": 6, "edges": [[0, 0, 8], [170, 0, 8], [0, 121, 8], [170, 121, 8]], "name": "底座四竖棱R6"},
+      {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 108, 0], "loops": [{"path": [[13, 16], [157, 16], [157, 69], [113, 111], [44, 111], [13, 84]]}], "depth": 96, "name": "本体"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 22], "loops": [{"rect": [-12, 27, 13, 92]}], "depth": 65, "name": "左凸台"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 18], "loops": [{"rect": [157, 24, 181, 97]}], "depth": 73, "name": "右凸台"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 108, 0], "at": [[61, 65]], "d": 10, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 108, 0], "at": [[113, 49]], "d": 33, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 12, 0], "at": [[61, 65]], "d": 30, "depth": 10, "name": "前沉孔Φ30"},
+      {"type": "hole", "plane": "YZ", "origin": [-12, 0, 0], "at": [[61, 55]], "d": 64, "depth": 10, "reverse": true, "name": "X向沉孔Φ64"},
+      {"type": "hole", "plane": "YZ", "origin": [-12, 0, 0], "at": [[61, 55]], "d": 30, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 111], "at": [[52, 72], [80, 60], [112, 48]], "d": 8, "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 16], "at": [[10, 10], [160, 10], [10, 111], [160, 111]], "d": 8, "through": true}
+    ]}
+  ]
+}

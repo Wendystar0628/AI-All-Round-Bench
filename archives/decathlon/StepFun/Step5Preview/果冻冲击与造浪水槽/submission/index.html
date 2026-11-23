@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>果冻冲击与造浪水槽</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="loading"><div><div>正在装载物理场景…</div><div class="bar"><i></i></div></div></div>
+<canvas id="c"></canvas>
+
+<div id="ui" class="ui">
+  <header id="topbar">
+    <div class="brand">
+      <span class="logo">◉</span>
+      <div class="brandtxt">
+        <b>果冻冲击与造浪水槽</b>
+        <i>软体 · 刚体 · 流体 三维物理演示</i>
+      </div>
+    </div>
+    <nav id="sceneTabs">
+      <button class="tab active" data-scene="jelly">场景一 · 重球冲击果冻</button>
+      <button class="tab" data-scene="tank">场景二 · 造浪水槽</button>
+    </nav>
+    <div id="status">
+      <span id="fps">--</span>
+      <button id="audioBtn" class="chip">音效：开</button>
+    </div>
+  </header>
+
+  <aside id="panel" class="panel">
+    <section id="panelJelly" class="pane">
+      <h3>演示</h3>
+      <div class="row">
+        <button class="btn demo" data-demo="jelly-center">正中单击</button>
+        <button class="btn demo" data-demo="jelly-multi">连击</button>
+        <button class="btn demo" data-demo="jelly-offset">偏击</button>
+      </div>
+      <h3>冲击</h3>
+      <div class="row">
+        <button class="btn act" data-act="center">正中冲击</button>
+        <button class="btn act" data-act="offset">偏心冲击</button>
+        <button class="btn act" data-act="multi">连续冲击</button>
+      </div>
+      <h3>参数</h3>
+      <label class="sl">果冻软硬 <output id="oSoft"></output>
+        <input type="range" id="sSoft" min="0" max="1" step="0.01" value="0.6">
+      </label>
+      <label class="sl">果冻结实程度 <output id="oStur"></output>
+        <input type="range" id="sStur" min="0" max="1" step="0.01" value="0.75">
+      </label>
+      <label class="sl">重球质量 <output id="oMass"></output>
+        <input type="range" id="sMass" min="1500" max="9000" step="50" value="7800">
+      </label>
+      <label class="sl">下落高度 <output id="oDrop"></output>
+        <input type="range" id="sDrop" min="0.25" max="1.6" step="0.01" value="0.95">
+      </label>
+      <div class="row">
+        <button class="btn act" id="dropBtn">释放重球</button>
+        <button class="btn" id="resetJelly">重置场景</button>
+      </div>
+      <p class="tip">三块果冻软硬与结实程度不同；同一颗球落在不同果冻上结局不同。球可在果冻间弹跳，与台面、石球相碰。</p>
+    </section>
+
+    <section id="panelTank" class="pane hidden">
+      <h3>演示</h3>
+      <div class="row">
+        <button class="btn demo" data-demo="tank-full">风浪（20 秒）</button>
+      </div>
+      <h3>操作</h3>
+      <div class="row">
+        <button class="btn act" id="releaseBtn">释放小球</button>
+        <button class="btn act" id="waveBtn">开始造浪</button>
+        <button class="btn" id="resetTank">重置场景</button>
+      </div>
+      <h3>小球密度（kg/m³）</h3>
+      <label class="sl">低密度组（浮球） <output id="oLow"></output>
+        <input type="range" id="sLow" min="80" max="450" step="10" value="180">
+      </label>
+      <label class="sl">中性组（悬浮） <output id="oNeu"></output>
+        <input type="range" id="sNeu" min="700" max="1350" step="10" value="1000">
+      </label>
+      <label class="sl">高密度组（沉底） <output id="oHigh"></output>
+        <input type="range" id="sHigh" min="1800" max="4200" step="20" value="2700">
+      </label>
+      <h3>造浪装置</h3>
+      <label class="sl">幅度 <output id="oAmp"></output>
+        <input type="range" id="sAmp" min="0" max="0.36" step="0.005" value="0.14">
+      </label>
+      <label class="sl">频率 <output id="oFreq"></output>
+        <input type="range" id="sFreq" min="0.3" max="2.4" step="0.02" value="1.0">
+      </label>
+      <p class="tip">四组同尺寸小球、密度不同；浪由小到大可调到翻卷破碎，浪到远端槽壁会拍击、反射。</p>
+    </section>
+  </aside>
+
+  <footer id="bottombar">
+    <div class="grp">
+      <button id="playBtn" class="btn wide">暂停</button>
+      <button id="slowBtn" class="btn wide">慢放 0.5×</button>
+      <button id="restartBtn" class="btn wide">重新运行</button>
+    </div>
+    <div class="hint">左键拖拽旋转视角 · 滚轮缩放 · 右键拖拽平移 · 空格暂停 · 1/2/3 触发三种冲击</div>
+    <div class="grp right">
+      <span id="demoLabel" class="chip">自由模式</span>
+    </div>
+  </footer>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/render.js"></script>
+<script src="js/fluid.js"></script>
+<script src="js/jelly.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
+

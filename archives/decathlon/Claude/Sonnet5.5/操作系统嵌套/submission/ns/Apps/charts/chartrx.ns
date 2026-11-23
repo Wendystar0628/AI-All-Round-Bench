@@ -1,0 +1,52 @@
+// chartrx.ns — 数据接收进程：向系统申请到根系统电子表格的实时数据连接，按序接收各版本的完整选区，
+// 只让版本前进（旧版本被丢弃），并把数据交给图表更新进程。暂停整棵子树时，更新在子树边界外暂存，恢复后在这里按序处理。
+let A = args();
+let APP = A.app; let DRAW = A.draw;
+let R = {sub: nil, state: "idle", version: 0, doc: "", range: "", title: "", last_check: 0, books: 0};
+fn status(extra) {
+  let m = {t: "status", state: R.state, version: R.version, title: R.title, doc: R.doc, range: R.range};
+  if (extra != nil) { for (let k of keys(extra)) { m[k] = extra[k]; } }
+  send(APP, m);
+}
+fn forward(values, title, version) { send(DRAW, {t: "data", version: version, values: values, title: title, range: R.range}); }
+fn do_connect(m) {
+  if (R.sub != nil) { sys("data_close", R.sub); R.sub = nil; }
+  let r = sys("data_open", {doc: m.doc, range: m.range});
+  if (r == nil || r.err != nil) { R.state = "error"; status({err: r == nil ? "连接失败" : r.err}); return nil; }
+  R.sub = r.sub; R.version = 1; R.doc = m.doc; R.range = m.range; R.title = r.title; R.state = "connected";
+  forward(r.values, r.title, 1);
+  status({initial: true});
+}
+fn do_disconnect() {
+  if (R.sub != nil) { sys("data_close", R.sub); R.sub = nil; }
+  R.state = "disconnected"; status(nil);
+}
+fn on_data(e) {
+  if (R.sub == nil || e.sub.id != R.sub.id) { return nil; }
+  if (e.kind == "update") {
+    if (e.version > R.version) { R.version = e.version; R.title = e.title; forward(e.values, e.title, e.version); status({dirty: e.dirty}); }
+  } else if (e.kind == "source_closed") {
+    R.state = "source_closed"; status(nil);
+    sys("notify", "数据源已关闭", "图表的数据源工作簿已关闭，已保留已接收的数据；重新打开后请重新选择连接");
+  }
+}
+while (true) {
+  let e = recv_timeout(1);
+  while (e != nil) {
+    let m = e.msg;
+    if (typeof(m) == "map") {
+      if (m.t == "connect") { do_connect(m); }
+      else if (m.t == "disconnect") { do_disconnect(); }
+      else if (m.t == "data") { on_data(m.e); }
+      else if (m.t == "status_req") { status(nil); }
+    }
+    e = poll_msg();
+  }
+  // 定期检查连接的实际状态（例如快照恢复后连接处于“已恢复，待重新连接”）
+  if (R.sub != nil && time() - R.last_check > 0.8) {
+    R.last_check = time();
+    let inf = sys("dev", "data", "info", R.sub);
+    if (inf != nil && inf.state == "restored" && R.state != "restored") { R.state = "restored"; status(nil); }
+    else if (inf != nil && inf.state == "source-closed" && R.state == "connected") { R.state = "source_closed"; status(nil); }
+  }
+}

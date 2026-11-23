@@ -1,0 +1,20 @@
+// 预置程序：持续计算
+// 在循环中不主动等待或让出执行权，用于检验调度：
+// 其他进程与系统控制仍应持续取得执行机会
+let acc = 0
+let n = 0
+let last = 0
+
+fn main() {
+  print("持续计算启动，pid=" + str(self()))
+  while true {
+    acc = acc + sqrt(n * 0.001 + 1) * 1.7
+    n = n + 1
+    if n - last >= 50000 {
+      last = n
+      print("已计算 " + str(n) + " 步 acc=" + str(floor(acc)))
+    }
+  }
+}
+
+main()

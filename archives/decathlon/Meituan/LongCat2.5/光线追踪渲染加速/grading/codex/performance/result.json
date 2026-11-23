@@ -1,0 +1,71 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 11.8,
+      "reason": "（11-16 光追锚点改为 s≤0.2 得 0、s=1 得 12，2 倍起不变；按本次记录的加速比重算速度分。）官方完整评测：5 次计时画面、12 个隐藏输入与 3 个公开边界输入全部通过，但 R=542.764 ms、C=552.4486 ms，s=0.9824696813，q=0、c=h=1，按公式得 0.0 分。另确认 solution.cu:403、418、428、432、440 在正常 render 路径无条件向 stderr 输出阶段耗时，官方 results.json 的各次 stderr 记录亦有对应 T 日志，违反题面第十节第 4 条；按规则核对条款同样应整题记零。"
+    }
+  ],
+  "metrics": {
+    "baseline_min_ms": 542.764,
+    "submission_min_ms": 552.4486,
+    "speedup": 0.9824696813423004,
+    "q": 11.8213935448792,
+    "c": 1,
+    "h": 1,
+    "official_score": 0,
+    "baseline_times_ms": [
+      545.203,
+      545.753,
+      545.4488,
+      542.764,
+      547.5268
+    ],
+    "submission_times_ms": [
+      554.8055,
+      552.4486,
+      562.9153,
+      559.7405,
+      562.6635
+    ],
+    "timed_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_pass_count": 3,
+    "performance_exception_pixels": [
+      806,
+      806,
+      806,
+      806,
+      806
+    ],
+    "performance_exception_limit": 3232,
+    "performance_rmse": 3.931846205725064e-05,
+    "gpu_max_before_utilization": 6,
+    "official_results": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Meituan\\LongCat2.5\\光线追踪渲染加速\\codex\\performance\\work\\official\\results.json"
+  },
+  "notes": "评分版本：评的是作答结束时工作目录内容的副本，不看 git 提交；原始提交除指定评分表外未修改。副本为 work\\submission，solution.cu 与原件 SHA256 均为 5F1E04A10F325AD1AFE2724EB463650C4C1946ECF7363EEB6831850DDE23C3A5。官方 evaluate.py 仅运行一次，全部编译及评测经 process_job.py --cpus 16-27 包装，官方入口保留 --cpus 16-27，高优先级、各 5 次取最小值。官方报告 valid=true、formal=true；各次 GPU 检查无其他 CUDA 计算进程，未发现伪造输出、篡改评测或少采样。静态扫描的内存回传是 Morton 码及排序索引，用于当前场景 CPU 建树；静态分配仅复用容量，每次 render 重新上传并构造场景。常规 stderr 调试输出违反明示规则，独立于未提速导致的官方零分。已核对本次启动的包装进程和全部 25 个评测进程自然退出，见 work\\cleanup.json。",
+  "total": 11.821
+}

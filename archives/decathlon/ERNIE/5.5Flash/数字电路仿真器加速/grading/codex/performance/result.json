@@ -1,0 +1,107 @@
+{
+  "task": "数字电路仿真器加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "总分",
+      "max": 100,
+      "score": 10.7,
+      "reason": "官方 evaluate.py 正确性通过 7/7；已完成 9/9 个性能输入。性能平均 10.7 分，按正确性比例计算总分 10.7 分；提交与基线均按指定命令重新编译，未见第十节 1–7 条违规。9 个性能输入均慢于基线，加速比为 0.599–0.974 倍，寄存器堆退化最明显。"
+    }
+  ],
+  "metrics": {
+    "correctness_passed": 7,
+    "correctness_total": 7,
+    "performance_cases_completed": 9,
+    "report_path": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\ERNIE\\5.5Flash\\数字电路仿真器加速\\codex\\performance\\work\\evaluate_report.json",
+    "performance_passed": 9,
+    "performance_score": 10.7,
+    "G": 0.8431716195844313,
+    "score": 10.7,
+    "performance_summary": [
+      {
+        "case": "input_01",
+        "family": "深链",
+        "R_i_ms": 1012.895,
+        "C_i_ms": 1072.269,
+        "s_i": 0.944627700698239,
+        "points_i": 11.4,
+        "status": "PASS"
+      },
+      {
+        "case": "input_02",
+        "family": "深链",
+        "R_i_ms": 1022.101,
+        "C_i_ms": 1098.587,
+        "s_i": 0.9303778398979781,
+        "points_i": 11.3,
+        "status": "PASS"
+      },
+      {
+        "case": "input_03",
+        "family": "深链",
+        "R_i_ms": 1024.159,
+        "C_i_ms": 1119.216,
+        "s_i": 0.9150682263298596,
+        "points_i": 11.1,
+        "status": "PASS"
+      },
+      {
+        "case": "input_04",
+        "family": "阵列乘法器",
+        "R_i_ms": 963.339,
+        "C_i_ms": 1018.389,
+        "s_i": 0.9459440351378501,
+        "points_i": 11.4,
+        "status": "PASS"
+      },
+      {
+        "case": "input_05",
+        "family": "阵列乘法器",
+        "R_i_ms": 982.843,
+        "C_i_ms": 1009.082,
+        "s_i": 0.9739971578127447,
+        "points_i": 11.7,
+        "status": "PASS"
+      },
+      {
+        "case": "input_06",
+        "family": "阵列乘法器",
+        "R_i_ms": 967.502,
+        "C_i_ms": 1021.026,
+        "s_i": 0.9475782203391491,
+        "points_i": 11.5,
+        "status": "PASS"
+      },
+      {
+        "case": "input_07",
+        "family": "寄存器堆",
+        "R_i_ms": 1001.935,
+        "C_i_ms": 1420.723,
+        "s_i": 0.7052289573688889,
+        "points_i": 10.0,
+        "status": "PASS"
+      },
+      {
+        "case": "input_08",
+        "family": "寄存器堆",
+        "R_i_ms": 1021.833,
+        "C_i_ms": 1406.553,
+        "s_i": 0.7264802677183155,
+        "points_i": 10.4,
+        "status": "PASS"
+      },
+      {
+        "case": "input_09",
+        "family": "寄存器堆",
+        "R_i_ms": 1002.081,
+        "C_i_ms": 1673.496,
+        "s_i": 0.598794977699379,
+        "points_i": 7.6,
+        "status": "PASS"
+      }
+    ]
+  },
+  "notes": "评的是作答结束时的工作目录内容副本（work\\submission），不看 git 提交；solution.cpp 与原件 SHA-256 一致：9AC496EA5DDDBA58238B1D732CF2D83700DD5644507807BD4DCA684BC41451E8。所有编译及唯一一次官方评测均经 process_job.py --cpus 0-15 包装；官方评测保留亲和掩码 0xffff、高优先级、OMP_NUM_THREADS=16 和三次交错取中位数。"
+}

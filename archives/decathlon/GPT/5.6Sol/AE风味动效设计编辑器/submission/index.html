@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>砺场 ForgeMotion · AE 风味动效设计编辑器</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <div class="brand" title="砺场 ForgeMotion">
+        <div class="brand-mark"><span></span><span></span><span></span></div>
+        <div><b>砺场</b><small>FORGE MOTION</small></div>
+      </div>
+      <nav class="menus" aria-label="主菜单">
+        <button data-menu="file">文件</button><button data-menu="edit">编辑</button><button data-menu="comp">合成</button><button data-menu="layer">图层</button><button data-menu="animate">动画</button><button data-menu="view">视图</button>
+      </nav>
+      <div class="project-title"><i></i><span id="projectName">锻字工程 / 主合成</span><em id="dirtyMark">已保存</em></div>
+      <div class="top-actions">
+        <button class="icon-button" id="undoBtn" title="撤销 Ctrl+Z" aria-label="撤销">↶</button>
+        <button class="icon-button" id="redoBtn" title="重做 Ctrl+Shift+Z" aria-label="重做">↷</button>
+        <button class="top-pill" id="saveBtn"><span>保存工程</span><kbd>Ctrl S</kbd></button>
+        <button class="render-button" id="previewBtn"><span class="render-dot"></span>实时预览</button>
+      </div>
+    </header>
+
+    <aside class="left-panel panel">
+      <div class="panel-heading">
+        <div class="tabs"><button class="active">项目</button><button>效果</button></div>
+        <button class="mini-button" id="newCompBtn" title="新建合成">＋</button>
+      </div>
+      <div class="search-row"><span>⌕</span><input id="projectSearch" placeholder="搜索工程素材" autocomplete="off"><kbd>/</kbd></div>
+      <div class="asset-summary">
+        <div class="preview-tile"><span class="tile-glyph">铸</span><i></i></div>
+        <div><b>主合成</b><small>1920 × 1080</small><small>30 fps · 00:15:00</small></div>
+      </div>
+      <div class="tree" id="projectTree">
+        <div class="tree-group expanded"><button class="twisty">⌄</button><span class="folder-icon"></span><b>锻字工程</b><small>3</small></div>
+        <button class="tree-item selected" data-comp="main"><span class="comp-icon">▰</span><span>主合成</span><em>15s</em></button>
+        <button class="tree-item" data-comp="glyph"><span class="comp-icon violet">▰</span><span>字形_预合成</span><em>15s</em></button>
+        <button class="tree-item" data-comp="spark"><span class="comp-icon orange">✦</span><span>火星_粒子系统</span><em>3s</em></button>
+        <div class="tree-group expanded"><button class="twisty">⌄</button><span class="folder-icon"></span><b>程序资源</b><small>4</small></div>
+        <button class="tree-item"><span class="asset-icon">◇</span><span>铸_轮廓几何</span></button>
+        <button class="tree-item"><span class="asset-icon">⌁</span><span>锻造台_碰撞体</span></button>
+        <button class="tree-item"><span class="asset-icon">◉</span><span>炽铁_PBR</span></button>
+        <button class="tree-item"><span class="asset-icon">♫</span><span>炉心节拍_音色</span></button>
+      </div>
+      <div class="left-footer">
+        <button id="importBtn" title="打开工程">⇧</button><button id="addFolderBtn" title="新建文件夹">▱</button><span></span><button id="trashBtn" title="删除">⌫</button>
+        <input type="file" id="fileInput" accept="application/json,.forge.json" hidden>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <section class="viewer panel">
+        <div class="viewer-toolbar">
+          <div class="tool-group" id="tools">
+            <button class="tool active" data-tool="select" title="选择工具 V">⌁<small>V</small></button>
+            <button class="tool" data-tool="hand" title="抓手 H">✋<small>H</small></button>
+            <button class="tool" data-tool="pen" title="钢笔 G">⌕<small>G</small></button>
+            <button class="tool" data-tool="text" title="文字 T"><b>T</b><small>T</small></button>
+            <button class="tool" data-tool="shape" title="形状 Q">▱<small>Q</small></button>
+            <button class="tool" data-tool="pin" title="图钉 P">◆<small>P</small></button>
+          </div>
+          <div class="toolbar-divider"></div>
+          <div class="transform-mode"><button class="active" data-transform="move">移动</button><button data-transform="rotate">旋转</button><button data-transform="scale">缩放</button></div>
+          <div class="viewer-spacer"></div>
+          <button class="status-toggle active" id="gridToggle"><span class="grid-mini"></span>网格</button>
+          <button class="status-toggle active" id="guideToggle"><span>⌗</span>辅助线</button>
+          <button class="quality-button"><i></i>自适应 <span>⌄</span></button>
+        </div>
+        <div class="stage-wrap" id="stageWrap">
+          <div class="stage-vignette"></div>
+          <div class="canvas-shell" id="canvasShell">
+            <canvas id="glCanvas" width="1280" height="720" aria-label="WebGL 2 合成画布"></canvas>
+            <canvas id="overlayCanvas" width="1280" height="720"></canvas>
+            <div class="stage-badge left"><span id="stageLabel">主合成</span><b id="phaseLabel">01 · 写成</b></div>
+            <div class="stage-badge right"><span>活动摄像机</span><b>GPU · WebGL 2</b></div>
+            <div class="render-warning" id="renderWarning" hidden>当前浏览器未启用 WebGL 2</div>
+          </div>
+        </div>
+        <div class="viewer-footer">
+          <button id="viewZoomBtn">适合 <span>⌄</span></button><span class="divider"></span><button id="channelBtn">RGB <span class="rgb-dots"></span></button>
+          <div class="viewer-spacer"></div>
+          <span class="render-stat"><i></i><b id="renderStat">实时</b> · <span id="resolutionStat">1280 × 720</span></span>
+          <button class="icon-button small" id="snapshotBtn" title="保存快照">◉</button>
+        </div>
+      </section>
+
+      <section class="timeline panel" id="timelinePanel">
+        <div class="timeline-topbar">
+          <div class="tabs view-tabs" id="lowerTabs"><button class="active" data-view="timeline">时间轴</button><button data-view="curve">曲线</button><button data-view="nodes">程序节点</button></div>
+          <div class="transport">
+            <button id="goStartBtn" title="回到开头">▮◀</button><button id="prevKeyBtn" title="上一个关键帧">◆◀</button><button class="play-main" id="playBtn" title="播放/暂停 空格">▶</button><button id="nextKeyBtn" title="下一个关键帧">▶◆</button><button id="goEndBtn" title="跳到结尾">▶▮</button><button id="loopBtn" class="active" title="循环工作区">↻</button>
+          </div>
+          <div class="time-readout"><span id="timeDisplay">00:00:00</span><small id="frameDisplay">0000f</small></div>
+          <div class="timeline-spacer"></div>
+          <button class="timeline-option active" id="motionBlurBtn" title="合成运动模糊">◒</button><button class="timeline-option active" id="snapBtn" title="吸附">⌁</button>
+          <div class="zoom-slider"><span>−</span><input id="zoomRange" type="range" min="70" max="180" value="100"><span>＋</span></div>
+        </div>
+        <div class="lower-view active" id="timelineView">
+          <div class="layer-head grid-row"><div class="layer-controls-head"><span>图层</span><span class="head-icons">◉　♧　鎖</span></div><div class="ruler-wrap" id="rulerWrap"><div class="work-area" id="workArea"></div><div class="ruler" id="ruler"></div><div class="playhead" id="playhead"><i></i></div></div></div>
+          <div class="timeline-scroll" id="timelineScroll"><div class="layer-list" id="layerList"></div><div class="tracks" id="tracks"></div></div>
+        </div>
+        <div class="lower-view" id="curveView">
+          <div class="curve-sidebar"><div class="curve-title"><span class="curve-dot orange"></span>冲击控制器</div><button class="curve-prop active" data-curve="speed"><i></i>速度 <em>px/s</em></button><button class="curve-prop" data-curve="value"><i></i>旋转 Y <em>deg</em></button><button class="curve-prop" data-curve="glow"><i></i>发光强度 <em>%</em></button><label><input type="checkbox" id="expressionCurve" checked> 显示表达式结果</label></div>
+          <canvas id="curveCanvas" width="1100" height="260"></canvas>
+        </div>
+        <div class="lower-view" id="nodesView">
+          <div class="node-toolbar"><button id="addNodeBtn">＋ 添加节点</button><button id="duplicateNodeBtn">复制节点</button><button id="groupNodeBtn">封装节点组</button><button id="frameNodesBtn">适合全部</button><span></span><small id="nodeStatus">几何流 · 7 个节点 · 实时求值</small></div>
+          <div class="node-board" id="nodeBoard"><svg id="nodeWires"></svg></div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="right-panel panel">
+      <div class="inspector-tabs" id="inspectorTabs"><button class="active" data-inspector="properties">属性</button><button data-inspector="effects">效果</button><button data-inspector="material">材质</button></div>
+      <div class="inspector-breadcrumb"><span id="selectedTypeIcon">T</span><div><small>当前选择</small><b id="selectedLayerName">铸字_挤出体</b></div><button id="renameBtn">⋯</button></div>
+      <div class="inspector-content active" id="propertiesInspector">
+        <section class="property-section open">
+          <button class="section-title"><span>⌄</span><b>变换</b><em>TRANSFORM</em></button>
+          <div class="section-body">
+            <div class="prop-row"><button class="stopwatch animated" data-prop="anchor" title="开启动画">◉</button><label>锚点</label><div class="value-triplet"><input data-field="anchorX" value="0"><input data-field="anchorY" value="0"><input data-field="anchorZ" value="0"></div></div>
+            <div class="prop-row"><button class="stopwatch animated" data-prop="position">◉</button><label>位置</label><div class="value-triplet"><input data-field="positionX" value="960"><input data-field="positionY" value="540"><input data-field="positionZ" value="0"></div></div>
+            <div class="prop-row"><button class="stopwatch animated" data-prop="scale">◉</button><label>缩放</label><div class="value-triplet linked"><input data-field="scaleX" value="100"><input data-field="scaleY" value="100"><input data-field="scaleZ" value="100"></div></div>
+            <div class="prop-row"><button class="stopwatch animated" data-prop="rotation">◉</button><label>旋转</label><div class="value-triplet"><input data-field="rotationX" value="-6"><input data-field="rotationY" value="-12"><input data-field="rotationZ" value="0"></div></div>
+            <div class="prop-row"><button class="stopwatch animated" data-prop="opacity">◉</button><label>不透明度</label><div class="value-single"><input data-field="opacity" value="100"><span>%</span></div></div>
+            <div class="parent-row"><label>父级与链接</label><select id="parentSelect"><option>无</option><option>控制器</option><option>场景控制器</option><option>冲击控制器</option></select><button title="拾取链接">⌁</button></div>
+          </div>
+        </section>
+        <section class="property-section open expression-section">
+          <button class="section-title"><span>⌄</span><b>表达式</b><em>EXPRESSION</em></button>
+          <div class="section-body">
+            <div class="expression-head"><span class="fx">ƒx</span><b>旋转 Y</b><button id="expressionEnable" class="active">已启用</button></div>
+            <textarea id="expressionInput" spellcheck="false">value + wiggle(0.8, 0.6)</textarea>
+            <div class="expression-status" id="expressionStatus"><i></i><span>求值正常 · 可复现随机种子 24</span><b>12.0°</b></div>
+            <div class="expression-chips"><button data-expression="wiggle">wiggle()</button><button data-expression="loop">loopOut()</button><button data-expression="ease">ease()</button><button data-expression="reference">跨层引用</button></div>
+          </div>
+        </section>
+        <section class="property-section open">
+          <button class="section-title"><span>⌄</span><b>几何与变形</b><em>GEOMETRY</em></button>
+          <div class="section-body compact">
+            <div class="slider-row"><label>挤出深度</label><input id="depthRange" type="range" min="10" max="140" value="72"><output id="depthOutput">72 px</output></div>
+            <div class="slider-row"><label>倒角</label><input id="bevelRange" type="range" min="0" max="24" value="8"><output id="bevelOutput">8 px</output></div>
+            <div class="slider-row"><label>受击形变</label><input id="deformRange" type="range" min="0" max="100" value="64"><output id="deformOutput">64%</output></div>
+            <div class="slider-row"><label>旋涡场混合</label><input id="fieldRange" type="range" min="0" max="100" value="32"><output id="fieldOutput">32%</output></div>
+            <div class="mini-cards"><button class="active"><span>⌁</span><b>旋涡场</b><small>混合 32%</small></button><button class="active"><span>◆</span><b>位置图钉</b><small>3 个固定点</small></button></div>
+          </div>
+        </section>
+        <section class="property-section open" id="particleSection">
+          <button class="section-title"><span>⌄</span><b>粒子与碰撞</b><em>PARTICLES</em></button>
+          <div class="section-body compact">
+            <div class="slider-row"><label>发射速率</label><input id="rateRange" type="range" min="4" max="56" value="34"><output id="rateOutput">34 /s</output></div>
+            <div class="slider-row"><label>初速度</label><input id="speedRange" type="range" min="20" max="180" value="100"><output id="speedOutput">1.00×</output></div>
+            <div class="slider-row"><label>寿命</label><input id="lifeRange" type="range" min="40" max="180" value="100"><output id="lifeOutput">1.00 s</output></div>
+            <div class="slider-row"><label>空气阻力</label><input id="dragRange" type="range" min="0" max="100" value="18"><output id="dragOutput">0.18</output></div>
+            <div class="parent-row"><label>发射源</label><select id="emitterSource"><option>铸字_变形表面</option><option>冲击曲线</option><option>点发射器</option></select><button title="拾取几何">⌁</button></div>
+            <div class="mini-cards"><button class="active"><span>↘</span><b>重力场</b><small>980 px/s²</small></button><button class="active"><span>⌁</span><b>表面碰撞</b><small>反弹 42%</small></button></div>
+          </div>
+        </section>
+        <section class="property-section open" id="textAnimatorSection">
+          <button class="section-title"><span>⌄</span><b>文字与范围动画器</b><em>TEXT</em></button>
+          <div class="section-body compact">
+            <div class="parent-row"><label>源文字</label><button class="wide-action" id="editTextBtn">编辑「铸」并重建轮廓</button><button>⌁</button></div>
+            <div class="parent-row"><label>选择单位</label><select id="textUnit"><option>按字</option><option>按词</option><option>按行</option></select><button title="字符绕自身中心">◎</button></div>
+            <div class="parent-row"><label>段落对齐</label><select id="textAlign"><option>居中</option><option>左对齐</option><option>右对齐</option></select><button title="字体范围：系统中文黑体">字</button></div>
+            <div class="slider-row"><label>字号</label><input id="fontSizeRange" type="range" min="120" max="800" value="720"><output id="fontSizeOutput">720 px</output></div>
+            <div class="slider-row"><label>行距</label><input id="lineHeightRange" type="range" min="80" max="180" value="108"><output id="lineHeightOutput">108%</output></div>
+            <div class="slider-row"><label>字距</label><input id="trackingRange" type="range" min="-30" max="80" value="0"><output id="trackingOutput">0 px</output></div>
+            <div class="dual-slider"><label>范围</label><input id="textStart" type="range" min="0" max="100" value="0"><input id="textEnd" type="range" min="0" max="100" value="100"><output id="textRangeOutput">0—100%</output></div>
+            <div class="slider-row"><label>偏移</label><input id="textOffset" type="range" min="-100" max="100" value="0"><output id="textOffsetOutput">0%</output></div>
+            <div class="slider-row"><label>软边</label><input id="textSoftness" type="range" min="0" max="100" value="18"><output id="textSoftnessOutput">18%</output></div>
+            <div class="slider-row"><label>字符不透明度</label><input id="textOpacity" type="range" min="0" max="100" value="100"><output id="textOpacityOutput">100%</output></div>
+          </div>
+        </section>
+        <section class="property-section open" id="shapeOpsSection">
+          <button class="section-title"><span>⌄</span><b>形状操作</b><em>VECTOR</em></button>
+          <div class="section-body compact">
+            <div class="slider-row"><label>修剪路径</label><input id="trimRange" type="range" min="0" max="100" value="100"><output id="trimOutput">100%</output></div>
+            <div class="slider-row"><label>重复器</label><input id="repeatRange" type="range" min="1" max="12" value="1"><output id="repeatOutput">1</output></div>
+            <div class="parent-row"><label>布尔运算</label><select id="booleanMode"><option>无</option><option>并集</option><option>差集</option><option>交集</option></select><button title="交换操作数顺序" id="swapBoolean">⇄</button></div>
+            <div class="parent-row"><label>路径形变</label><select id="morphTarget"><option>无</option><option>椭圆轮廓</option><option>铸字外轮廓</option></select><button title="保留孔洞对应">◇</button></div>
+          </div>
+        </section>
+        <section class="property-section open" id="sceneSection">
+          <button class="section-title"><span>⌄</span><b>摄像机与灯光</b><em>SCENE 3D</em></button>
+          <div class="section-body compact">
+            <div class="slider-row"><label>视角</label><input id="fovRange" type="range" min="18" max="80" value="38"><output id="fovOutput">38°</output></div>
+            <div class="slider-row"><label>对焦距离</label><input id="focusRange" type="range" min="300" max="1600" value="920"><output id="focusOutput">920</output></div>
+            <div class="slider-row"><label>光圈</label><input id="apertureRange" type="range" min="0" max="80" value="18"><output id="apertureOutput">f/1.8</output></div>
+            <div class="slider-row"><label>点光强度</label><input id="lightRange" type="range" min="0" max="240" value="128"><output id="lightOutput">128%</output></div>
+            <div class="color-row"><label>灯光颜色</label><input id="lightColor" type="color" value="#ff9b54"><code>#FF9B54</code></div>
+          </div>
+        </section>
+        <section class="property-section open" id="precompSection">
+          <button class="section-title"><span>⌄</span><b>预合成与时间重映射</b><em>TIME MAP</em></button>
+          <div class="section-body compact">
+            <div class="slider-row"><label>播放速度</label><input id="timeSpeed" type="range" min="-200" max="200" value="100"><output id="timeSpeedOutput">100%</output></div>
+            <div class="prop-row"><button class="stopwatch animated">◉</button><label>开始时间</label><div class="value-single"><input id="precompStart" value="0.00"><span>s</span></div></div>
+            <label class="check-row"><input id="reverseTime" type="checkbox"><span>倒放引用</span></label>
+            <label class="check-row"><input id="freezeTime" type="checkbox"><span>定格当前帧</span></label>
+            <label class="check-row"><input id="precompBlur" type="checkbox" checked><span>继承合成运动模糊</span></label>
+          </div>
+        </section>
+        <section class="property-section open" id="audioSection">
+          <button class="section-title"><span>⌄</span><b>内置音色</b><em>SYNTH</em></button>
+          <div class="section-body compact">
+            <div class="slider-row"><label>主音量</label><input id="volumeRange" type="range" min="0" max="100" value="48"><output id="volumeOutput">48%</output></div>
+            <div class="slider-row"><label>炉心基频</label><input id="toneRange" type="range" min="35" max="110" value="55"><output id="toneOutput">55 Hz</output></div>
+            <div class="parent-row"><label>波形</label><select id="waveform"><option>三角波</option><option>正弦波</option><option>锯齿波</option></select><button title="试听音色" id="auditionTone">▶</button></div>
+          </div>
+        </section>
+        <section class="property-section open">
+          <button class="section-title"><span>⌄</span><b>合成与遮罩</b><em>COMPOSITE</em></button>
+          <div class="section-body compact">
+            <div class="parent-row"><label>混合模式</label><select id="blendMode"><option>正常</option><option>相加</option><option>滤色</option><option>正片叠底</option><option>叠加</option></select><button title="混合模式说明">?</button></div>
+            <div class="parent-row"><label>轨道遮罩</label><select id="trackMatte"><option>无</option><option>Alpha</option><option>Alpha 反转</option><option>亮度</option><option>亮度反转</option></select><button title="选择遮罩层">⌁</button></div>
+            <div class="mask-row"><button id="maskToggle"><span>＋</span> 添加椭圆蒙版</button><label>羽化 <input id="maskFeather" type="number" value="18" min="0" max="200"> px</label></div>
+            <div class="parent-row"><label>蒙版模式</label><select id="maskType"><option>椭圆</option><option>矩形</option><option>自由路径</option></select><label class="mini-check"><input id="maskInvert" type="checkbox"> 反转</label></div>
+          </div>
+        </section>
+      </div>
+      <div class="inspector-content" id="effectsInspector">
+        <div class="effect-stack">
+          <div class="effect-card active"><header><span>⠿</span><button class="fx-switch on" data-effect="glow"></button><b>炽热发光</b><em>01</em></header><div class="slider-row"><label>强度</label><input id="glowRange" type="range" min="0" max="200" value="118"><output id="glowOutput">118%</output></div><div class="slider-row"><label>半径</label><input id="glowRadius" type="range" min="0" max="80" value="32"><output id="glowRadiusOutput">32 px</output></div></div>
+          <div class="effect-card active"><header><span>⠿</span><button class="fx-switch on" data-effect="blur"></button><b>高斯模糊</b><em>02</em></header><div class="slider-row"><label>模糊度</label><input id="blurRange" type="range" min="0" max="30" value="2"><output id="blurOutput">2 px</output></div></div>
+          <div class="effect-card active"><header><span>⠿</span><button class="fx-switch on" data-effect="grade"></button><b>冷却调色</b><em>03</em></header><div class="slider-row"><label>色相</label><input id="hueRange" type="range" min="-180" max="180" value="0"><output id="hueOutput">0°</output></div><div class="slider-row"><label>饱和度</label><input id="saturationRange" type="range" min="0" max="200" value="112"><output id="saturationOutput">112%</output></div><div class="slider-row"><label>亮度</label><input id="brightnessRange" type="range" min="0" max="200" value="92"><output id="brightnessOutput">92%</output></div></div>
+          <button class="add-effect" id="addEffectBtn">＋ 添加效果</button>
+        </div>
+      </div>
+      <div class="inspector-content" id="materialInspector">
+        <div class="material-preview"><div class="material-sphere"></div><div><b>炽铁_PBR</b><small>物理材质 · 实时反射</small></div></div>
+        <section class="property-section open"><button class="section-title"><span>⌄</span><b>表面</b><em>PBR</em></button><div class="section-body compact">
+          <div class="color-row"><label>基础色</label><input id="baseColor" type="color" value="#5a3026"><code>#5A3026</code></div>
+          <div class="slider-row"><label>金属度</label><input id="metalRange" type="range" min="0" max="100" value="92"><output id="metalOutput">0.92</output></div>
+          <div class="slider-row"><label>粗糙度</label><input id="roughRange" type="range" min="0" max="100" value="28"><output id="roughOutput">0.28</output></div>
+          <div class="slider-row"><label>自发光</label><input id="emissionRange" type="range" min="0" max="200" value="136"><output id="emissionOutput">1.36</output></div>
+          <div class="color-row"><label>发光色</label><input type="color" value="#ff5a1f"><code>#FF5A1F</code></div>
+        </div></section>
+        <section class="property-section open"><button class="section-title"><span>⌄</span><b>阴影</b><em>SHADOW</em></button><div class="section-body compact"><label class="check-row"><input type="checkbox" checked><span>投射阴影</span></label><label class="check-row"><input type="checkbox" checked><span>接收阴影</span></label><div class="slider-row"><label>阴影柔度</label><input type="range" min="0" max="100" value="26"><output>26%</output></div></div></section>
+      </div>
+      <div class="inspector-footer"><span><i></i>依赖已更新</span><b id="selectionCount">1 个图层</b></div>
+    </aside>
+
+    <div class="toast-stack" id="toastStack"></div>
+    <div class="context-menu" id="contextMenu" hidden></div>
+    <div class="modal-backdrop" id="modalBackdrop" hidden>
+      <div class="modal" id="modal"><header><b id="modalTitle">新建合成</b><button id="modalClose">×</button></header><div id="modalBody"></div><footer><button id="modalCancel">取消</button><button class="primary" id="modalConfirm">确定</button></footer></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

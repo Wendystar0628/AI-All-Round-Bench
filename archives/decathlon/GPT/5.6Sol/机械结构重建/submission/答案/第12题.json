@@ -1,0 +1,12 @@
+{
+  "problem":"12","parts":[{"name":"1","title":"偏轴阶梯双腔泵座","features":[
+    {"type":"extrude","plane":"XY","origin":[0,0,-4],"loops":[{"rect":[-8,-6,104,66]}],"depth":4},
+    {"type":"extrude","plane":"XZ","loops":[{"path":[[0,0],[96,0],[96,34],[76,54],[20,54],[0,34]]}],"depth":-60},
+    {"type":"extrude","plane":"XZ","origin":[0,-6,0],"loops":[{"circle":[38,34],"d":76}],"depth":-6},
+    {"type":"hole","plane":"XZ","origin":[0,-6,0],"at":[38,34],"d":42,"through":true,"cbore":{"d":58,"depth":4}},
+    {"type":"extrude","op":"cut","plane":"XZ","origin":[0,8,0],"loops":[{"rect":[8,8,54,42]},{"rect":[62,6,88,30]}],"depth":-44},
+    {"type":"hole","plane":"ZY","origin":[96,0,0],"at":[18,38],"d":30,"through":true,"reverse":true,"cbore":{"d":54,"depth":4}},
+    {"type":"hole","plane":{"origin":[76,30,54],"normal":[0.707106781,0,0.707106781],"x_dir":[0,1,0]},"at":[0,0],"d":22,"depth":46},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[0,0],[96,0],[0,60],[96,60]],"d":9,"through":true,"reverse":true,"cbore":{"d":15,"depth":2}},
+    {"type":"fillet","radius":2,"edges":[[-8,-6,-2]]}
+  ]}]}

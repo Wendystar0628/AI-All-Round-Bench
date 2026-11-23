@@ -1,0 +1,16 @@
+{
+  "problem": "17",
+  "parts": [
+    {"name": "1", "title": "五斜座交汇比例阀体(粗略)", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [0, 0, 300, 200], "r": 6}], "depth": 18},
+      {"type": "extrude", "name": "本体", "plane": "XZ", "loops": [{"path": [[17, 0], [283, 0], [283, 106], [237, 150], [62, 150], [17, 106]]}], "depth": [-183, -17]},
+      {"type": "extrude", "name": "前接口凸缘Φ90", "plane": "XZ", "origin": [0, 17, 0], "loops": [{"circle": [93, 74], "d": 90}], "depth": [0, 17]},
+      {"type": "extrude", "name": "后接口凸缘Φ86", "plane": "XZ", "origin": [0, 183, 0], "loops": [{"circle": [200, 74], "d": 86}], "depth": [-17, 0]},
+      {"type": "extrude", "op": "cut", "name": "上腔", "plane": "XY", "origin": [0, 0, 103], "loops": [{"rect": [68, 40, 231, 150]}], "depth": 32},
+      {"type": "extrude", "op": "cut", "name": "前接口通孔Φ32", "plane": "XZ", "origin": [0, 60, 0], "loops": [{"circle": [93, 74], "d": 32}], "depth": [0, 61]},
+      {"type": "extrude", "op": "cut", "name": "前接口沉台Φ50", "plane": "XZ", "origin": [0, 8, 0], "loops": [{"circle": [93, 74], "d": 50}], "depth": [0, 9]},
+      {"type": "extrude", "op": "cut", "name": "后接口通孔Φ32", "plane": "XZ", "origin": [0, 201, 0], "loops": [{"circle": [200, 74], "d": 32}], "depth": [0, 61]},
+      {"type": "hole", "name": "底板孔", "plane": "XY", "origin": [0, 0, 18], "at": [[12, 12], [288, 12], [12, 188], [288, 188]], "d": 10, "through": true, "cbore": {"d": 18, "depth": 4}}
+    ]}
+  ]
+}

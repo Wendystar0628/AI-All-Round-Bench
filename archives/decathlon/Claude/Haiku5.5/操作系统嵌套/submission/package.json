@@ -1,0 +1,16 @@
+{
+  "name": "nested-os",
+  "version": "1.0.0",
+  "description": "嵌套图形操作系统 (Nested OS) - Electron desktop app",
+  "main": "src/main/main.js",
+  "private": true,
+  "scripts": {
+    "prestart": "node tools/bundle-runtime.js && node tools/build-images.js",
+    "start": "electron .",
+    "test": "node tests/vm.test.js && node tests/kernel.test.js && node tests/kernel-e2e.test.js"
+  },
+  "dependencies": {
+    "electron": "45.2.1",
+    "three": "0.170.0"
+  }
+}

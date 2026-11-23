@@ -1,0 +1,65 @@
+
+// ============================== 时钟与轮询 ==============================
+fn on_step(dt) {
+  K.step++; K.step_used = 0;
+  for (let pid of K.order) {
+    let p = K.procs[pid];
+    p.rate = p.rate * 0.92 + p.used_step * 0.08;
+    p.used_step = 0;
+    if (p.kind == "system") {
+      let c = p.sys; c.step_used = 0;
+      if (c.state == "running") { c.t = c.t + dt * c.rate; c.step++; }
+    }
+  }
+}
+fn poll() {
+  let r = sys("mi_poll");
+  K.since_poll = 0;
+  if (r.t > K.now) { let dt = r.t - K.now; K.now = r.t; on_step(dt); }
+  K.budget = {total: r.budget, granted: r.granted, used: r.used, svc: r.svc};
+  for (let e of r.evs) { route_event(e); }
+}
+
+// ============================== 启动与主循环 ==============================
+fn restore_children() {
+  let list = mi("sys", "children");
+  if (typeof(list) != "arr") { return nil; }
+  for (let c of list) {
+    let kpath = "/System/Kernels/" + c.id + "/kernel.ns";
+    let q = proc_add(c.name, kpath, nil, nil, "system", 0);
+    q.sys = child_new_rec(c.h, c.name, kpath);
+    q.state = "waiting"; q.wait = "boot";
+    child_boot(q);
+  }
+}
+fn boot() {
+  syscalls_init();
+  K.self_h = mi("sys", "self");
+  K.depth = mi("sys", "depth");
+  K.screen_ref = mi("gfx", "screen");
+  K.wall0 = mi("sys", "wall");
+  for (let d of ["/Documents", "/Downloads", "/Programs", "/Snapshots", "/System/Kernels", "/Temp"]) {
+    if (!fs_isdir(d)) { fs_mkdir_(d); }
+  }
+  poll();
+  spawn_start("/System/wm.ns", {}, "窗口管理", "user", 0, 0, "boot");
+  restore_children();
+  K.booted = true;
+}
+fn main_loop() {
+  while (true) {
+    if (K.since_poll >= CFG.poll_work) { poll(); }
+    wake_sleepers();
+    let p = sched_pick();
+    if (p == nil) {
+      poll();
+      wake_sleepers();
+      p = sched_pick();
+      if (p == nil) { sys("mi_idle"); K.since_poll = CFG.poll_work; continue; }
+    }
+    run_slice(p);
+  }
+}
+
+boot();
+main_loop();

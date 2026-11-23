@@ -1,0 +1,139 @@
+# 进程与子系统管理。预算、挂起、快照、内核都从这里操作。
+
+fn main() {
+  let st = { wm: 0, windowId: "", me: self(), note: "", budget: "420000", mem: "268435456", storage: "50331648", grant: "320000", rate: "1" };
+  while (true) {
+    let m = wait_msg();
+    take(st, m);
+    let g = 0;
+    while (g < 16) {
+      let e = recv();
+      if (e == null) { g = 100; }
+      else { take(st, e); g = g + 1; }
+    }
+    if (st.wm != 0) { send(st.wm, { tag: "body", from: st.me, windowId: st.windowId, title: "进程", widgets: build(st) }); }
+  }
+}
+
+fn take(st, m) {
+  if (m == null) { return 0; }
+  if (m.tag == "boot") { st.wm = m.wm; st.windowId = m.windowId; }
+  if (m.tag == "value") {
+    if (m.id == "tasks-budget") { st.budget = str(m.value); }
+    if (m.id == "tasks-memory") { st.mem = str(m.value); }
+    if (m.id == "tasks-storage") { st.storage = str(m.value); }
+    if (m.id == "tasks-grant-input") { st.grant = str(m.value); }
+    if (m.id == "tasks-rate") { st.rate = str(m.value); }
+  }
+  if (m.tag == "ui") { on_ui(st, m); }
+  return 0;
+}
+
+fn on_ui(st, m) {
+  if (m.id == "apply-budget") {
+    set_quota("budget", num(st.budget), "");
+    set_quota("mem", num(st.mem), "");
+    set_quota("storage", num(st.storage), "");
+    st.note = "已写入本系统配额";
+    return 0;
+  }
+  if (m.testid == "tasks-suspend") { suspend(num(m.target)); return 0; }
+  if (m.testid == "tasks-resume-proc") { resume_proc(num(m.target)); return 0; }
+  if (m.testid == "tasks-kill") { kill(num(m.target)); return 0; }
+  if (m.testid == "system-pause") { ctl("pause", m.sys, 0); return 0; }
+  if (m.testid == "system-resume") { ctl("resume", m.sys, 0); return 0; }
+  if (m.testid == "system-restart") { ctl("restart", m.sys, 0); st.note = "正在重启内核"; return 0; }
+  if (m.testid == "system-step") { ctl("step", m.sys, 0); st.note = "单步 50 毫秒"; return 0; }
+  if (m.testid == "kernel-open") {
+    if (st.wm != 0) { send(st.wm, { tag: "open", path: "/Systems/" + m.sys + "/kernel.npl" }); }
+    return 0;
+  }
+  if (m.testid == "tasks-grant") { ctl("grant", m.sys, num(st.grant)); st.note = "已改拨付"; return 0; }
+  if (m.testid == "system-rate") { ctl("rate", m.sys, num(st.rate)); return 0; }
+  if (m.testid == "system-snapshot") {
+    let r = ctl("snapshot", m.sys, 0);
+    if (r != null && r.file != null) { st.note = "快照 " + r.file; }
+    else { st.note = "快照失败"; }
+    return 0;
+  }
+  if (m.testid == "system-fork") {
+    let f = ctl("fork", m.sys, 0);
+    if (f != null && f.id != null) { st.note = "分叉 " + f.id; }
+    return 0;
+  }
+  if (m.id == "flight-open") {
+    if (st.wm != 0) { send(st.wm, { tag: "open", path: "/Programs/flight.npl" }); }
+  }
+  return 0;
+}
+
+fn build(st) {
+  let w = [];
+  let q = quota();
+  let summary = "预算 " + str(q.budget) + "  本拍剩余 " + str(q.pool) + "  内核 " + str(q.kernel) + "  内部 " + str(q.internal);
+  push(w, { t: "label", id: "sum", testid: "tasks-summary", x: 8, y: 6, w: 720, h: 20, text: summary });
+  push(w, { t: "input", id: "tasks-budget", testid: "tasks-budget", x: 8, y: 30, w: 120, h: 26, value: st.budget });
+  push(w, { t: "input", id: "tasks-memory", testid: "tasks-memory", x: 136, y: 30, w: 140, h: 26, value: st.mem });
+  push(w, { t: "input", id: "tasks-storage", testid: "tasks-storage", x: 284, y: 30, w: 140, h: 26, value: st.storage });
+  push(w, { t: "button", id: "apply-budget", testid: "tasks-apply", x: 432, y: 30, w: 72, h: 26, label: "应用" });
+  push(w, { t: "input", id: "tasks-grant-input", testid: "tasks-grant-input", x: 512, y: 30, w: 100, h: 26, value: st.grant });
+  push(w, { t: "input", id: "tasks-rate", testid: "tasks-rate", x: 620, y: 30, w: 64, h: 26, value: st.rate });
+  let rows = ps();
+  let y = 64;
+  if (rows != null) {
+    let i = 0;
+    while (i < len(rows) && y < 280) {
+      let p = rows[i];
+      let line = str(p.pid) + " " + str(p.name) + " " + str(p.status) + " 本拍 " + str(p.instr);
+      if (p.kind == "carrier") { line = line + " 内核 " + str(p.kernelOwn) + " 内部 " + str(p.internal); }
+      if (p.error != null && p.error != "") { line = line + " " + str(p.error); }
+      push(w, { t: "label", id: "p" + str(i), testid: "tasks-row", x: 8, y: y, w: 460, h: 20, text: line });
+      if (p.kind != "kernel" && p.kind != "carrier" && p.pid != 0) {
+        push(w, { t: "button", id: "sus" + str(p.pid), testid: "tasks-suspend", x: 470, y: y - 2, w: 52, h: 22, label: "挂起", target: str(p.pid) });
+        push(w, { t: "button", id: "res" + str(p.pid), testid: "tasks-resume-proc", x: 526, y: y - 2, w: 52, h: 22, label: "继续", target: str(p.pid) });
+        push(w, { t: "button", id: "kil" + str(p.pid), testid: "tasks-kill", x: 582, y: y - 2, w: 52, h: 22, label: "结束", target: str(p.pid) });
+      }
+      y = y + 24;
+      i = i + 1;
+    }
+  }
+  let kids = children();
+  let y2 = 300;
+  push(w, { t: "label", id: "kidh", testid: "tasks-children", x: 8, y: y2, w: 400, h: 18, text: "直属子系统" });
+  y2 = y2 + 22;
+  if (kids != null) {
+    let j = 0;
+    while (j < len(kids)) {
+      let c = kids[j];
+      push(w, { t: "label", id: "c" + c.id, testid: "tasks-child", x: 8, y: y2, w: 220, h: 20, text: c.id + " " + str(c.state) });
+      push(w, btn("system-pause", c.id, 230, y2));
+      push(w, btn("system-resume", c.id, 290, y2));
+      push(w, btn("system-restart", c.id, 350, y2));
+      push(w, btn("system-step", c.id, 410, y2));
+      push(w, btn("kernel-open", c.id, 470, y2));
+      push(w, btn("tasks-grant", c.id, 540, y2));
+      push(w, btn("system-rate", c.id, 600, y2));
+      push(w, btn("system-snapshot", c.id, 230, y2 + 26));
+      push(w, btn("system-fork", c.id, 300, y2 + 26));
+      y2 = y2 + 56;
+      j = j + 1;
+    }
+  }
+  push(w, { t: "button", id: "flight-open", testid: "kernel-open-flight", x: 8, y: 430, w: 140, h: 26, label: "打开飞控程序" });
+  push(w, { t: "label", id: "note", testid: "tasks-note", x: 160, y: 432, w: 520, h: 22, text: st.note });
+  return w;
+}
+
+fn btn(testid, sys, x, y) {
+  let label = testid;
+  if (testid == "system-pause") { label = "暂停"; }
+  if (testid == "system-resume") { label = "继续"; }
+  if (testid == "system-restart") { label = "重启"; }
+  if (testid == "system-step") { label = "单步"; }
+  if (testid == "kernel-open") { label = "内核"; }
+  if (testid == "tasks-grant") { label = "拨付"; }
+  if (testid == "system-rate") { label = "速率"; }
+  if (testid == "system-snapshot") { label = "快照"; }
+  if (testid == "system-fork") { label = "分叉"; }
+  return { t: "button", id: testid + "-" + sys, testid: testid, x: x, y: y, w: 56, h: 22, label: label, sys: sys, target: sys };
+}

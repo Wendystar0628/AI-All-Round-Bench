@@ -1,0 +1,25 @@
+{
+  "problem": "21",
+  "parts": [
+    {"name": "1", "title": "双回路桥接伺服总壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 160, 140], "r": 6}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [10, 10, 150, 130]}], "depth": 62},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [60, 44], "d": 90}], "depth": [-28, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [60, 44], "d": 50}], "depth": [-28, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [60, 44], "d": 32}], "through": true},
+      {"type": "extrude", "plane": {"origin": [78.34, 68.34, 49.41], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 60},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [78.34, 68.34, 49.41], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 61]},
+      {"type": "extrude", "plane": {"origin": [80, 66.92, 48.94], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 60},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [80, 66.92, 48.94], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 61]},
+      {"type": "extrude", "plane": {"origin": [82.63, 67.37, 48.35], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 60},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [82.63, 67.37, 48.35], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 61]},
+      {"type": "extrude", "plane": {"origin": [78.02, 71.98, 49.15], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 60},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [78.02, 71.98, 49.15], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 61]},
+      {"type": "extrude", "plane": {"origin": [82.79, 72.79, 48.08], "normal": [0.557, 0.557, 0.616], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 60},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [82.79, 72.79, 48.08], "normal": [0.557, 0.557, 0.616], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 61]},
+      {"type": "extrude", "plane": {"origin": [80, 73.35, 48.71], "normal": [0, 0.669, 0.743], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 60},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [80, 73.35, 48.71], "normal": [0, 0.669, 0.743], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 61]},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 76], "at": [[25, 25], [135, 25], [25, 115], [135, 115]], "d": 10, "depth": 14, "cbore": {"d": 18, "depth": 6}}
+    ]}
+  ]
+}

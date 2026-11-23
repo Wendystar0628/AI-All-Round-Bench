@@ -1,0 +1,174 @@
+// =====================================================================
+// 时序进程（/System/apps/scene.ns）：播放位置、倍速、循环、逐帧与跳转，以及镜头。
+// 它不做物理与特效，而是通过消息驱动物理进程（sim）与特效进程（fx），再把合成的一帧交给播放器。
+// 画面显示的是物理进程实际算到的时刻；跳转后序号不一致的旧画面被丢弃。
+// 参数：args[0] 播放器 pid；args[1] 物理进程 pid；args[2] 特效进程 pid；args[3] 时长（秒）；args[4] 镜头关键帧。
+// =====================================================================
+var pos = 0;
+var rate = 1;
+var playing = false;
+var loop = false;
+var dur = 15;
+var lastNow = 0;
+var camMode = "cine";
+var camYaw = 0.6;
+var camPitch = 0.28;
+var camDist = 22;
+var keys = [];
+var simWait = false;
+var fxWait = false;
+var seq = 0;
+var app = 0;
+var simPid = 0;
+var fxPid = 0;
+var me = 0;
+var simSt = nil;
+var fxRes = nil;
+var frameSeq = -1;
+var frameT = 0;
+
+func lerp(a, b, k) {
+    return a + (b - a) * k;
+}
+
+func lerp3(a, b, k) {
+    return [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+}
+
+// 演出镜头：关键帧之间线性插值
+func cine_cam(t) {
+    var n = len(keys);
+    if (n == 0) { return {p: [0, 10, -40], t: [0, 2, 0], fov: 42}; }
+    if (t <= keys[0][0]) { return {p: keys[0][1], t: keys[0][2], fov: keys[0][3]}; }
+    for (var i = 0; i < n - 1; i = i + 1) {
+        var a = keys[i];
+        var b = keys[i + 1];
+        if (t >= a[0] && t <= b[0]) {
+            var k = (t - a[0]) / (b[0] - a[0]);
+            return {p: lerp3(a[1], b[1], k), t: lerp3(a[2], b[2], k), fov: lerp(a[3], b[3], k)};
+        }
+    }
+    var last = keys[n - 1];
+    return {p: last[1], t: last[2], fov: last[3]};
+}
+
+func camera() {
+    if (simSt == nil) { return cine_cam(pos); }
+    var hp = simSt.p;
+    if (camMode == "follow") {
+        var yaw = simSt.yaw;
+        var back = [-sin(yaw) * 15, 5.5, -cos(yaw) * 15];
+        return {p: [hp[0] + back[0], hp[1] + back[1], hp[2] + back[2]], t: [hp[0], hp[1] + 1.5, hp[2]], fov: 46};
+    }
+    if (camMode == "free") {
+        var cp = cos(camPitch);
+        var p = [hp[0] + camDist * cp * sin(camYaw), hp[1] + 2 + camDist * sin(camPitch), hp[2] + camDist * cp * cos(camYaw)];
+        return {p: p, t: [hp[0], hp[1] + 2, hp[2]], fov: 42};
+    }
+    return cine_cam(pos);
+}
+
+func request() {
+    seq = seq + 1;
+    sys_send(simPid, {type: "advance", t: pos});
+    sys_send(simPid, {type: "query", reply: me, seq: seq});
+    simWait = true;
+}
+
+func seek_to(t) {
+    pos = clamp(t, 0, dur);
+    seq = seq + 1;
+    sys_send(simPid, {type: "seek", t: pos});
+    sys_send(simPid, {type: "query", reply: me, seq: seq});
+    simWait = true;
+    frameSeq = -1;
+}
+
+func tick() {
+    var now = sys_now();
+    var dt = now - lastNow;
+    lastNow = now;
+    if (playing) {
+        pos = pos + dt * rate;
+        if (pos >= dur) {
+            if (loop) {
+                pos = pos - dur;
+            } else {
+                pos = dur;
+                playing = false;
+            }
+        }
+    }
+    if (!simWait) { request(); }
+}
+
+func emit() {
+    sys_send(app, {type: "frame", pos: pos, t: frameT, dur: dur, rate: rate, playing: playing, loop: loop, cam: camera(), heli: simSt, fx: fxRes, cammode: camMode});
+}
+
+func handle_ctl(m) {
+    var op = m.op;
+    if (op == "play") {
+        if (pos >= dur) { seek_to(0); }
+        playing = true;
+    } else if (op == "pause") {
+        playing = false;
+    } else if (op == "toggle") {
+        if (playing) { playing = false; } else { if (pos >= dur) { seek_to(0); } playing = true; }
+    } else if (op == "stop") {
+        playing = false;
+        seek_to(0);
+    } else if (op == "replay") {
+        seek_to(0);
+        playing = true;
+    } else if (op == "step") {
+        playing = false;
+        seek_to(pos + 1 / 30);
+    } else if (op == "seek") {
+        seek_to(m.value);
+    } else if (op == "rate") {
+        rate = m.value;
+    } else if (op == "loop") {
+        loop = m.value;
+    } else if (op == "cam") {
+        camMode = m.mode;
+        if (m.yaw != nil) { camYaw = m.yaw; }
+        if (m.pitch != nil) { camPitch = m.pitch; }
+        if (m.dist != nil) { camDist = m.dist; }
+        emit();
+    } else if (op == "live") {
+        playing = m.value;
+    }
+}
+
+func main(args) {
+    app = args[0];
+    simPid = args[1];
+    fxPid = args[2];
+    dur = args[3];
+    keys = args[4];
+    me = sys_self();
+    lastNow = sys_now();
+    request();
+    while (true) {
+        var m = sys_recvt(1 / 30);
+        if (m == nil) {
+            tick();
+        } else if (m.type == "ctl") {
+            handle_ctl(m);
+        } else if (m.type == "state") {
+            if (m.seq == seq) {
+                simSt = m.st;
+                simWait = false;
+                frameT = m.t;
+                sys_send(fxPid, {type: "frame", st: simSt, t: m.t, reply: me});
+                fxWait = true;
+            }
+        } else if (m.type == "fx") {
+            fxRes = m.fx;
+            fxWait = false;
+            emit();
+        }
+    }
+    return 0;
+}

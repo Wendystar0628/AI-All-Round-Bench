@@ -1,0 +1,24 @@
+{
+  "name": "持续计算",
+  "format": "nest-1",
+  "code": [
+    [
+      "set",
+      "n",
+      0
+    ],
+    [
+      "label",
+      "loop"
+    ],
+    [
+      "add",
+      "n",
+      1
+    ],
+    [
+      "jump",
+      "loop"
+    ]
+  ]
+}

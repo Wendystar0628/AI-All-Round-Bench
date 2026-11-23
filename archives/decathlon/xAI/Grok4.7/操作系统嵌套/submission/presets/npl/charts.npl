@@ -1,0 +1,213 @@
+# 图表工作台。连接根系统工作簿，自己计算柱和折线的几何。
+
+fn main() {
+  let st = {
+    wm: 0, windowId: "chart", me: self(), recv: 0,
+    book: "", bookTitle: "", range: "A1:D4", label: "A", series: "D",
+    chartType: "bar", rows: [], connected: false, state: "disconnected",
+    note: "选择工作簿后连接", version: 0, hover: -1, vmax: 1
+  };
+  while (true) {
+    let m = wait_msg();
+    take(st, m);
+    let g = 0;
+    while (g < 12) {
+      let e = recv();
+      if (e == null) { g = 100; }
+      else { take(st, e); g = g + 1; }
+    }
+    if (st.wm != 0) {
+      send(st.wm, { tag: "body", from: st.me, windowId: st.windowId, title: "图表", widgets: build(st) });
+    }
+    publish("chart", {
+      windowId: st.windowId, sourceTitle: st.bookTitle, range: st.range,
+      chartType: st.chartType, connectionState: st.state
+    });
+  }
+}
+
+fn take(st, m) {
+  if (m == null) { return 0; }
+  if (m.tag == "boot") {
+    st.wm = m.wm; st.windowId = m.windowId; st.recv = m.recv;
+    if (st.book == "") { pick_default(st); }
+  }
+  if (m.tag == "value") {
+    if (m.id == "chart-range") { st.range = str(m.value); }
+    if (m.id == "chart-label-column") { st.label = str(m.value); }
+    if (m.id == "chart-series") { st.series = str(m.value); }
+    if (m.id == "chart-source") { st.book = str(m.value); }
+  }
+  if (m.tag == "sheet") { apply_rows(st, m); }
+  if (m.tag == "restored") { st.connected = false; st.state = "restored-pending"; st.note = "已恢复，待重新连接"; }
+  if (m.tag == "source-closed") { st.connected = false; st.state = "source-closed"; st.note = "数据源已关闭"; }
+  if (m.tag == "ui") { on_ui(st, m); }
+  return 0;
+}
+
+fn pick_default(st) {
+  let books = books();
+  if (books != null && len(books) > 0) {
+    st.book = books[0].id;
+    st.bookTitle = books[0].title;
+  }
+  return 0;
+}
+
+fn on_ui(st, m) {
+  if (m.testid == "chart-connect") { return do_connect(st); }
+  if (m.testid == "chart-disconnect") {
+    unsubscribe(st.windowId);
+    st.connected = false;
+    st.state = "disconnected";
+    st.note = "已断开，保留最后的图";
+    return 0;
+  }
+  if (m.testid == "chart-type") {
+    if (st.chartType == "bar") { st.chartType = "line"; }
+    else { st.chartType = "bar"; }
+    return 0;
+  }
+  if (m.testid == "project-target" && m.target != null && m.target != "") {
+    project(m.target, st.windowId, "charts", "图表");
+    st.note = "已投送到 " + m.target;
+    return 0;
+  }
+  if (m.testid == "window-project") { st.note = "选择下方的目标桌面"; return 0; }
+  if (m.id == "pick-book") { st.book = m.target; st.bookTitle = m.path; return 0; }
+  if (slice(str(m.id), 0, 4) == "bar-") { st.hover = num(slice(str(m.id), 4, len(str(m.id)))); }
+  return 0;
+}
+
+fn do_connect(st) {
+  if (st.book == "") { pick_default(st); }
+  let res = subscribe(st.book, st.range, st.label, st.series, st.windowId);
+  if (res == null || res.ok == false) {
+    st.note = "工作簿未打开";
+    st.state = "disconnected";
+    return 0;
+  }
+  st.connected = true;
+  st.state = "connected";
+  st.note = "已连接";
+  if (res.initial != null) { apply_rows(st, res.initial); }
+  return 0;
+}
+
+fn apply_rows(st, msg) {
+  if (msg.version != null && st.version != null && msg.version < st.version) { return 0; }
+  if (msg.version != null) { st.version = msg.version; }
+  if (msg.rows != null) { st.rows = msg.rows; }
+  if (msg.title != null) { st.bookTitle = msg.title; }
+  st.connected = true;
+  if (st.state != "source-closed") { st.state = "connected"; }
+  return 0;
+}
+
+fn col_index(name) {
+  let s = upper(trim(name));
+  if (len(s) == 0) { return 0; }
+  let n = 0;
+  let i = 0;
+  while (i < len(s)) {
+    n = n * 26 + (ord(slice(s, i, i + 1)) - 64);
+    i = i + 1;
+  }
+  return n - 1;
+}
+
+fn build(st) {
+  let w = [];
+  let books = books();
+  let bx = 8;
+  if (books != null) {
+    let i = 0;
+    while (i < len(books) && i < 4) {
+      push(w, { t: "button", id: "pick-book", testid: "chart-source", x: bx, y: 6, w: 110, h: 26, label: books[i].title, target: books[i].id, path: books[i].title });
+      bx = bx + 116;
+      i = i + 1;
+    }
+  }
+  push(w, { t: "input", id: "chart-range", testid: "chart-range", x: 8, y: 38, w: 110, h: 26, value: st.range });
+  push(w, { t: "input", id: "chart-label-column", testid: "chart-label-column", x: 124, y: 38, w: 48, h: 26, value: st.label });
+  push(w, { t: "input", id: "chart-series", testid: "chart-series", x: 178, y: 38, w: 48, h: 26, value: st.series });
+  push(w, { t: "button", id: "chart-connect", testid: "chart-connect", x: 234, y: 38, w: 72, h: 26, label: "连接" });
+  push(w, { t: "button", id: "chart-disconnect", testid: "chart-disconnect", x: 312, y: 38, w: 72, h: 26, label: "断开" });
+  push(w, { t: "button", id: "chart-type", testid: "chart-type", x: 390, y: 38, w: 88, h: 26, label: st.chartType });
+  push(w, { t: "button", id: "window-project", testid: "window-project", x: 484, y: 38, w: 72, h: 26, label: "投送" });
+  let ids = ancestors();
+  let ax = 560;
+  if (ids != null) {
+    let j = 0;
+    while (j < len(ids)) {
+      push(w, { t: "button", id: "pt" + ids[j], testid: "project-target", x: ax, y: 38, w: 88, h: 26, label: ids[j], target: ids[j], sys: ids[j] });
+      ax = ax + 92;
+      j = j + 1;
+    }
+  }
+  push(w, { t: "label", id: "note", testid: "chart-note", x: 8, y: 68, w: 700, h: 18, text: st.note + "  " + st.bookTitle });
+  add_plot(st, w);
+  return w;
+}
+
+fn add_plot(st, w) {
+  let li = col_index(st.label);
+  let vi = col_index(st.series);
+  let n = 0;
+  if (st.rows != null) { n = len(st.rows); }
+  let maxv = 1;
+  let i = 0;
+  while (i < n) {
+    let cell = cell_at(st.rows[i], vi);
+    let val = num(cell);
+    if (val != null && val > maxv) { maxv = val; }
+    i = i + 1;
+  }
+  st.vmax = maxv;
+  let base = 250;
+  let plotX = 24;
+  let plotY = 96;
+  let plotH = 250;
+  push(w, { t: "label", id: "axis", testid: "chart-axis", x: plotX, y: plotY + plotH, w: 520, h: 16, text: st.label + " / " + st.series });
+  let count = 0;
+  let prevX = plotX;
+  let prevY = plotY + plotH;
+  i = 0;
+  while (i < n) {
+    let lab = str(cell_at(st.rows[i], li));
+    let val2 = num(cell_at(st.rows[i], vi));
+    if (val2 != null) {
+      let bh = val2 / maxv * (plotH - 20);
+      let x = plotX + count * 90;
+      if (st.chartType == "bar") {
+        push(w, { t: "rect", id: "bar-" + str(count), testid: "chart-bar", x: x, y: plotY + plotH - bh, w: 56, h: bh, color: bar_color(count), label: lab });
+      } else {
+        push(w, { t: "rect", id: "bar-" + str(count), testid: "chart-bar", x: x + 16, y: plotY + plotH - bh, w: 14, h: 14, color: "#e39b3a", label: lab });
+        if (count > 0) {
+          push(w, { t: "line", id: "ln" + str(count), x: prevX, y: prevY, x2: x + 22, y2: plotY + plotH - bh, color: "#e7c27a" });
+        }
+        prevX = x + 22;
+        prevY = plotY + plotH - bh;
+      }
+      push(w, { t: "label", id: "lb" + str(count), testid: "chart-label", x: x, y: plotY + plotH + 16, w: 80, h: 16, text: lab });
+      push(w, { t: "label", id: "vv" + str(count), testid: "chart-value", x: x, y: plotY + plotH - bh - 18, w: 70, h: 16, text: str(val2) });
+      count = count + 1;
+    }
+    i = i + 1;
+  }
+  if (st.hover >= 0) {
+    push(w, { t: "label", id: "hover", testid: "chart-hover", x: 560, y: 120, w: 160, h: 40, text: "选中 #" + str(st.hover) });
+  }
+  return 0;
+}
+
+fn cell_at(row, index) {
+  if (row == null || index < 0 || index >= len(row)) { return null; }
+  return row[index];
+}
+
+fn bar_color(i) {
+  if (i % 3 == 0) { return "#e39b3a"; }
+  if (i % 3 == 1) { return "#8b6cff"; }
+  return "#d86b4a";
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>GPU test</title>
+<style>html,body{margin:0;background:#111;color:#eee;font:14px monospace}canvas{width:100vw;height:100vh;display:block}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<pre id="log"></pre>
+<script>
+const log = (s)=>{document.getElementById('log').textContent += s+"\n";};
+(async()=>{
+  if(!navigator.gpu){log("no navigator.gpu");return;}
+  const a = await navigator.gpu.requestAdapter();
+  if(!a){log("no adapter");return;}
+  log("adapter: "+(a.info?JSON.stringify({vendor:a.info.vendor,arch:a.info.architecture,device:a.info.device,desc:a.info.description}):"?"));
+  const d = await a.requestDevice();
+  log("device ok, maxStorageBufferBindingSize="+d.limits.maxStorageBufferBindingSize+", maxComputeWorkgroupStorageSize="+d.limits.maxComputeWorkgroupStorageSize+", maxBufferSize="+d.limits.maxBufferSize);
+  log("maxTextureDimension3D="+d.limits.maxTextureDimension3D);
+  window.__ok = true;
+})().catch(e=>{log("ERR "+e);window.__ok=false;});
+</script>
+</body>
+</html>

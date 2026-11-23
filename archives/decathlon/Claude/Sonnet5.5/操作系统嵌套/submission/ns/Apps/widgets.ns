@@ -1,0 +1,172 @@
+// widgets.ns — 小组件面板：时钟与日历、倒计时与秒表、便笺、剪贴板历史、通知中心、快速设置。
+// 倒计时由内核按虚拟时间计时，到点产生通知；剪贴板历史来自实际复制的文本与表格选区；通知中心汇总实际发生的通知；
+// 快速设置与“设置”应用读写同一份 /System/settings.json。
+include "/System/lib/ui.ns";
+
+let S = {cal_y: 0, cal_m: 0, timer: nil, sw: {running: false, t0: 0, acc: 0, laps: []}, note_dirty: false, note_loaded: false, notes: [], clips: [], cfg: {}, last: -9, msg: "", msg_t: 0, tab: "calendar"};
+let ACCENTS = ["", "#8b6cff", "#2fd0b5", "#ff7a6b", "#4aa8ff", "#ffc83d", "#f472b6"];
+let WD = ["日", "一", "二", "三", "四", "五", "六"];
+fn say(m) { S.msg = m; S.msg_t = time(); }
+fn load_cfg() { let t = sys("fs_read", "/System/settings.json"); let c = typeof(t) == "str" ? json_parse(t) : nil; S.cfg = c == nil ? {} : c; }
+fn save_cfg() { sys("fs_write", "/System/settings.json", json_stringify(S.cfg, true)); send(APP.args.wm, {t: "settings"}); }
+fn reload() {
+  S.timer = sys("timer", "get");
+  S.notes = sys("notes"); if (typeof(S.notes) != "arr") { S.notes = []; }
+  let c = sys("dev", "clip", "list"); S.clips = typeof(c) == "arr" ? c : [];
+  load_cfg(); S.last = time();
+}
+fn card(x, y, w, h, title, icon) {
+  let b = ui_rect(x, y, w, h, TH.bg2, 14); b.stroke = TH.border;
+  ui_icon(x + 14, y + 12, icon, 16, TH.acc);
+  ui_text(x + 38, y + 12, title, 12, TH.muted, {b: true});
+}
+fn fmt_hms(s) { s = max(0, s); let m = floor(s / 60); return pad(m, 2, "0") + ":" + pad(fmt(s - m * 60, 1), 4, "0"); }
+fn clock_card(x, y, w, h) {
+  card(x, y, w, h, "时钟与日历", "clock");
+  let d = date_parts(wall_secs());
+  ui_text(x + 18, y + 38, pad(d.hh, 2, "0") + ":" + pad(d.mm, 2, "0") + ":" + pad(d.ss, 2, "0"), 38, TH.text, {b: true, fam: "num"});
+  ui_text(x + 18, y + 86, d.y + " 年 " + d.m + " 月 " + d.d + " 日 · 星期" + WD[d.wd], 13, TH.muted);
+  // 日历
+  if (S.cal_y == 0) { S.cal_y = d.y; S.cal_m = d.m; }
+  let cx = x + w - 252; let cy = y + 14;
+  ui_iconbtn("widget-cal-prev", cx, cy, 26, "back", "上个月", {});
+  if (ui.ev != nil && false) { }
+  ui_textc(cx + 28, cy + 4, 150, S.cal_y + " 年 " + S.cal_m + " 月", 14, TH.text, {b: true});
+  ui_iconbtn("widget-cal-next", cx + 180, cy, 26, "forward", "下个月", {});
+  if (ui_in(cx, cy, 26, 26) && ui_ev_is("up", 0)) { S.cal_m--; if (S.cal_m < 1) { S.cal_m = 12; S.cal_y--; } }
+  if (ui_in(cx + 180, cy, 26, 26) && ui_ev_is("up", 0)) { S.cal_m++; if (S.cal_m > 12) { S.cal_m = 1; S.cal_y++; } }
+  let cw = 34; let gy = cy + 34;
+  for (let i = 0; i < 7; i++) { ui_textc(cx + i * cw - 4, gy, cw, WD[i], 11, i == 0 || i == 6 ? TH.acc2 : TH.faint); }
+  // 该月 1 日是星期几
+  let first = date_parts((days_from_civil(S.cal_y, S.cal_m, 1)) * 86400);
+  let dim = days_in_month(S.cal_y, S.cal_m);
+  for (let k = 1; k <= dim; k++) {
+    let idx = first.wd + k - 1; let row = floor(idx / 7); let col = idx % 7;
+    let px = cx + col * cw - 2; let py = gy + 22 + row * 28;
+    let today = S.cal_y == d.y && S.cal_m == d.m && k == d.d;
+    if (today) { ui_rect(px, py, 30, 24, TH.acc, 12); }
+    ui_textc(px - 1, py + 4, 32, str(k), 12, today ? "#fff" : TH.text, {b: today, fam: "num"});
+  }
+}
+fn days_from_civil(y, m, d) {
+  if (m <= 2) { y = y - 1; }
+  let era = floor(y / 400); let yoe = y - era * 400;
+  let doy = floor((153 * (m + (m > 2 ? -3 : 9)) + 2) / 5) + d - 1;
+  let doe = yoe * 365 + floor(yoe / 4) - floor(yoe / 100) + doy;
+  return era * 146097 + doe - 719468;
+}
+fn timer_card(x, y, w, h) {
+  card(x, y, w, h, "倒计时与秒表", "timer");
+  let t = S.timer == nil ? {state: "idle", left: 0, total: 0} : S.timer;
+  ui_text(x + 18, y + 34, fmt_hms(t.left), 32, t.state == "running" ? TH.acc2 : (t.state == "done" ? TH.ok : TH.text), {b: true, fam: "num"});
+  ui_text(x + 140, y + 46, t.state == "idle" ? "倒计时" : (t.state == "running" ? "倒计时进行中" : (t.state == "paused" ? "已暂停" : "已结束")), 12, TH.muted);
+  if (t.total > 0) { ui_progress(x + 18, y + 78, w - 36, 5, 1 - t.left / t.total, TH.acc2); }
+  ui_input("widget-timer-input", x + 18, y + 92, 70, 28, {ph: "秒", size: 13, pad: 6, r: 8});
+  ui_text(x + 92, y + 98, "秒", 12, TH.muted);
+  if (ui_button("widget-timer-start", x + 118, y + 92, 64, 28, "开始", {fill: TH.acc, size: 12, b: true})) {
+    let secs = num(trim(ui_val("widget-timer-input"))); if (secs == nil) { secs = 30; }
+    let r = sys("timer", "start", secs, ""); S.timer = r; say("倒计时已开始：" + secs + " 秒");
+  }
+  if (ui_button("widget-timer-pause", x + 188, y + 92, 64, 28, t.state == "paused" ? "继续" : "暂停", {size: 12})) { S.timer = sys("timer", t.state == "paused" ? "resume" : "pause"); }
+  if (ui_button("widget-timer-reset", x + 258, y + 92, 64, 28, "重置", {size: 12})) { S.timer = sys("timer", "reset"); }
+  // 秒表
+  let sw = S.sw; let el = sw.acc + (sw.running ? time() - sw.t0 : 0);
+  ui_rect(x + 18, y + 130, w - 36, 1, TH.border, 0);
+  ui_text(x + 18, y + 140, fmt_hms(el), 22, TH.text, {b: true, fam: "num"}); ui_text(x + 128, y + 148, "秒表", 12, TH.muted);
+  if (ui_button("widget-sw-start", x + 18, y + 174, 64, 26, sw.running ? "停止" : "开始", {size: 12, fill: sw.running ? TH.danger : TH.bg3})) {
+    if (sw.running) { sw.acc = sw.acc + time() - sw.t0; sw.running = false; } else { sw.t0 = time(); sw.running = true; }
+  }
+  if (ui_button("widget-sw-lap", x + 88, y + 174, 64, 26, "计次", {size: 12})) { if (sw.running) { push(sw.laps, el); } }
+  if (ui_button("widget-sw-reset", x + 158, y + 174, 64, 26, "清零", {size: 12})) { sw.running = false; sw.acc = 0; sw.laps = []; }
+  let ln = len(sw.laps); let ly = y + 176;
+  for (let i = max(0, ln - 2); i < ln; i++) { ui_text(x + 236, ly - 2, "第 " + (i + 1) + " 次 " + fmt_hms(sw.laps[i]), 11, TH.muted, {fam: "num"}); ly = ly + 14; }
+}
+fn note_card(x, y, w, h) {
+  card(x, y, w, h, "便笺", "note");
+  ui_input("widget-note-text", x + 14, y + 38, w - 28, h - 38 - 50, {ml: true, ph: "在这里写点什么…", size: 13, pad: 8, r: 8, fill: "#241d3d"});
+  if (ui_text_changed("widget-note-text")) { S.note_dirty = true; ui_text_ack("widget-note-text"); }
+  if (ui_button("widget-note-save", x + 14, y + h - 40, 80, 28, "保存", {fill: S.note_dirty ? TH.acc : TH.bg3, size: 12, icon: "save"})) {
+    let r = sys("fs_write", "/Documents/便笺.txt", ui_val("widget-note-text"));
+    if (r != nil && r.err != nil) { say("便笺保存失败：" + r.err); } else { S.note_dirty = false; say("便笺已保存到 /Documents/便笺.txt"); }
+  }
+  ui_text(x + 104, y + h - 34, S.note_dirty ? "● 未保存" : "已保存", 12, S.note_dirty ? TH.warn : TH.muted);
+}
+fn clip_card(x, y, w, h) {
+  card(x, y, w, h, "剪贴板历史", "clipboard");
+  if (ui_button("widget-clip-clear", x + w - 70, y + 6, 58, 24, "清空", {size: 11})) { sys("dev", "clip", "clear"); S.clips = []; }
+  let bg = ui_rect(x + 10, y + 36, w - 20, h - 46, "rgba(0,0,0,0)", 8); bg.tid = "widget-clipboard-list"; bg.aria = "剪贴板历史"; bg.d = {count: str(len(S.clips))};
+  if (len(S.clips) == 0) { ui_text(x + 18, y + 46, "还没有复制过内容（在电子表格或文本里复制后出现）", 12, TH.faint); }
+  let cy = y + 38;
+  for (let i = 0; i < len(S.clips); i++) {
+    if (cy + 26 > y + h - 6) { break; }
+    let c = S.clips[i]; let txt = replace(replace(c.text, "\n", " ↵ "), "\t", " → ");
+    let row = ui_rect(x + 12, cy, w - 24, 24, i % 2 == 0 ? "rgba(255,255,255,.04)" : "rgba(0,0,0,0)", 6); row.tid = "widget-clipboard-item"; row.aria = c.text; row.key = "cl" + i;
+    ui_text(x + 20, cy + 4, c.kind == "table" ? "表格" : (c.kind == "files" ? "文件" : "文本"), 10, TH.acc2, {b: true});
+    ui_textw(x + 58, cy + 4, w - 150, txt, 12, TH.text);
+    ui_textr(x + w - 80, cy + 5, 62, c.sys, 10, TH.faint);
+    cy = cy + 26;
+  }
+}
+fn notif_card(x, y, w, h) {
+  card(x, y, w, h, "通知中心", "bell");
+  if (ui_button("widget-dnd", x + w - 112, y + 6, 100, 24, S.cfg.dnd == true ? "免打扰：开" : "免打扰：关", {size: 11, fill: S.cfg.dnd == true ? TH.acc : TH.bg3, icon: S.cfg.dnd == true ? "bell-off" : "bell"})) { S.cfg.dnd = !(S.cfg.dnd == true); save_cfg(); sys("note_ctl", "dnd", S.cfg.dnd); }
+  let bg = ui_rect(x + 10, y + 36, w - 20, h - 46, "rgba(0,0,0,0)", 8); bg.tid = "widget-notifications"; bg.aria = "通知"; bg.d = {count: str(len(S.notes)), dnd: S.cfg.dnd == true ? "on" : "off"};
+  if (len(S.notes) == 0) { ui_text(x + 18, y + 46, "暂无通知", 12, TH.faint); }
+  let cy = y + 38;
+  for (let i = len(S.notes) - 1; i >= 0; i--) {
+    if (cy + 40 > y + h - 6) { break; }
+    let n = S.notes[i]; let col = n.kind == "error" ? TH.danger : (n.kind == "ok" ? TH.ok : TH.acc);
+    let row = ui_rect(x + 12, cy, w - 24, 38, "rgba(255,255,255,.04)", 8); row.tid = "widget-notification-item"; row.aria = n.title; row.key = "nt" + n.id;
+    ui_rect(x + 12, cy + 6, 3, 26, col, 2);
+    ui_textw(x + 24, cy + 3, w - 60, n.title, 12, TH.text, {b: true});
+    ui_textw(x + 24, cy + 21, w - 60, n.text, 11, TH.muted);
+    cy = cy + 42;
+  }
+}
+fn quick_card(x, y, w, h) {
+  card(x, y, w, h, "快速设置", "sliders");
+  ui_text(x + 16, y + 38, "强调色", 12, TH.muted);
+  let sx = x + 70;
+  for (let a of ACCENTS) {
+    let on = S.cfg.accent == a || (a == "" && (S.cfg.accent == nil || S.cfg.accent == ""));
+    let col = a == "" ? "#8b6cff" : a;
+    let b = ui_rect(sx, y + 32, 24, 24, col, 12); b.tid = "quick-accent"; b.d = {value: a == "" ? "auto" : a}; b.stroke = on ? "#fff" : "rgba(255,255,255,.2)"; b.sw = on ? 3 : 1; b.cur = "pointer"; b.key = "qa" + a;
+    if (ui_in(sx, y + 32, 24, 24) && ui_ev_is("up", 0)) { S.cfg.accent = a; save_cfg(); }
+    sx = sx + 32;
+  }
+  ui_text(x + 16, y + 72, "界面缩放", 12, TH.muted);
+  let sc = S.cfg.scale == nil ? 1 : S.cfg.scale; let bx = x + 84;
+  for (let s of [0.9, 1, 1.15, 1.25]) {
+    if (ui_button("quick-scale", bx, y + 66, 52, 26, floor(s * 100) + "%", {size: 11, fill: abs(sc - s) < 0.001 ? TH.acc : TH.bg3, d: {value: str(s)}, key: "qs" + s})) { S.cfg.scale = s; save_cfg(); send(APP.args.wm, {t: "set_scale", scale: s}); }
+    bx = bx + 58;
+  }
+  ui_text(x + 16, y + 106, "与“设置”应用共用同一份状态（/System/settings.json）", 11, TH.faint);
+}
+fn widgets_frame(U, w, h) {
+  ui_rect(0, 0, w, h, TH.bg1, 0);
+  let pad2 = 12; let cw = floor((w - pad2 * 3) / 2);
+  let lh = h - 30;
+  let h1 = 214; let h2 = 236; let gap = 12;
+  clock_card(pad2, pad2, cw, h1);
+  timer_card(pad2, pad2 + h1 + gap, cw, h2 - 18);
+  note_card(pad2, pad2 + h1 + gap + h2 - 18 + gap, cw, max(120, h - 30 - (pad2 + h1 + gap + h2 - 18 + gap) - pad2));
+  let rx = pad2 * 2 + cw;
+  let q = 124; let c = 176;
+  quick_card(rx, pad2, cw, q);
+  clip_card(rx, pad2 + q + gap, cw, c);
+  notif_card(rx, pad2 + q + gap + c + gap, cw, max(120, h - 30 - (pad2 + q + gap + c + gap) - pad2));
+  ui_rect(0, h - 28, w, 28, TH.bg2, 0);
+  ui_textw(12, h - 21, w - 24, S.msg != "" && time() - S.msg_t < 6 ? S.msg : "小组件：时钟日历 · 倒计时与秒表 · 便笺 · 剪贴板历史 · 通知中心 · 快速设置", 12, S.msg != "" && time() - S.msg_t < 6 ? TH.acc2 : TH.muted);
+}
+fn w_idle() {
+  if (time() - S.last >= 0.5) { reload(); return true; }
+  return true;
+}
+fn w_msg(m) { if (m.t == "open") { } }
+app_init(&widgets_frame, &w_msg, 0.5);
+APP.on_idle = &w_idle;
+ui = app_view(0);
+reload();
+let nt = sys("fs_read", "/Documents/便笺.txt");
+if (typeof(nt) == "str") { ui_set("widget-note-text", nt); }
+app_run();

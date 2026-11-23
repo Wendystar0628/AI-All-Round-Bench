@@ -1,0 +1,25 @@
+{
+  "problem": "13",
+  "parts": [
+    {"name": "1", "title": "斜耳叉架减速箱体", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [0, 0, 188, 132], "r": 6}], "depth": 16},
+      {"type": "extrude", "name": "本体", "plane": "XZ", "loops": [{"path": [[16, 0], [172, 0], [164.5, 93], [142, 116], [51, 116], [24.5, 93.5]]}], "depth": [-114, -18]},
+      {"type": "extrude", "name": "前凸台Φ66", "plane": "XZ", "origin": [0, 18, 0], "loops": [{"circle": [66, 64], "d": 66}], "depth": [0, 12]},
+      {"type": "extrude", "name": "后凸台Φ66", "plane": "XZ", "origin": [0, 114, 0], "loops": [{"circle": [66, 64], "d": 66}], "depth": [-12, 0]},
+      {"type": "extrude", "name": "右凸台Φ54", "plane": "YZ", "origin": [158, 0, 0], "loops": [{"circle": [67, 82], "d": 54}], "depth": 28},
+      {"type": "extrude", "name": "前肋", "plane": "XZ", "origin": [0, 18, 0], "loops": [{"path": [[108, 16], [141, 93], [160, 16]]}], "depth": [0, 11]},
+      {"type": "extrude", "name": "后肋", "plane": "XZ", "origin": [0, 114, 0], "loops": [{"path": [[108, 16], [141, 93], [160, 16]]}], "depth": [-11, 0]},
+      {"type": "extrude", "name": "斜耳A", "plane": "XZ", "origin": [0, 24, 0], "loops": [{"path": [[26, 142], [48.7, 150], [58, 117.6], [58, 100], [24.5, 94]]}], "depth": [-16, 0]},
+      {"type": "extrude", "name": "斜耳B", "plane": "XZ", "origin": [0, 92, 0], "loops": [{"path": [[26, 142], [48.7, 150], [58, 117.6], [58, 100], [24.5, 94]]}], "depth": [-16, 0]},
+      {"type": "extrude", "op": "cut", "name": "箱腔", "plane": "XY", "origin": [0, 0, 29], "loops": [{"rect": [34, 30, 150, 102]}], "depth": 63},
+      {"type": "extrude", "op": "cut", "name": "底凹", "plane": "XY", "origin": [0, 0, 24], "loops": [{"rect": [54, 40, 144, 94]}], "depth": 6},
+      {"type": "extrude", "op": "cut", "name": "前孔Φ44", "plane": "XZ", "origin": [0, 31, 0], "loops": [{"circle": [66, 64], "d": 44}], "depth": [0, 26]},
+      {"type": "extrude", "op": "cut", "name": "后孔Φ44", "plane": "XZ", "origin": [0, 101, 0], "loops": [{"circle": [66, 64], "d": 44}], "depth": [-26, 0]},
+      {"type": "extrude", "op": "cut", "name": "右孔Φ36", "plane": "YZ", "origin": [140, 0, 0], "loops": [{"circle": [67, 82], "d": 36}], "depth": 50},
+      {"type": "extrude", "op": "cut", "name": "耳孔Φ16A", "plane": "XZ", "origin": [0, 23, 0], "loops": [{"circle": [40.3, 131], "d": 16}], "depth": [-18, 0]},
+      {"type": "extrude", "op": "cut", "name": "耳孔Φ16B", "plane": "XZ", "origin": [0, 91, 0], "loops": [{"circle": [40.3, 131], "d": 16}], "depth": [-18, 0]},
+      {"type": "hole", "name": "斜孔Φ12", "plane": {"origin": [141, 99, 116], "normal": [-0.405579788, -0.405579788, 0.819152044], "x_dir": [1, -1, 0]}, "at": [0, 0], "d": 12, "depth": 76},
+      {"type": "hole", "name": "底板Φ9沉头", "plane": "XY", "origin": [0, 0, 16], "at": [[10, 10], [178, 10], [10, 122], [178, 122]], "d": 9, "through": true, "cbore": {"d": 16, "depth": 4}}
+    ]}
+  ]
+}

@@ -1,0 +1,258 @@
+
+// ============================== 程序载入与编译作业 ==============================
+fn nsx_fresh(text, src) {
+  let i = indexOf(text, ",\"k\":");
+  if (i < 0) { return false; }
+  let hdr = json_parse(slice(text, 0, i) + "}");
+  if (hdr == nil || hdr.sig != src.sig) { return false; }
+  for (let d of hdr.deps) {
+    let ds = fs_stat_(d[0]);
+    if (ds.err != nil || ds.sig != d[1]) { return false; }
+  }
+  return true;
+}
+// 返回 {text} 可直接载入；{stale} 需要先编译；{err}
+fn load_nsx(path) {
+  path = fs_norm(path);
+  if (path == nil) { return E("路径无效"); }
+  if (endsWith(path, ".nsx")) { let t = fs_read_(path); if (typeof(t) != "str") { return t; } return {text: t}; }
+  let src = fs_stat_(path);
+  if (src.err != nil) { return src; }
+  if (src.dir) { return E("是目录：" + path); }
+  let x = mi("disk", "get", path + "x");
+  if (x != nil && !x.dir && nsx_fresh(x.data, src)) { burn(len(x.data) / 64); return {text: x.data}; }
+  return {stale: true, path: path};
+}
+fn compile_job(path, job) {
+  let cx = fs_read_("/System/compiler.nsx");
+  if (typeof(cx) != "str") { return E("缺少编译器 /System/compiler.nsx"); }
+  let h = vm_new(cx, {src: path, out: path + "x"}, {name: "compiler"});
+  if (h.err != nil) { return h; }
+  let p = proc_add("编译 " + fs_base(path), "/System/compiler.nsx", h, nil, "user", 0);
+  K.jobs[p.pid] = job;
+  return p;
+}
+fn reply_waiter(pid, v) {
+  let w = proc_find(pid);
+  if (w != nil && proc_alive(w) && w.state == "waiting" && w.wait == "job") { w.state = "ready"; w.wait = nil; vm_ret(w.ctx, v); }
+}
+fn job_proc_exit(p) {
+  let job = K.jobs[p.pid];
+  if (job == nil) { return nil; }
+  del(K.jobs, p.pid);
+  let ok = p.state == "done" && typeof(p.result) == "map" && p.result.ok == true;
+  if (!ok) {
+    let msg = "编译失败";
+    if (typeof(p.result) == "map" && p.result.msg != nil) { msg = p.result.msg; } else if (p.err != nil) { msg = p.err.msg; }
+    if (job.t == "child") { child_boot_failed(job.pid, msg); }
+    else { reply_waiter(job.waiter, E(msg)); }
+    notify("编译失败", msg, "error");
+    return nil;
+  }
+  if (job.t == "spawn") { reply_waiter(job.waiter, spawn_finish(job)); }
+  else if (job.t == "compile") { reply_waiter(job.waiter, {ok: true, out: job.path + "x"}); }
+  else if (job.t == "child") { child_boot_2(job.pid); }
+  else if (job.t == "boot") { spawn_finish(job); }
+}
+fn spawn_finish(job) {
+  let l = load_nsx(job.path);
+  if (l.text == nil) { return l.err == nil ? E("编译后仍无法载入") : l; }
+  let h = vm_new(l.text, job.args, {name: job.path});
+  if (h.err != nil) { return h; }
+  let p = proc_add(job.name == nil ? fs_base(job.path) : job.name, job.path, h, job.args, job.kind == nil ? "user" : job.kind, job.parent == nil ? 0 : job.parent);
+  return {pid: p.pid};
+}
+// 启动程序：可能需要先编译（此时返回 {wait:true}，调用者阻塞到编译结束）
+fn spawn_start(path, args, name, kind, parent, waiter, jt) {
+  let l = load_nsx(path);
+  if (l.err != nil) { return l; }
+  let job = {t: jt == nil ? "spawn" : jt, path: fs_norm(path), args: args, name: name, kind: kind, parent: parent, waiter: waiter};
+  if (l.stale) {
+    let c = compile_job(job.path, job);
+    if (c.err != nil) { return c; }
+    return {wait: true};
+  }
+  return spawn_finish(job);
+}
+
+// ============================== 系统调用（用户 ABI） ==============================
+// 每个 sc_xxx(p, a) 处理一种系统调用：p 是调用进程，a 是参数数组；返回值就是调用结果，
+// 返回 BLOCK 表示调用进程进入等待。新增系统调用：写一个 sc_ 函数并在 syscalls_init 里登记。
+fn sc_print(p, a) {
+  let line = typeof(a[0]) == "str" ? a[0] : str(a[0]);
+  if (len(line) > 400) { line = slice(line, 0, 400) + "…"; }
+  push(p.out, line);
+  if (len(p.out) > CFG.out_lines) { shift(p.out); }
+  return nil;
+}
+fn sc_exit(p, a) { proc_finish(p, "done", a[0], nil); return nil; }
+fn sc_time(p, a) { return K.now; }
+fn sc_sleep(p, a) {
+  let t = typeof(a[0]) == "num" ? a[0] : 0;
+  if (t <= 0) { return nil; }
+  p.wake_at = K.now + t; p.wait = "sleep";
+  return BLOCK;
+}
+fn sc_yield(p, a) { return nil; }
+fn sc_self(p, a) { return p.pid; }
+fn sc_spawn(p, a) {
+  let path = a[0];
+  if (typeof(path) != "str") { return E("需要程序路径"); }
+  let r = spawn_start(path, a[1], a[2], "user", p.pid, p.pid, "spawn");
+  if (r.wait) { p.wait = "job"; return BLOCK; }
+  if (r.err != nil) { return r; }
+  return r.pid;
+}
+fn sc_compile(p, a) {
+  let path = fs_norm(a[0]);
+  if (path == nil) { return E("路径无效"); }
+  let c = compile_job(path, {t: "compile", path: path, waiter: p.pid});
+  if (c.err != nil) { return c; }
+  p.wait = "job";
+  return BLOCK;
+}
+fn sc_kill(p, a) { return proc_kill(a[0]); }
+fn sc_suspend(p, a) {
+  let q = proc_find(a[0]);
+  if (!proc_alive(q)) { return E("进程不存在"); }
+  q.susp = true; return {ok: true};
+}
+fn sc_resume(p, a) {
+  let q = proc_find(a[0]);
+  if (!proc_alive(q)) { return E("进程不存在"); }
+  q.susp = false;
+  if (q.state == "waiting" && q.wait == "recv") { wake_recv(q); }
+  return {ok: true};
+}
+fn sc_setquota(p, a) {
+  let q = proc_find(a[0]);
+  if (!proc_alive(q)) { return E("进程不存在"); }
+  q.quota = max(0, floor(a[1]));
+  return {ok: true};
+}
+fn sc_send(p, a) { return msg_deliver(p.pid, a[0], a[1]); }
+fn sc_recv(p, a) {
+  if (len(p.mailbox) > 0) { return shift(p.mailbox); }
+  p.state = "waiting"; p.wait = "recv"; p.wake_at = 0;
+  return BLOCK;
+}
+fn sc_recv_timeout(p, a) {
+  if (len(p.mailbox) > 0) { return shift(p.mailbox); }
+  if (typeof(a[0]) != "num" || a[0] <= 0) { return nil; }
+  p.state = "waiting"; p.wait = "recv"; p.wake_at = K.now + a[0];
+  return BLOCK;
+}
+fn sc_poll(p, a) { if (len(p.mailbox) > 0) { return shift(p.mailbox); } return nil; }
+
+fn sc_fs_read(p, a) { return fs_read_(a[0]); }
+fn sc_fs_write(p, a) { return fs_write_(a[0], a[1]); }
+fn sc_fs_list(p, a) { return fs_list_(a[0]); }
+fn sc_fs_stat(p, a) { return fs_stat_(a[0]); }
+fn sc_fs_mkdir(p, a) { return fs_mkdir_(a[0]); }
+fn sc_fs_remove(p, a) { return fs_remove_(a[0]); }
+fn sc_fs_copy(p, a) { return fs_copy_(a[0], a[1]); }
+fn sc_fs_move(p, a) { return fs_move_(a[0], a[1]); }
+fn sc_fs_trash(p, a) { return fs_trash_(a[0]); }
+fn sc_fs_restore(p, a) { return fs_restore_(a[0]); }
+fn sc_fs_rev(p, a) { return K.fs_rev; }
+fn sc_fs_usage(p, a) { return mi("disk", "usage"); }
+
+fn proc_info(q) {
+  let o = {pid: q.pid, name: q.name, path: q.path, kind: q.kind, state: proc_state_name(q), raw: q.state, wait: q.wait, susp: q.susp,
+    used: q.used, used_step: q.used_step, quota: q.quota, slice: q.slice, mailbox: len(q.mailbox), sent: q.sent, recv: q.recv,
+    started: q.started, err: q.err, rate: q.rate, out_n: len(q.out), parent: q.parent, own: 0, inner: 0, mem: q.mem, result: q.result};
+  if (proc_alive(q)) {
+    let st = vm_stat(q.ctx);
+    if (st != nil) { o.own = st.own; o.inner = st.inner; o.mem = st.mem; o.fn = st.fn; o.line = st.line; }
+  }
+  if (q.kind == "system") { o.sys = child_info(q); }
+  return o;
+}
+fn sc_ps(p, a) {
+  let out = [];
+  for (let pid of K.order) { push(out, proc_info(K.procs[pid])); }
+  for (let z of K.zombies) { push(out, proc_info(K.procs[z])); }
+  return out;
+}
+fn sc_proc_out(p, a) { let q = proc_find(a[0]); if (q == nil) { return []; } return q.out; }
+fn sc_budget_info(p, a) {
+  let b = {total: K.budget.total, granted: K.budget.granted, used: K.budget.used, svc: K.budget.svc, step_used: K.step_used, step: K.step,
+    kernel_own: 0, kernel_inner: 0, now: K.now};
+  let s = vm_self_stat();
+  b.kernel_own = s.own; b.kernel_inner = s.inner; b.mem = s.mem;
+  let st = mi("sys", "budget");
+  if (st != nil && st.err == nil) { b.mem_quota = st.mem; b.storage_quota = st.storage; }
+  b.nprocs = len(K.order);
+  return b;
+}
+fn sc_cfg_set(p, a) { // 本系统自己的总预算/配额：交给父系统保存并执行
+  return mi("sys", "setself", a[0]);
+}
+
+fn sc_notify(p, a) { return notify(a[0], a[1], a[2]).id; }
+fn sc_notes(p, a) { return K.notes; }
+fn sc_note_ctl(p, a) {
+  if (a[0] == "clear") { K.notes = []; }
+  else if (a[0] == "dnd") { K.dnd = a[1] == true; }
+  else if (a[0] == "read") { for (let n of K.notes) { n.read = true; } }
+  return {dnd: K.dnd, n: len(K.notes)};
+}
+fn sc_depth(p, a) { return K.depth; }
+fn sc_timer(p, a) {
+  let tm = K.timer; let op = a[0];
+  if (op == "start") { let secs = a[1]; if (typeof(secs) != "num" || secs <= 0) { return E("倒计时秒数需要大于 0"); } tm.total = secs; tm.left = secs; tm.due = K.now + secs; tm.state = "running"; tm.label = typeof(a[2]) == "str" ? a[2] : ""; }
+  else if (op == "pause") { if (tm.state == "running") { tm.left = max(0, tm.due - K.now); tm.state = "paused"; } }
+  else if (op == "resume") { if (tm.state == "paused") { tm.due = K.now + tm.left; tm.state = "running"; } }
+  else if (op == "reset") { tm.state = "idle"; tm.left = 0; tm.total = 0; }
+  let left = tm.state == "running" ? max(0, tm.due - K.now) : tm.left;
+  return {state: tm.state, total: tm.total, left: left, label: tm.label};
+}
+fn sc_rename_self(p, a) { if (typeof(a[0]) != "str" || a[0] == "") { return E("名称无效"); } return mi("sys", "rename", nil, a[0]); }
+fn sc_wallclock(p, a) { return K.wall0 + K.now * 1000; }
+fn sc_self_id(p, a) { return K.self_h.id; }
+fn sc_kernel_info(p, a) { return {version: CFG.version, depth: K.depth, id: K.self_h.id, now: K.now, step: K.step, nprocs: len(K.order), cfg: CFG}; }
+
+// ---- 显示：应用经系统调用提交画面，内核校验后转交父系统的显示服务 ----
+fn sc_gfx_submit(p, a) {
+  let v = a[0]; let cmds = a[1];
+  if (typeof(v) != "num") { return E("视图编号无效"); }
+  let sc = gx_scan(cmds);
+  burn(sc.n / 4);
+  for (let r of sc.embeds) { if (!ctx_in(r)) { return E("无效的嵌入目标"); } }
+  p.views[v] = 1;
+  // 窗口管理进程的 0 号视图就是本系统的屏幕（由父系统指定的表面）
+  if (p.pid == K.wm && v == 0) { return mi("gfx", "submit", K.screen_ref.c, K.screen_ref.v, cmds); }
+  return mi("gfx", "submit", p.ctx, v, cmds);
+}
+fn sc_gfx_free(p, a) { del(p.views, a[0]); return mi("gfx", "free", p.ctx, a[0]); }
+fn sc_scene_load(p, a) { burn(sizeof(a[1]) / 8); return mi("scene", "load", p.ctx, a[0], a[1]); }
+fn sc_scene_state(p, a) { burn(sizeof(a[1]) / 16); return mi("scene", "state", p.ctx, a[0], a[1]); }
+fn sc_scene_free(p, a) { return mi("scene", "free", p.ctx, a[0]); }
+fn sc_scene_pick(p, a) { burn(30); return sysv("mi_dev", [nil, "scene", "pick", p.ctx, a[0], a[1], a[2], a[3], a[4], a[5]]); }
+fn sc_input_value(p, a) { return mi("input", "get", p.ctx, a[0], a[1]); }
+fn sc_input_set(p, a) { return mi("input", "set", p.ctx, a[0], a[1], a[2]); }
+fn sc_proc_ref(p, a) { let q = proc_find(a[0]); if (!proc_alive(q)) { return E("进程不存在"); } return {c: q.ctx, pid: q.pid}; }
+fn sc_self_ref(p, a) { return {c: p.ctx, pid: p.pid}; }
+
+// ---- 窗口管理 ----
+fn sys_name() { let i = mi("sys", "info"); return i == nil ? "" : i.name; }
+fn sc_wm_register(p, a) { K.wm = p.pid; return {screen: K.screen, depth: K.depth, id: K.self_h.id}; }
+fn sc_screen_info(p, a) { return {w: K.screen.w, h: K.screen.h, depth: K.depth, id: K.self_h.id, name: sys_name()}; }
+
+fn syscalls_init() {
+  SYSCALLS.print = &sc_print; SYSCALLS.exit = &sc_exit; SYSCALLS.time = &sc_time; SYSCALLS.sleep = &sc_sleep;
+  SYSCALLS.yield = &sc_yield; SYSCALLS.self = &sc_self; SYSCALLS.spawn = &sc_spawn; SYSCALLS.compile = &sc_compile;
+  SYSCALLS.kill = &sc_kill; SYSCALLS.suspend = &sc_suspend; SYSCALLS.resume = &sc_resume; SYSCALLS.setquota = &sc_setquota;
+  SYSCALLS.send = &sc_send; SYSCALLS.recv = &sc_recv; SYSCALLS.recv_timeout = &sc_recv_timeout; SYSCALLS.poll = &sc_poll;
+  SYSCALLS.fs_read = &sc_fs_read; SYSCALLS.fs_write = &sc_fs_write; SYSCALLS.fs_list = &sc_fs_list; SYSCALLS.fs_stat = &sc_fs_stat;
+  SYSCALLS.fs_mkdir = &sc_fs_mkdir; SYSCALLS.fs_remove = &sc_fs_remove; SYSCALLS.fs_copy = &sc_fs_copy; SYSCALLS.fs_move = &sc_fs_move;
+  SYSCALLS.fs_trash = &sc_fs_trash; SYSCALLS.fs_restore = &sc_fs_restore; SYSCALLS.fs_rev = &sc_fs_rev; SYSCALLS.fs_usage = &sc_fs_usage;
+  SYSCALLS.ps = &sc_ps; SYSCALLS.proc_out = &sc_proc_out; SYSCALLS.budget_info = &sc_budget_info; SYSCALLS.cfg_set = &sc_cfg_set;
+  SYSCALLS.notify = &sc_notify; SYSCALLS.notes = &sc_notes; SYSCALLS.note_ctl = &sc_note_ctl; SYSCALLS.depth = &sc_depth;
+  SYSCALLS.self_id = &sc_self_id; SYSCALLS.kernel_info = &sc_kernel_info;
+  SYSCALLS.gfx_submit = &sc_gfx_submit; SYSCALLS.gfx_free = &sc_gfx_free; SYSCALLS.scene_load = &sc_scene_load;
+  SYSCALLS.scene_state = &sc_scene_state; SYSCALLS.scene_free = &sc_scene_free; SYSCALLS.scene_pick = &sc_scene_pick;
+  SYSCALLS.input_value = &sc_input_value; SYSCALLS.input_set = &sc_input_set; SYSCALLS.proc_ref = &sc_proc_ref; SYSCALLS.self_ref = &sc_self_ref;
+  SYSCALLS.wallclock = &sc_wallclock; SYSCALLS.timer = &sc_timer; SYSCALLS.rename_self = &sc_rename_self; SYSCALLS.wm_register = &sc_wm_register; SYSCALLS.screen_info = &sc_screen_info;
+  syscalls_init2();
+}

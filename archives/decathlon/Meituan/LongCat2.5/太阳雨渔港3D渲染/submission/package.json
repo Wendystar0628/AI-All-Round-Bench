@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "esbuild": "^0.24.0",
+    "three": "^0.170.0"
+  },
+  "name": "sunshower-harbor",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --minify --format=iife --target=chrome100 --outfile=bundle.js",
+    "watch": "esbuild src/main.js --bundle --minify --format=iife --target=chrome100 --outfile=bundle.js --watch"
+  }
+}

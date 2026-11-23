@@ -1,0 +1,70 @@
+// bake.ns — 离线烘焙：用与飞行场景相同的动力学库，运行一份“演出驾驶脚本”，把实际写入的控制量、事件和检查点
+// 记成默认演出的飞行记录（写进场景资源的 flight.record）。结局由记录里的控制时序决定，不随预算变化。
+// #noprelude
+include "/Apps/player/flightlib.ns";
+fn exit(v) { return sys("exit", v); }
+let track = [];
+let A = args();
+fl_init(A.flight, A.terrain, A.pads, A.obstacles);
+fl_reset();
+let DT = PRM.dt; let CTL_DT = 1 / PRM.ctlRate;
+let controls = []; let events = []; let cps = [];
+let DUR = A.duration;
+fn wrap(a) { while (a > 3.14159265) { a = a - 6.2831853; } while (a < -3.14159265) { a = a + 6.2831853; } return a; }
+fn ev(t, e) { e.t = t; push(events, e); }
+// 驾驶脚本：事件表
+ev(0, {kind: "start"});
+ev(0, {kind: "wind", dir: 250, speed: A.wind_speed});
+ev(0, {kind: "heading", h: 0});
+ev(A.t_vib, {kind: "vib"});
+ev(A.t_smoke, {kind: "smoke"});
+ev(A.t_tail, {kind: "tail"});
+ev(A.t_engine, {kind: "engine"});
+let ei = 0;
+fn target_yaw(t) {
+  if (t < A.t_turn0) { return 1.5708; }
+  if (t > A.t_turn1) { return A.yaw_end; }
+  let f = (t - A.t_turn0) / (A.t_turn1 - A.t_turn0);
+  f = f * f * (3 - 2 * f);
+  return 1.5708 + (A.yaw_end - 1.5708) * f;
+}
+fn pilot(t, s) {
+  let c = 0.12; let cp = 0; let cr = 0; let ped = 0;
+  if (t < A.t_lift) { return {c: s.om > 0.5 ? 0.18 : 0.05, cp: 0, cr: 0, ped: 0}; }
+  let tyaw = target_yaw(t);
+  // 高度：先按爬升率爬升，再定高
+  let alt_t = A.alt;
+  let vyt = clampv((alt_t - s.agl) * 0.9, -2, 3.4);
+  c = s.hoverC + 0.075 * (vyt - s.vy) + 0.0;
+  c = c / max(0.6, cos(s.roll) * cos(s.pitch));
+  // 水平速度：沿目标航向前飞
+  let V = 0;
+  if (t > A.t_fwd0) { V = clampv((t - A.t_fwd0) / (A.t_fwd1 - A.t_fwd0), 0, 1) * A.speed; }
+  let vxt = sin(s.yaw) * V + s.wind[0] * 0.0; let vzt = cos(s.yaw) * V + s.wind[1] * 0.0;
+  let ax = 0.7 * (vxt - s.vx); let az = 0.7 * (vzt - s.vz);
+  let cy = cos(s.yaw); let sy = sin(s.yaw);
+  let a_f = ax * sy + az * cy; let a_r = 0 - ax * cy + az * sy;
+  let th_d = clampv(0 - a_f / s.g, -0.42, 0.42); let ph_d = clampv(a_r / s.g, -0.42, 0.42);
+  cp = clampv(0.9 * (s.pitch - th_d) + 0.25 * s.q, -1, 1);
+  cr = clampv(0.9 * (ph_d - s.roll) - 0.25 * s.p, -1, 1);
+  ped = clampv(1.3 * wrap(tyaw - s.yaw) - 0.75 * s.r, -1, 1);
+  if (t > A.t_engine + 0.4) { c = c * 0.7; }
+  return {c: clampv(c, 0.04, 1), cp: cp, cr: cr, ped: ped};
+}
+let step_i = 0; let next_ctl = 0; let next_cp = 0;
+while (SIMT < DUR - 1e-9) {
+  while (ei < len(events) && events[ei].t <= SIMT + 1e-5) { fl_apply_event(events[ei]); ei++; }
+  if (floor(SIMT * 60 + 0.5) % 30 == 0) { push(track, [round(SIMT * 10) / 10, round(ST.x * 10) / 10, round(ST.y * 10) / 10, round(ST.z * 10) / 10, round(ST.yaw * 100) / 100, round(fl_agl() * 10) / 10, round(ST.om * 100) / 100, round(ST.pitch * 100) / 100, round(ST.roll * 100) / 100]); }
+  if (SIMT + 1e-5 >= next_cp) { push(cps, {t: round(SIMT * 1000000) / 1000000, st: copy(ST), wind: copy(WIND), cur: copy(CUR)}); next_cp = next_cp + 0.5; }
+  if (SIMT + 1e-5 >= next_ctl) {
+    let u0 = pilot(SIMT, fl_sensors());
+    let u = {c: round(u0.c * 10000) / 10000, cp: round(u0.cp * 10000) / 10000, cr: round(u0.cr * 10000) / 10000, ped: round(u0.ped * 10000) / 10000};
+    CUR = u; push(controls, [round(SIMT * 1000000) / 1000000, u.c, u.cp, u.cr, u.ped]);
+    next_ctl = next_ctl + CTL_DT;
+  }
+  fl_step(DT);
+  step_i++;
+}
+let s = ST;
+exit({record: {dt: CTL_DT, duration: DUR, controls: controls, events: events, cp: cps, init: fl_new_state()},
+  track: track, summary: {crashed: s.crashed, crash: s.crash, x: s.x, y: s.y, z: s.z, steps: step_i, debris: len(s.debris)}});

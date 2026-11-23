@@ -1,0 +1,528 @@
+# 巢航子系统内核。这份程序在父系统的 /Systems/<id>/kernel.npl。
+# 调度、消息、文件和系统调用都在这里。改完后重启该子系统生效。
+# 修改点：pick 策略见 schedule；消息见 deliver；文件见 fs_apply_write / fs_sort_mode；
+# 新系统调用见 dispatch 末尾的 echo2。
+
+fn fs_apply_write(text) {
+  # 修改点：改成 return upper(text); 后，新写入的文本会变成大写。
+  return text;
+}
+
+fn fs_sort_mode() {
+  # 修改点：改成 return 1; 后，文件排在目录前面，同组名字倒序。
+  return 0;
+}
+
+fn do_echo2(x) {
+  # 修改点：改成 return x + 1; 后，程序调用 echo2 会得到加一的结果。
+  return x;
+}
+
+fn make_state() {
+  return {
+    pids: [],
+    boxes: {},
+    kinds: {},
+    until: {},
+    quantum: 12000,
+    fair: 1500,
+    child_slice: 42000,
+    rr: 0,
+    wm: 0,
+    mark: -1,
+    role_order: ["时序", "飞控", "物理", "机身", "环境", "图表接收", "图表", "窗口", "文件", "编辑", "进程"],
+    pending_bridge: [],
+    pquota: {}
+  };
+}
+
+fn boot_frame(text) {
+  return {
+    boot: true,
+    name: k_self_name(),
+    nodes: [
+      { t: "label", x: 36, y: 36, w: 640, h: 36, text: text },
+      { t: "taskbar", x: 0, y: 0, w: 10, h: 52, items: [], launch: [], clock: "", open: false, title: k_self_name() }
+    ]
+  };
+}
+
+fn main() {
+  let st = make_state();
+  k_present(boot_frame("正在编译窗口管理器"));
+  let wm = load_program(st, "/Programs/wm.npl", "窗口");
+  st.wm = wm;
+  if (wm == 0) {
+    k_present(boot_frame("窗口管理器没有编过，桌面起不来"));
+  }
+  while (true) {
+    drain_host(st);
+    let now = k_time();
+    if (now != st.mark) {
+      st.mark = now;
+      schedule(st);
+    }
+    k_idle();
+  }
+}
+
+fn schedule(st) {
+  # 修改点：角色顺序和每拍额度。把 fair 调得很大、并让自旋先跑，其他程序会饿死。
+  let i = 0;
+  while (i < len(st.role_order)) {
+    let pid = find_named(st, st.role_order[i]);
+    if (pid != 0) { poke(st, pid, st.quantum); }
+    i = i + 1;
+  }
+  let steps = 0;
+  let guard = len(st.pids) + 1;
+  while (steps < guard) {
+    let pid2 = robin(st);
+    if (pid2 == 0) { steps = guard; }
+    else {
+      if (!is_role(st, pid2)) { poke(st, pid2, st.fair); }
+      steps = steps + 1;
+    }
+  }
+  step_children(st);
+  return 0;
+}
+
+fn step_children(st) {
+  let kids = k_children();
+  let i = 0;
+  while (i < len(kids)) {
+    let kid = kids[i];
+    if (kid.pid != 0 && kid.state == "running") {
+      k_step(kid.pid, st.child_slice);
+    }
+    i = i + 1;
+  }
+  return 0;
+}
+
+fn is_role(st, pid) {
+  let info = k_info(pid);
+  if (info == null) { return false; }
+  let i = 0;
+  while (i < len(st.role_order)) {
+    if (st.role_order[i] == info.name) { return true; }
+    i = i + 1;
+  }
+  return false;
+}
+
+fn find_named(st, name) {
+  let i = 0;
+  while (i < len(st.pids)) {
+    let info = k_info(st.pids[i]);
+    if (info != null && info.name == name && info.status != "halt") { return st.pids[i]; }
+    i = i + 1;
+  }
+  return 0;
+}
+
+fn robin(st) {
+  let n = len(st.pids);
+  if (n == 0) { return 0; }
+  let k = 0;
+  while (k < n) {
+    let idx = st.rr % n;
+    st.rr = st.rr + 1;
+    let pid = st.pids[idx];
+    let info = k_info(pid);
+    if (info != null && (info.status == "ready" || info.status == "running" || info.status == "waiting")) {
+      return pid;
+    }
+    k = k + 1;
+  }
+  return 0;
+}
+
+fn poke(st, pid, budget) {
+  let info = k_info(pid);
+  if (info == null) { return 0; }
+  if (info.status == "suspended" || info.status == "error" || info.status == "halt") { return 0; }
+  if (info.status == "waiting") {
+    let key = str(pid);
+    let kinds = st.kinds;
+    let kd = kinds[key];
+    if (kd == "time") {
+      let untils = st.until;
+      if (k_time() + 0 >= untils[key] + 0) {
+        kinds[key] = "";
+        k_resume(pid, null);
+      } else {
+        return 0;
+      }
+    } else {
+      let box = mailbox(st, pid);
+      if (len(box) > 0) {
+        let msg = take_first(box);
+        k_resume(pid, msg);
+      } else if (is_role(st, pid)) {
+        k_resume(pid, { tag: "tick", time: k_time() });
+      } else if (kd == "msg") {
+        return 0;
+      } else {
+        k_resume(pid, { tag: "tick", time: k_time() });
+      }
+    }
+  }
+  let cap = budget;
+  let pq = st.pquota;
+  let lim = pq[str(pid)];
+  if (lim != null && lim > 0 && lim < cap) { cap = lim; }
+  run_pid(st, pid, cap);
+  return 1;
+}
+
+fn run_pid(st, pid, budget) {
+  let used = 0;
+  let guard = 0;
+  while (used < budget && guard < 12) {
+    guard = guard + 1;
+    let room = budget - used;
+    if (room < 1) { return used; }
+    let r = k_step(pid, room);
+    if (r == null) { return used; }
+    used = used + r.cost;
+    if (r.reason == "trap") {
+      let how = dispatch(st, pid, r);
+      if (how == "wait" || how == "dead") { return used; }
+    } else {
+      return used;
+    }
+  }
+  return used;
+}
+
+fn dispatch(st, pid, r) {
+  let name = r.name;
+  let args = r.args;
+  if (args == null) { args = []; }
+  if (name == "clock") { k_resume(pid, k_time()); return "ok"; }
+  if (name == "sleep") {
+    let kinds = st.kinds;
+    let untils = st.until;
+    kinds[str(pid)] = "time";
+    untils[str(pid)] = k_time() + args[0];
+    k_set_wait(pid, "time");
+    return "wait";
+  }
+  if (name == "self") { k_resume(pid, pid); return "ok"; }
+  if (name == "self_name") { k_resume(pid, k_self_name()); return "ok"; }
+  if (name == "self_id") { k_resume(pid, k_self_id()); return "ok"; }
+  if (name == "exit") { forget(st, pid); k_kill(pid); return "dead"; }
+  if (name == "log") { k_log(args[0], pid); k_resume(pid, null); return "ok"; }
+  if (name == "send") {
+    let sent = deliver(st, pid, args[0], args[1]);
+    k_resume(pid, sent);
+    return "ok";
+  }
+  if (name == "recv") {
+    let box = mailbox(st, pid);
+    if (len(box) == 0) { k_resume(pid, null); return "ok"; }
+    k_resume(pid, take_first(box));
+    return "ok";
+  }
+  if (name == "wait_msg") {
+    let box2 = mailbox(st, pid);
+    if (len(box2) > 0) { k_resume(pid, take_first(box2)); return "ok"; }
+    let kinds2 = st.kinds;
+    kinds2[str(pid)] = "msg";
+    k_set_wait(pid, "msg");
+    return "wait";
+  }
+  if (name == "read_file") {
+    let rf = k_read(args[0]);
+    if (rf.error != null) { k_resume(pid, null); }
+    else { k_resume(pid, rf.data); }
+    return "ok";
+  }
+  if (name == "write_file") {
+    let text = fs_apply_write(str(args[1]));
+    k_resume(pid, k_write(args[0], text));
+    return "ok";
+  }
+  if (name == "list_dir") { k_resume(pid, sort_entries(k_list(args[0]))); return "ok"; }
+  if (name == "delete_file") { k_resume(pid, k_delete(args[0])); return "ok"; }
+  if (name == "recycle") { k_resume(pid, k_recycle(args[0])); return "ok"; }
+  if (name == "restore") { k_resume(pid, k_restore(args[0])); return "ok"; }
+  if (name == "move_file") { k_resume(pid, k_move(args[0], args[1])); return "ok"; }
+  if (name == "mkdir") { k_resume(pid, k_mkdir(args[0])); return "ok"; }
+  if (name == "spawn") { k_resume(pid, load_program(st, args[0], args[1])); return "ok"; }
+  if (name == "kill") { forget(st, args[0]); k_kill(args[0]); k_resume(pid, true); return "ok"; }
+  if (name == "suspend") { k_suspend(args[0], 1); k_resume(pid, true); return "ok"; }
+  if (name == "resume_proc") { k_suspend(args[0], 0); k_resume(pid, true); return "ok"; }
+  if (name == "find") { k_resume(pid, find_named(st, args[0])); return "ok"; }
+  if (name == "ps") { k_resume(pid, do_ps(st)); return "ok"; }
+  if (name == "info") { k_resume(pid, k_info(args[0])); return "ok"; }
+  if (name == "quota") { k_resume(pid, k_quota()); return "ok"; }
+  if (name == "set_quota") { k_resume(pid, k_set_quota(args[0], args[1], args[2])); return "ok"; }
+  if (name == "children") { k_resume(pid, k_children()); return "ok"; }
+  if (name == "create_child") { k_resume(pid, k_create_child(args[0])); return "ok"; }
+  if (name == "ctl") { k_resume(pid, k_ctl(args[0], args[1], args[2])); return "ok"; }
+  if (name == "present") { k_present(args[0]); k_resume(pid, true); return "ok"; }
+  if (name == "present3d") { k_present3d(args[0], args[1]); k_resume(pid, true); return "ok"; }
+  if (name == "publish") { k_publish(args[0], args[1]); k_resume(pid, true); return "ok"; }
+  if (name == "rand") { k_resume(pid, k_rand()); return "ok"; }
+  if (name == "ancestors") { k_resume(pid, k_ancestor_ids()); return "ok"; }
+  if (name == "books") { k_resume(pid, k_books()); return "ok"; }
+  if (name == "subscribe") { k_resume(pid, k_subscribe(args[0], args[1], args[2], args[3], args[4])); return "ok"; }
+  if (name == "unsubscribe") { k_resume(pid, k_unsubscribe(args[0])); return "ok"; }
+  if (name == "project") {
+    k_resume(pid, k_project({ targetId: args[0], windowId: args[1], appId: args[2], title: args[3] }));
+    return "ok";
+  }
+  if (name == "unproject") { k_resume(pid, k_unproject(args[0])); return "ok"; }
+  if (name == "self_compile") { k_resume(pid, compile_self(st)); return "ok"; }
+  if (name == "set_proc_quota") {
+    let pq = st.pquota;
+    pq[str(args[0])] = args[1];
+    k_resume(pid, true);
+    return "ok";
+  }
+  if (name == "echo2") { k_resume(pid, do_echo2(args[0])); return "ok"; }
+  # 修改点：在上面按同样写法增加系统调用，重启后用户程序就能调用。
+  k_resume(pid, null);
+  return "ok";
+}
+
+fn deliver(st, from, to, msg) {
+  # 修改点：改写投递。例如 return "dead"; 会让所有发送都失败。
+  if (to == 0 || to == null) { return "dead"; }
+  let info = k_info(to);
+  if (info == null) { return "dead"; }
+  if (info.status == "halt" || info.status == "error") { return "dead"; }
+  let box = mailbox(st, to);
+  push(box, clone(msg));
+  return "ok";
+}
+
+fn mailbox(st, pid) {
+  let key = str(pid);
+  let boxes = st.boxes;
+  if (!has(boxes, key)) { boxes[key] = []; }
+  return boxes[key];
+}
+
+fn take_first(a) {
+  if (len(a) == 0) { return null; }
+  let v = a[0];
+  let i = 0;
+  while (i + 1 < len(a)) {
+    a[i] = a[i + 1];
+    i = i + 1;
+  }
+  pop(a);
+  return v;
+}
+
+fn forget(st, pid) {
+  let out = [];
+  let i = 0;
+  while (i < len(st.pids)) {
+    if (st.pids[i] != pid) { push(out, st.pids[i]); }
+    i = i + 1;
+  }
+  st.pids = out;
+  return 0;
+}
+
+fn remember(st, pid) {
+  if (pid == 0 || pid == null) { return 0; }
+  let i = 0;
+  while (i < len(st.pids)) {
+    if (st.pids[i] == pid) { return pid; }
+    i = i + 1;
+  }
+  push(st.pids, pid);
+  return pid;
+}
+
+fn do_ps(st) {
+  let out = [];
+  push(out, k_info(0));
+  let i = 0;
+  while (i < len(st.pids)) {
+    let info = k_info(st.pids[i]);
+    if (info != null) { push(out, info); }
+    i = i + 1;
+  }
+  let kids = k_children();
+  let j = 0;
+  while (j < len(kids)) {
+    let infok = k_info(kids[j].pid);
+    if (infok != null) {
+      infok.sysId = kids[j].id;
+      infok.rate = kids[j].rate;
+      infok.grant = kids[j].grant;
+      push(out, infok);
+    }
+    j = j + 1;
+  }
+  return out;
+}
+
+fn sort_entries(dir) {
+  if (dir == null || dir.entries == null) { return dir; }
+  let entries = dir.entries;
+  let mode = fs_sort_mode();
+  let n = len(entries);
+  let a = 0;
+  while (a < n) {
+    let b = 0;
+    while (b + 1 < n) {
+      let left = entries[b];
+      let right = entries[b + 1];
+      let swap = false;
+      if (mode == 0) {
+        if (left.kind != "dir" && right.kind == "dir") { swap = true; }
+        else if (left.kind == right.kind && left.name > right.name) { swap = true; }
+      } else {
+        if (left.kind == "dir" && right.kind != "dir") { swap = true; }
+        else if (left.kind == right.kind && left.name < right.name) { swap = true; }
+      }
+      if (swap) {
+        entries[b] = right;
+        entries[b + 1] = left;
+      }
+      b = b + 1;
+    }
+    a = a + 1;
+  }
+  return dir;
+}
+
+fn load_program(st, path, pname) {
+  let src = k_read(path);
+  if (src == null || src.error != null || src.data == null) {
+    k_log("找不到程序 " + str(path));
+    return 0;
+  }
+  let comp = k_read("/Programs/compiler.npl");
+  let key = k_hash(src.data);
+  if (comp != null && comp.data != null) { key = key + ":" + k_hash(comp.data); }
+  let cached = k_read(path + ".nbc");
+  if (cached != null && cached.error == null && cached.data != null) {
+    let head = cache_head(cached.data);
+    if (head == key) {
+      let body = cache_body(cached.data);
+      let obj = json_parse(body);
+      if (obj != null && obj.functions != null) {
+        let fast = k_load(obj, pname, path);
+        if (fast != null && fast.pid != 0) { return remember(st, fast.pid); }
+      }
+    }
+  }
+  k_compile_begin(src.data);
+  let guard = 0;
+  while (guard < 20000) {
+    guard = guard + 1;
+    let polled = k_compile_poll();
+    if (polled != null && polled.done) {
+      if (polled.result != null && polled.result.ok) {
+        let packed = json_stringify(polled.result.program);
+        k_write(path + ".nbc", key + "\n" + packed);
+        let loaded = k_load(polled.result.program, pname, path);
+        if (loaded == null || loaded.pid == 0) {
+          k_log("装入失败 " + str(path));
+          return 0;
+        }
+        return remember(st, loaded.pid);
+      }
+      let err = "编译失败";
+      if (polled.result != null && polled.result.error != null) { err = polled.result.error; }
+      k_log(err);
+      return 0;
+    }
+    if (guard % 4 == 0) { k_idle(); }
+  }
+  k_log("编译超时 " + str(path));
+  return 0;
+}
+
+fn cache_head(text) {
+  let i = index_of(text, "\n");
+  if (i < 0) { return ""; }
+  return slice(text, 0, i);
+}
+
+fn cache_body(text) {
+  let i = index_of(text, "\n");
+  if (i < 0) { return ""; }
+  return slice(text, i + 1, len(text));
+}
+
+fn compile_self(st) {
+  let src = k_read("/Programs/compiler.npl");
+  if (src == null || src.error != null) { return "没有编译器源文件"; }
+  k_compile_begin(src.data);
+  let guard = 0;
+  while (guard < 20000) {
+    guard = guard + 1;
+    let polled = k_compile_poll();
+    if (polled != null && polled.done) {
+      if (polled.result != null && polled.result.ok) {
+        k_write("/Programs/compiler.nbc", json_stringify(polled.result.program));
+        return "编译器已写回，之后启动的程序使用这份编译器";
+      }
+      if (polled.result != null) { return polled.result.error; }
+      return "编译自身失败";
+    }
+    if (guard % 4 == 0) { k_idle(); }
+  }
+  return "编译自身超时";
+}
+
+fn drain_host(st) {
+  let evs = k_poll();
+  let i = 0;
+  while (i < len(evs)) {
+    handle_host(st, evs[i]);
+    i = i + 1;
+  }
+  let br = k_bridge_poll();
+  let j = 0;
+  while (j < len(br)) {
+    forward_bridge(st, br[j]);
+    j = j + 1;
+  }
+  if (len(evs) > 0 && st.wm != 0) { poke(st, st.wm, st.quantum); }
+  return 0;
+}
+
+fn handle_host(st, ev) {
+  if (ev != null && ev.t == "drop") {
+    let text = fs_apply_write(str(ev.data));
+    let wr = k_write(ev.path, text);
+    if (st.wm != 0) {
+      deliver(st, 0, st.wm, { tag: "dropped", path: ev.path, result: wr });
+    }
+    return 0;
+  }
+  if (st.wm != 0) { deliver(st, 0, st.wm, ev); }
+  return 0;
+}
+
+fn forward_bridge(st, msg) {
+  if (msg != null && msg.tag == "project-input") {
+    if (st.wm != 0) {
+      deliver(st, 0, st.wm, msg);
+      poke(st, st.wm, st.quantum);
+    }
+    return 0;
+  }
+  let pid = find_named(st, "图表接收");
+  if (pid == 0) {
+    push(st.pending_bridge, msg);
+    return 0;
+  }
+  while (len(st.pending_bridge) > 0) {
+    deliver(st, 0, pid, take_first(st.pending_bridge));
+  }
+  deliver(st, 0, pid, msg);
+  poke(st, pid, st.quantum);
+  return 0;
+}

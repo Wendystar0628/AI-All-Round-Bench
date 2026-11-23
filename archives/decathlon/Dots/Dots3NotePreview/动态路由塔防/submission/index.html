@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>网络安全攻防战 · 动态路由塔防</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <div id="hud-left">
+      <div id="wave-info">Wave <span id="wave-cur">0</span>/<span id="wave-max">0</span></div>
+      <div id="map-name">分段内网</div>
+    </div>
+    <div id="hud-center">
+      <div id="resource-cp" class="resource"><span class="ico cp"></span><span id="cp-val">0</span></div>
+      <div id="resource-int" class="resource"><span class="ico int"></span><span id="int-val">0</span></div>
+    </div>
+    <div id="hud-right">
+      <button id="btn-start" class="btn">开始</button>
+      <button id="btn-pause" class="btn" disabled>暂停</button>
+      <button id="btn-next-wave" class="btn" disabled>下一波</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <canvas id="game-canvas"></canvas>
+    <div id="tooltip" class="tooltip"></div>
+
+    <aside id="side-panel">
+      <div class="panel">
+        <h3>塔 防</h3>
+        <div id="tower-list"></div>
+      </div>
+      <div class="panel">
+        <h3>交 换</h3>
+        <div id="swap-list"></div>
+        <div id="swap-hint" class="hint">点击地图上的交换节点旋转路由</div>
+      </div>
+      <div class="panel">
+        <h3>状 态</h3>
+        <div id="status-log" class="log"></div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="modal">
+    <div id="modal-box">
+      <h2 id="modal-title"></h2>
+      <p id="modal-text"></p>
+      <button id="modal-ok" class="btn">确 认</button>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="js/types.js"></script>
+<script type="module" src="js/game.js"></script>
+</body>
+</html>

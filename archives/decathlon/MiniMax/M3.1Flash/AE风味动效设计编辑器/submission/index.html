@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>锻字工坊 · AE 风味动效设计编辑器</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app">
+
+  <header id="topbar">
+    <div class="brand">
+      <span class="brand-mark">锻</span>
+      <span class="brand-text">锻字工坊<em>Motion Forge</em></span>
+    </div>
+    <div class="tb-group" id="tbProject">
+      <span class="tb-label">工程</span>
+      <input id="projName" class="tb-input" type="text" value="锻字" title="工程名称">
+      <button class="tb-btn" data-act="newProject" title="新建工程">新建</button>
+      <button class="tb-btn" data-act="openProject" title="打开工程 JSON">打开</button>
+      <button class="tb-btn" data-act="saveProject" title="保存工程 JSON">保存</button>
+      <input type="file" id="projectFile" accept=".json,application/json" hidden>
+    </div>
+    <div class="tb-group">
+      <span class="tb-label">合成</span>
+      <select id="compSelect" class="tb-select" title="当前合成"></select>
+      <button class="tb-btn" data-act="addComp" title="新建合成">＋</button>
+    </div>
+    <div class="tb-group">
+      <span class="tb-label">视图</span>
+      <button class="tb-btn" data-act="toggleLeft">项目</button>
+      <button class="tb-btn" data-act="toggleRight">属性</button>
+      <button class="tb-btn" data-act="toggleBottom">时间轴</button>
+    </div>
+    <div class="tb-group tb-right">
+      <button class="tb-btn" data-act="undo" title="撤销 Ctrl+Z">↶ 撤销</button>
+      <button class="tb-btn" data-act="redo" title="重做 Ctrl+Shift+Z">↷ 重做</button>
+      <button class="tb-btn accent" data-act="play" title="空格播放/暂停">▶ 播放</button>
+      <span class="tb-clock" id="timeReadout">0:00:00</span>
+    </div>
+  </header>
+
+  <main id="workspace">
+    <aside id="leftPanel" class="panel">
+      <div class="panel-head">
+        <span>项目</span>
+        <div class="panel-tools">
+          <button class="mini" data-act="addLayer" title="新建图层">＋</button>
+        </div>
+      </div>
+      <div class="tabs" id="leftTabs">
+        <button class="tab active" data-tab="layers">图层</button>
+        <button class="tab" data-tab="assets">资源</button>
+        <button class="tab" data-tab="notes">说明</button>
+      </div>
+      <div class="panel-body" id="leftBody"></div>
+    </aside>
+
+    <section id="stage">
+      <div id="viewport">
+        <canvas id="glCanvas"></canvas>
+        <canvas id="overlayCanvas"></canvas>
+        <div id="viewportHint" class="viewport-hint"></div>
+        <div id="stageBadge" class="stage-badge">锻字 · 15s</div>
+      </div>
+      <div id="stageBar">
+        <div class="seg" id="viewModes">
+          <button class="seg-btn active" data-view="final" title="最终效果">最终</button>
+          <button class="seg-btn" data-view="shapes" title="仅形状">形状</button>
+          <button class="seg-btn" data-view="wire" title="线框/辅助">线框</button>
+          <button class="seg-btn" data-view="fields" title="场">场</button>
+        </div>
+        <div class="seg">
+          <button class="seg-btn" data-act="toggleGrid" title="网格">网格</button>
+          <button class="seg-btn" data-act="togglePath" title="运动路径">路径</button>
+          <button class="seg-btn" data-act="toggle3d" title="三维视图">三维</button>
+        </div>
+        <div class="spacer"></div>
+        <div class="seg" id="zoomBox">
+          <button class="seg-btn" data-act="zoomOut">－</button>
+          <span class="zoom-label" id="zoomLabel">适应</span>
+          <button class="seg-btn" data-act="zoomIn">＋</button>
+        </div>
+      </div>
+    </section>
+
+    <aside id="rightPanel" class="panel">
+      <div class="panel-head">
+        <span id="rightTitle">属性</span>
+        <div class="panel-tools" id="rightTools"></div>
+      </div>
+      <div class="tabs" id="rightTabs">
+        <button class="tab active" data-tab="prop">属性</button>
+        <button class="tab" data-tab="effect">效果</button>
+        <button class="tab" data-tab="anim">动画</button>
+        <button class="tab" data-tab="node">节点</button>
+      </div>
+      <div class="panel-body" id="rightBody"></div>
+    </aside>
+  </main>
+
+  <footer id="bottomPanel">
+    <div id="bottomTabs">
+      <button class="tab active" data-btab="timeline">时间轴</button>
+      <button class="tab" data-btab="curve">曲线</button>
+      <button class="tab" data-btab="audio">声音</button>
+      <span class="spacer"></span>
+      <span class="hint" id="shortcutHint">空格播放 · F9 缓入缓出 · Ctrl+Shift+C 预合成 · Ctrl+Z 撤销</span>
+    </div>
+    <div class="bottom-body">
+      <div id="timelinePane" class="btab-pane active">
+        <div id="tlLayerList"></div>
+        <div id="tlTracks">
+          <div id="tlRuler"><div id="tlRulerMarks"></div><div id="tlWorkArea"></div></div>
+          <div id="tlTrackArea"></div>
+        </div>
+      </div>
+      <div id="curvePane" class="btab-pane">
+        <div id="curveLeft">
+          <div class="curve-head">
+            <span>曲线</span>
+            <select id="curvePropSelect" class="tb-select"></select>
+            <button class="seg-btn active" data-curve-mode="value" id="curveModeValue">值</button>
+            <button class="seg-btn" data-curve-mode="speed" id="curveModeSpeed">速度</button>
+          </div>
+          <div id="curveCanvasWrap"><canvas id="curveCanvas"></canvas></div>
+        </div>
+        <div id="curveInfo"></div>
+      </div>
+      <div id="audioPane" class="btab-pane">
+        <div id="audioList"></div>
+        <div id="audioDetail"></div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast"></div>
+  <div id="modalBackdrop" class="hidden"><div id="modalBox"></div></div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/expr.js"></script>
+<script src="js/anim.js"></script>
+<script src="js/path.js"></script>
+<script src="js/text.js"></script>
+<script src="js/model.js"></script>
+<script src="js/geom3d.js"></script>
+<script src="js/fields.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/nodes.js"></script>
+<script src="js/render.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

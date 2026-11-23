@@ -1,0 +1,366 @@
+// =====================================================================
+// 任务管理器（/System/apps/tasks.ns）
+// 进程：查看状态、实际工作量、错误，挂起、继续、结束，调整进程额度与消息输出。
+// 本系统：总预算、存储配额。子系统：创建、暂停、继续、单步、调速、拨付上限、
+// 重启、关闭、快照、恢复与分叉、打开内核源文件。
+// 读数区分子系统内核自身（kernel）与其用户进程（procs）。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var VW = 820;
+var VH = 560;
+var tab = "procs";
+var procs = [];
+var kids = [];
+var info = {};
+var selPid = -1;
+var selKid = "";
+var snaps = [];
+var notice = "";
+var tickN = 0;
+
+func reload() {
+    info = sys_info();
+    procs = sys_procs();
+    kids = sys_kids();
+    snaps = [];
+    var list = sys_fs_list("/Snapshots");
+    if (list != nil) {
+        for (var f in list) {
+            if (ends(f.name, ".snap")) { push(snaps, f); }
+        }
+    }
+    if (selPid >= 0) {
+        var still = false;
+        for (var p in procs) { if (p.pid == selPid) { still = true; } }
+        if (!still) { selPid = -1; }
+    }
+}
+
+func fmt_units(n) {
+    if (n >= 1000000) { return fmt(n / 1000000, 2) + "M"; }
+    if (n >= 1000) { return fmt(n / 1000, 1) + "k"; }
+    return str(floor(n));
+}
+
+func state_text(s) {
+    if (s == "ready") { return "就绪"; }
+    if (s == "sleep") { return "睡眠"; }
+    if (s == "recv") { return "等待消息"; }
+    if (s == "susp") { return "已挂起"; }
+    if (s == "frozen") { return "暂停"; }
+    if (s == "wait") { return "等待预算"; }
+    if (s == "error") { return "异常"; }
+    if (s == "gone") { return "已结束"; }
+    return s;
+}
+
+func kid_state_text(s) {
+    if (s == "running") { return "运行中"; }
+    if (s == "paused") { return "已暂停"; }
+    if (s == "suspended") { return "父系统暂停"; }
+    if (s == "error") { return "内核错误"; }
+    return s;
+}
+
+func rate_next(r) {
+    if (r < 0.5) { return 0.5; }
+    if (r < 1) { return 1; }
+    if (r < 2) { return 2; }
+    if (r < 4) { return 4; }
+    return 0.25;
+}
+
+// 子系统行的按钮：[标签, 标识, 动作, 列, 行]
+func kid_buttons() {
+    return [
+        ["暂停", "system-pause", "pause", 0, 0], ["继续", "system-resume", "resume", 1, 0],
+        ["单步", "system-step", "step", 2, 0], ["速率", "system-rate", "rate", 3, 0],
+        ["拨付−", "tasks-grant-down", "grant-", 4, 0], ["拨付+", "tasks-grant-up", "grant+", 5, 0],
+        ["重启", "system-restart", "restart", 0, 1], ["关闭", "system-close", "close", 1, 1],
+        ["快照", "system-snapshot", "snapshot", 2, 1], ["内核源", "kernel-open", "kernel", 3, 1],
+        ["进入", "system-enter", "enter", 4, 1]
+    ];
+}
+
+func kid_action(kid, act) {
+    if (act == "pause") { do_kid(kid.id, "pause", nil); }
+    else if (act == "resume") { do_kid(kid.id, "resume", nil); }
+    else if (act == "step") { do_kid(kid.id, "step", nil); }
+    else if (act == "rate") { do_kid(kid.id, "rate", rate_next(kid.rate)); }
+    else if (act == "grant-") { do_kid(kid.id, "budget", max(0, kid.budget - 5000)); }
+    else if (act == "grant+") { do_kid(kid.id, "budget", kid.budget + 5000); }
+    else if (act == "restart") { do_kid(kid.id, "restart", nil); }
+    else if (act == "close") {
+        do_kid(kid.id, "close", nil);
+        sys_send("wm", {type: "kid-gone", sys: kid.id});
+        selKid = "";
+    }
+    else if (act == "snapshot") { do_kid(kid.id, "snapshot", "snap-" + kid.id + "-" + str(floor(info.clock))); }
+    else if (act == "kernel") { sys_send("wm", {type: "open-file", path: "/Kernels/" + kid.id + ".ns"}); }
+    else if (act == "enter") { sys_send("wm", {type: "open-kid", sys: kid.id, title: kid.id}); }
+}
+
+func do_kid(id, action, arg) {
+    var r = sys_child_ctl(id, action, arg);
+    if (!r.ok) {
+        notice = r.error;
+    } else {
+        notice = "已完成：" + action;
+    }
+    return r;
+}
+
+func paint() {
+    var L = [];
+    add_rect(L, 0, 0, VW, VH, THEME.panel);
+    add_bold(L, 24, 16, 420, 28, "任务管理器", 17, THEME.text, "l");
+    add_text(L, 24, 44, VW - 48, 20, sys_name_text(), 12, THEME.sub, "l");
+
+    // 指标
+    var my = 72;
+    var cards = [
+        ["预算/步", fmt_units(info.budget) + " 单位", "budget"],
+        ["实际拨付", fmt_units(info.lastUsed) + " 单位", "lastUsed"],
+        ["内核自身", fmt_units(info.stat.self) + " 单位", "kernel"],
+        ["用户进程", fmt_units(info.stat.procs) + " 单位", "procs"],
+        ["子系统", fmt_units(info.stat.kids) + " 单位", "kids"],
+        ["存储", size_text(info.disk) + " / " + str(floor(info.storQuota / 1048576)) + " MB", "disk"]
+    ];
+    var cx = 24;
+    var cw = floor((VW - 48 - 50) / 6);
+    for (var c in cards) {
+        var cd = add_frame(L, cx, my, cw, 62, "#f8f9fc", THEME.line, 10);
+        cd.tid = "tasks-metric";
+        cd.da = {metric: c[2]};
+        add_text(L, cx + 10, my + 6, cw - 20, 18, c[0], 11, THEME.sub, "l");
+        add_bold(L, cx + 10, my + 26, cw - 20, 26, c[1], 13, THEME.text, "l");
+        cx = cx + cw + 10;
+    }
+    // 预算与配额的调节
+    var by = 146;
+    add_text(L, 24, by + 8, 150, 26, "本系统总预算", 12, THEME.sub, "l");
+    add_btn(L, 150, by + 4, 30, 28, "−", "tasks-budget-down", "#f0f1f6", THEME.text).da = {delta: "-20000"};
+    add_btn(L, 184, by + 4, 30, 28, "+", "tasks-budget-up", "#f0f1f6", THEME.text).da = {delta: "20000"};
+    add_text(L, 222, by + 8, 130, 26, "存储配额 " + str(floor(info.storQuota / 1048576)) + " MB", 12, THEME.sub, "l");
+    add_btn(L, 360, by + 4, 30, 28, "−", "tasks-storage-down", "#f0f1f6", THEME.text).da = {delta: "-16777216"};
+    add_btn(L, 394, by + 4, 30, 28, "+", "tasks-storage-up", "#f0f1f6", THEME.text).da = {delta: "16777216"};
+    add_text(L, VW - 320, by + 8, 300, 26, notice, 12, accent_color("violet"), "r");
+
+    // 页签
+    var ty = 186;
+    var t1 = add_btn(L, 24, ty, 110, 30, "进程 (" + str(len(procs)) + ")", "tasks-tab-procs", pick(tab == "procs", accent_color("violet"), "#f0f1f6"), pick(tab == "procs", "#ffffff", THEME.text));
+    var t2 = add_btn(L, 140, ty, 110, 30, "子系统 (" + str(len(kids)) + ")", "tasks-tab-kids", pick(tab == "kids", accent_color("violet"), "#f0f1f6"), pick(tab == "kids", "#ffffff", THEME.text));
+    var top = 226;
+    if (tab == "procs") {
+        paint_procs(L, top);
+    } else {
+        paint_kids(L, top);
+    }
+    sys_submit("win-" + str(WID), L);
+}
+
+func sys_name_text() {
+    var depthText = pick(info.parentId == nil, "根系统", "子系统 " + str(info.id));
+    return depthText + " · 状态：" + kid_state_text(pick(info.paused, "paused", "running")) + " · 虚拟时间 " + fmt(info.clock, 1) + " 秒";
+}
+
+func paint_procs(L, top) {
+    var hd = top;
+    add_rect(L, 24, hd, VW - 48, 26, "#f4f5fa");
+    add_text(L, 34, hd, 50, 26, "PID", 12, THEME.sub, "l");
+    add_text(L, 90, hd, 180, 26, "程序", 12, THEME.sub, "l");
+    add_text(L, 280, hd, 110, 26, "状态", 12, THEME.sub, "l");
+    add_text(L, 400, hd, 100, 26, "工作量", 12, THEME.sub, "r");
+    add_text(L, 510, hd, 70, 26, "额度", 12, THEME.sub, "r");
+    add_text(L, 590, hd, 200, 26, "错误", 12, THEME.sub, "l");
+    var y = hd + 30;
+    var shown = 0;
+    for (var p in procs) {
+        if (y > VH - 150) { break; }
+        var on = p.pid == selPid;
+        var row = add_rect(L, 24, y, VW - 48, 26, pick(on, THEME.select, "#00000000"));
+        row.r = 6;
+        row.hv = !on;
+        row.cur = "pointer";
+        row.tid = "tasks-proc";
+        row.da = {pid: str(p.pid)};
+        add_text(L, 34, y, 50, 26, str(p.pid), 12, THEME.text, "l");
+        add_text(L, 90, y, 186, 26, fit_text(p.name + pick(p.kind == "carrier", "（子系统承载）", ""), 12, 180), 12, THEME.text, "l");
+        add_text(L, 280, y, 110, 26, state_text(p.state), 12, THEME.sub, "l");
+        add_text(L, 400, y, 100, 26, fmt_units(p.work), 12, THEME.text, "r");
+        add_text(L, 510, y, 70, 26, pick(p.quota > 0, str(p.quota), "无"), 12, THEME.sub, "r");
+        var errText = "";
+        if (p.err != nil) { errText = p.err.message; }
+        add_text(L, 590, y, 200, 26, fit_text(errText, 12, 190), 12, THEME.danger, "l");
+        y = y + 28;
+        shown = shown + 1;
+    }
+    if (shown == 0) { add_text(L, 34, hd + 40, 400, 26, "没有进程", 12, THEME.hint, "l"); }
+    // 操作区
+    var oy = VH - 116;
+    add_rect(L, 24, oy - 8, VW - 48, 1, THEME.line);
+    var sel = nil;
+    for (var q in procs) { if (q.pid == selPid) { sel = q; } }
+    var sname = "未选择进程";
+    if (sel != nil) { sname = "已选择：" + sel.name + "（pid " + str(sel.pid) + "）"; }
+    add_text(L, 24, oy, 340, 26, sname, 12, THEME.text, "l");
+    add_btn(L, 24, oy + 30, 84, 30, "挂起", "tasks-suspend", "#f0f1f6", THEME.text);
+    add_btn(L, 114, oy + 30, 84, 30, "继续", "tasks-resume", "#f0f1f6", THEME.text);
+    add_btn(L, 204, oy + 30, 84, 30, "结束", "tasks-kill", THEME.danger, "#ffffff");
+    add_btn(L, 298, oy + 30, 84, 30, "额度 −", "tasks-quota-down", "#f0f1f6", THEME.text);
+    add_btn(L, 386, oy + 30, 84, 30, "额度 +", "tasks-quota-up", "#f0f1f6", THEME.text);
+    // 消息输出
+    var logs = [];
+    if (sel != nil) { logs = sys_proc_logs(sel.pid); }
+    var lx = 490;
+    add_text(L, lx, oy - 2, 300, 22, "消息输出", 12, THEME.sub, "l");
+    var k = 0;
+    for (var lg in logs) {
+        if (k >= 4) { break; }
+        add_text(L, lx, oy + 18 + k * 18, VW - lx - 30, 18, fit_text(lg, 12, VW - lx - 40), 11, THEME.text, "l");
+        k = k + 1;
+    }
+}
+
+func paint_kids(L, top) {
+    var y = top;
+    add_btn(L, 24, y, 130, 30, "新建子系统", "system-new", accent_color("violet"), "#ffffff");
+    add_text(L, 170, y, VW - 200, 30, "子系统的内核源文件保存在本系统的 /Kernels 中", 12, THEME.sub, "l");
+    y = y + 40;
+    if (len(kids) == 0) { add_text(L, 34, y, 400, 26, "没有直属子系统", 12, THEME.hint, "l"); }
+    for (var k in kids) {
+        if (y > VH - 170) { break; }
+        var on = k.id == selKid;
+        var row = add_rect(L, 24, y, VW - 48, 52, pick(on, THEME.select, "#f8f9fc"));
+        row.r = 10;
+        row.tid = "tasks-kid";
+        row.da = {sys: k.id};
+        add_bold(L, 36, y + 6, 180, 20, k.id, 13, THEME.text, "l");
+        add_text(L, 36, y + 26, 220, 20, kid_state_text(k.state) + " · 速率 " + fmt(k.rate, 2) + "x · 时间 " + fmt(k.clock, 1) + "s", 11, THEME.sub, "l");
+        add_text(L, 260, y + 6, 200, 20, "拨付上限 " + fmt_units(k.budget) + " · 上步用 " + fmt_units(k.lastUsed), 11, THEME.sub, "l");
+        add_text(L, 260, y + 26, 200, 20, "用户进程 " + fmt_units(k.stat.procs) + " · 内核 " + fmt_units(k.stat.self), 11, THEME.sub, "l");
+        for (var kb in kid_buttons()) {
+            var kbt = add_btn(L, 466 + kb[3] * 54, y + 8 + kb[4] * 26, 50, 22, kb[0], kb[1], "#f0f1f6", THEME.text);
+            kbt.tg = k.id;
+            kbt.da = {action: kb[2]};
+        }
+        y = y + 60;
+    }
+    // 快照
+    y = y + 6;
+    add_text(L, 24, y, 300, 22, "快照（保存于 /Snapshots）", 12, THEME.sub, "l");
+    y = y + 26;
+    var n = 0;
+    for (var s in snaps) {
+        if (n >= 4 || y > VH - 50) { break; }
+        add_text(L, 34, y, 240, 24, s.name, 12, THEME.text, "l");
+        var rb = add_btn(L, 300, y - 2, 70, 26, "恢复", "system-restore", "#f0f1f6", THEME.text);
+        rb.da = {snap: s.path};
+        var fb = add_btn(L, 376, y - 2, 70, 26, "分叉", "system-fork", "#f0f1f6", THEME.text);
+        fb.da = {snap: s.path};
+        y = y + 30;
+        n = n + 1;
+    }
+    if (n == 0) { add_text(L, 34, y, 300, 22, "还没有快照", 12, THEME.hint, "l"); }
+}
+
+// 点击处理
+func on_pointer(m) {
+    if (m.kind != "down") { return; }
+    var x = m.x;
+    var y = m.y;
+    if (inside(x, y, 150, 150, 30, 28)) { sys_budget("budget", max(0, info.budget - 20000)); return; }
+    if (inside(x, y, 184, 150, 30, 28)) { sys_budget("budget", info.budget + 20000); return; }
+    if (inside(x, y, 360, 150, 30, 28)) { sys_budget("storQuota", max(65536, info.storQuota - 16777216)); return; }
+    if (inside(x, y, 394, 150, 30, 28)) { sys_budget("storQuota", info.storQuota + 16777216); return; }
+    if (inside(x, y, 24, 186, 110, 30)) { tab = "procs"; return; }
+    if (inside(x, y, 140, 186, 110, 30)) { tab = "kids"; return; }
+    if (tab == "procs") {
+        var idx = floor((y - 256) / 28);
+        if (y >= 256 && idx >= 0 && idx < len(procs)) { selPid = procs[idx].pid; }
+        var oy = VH - 116;
+        if (inside(x, y, 24, oy + 30, 84, 30)) { if (selPid >= 0) { notice = sys_proc_ctl(selPid, "suspend").error || "已挂起"; } return; }
+        if (inside(x, y, 114, oy + 30, 84, 30)) { if (selPid >= 0) { notice = sys_proc_ctl(selPid, "resume").error || "已继续"; } return; }
+        if (inside(x, y, 204, oy + 30, 84, 30)) { if (selPid >= 0) { sys_proc_ctl(selPid, "kill"); selPid = -1; notice = "已结束"; } return; }
+        if (inside(x, y, 298, oy + 30, 84, 30) || inside(x, y, 386, oy + 30, 84, 30)) {
+            if (selPid >= 0) {
+                var cur = 0;
+                for (var q in procs) { if (q.pid == selPid) { cur = q.quota; } }
+                var nq = pick(inside(x, y, 386, oy + 30, 84, 30), cur + 1000, max(0, cur - 1000));
+                sys_set_quota(selPid, nq);
+                notice = "额度 " + str(nq) + "（0 为不限）";
+            }
+            return;
+        }
+        return;
+    }
+    // 子系统页
+    if (inside(x, y, 24, 226, 130, 30)) {
+        var r = sys_child_new();
+        if (r.ok) {
+            sys_send("wm", {type: "open-kid", sys: r.value, title: r.value});
+            notice = "已创建 " + r.value;
+        } else {
+            notice = r.error;
+        }
+        return;
+    }
+    var row = floor((y - 266) / 60);
+    if (y >= 266 && row >= 0 && row < len(kids)) {
+        var kid = kids[row];
+        selKid = kid.id;
+        var by = 266 + row * 60;
+        for (var kb in kid_buttons()) {
+            if (inside(x, y, 466 + kb[3] * 54, by + 8 + kb[4] * 26, 50, 22)) {
+                kid_action(kid, kb[2]);
+                return;
+            }
+        }
+    }
+    // 快照列表
+    var sy = 266 + len(kids) * 60 + 6 + 26;
+    var nn = 0;
+    for (var s in snaps) {
+        if (nn >= 4) { break; }
+        if (inside(x, y, 300, sy - 2, 70, 26)) {
+            var r2 = sys_child_ctl("", "restore", s.path);
+            if (r2.ok) { sys_send("wm", {type: "open-kid", sys: r2.value, title: r2.value}); notice = "已恢复 " + r2.value; } else { notice = r2.error; }
+            return;
+        }
+        if (inside(x, y, 376, sy - 2, 70, 26)) {
+            var r3 = sys_child_ctl("", "fork", s.path);
+            if (r3.ok) { sys_send("wm", {type: "open-kid", sys: r3.value, title: r3.value}); notice = "已分叉为 " + r3.value; } else { notice = r3.error; }
+            return;
+        }
+        sy = sy + 30;
+        nn = nn + 1;
+    }
+}
+
+func main(args) {
+    WID = args[0];
+    reload();
+    paint();
+    while (true) {
+        var m = sys_recvt(0.5);
+        if (m == nil) {
+            tickN = tickN + 1;
+            reload();
+            paint();
+        } else if (m.type == "view") {
+            VW = m.w;
+            VH = m.h;
+            paint();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+            reload();
+            paint();
+        } else if (m.type == "close-req") {
+            sys_send("wm", {type: "close", win: WID});
+            return 0;
+        }
+    }
+    return 0;
+}

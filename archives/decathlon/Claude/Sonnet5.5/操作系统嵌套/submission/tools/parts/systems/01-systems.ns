@@ -1,0 +1,173 @@
+// systems.ns — 系统管理：创建和管理本系统的直属子系统（新建、启动、暂停、继续、单步、调速、重启、关闭、
+// 快照、恢复、分叉）。每一层桌面都有这个应用；它通过 sys("sysctl", ...) 请求本系统的内核执行。
+include "/System/lib/ui.ns";
+
+let S = {list: [], snaps: [], fs_rev: -1, last: -9, confirm: nil, msg: "", msg_t: 0, tab: "systems", pending: nil};
+let RATES = [0.25, 0.5, 1, 2, 4];
+
+fn say(m) { S.msg = m; S.msg_t = time(); }
+fn reload() {
+  let l = sys("sysctl", "list");
+  S.list = typeof(l) == "arr" ? l : [];
+  let sn = sys("sysctl", "snaps");
+  S.snaps = typeof(sn) == "arr" ? sn : [];
+  S.last = time();
+}
+fn find_by_id(id) { for (let c of S.list) { if (c.id == id) { return c; } } return nil; }
+fn state_name(s) {
+  if (s == "running") { return "运行中"; } if (s == "paused") { return "已暂停"; } if (s == "booting") { return "启动中"; }
+  if (s == "error") { return "内核错误"; } if (s == "stopped") { return "已停止"; } return s;
+}
+fn state_color(s) { if (s == "running") { return TH.ok; } if (s == "paused") { return TH.warn; } if (s == "booting") { return TH.acc; } return TH.danger; }
+fn do_new() {
+  let nm = trim(ui_val("system-name"));
+  if (nm == "") { nm = "子系统"; }
+  let r = sys("sysctl", "new", nm);
+  if (r == nil || r.err != nil) { say("创建失败：" + (r == nil ? "" : r.err)); return nil; }
+  say("已创建 " + r.id + "，正在启动内核…");
+  ui_set("system-name", "");
+  send(APP.args.wm, {t: "open_system", pid: r.pid});
+  reload();
+}
+fn act(op, c, extra) {
+  let r = sys("sysctl", op, c.pid, extra);
+  if (r != nil && r.err != nil) { say(op + " 失败：" + r.err); } else { say(c.id + "：" + op + " 完成"); }
+  reload();
+}
+fn cur_rate_idx(rate) {
+  let best = 2; let bd = 99;
+  for (let i = 0; i < len(RATES); i++) { let d = abs(RATES[i] - rate); if (d < bd) { bd = d; best = i; } }
+  return best;
+}
+fn small_btn(id, x, y, w, label, icon, c, st) {
+  let s = {icon: icon, size: 12, fill: TH.bg3, hf: TH.bg4, d: {"target-system-id": c.id}, key: id + c.id};
+  if (st != nil) { for (let k of keys(st)) { s[k] = st[k]; } }
+  return ui_button(id, x, y, w, 28, label, s);
+}
+fn card(c, x, y, w) {
+  let h = 118;
+  let bx = ui_rect(x, y, w, h, TH.bg2, 12); bx.stroke = TH.border; bx.tid = "system-item"; bx.aria = c.name; bx.d = {"target-system-id": c.id}; bx.key = "card" + c.pid;
+  let lc = level_color_of(c);
+  ui_rect(x, y + 12, 4, h - 24, lc, 2);
+  ui_icon(x + 18, y + 14, "system", 22, lc);
+  ui_text(x + 48, y + 12, c.name, 15, TH.text, {b: true});
+  let tw = text_w(c.name, 15);
+  let chip = c.id;
+  let cw = text_w(chip, 11) + 14;
+  let p = ui_rect(x + 58 + tw, y + 14, cw, 18, "rgba(0,0,0,0)", 9); p.stroke = lc;
+  ui_textc(x + 58 + tw, y + 16, cw, chip, 11, lc);
+  let sc = state_color(c.state);
+  ui_rect(x + 68 + tw + cw, y + 20, 8, 8, sc, 4);
+  ui_text(x + 82 + tw + cw, y + 14, state_name(c.state), 12, sc, {b: true});
+  ui_textr(x + w - 220, y + 14, 208, "虚拟时间 " + fmt(c.t, 1) + " s · 速率 " + c.rate + "×", 12, TH.muted);
+  // 读数
+  let lim = c.limit;
+  ui_text(x + 48, y + 38, "逻辑步用量", 11, TH.faint);
+  ui_progress(x + 112, y + 42, 150, 6, lim > 0 ? c.step_used / lim : 0, c.step_used >= lim ? TH.warn : TH.acc);
+  ui_text(x + 270, y + 38, c.step_used + " / " + lim + (c.grant > 0 ? "（拨付上限 " + c.grant + "）" : ""), 11, TH.muted);
+  ui_text(x + 48, y + 56, "内存 " + fmt_size(c.mem_used) + (c.mem_self > 0 || c.mem_grant > 0 ? " / 配额 " + fmt_size(eff2(c.mem_grant, c.mem_self)) : "") + "   存储 " + fmt_size(c.storage_used) + (c.sto_self > 0 || c.sto_grant > 0 ? " / " + fmt_size(eff2(c.sto_grant, c.sto_self)) : ""), 11, TH.muted);
+  if (c.kerr != nil) { ui_textw(x + 340, y + 38, w - 360, "错误：" + c.kerr, 11, TH.danger); }
+  // 按钮行
+  let by = y + h - 36; let bx2 = x + 14;
+  if (small_btn("system-open", bx2, by, 76, "窗口", "project", c)) { send(APP.args.wm, {t: "open_system", pid: c.pid}); } bx2 = bx2 + 80;
+  if (c.state == "paused") {
+    if (small_btn("system-resume", bx2, by, 72, "继续", "play", c, {fill: TH.acc})) { act("resume", c); } bx2 = bx2 + 76;
+    if (small_btn("system-step", bx2, by, 72, "单步", "step", c, {tip: "前进一个固定的逻辑步（1/60 秒）"})) { act("step", c); } bx2 = bx2 + 76;
+  } else {
+    if (small_btn("system-pause", bx2, by, 72, "暂停", "pause", c, {fill: c.state == "running" ? TH.bg3 : TH.bg1, color: c.state == "running" ? TH.text : TH.faint})) { if (c.state == "running") { act("pause", c); } } bx2 = bx2 + 76;
+  }
+  let ri = cur_rate_idx(c.rate);
+  if (small_btn("system-rate", bx2, by, 82, RATES[ri] + "× 速率", "speed", c, {tip: "点击切换时间速率（不增加预算）"})) { act("rate", c, RATES[(ri + 1) % len(RATES)]); } bx2 = bx2 + 86;
+  if (small_btn("system-restart", bx2, by, 72, "重启", "reload", c)) { act("restart", c); } bx2 = bx2 + 76;
+  if (small_btn("kernel-open", bx2, by, 92, "内核源码", "code", c, {tip: "在编辑器中打开该实例的内核源文件"})) { send(APP.args.wm, {t: "launch", app: "editor", args: {file: c.kpath}}); } bx2 = bx2 + 96;
+  if (small_btn("system-snapshot", bx2, by, 72, "快照", "snapshot", c)) { act("snapshot", c); } bx2 = bx2 + 76;
+  if (small_btn("system-fork", bx2, by, 72, "分叉", "fork", c, {tip: "保存快照并从中启动一棵独立的新子树"})) { do_fork_live(c); } bx2 = bx2 + 76;
+  if (small_btn("system-close", bx2, by, 72, "关闭", "close", c, {color: TH.danger})) { S.confirm = {kind: "close", c: c}; }
+}
+fn eff2(a, b) { if (a > 0 && b > 0) { return a < b ? a : b; } return a > 0 ? a : b; }
+fn level_color_of(c) { let accs = ["#8b6cff", "#2fd0b5", "#ff7a6b", "#4aa8ff", "#ffc83d"]; return accs[(APP.args.depth + 1) % 5]; }
+fn do_fork_live(c) {
+  let r = sys("sysctl", "snapshot", c.pid, c.name + "-分叉点");
+  if (r == nil || r.err != nil) { say("快照失败：" + (r == nil ? "" : r.err)); return nil; }
+  let f = sys("sysctl", "fork", r.path, c.name + "（分叉）");
+  if (f == nil || f.err != nil) { say("分叉失败：" + (f == nil ? "" : f.err)); return nil; }
+  say("已分叉出 " + f.id);
+  send(APP.args.wm, {t: "open_system", pid: f.pid});
+  reload();
+}
+fn snap_row(sn, x, y, w) {
+  let r = ui_rect(x, y, w, 46, TH.bg2, 10); r.tid = "snapshot-item"; r.aria = sn.name; r.d = {"file-path": sn.path}; r.key = "sn" + sn.path;
+  ui_icon(x + 12, y + 12, "snapshot", 20, TH.acc2);
+  ui_textw(x + 42, y + 6, w - 380, sn.name, 13, TH.text, {b: true});
+  ui_textw(x + 42, y + 25, w - 380, sn.sysname + "（" + sn.id + "）· 虚拟时间 " + fmt(sn.t, 1) + " s · " + fmt_size(sn.size), 11, TH.muted);
+  let orig = find_by_id(sn.id);
+  let bx = x + w - 330;
+  if (ui_button("snap-restore", bx, y + 9, 100, 28, "恢复到原实例", {size: 12, fill: orig == nil ? TH.bg1 : TH.bg3, color: orig == nil ? TH.faint : TH.text, d: {"file-path": sn.path}, key: "sr" + sn.path, tip: orig == nil ? "原实例已不存在，请用“分叉”" : "把原实例的整棵子树还原到保存时刻"})) {
+    if (orig == nil) { say("原实例 " + sn.id + " 已不存在，请用“分叉”创建新实例"); }
+    else { let rr = sys("sysctl", "restore", orig.pid, sn.path); say(rr != nil && rr.err != nil ? "恢复失败：" + rr.err : "已恢复 " + orig.id); reload(); }
+  }
+  if (ui_button("snap-fork", bx + 106, y + 9, 100, 28, "分叉为新实例", {size: 12, fill: TH.acc, d: {"file-path": sn.path}, key: "sf" + sn.path})) {
+    let f = sys("sysctl", "fork", sn.path, sn.sysname + "（来自快照）");
+    if (f == nil || f.err != nil) { say("分叉失败：" + (f == nil ? "" : f.err)); } else { say("已创建 " + f.id); send(APP.args.wm, {t: "open_system", pid: f.pid}); }
+    reload();
+  }
+  if (ui_button("snap-delete", bx + 212, y + 9, 106, 28, "删除快照文件", {size: 12, color: TH.danger, d: {"file-path": sn.path}, key: "sd" + sn.path})) { sys("fs_remove", sn.path); reload(); }
+}
+fn sys_frame(U, w, h) {
+  ui_rect(0, 0, w, h, TH.bg1, 0);
+  ui.enabled = S.confirm == nil;
+  ui_rect(0, 0, w, 56, TH.bg2, 0);
+  ui_icon(16, 16, "tree", 24, TH.acc);
+  ui_text(50, 10, "子系统管理", 16, TH.text, {b: true});
+  ui_text(50, 32, "本系统（" + APP.args.sysid + "，第 " + APP.args.depth + " 层）的直属子系统", 12, TH.muted);
+  ui_input("system-name", w - 360, 13, 190, 30, {ph: "新子系统的名称", size: 13, pad: 8, r: 15});
+  if (ui_button("system-new", w - 160, 13, 146, 30, "新建子系统", {icon: "plus", fill: TH.acc, hf: "#a58bff", b: true, size: 13})) { do_new(); }
+  if (ui_key_in("Enter", "system-name") != nil) { do_new(); }
+  let n = len(S.list);
+  let sn = len(S.snaps);
+  let ch = 118 + 12;
+  let content = n * ch + 20 + (sn > 0 ? 40 + sn * 52 : 60);
+  let off = ui_scroll_begin("sys-list", 0, 56, w, h - 56 - 28, content);
+  let y = 12;
+  if (n == 0) {
+    ui_text(24, y + 20, "还没有子系统。点击右上角“新建子系统”：它会在本系统里作为一个承载进程运行，", 14, TH.muted);
+    ui_text(24, y + 44, "并拥有自己的进程表、文件系统、桌面、播放器和图表工作台，还能继续创建下一层。", 14, TH.muted);
+    y = y + 90;
+  }
+  for (let c of S.list) { card(c, 14, y, w - 28 - 8); y = y + ch; }
+  y = y + 6;
+  ui_text(18, y, "快照（保存在本系统的 /Snapshots 里）", 13, TH.muted, {b: true});
+  y = y + 26;
+  if (sn == 0) { ui_text(18, y + 4, "还没有快照。点击子系统卡片上的“快照”保存整棵子树的运行状态。", 12, TH.faint); }
+  for (let s of S.snaps) { snap_row(s, 14, y, w - 36); y = y + 52; }
+  ui_scroll_end();
+  ui_scrollbar(w - 8, 60, 6, h - 56 - 28 - 8, content, off);
+  ui_rect(0, h - 28, w, 28, TH.bg2, 0);
+  ui_textw(12, h - 21, w - 24, S.msg != "" && time() - S.msg_t < 8 ? S.msg : n + " 个子系统 · " + sn + " 个快照", 12, S.msg != "" && time() - S.msg_t < 8 ? TH.acc2 : TH.muted);
+  ui.enabled = true;
+  if (S.confirm != nil) {
+    let c = S.confirm.c;
+    ui_rect(0, 0, w, h, "rgba(6,4,16,.6)", 0);
+    let bw = min(480, w - 40); let bh = 190; let bx = (w - bw) / 2; let by = (h - bh) / 2;
+    let box = ui_rect(bx, by, bw, bh, TH.bg2, 14); box.stroke = TH.danger; box.sh = "s4"; box.tid = "dialog"; box.aria = "确认关闭";
+    ui_icon(bx + 20, by + 20, "warn", 24, TH.danger);
+    ui_text(bx + 54, by + 20, "关闭 " + c.name + "（" + c.id + "）？", 15, TH.text, {b: true});
+    ui_text(bx + 22, by + 58, "将停止它里面的全部程序和它的所有子系统；已保存的快照仍可重新打开。", 13, TH.muted, {wrap: true, w: bw - 44, lh: 19});
+    if (ui_button("dialog-ok", bx + bw - 22 - 110 - 96, by + bh - 54, 110, 34, "停止并关闭", {fill: TH.danger, b: true})) {
+      let r = sys("sysctl", "close", c.pid); S.confirm = nil;
+      send(APP.args.wm, {t: "refresh_children"});
+      say(r != nil && r.err != nil ? "关闭失败：" + r.err : "已关闭 " + c.id); reload();
+    }
+    if (ui_button("dialog-cancel", bx + bw - 22 - 90, by + bh - 54, 90, 34, "取消", {})) { S.confirm = nil; }
+  }
+}
+fn level_color(d) { let accs = ["#8b6cff", "#2fd0b5", "#ff7a6b", "#4aa8ff", "#ffc83d"]; return accs[d % 5]; }
+fn sys_idle() {
+  if (time() - S.last >= 0.5) { reload(); return true; }
+  return false;
+}
+fn sys_msg(m) { }
+app_init(&sys_frame, &sys_msg, 0);
+APP.on_idle = &sys_idle;
+reload();
+app_run();

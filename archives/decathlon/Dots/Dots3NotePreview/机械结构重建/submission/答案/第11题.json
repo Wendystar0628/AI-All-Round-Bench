@@ -1,0 +1,15 @@
+{
+  "problem": "11",
+  "parts": [
+    {"name": "1", "title": "三腔分层伺服分配箱", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-35, -35, 35, 35]}], "depth": 90},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [0, 0], "d": 42, "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [0, 0], "d": 36, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [-15, 0], "d": 24, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [15, 0], "d": 24, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [0, -15], "d": 18, "depth": 35},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [0, 15], "d": 18, "depth": 35},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -35, 0], [0, 35, 0], [-35, 0, 0], [35, 0, 0]]}
+    ]}
+  ]
+}

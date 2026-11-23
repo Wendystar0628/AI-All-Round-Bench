@@ -1,0 +1,407 @@
+// ============================================================
+// 三维场景播放器（Player.osprog）
+// 时序进程：装载场景资源、控制播放（播放/暂停/停止/循环/
+// 逐帧/调速/跳转）、切换演出与排演、驱动飞行场景与环境特效
+// 两个进程更新，并把可交互视图投送到祖先桌面。
+// ============================================================
+
+let win = 0
+let wm = 0
+let scenePid = 0
+let fxPid = 0
+let scenePath = "/Demo/helicopter-24.scene"
+let pathBuf = ""
+let mode = "show"        // show | rehearsal | replay
+let playing = 0
+let loopMode = 0
+let rate = 1
+let playT = 0
+let duration = 15
+let camMode = "orbit"
+let msg = ""
+let crashed = 0
+let picked = ""
+let selPart = ""
+let dragBar = 0
+let clock = 0
+let booted = 0
+let viewId = ""
+let projId = ""
+let projList = []
+let lastFrameT = 0
+let stepFrame = 0
+
+fn boot() {
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+    drive()
+  }
+}
+
+fn drive() {
+  // 时间推进：按所属系统虚拟时间以 16ms 为节拍发送帧
+  if playing == 1 {
+    let now = time()
+    if now - lastFrameT >= 16 {
+      let dt = now - lastFrameT
+      if dt > 60 {
+        dt = 60
+      }
+      lastFrameT = now
+      if scenePid != 0 {
+        send(scenePid, {"t": "tick", "dt": dt * rate})
+      }
+    }
+  }
+  sleep(4)
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    wm = m.wm
+    if m.path != "" {
+      scenePath = m.path
+    }
+    send(wm, {"t": "win_open", "pid": self(), "key": "player", "title": "三维场景播放器", "w": 760, "h": 540})
+    mode = "show"
+  } else if m.t == "win_opened" {
+    win = m.win
+    viewId = "player:" + str(win)
+    start_scene()
+    draw()
+  } else if m.t == "closing" {
+    if scenePid != 0 {
+      kill(scenePid)
+    }
+    if fxPid != 0 {
+      kill(fxPid)
+    }
+    kill(self())
+  } else if m.t == "click" {
+    on_click(m.x, m.y)
+  } else if m.t == "move" {
+    if dragBar == 1 and scenePid != 0 {
+      let t = (m.x - 12) / 700 * duration
+      if t < 0 {
+        t = 0
+      }
+      if t > duration {
+        t = duration
+      }
+      playT = t
+      send(scenePid, {"t": "playctl", "op": "seek", "t": t})
+      draw()
+    }
+  } else if m.t == "up" {
+    dragBar = 0
+  } else if m.t == "wheel" {
+    if scenePid != 0 {
+      send(scenePid, {"t": "camera", "op": "zoom", "dy": m.dy})
+    }
+  } else if m.t == "frame" {
+    playT = m.t
+    crashed = m.crashed
+    draw()
+  } else if m.t == "scene_ready" {
+    duration = m.duration
+    msg = "场景已装载: " + scenePath
+    playing = 1
+    draw()
+  } else if m.t == "fault" {
+    msg = "故障发生：旋翼转速下降"
+    draw()
+  } else if m.t == "crash" {
+    msg = "坠毁：冲击 " + str(floor(m.impact * 10) / 10)
+    draw()
+  } else if m.t == "error" {
+    msg = m.text
+    draw()
+  } else if m.t == "record_saved" {
+    msg = "记录已保存: " + m.path
+    draw()
+  } else if m.t == "picked" {
+    picked = m.name
+    draw()
+  } else if m.t == "projection_input" {
+    on_proj_input(m)
+  } else if m.t == "projection_restored" {
+    projId = m.projId
+    msg = "投送已随快照恢复"
+    draw()
+  } else if m.t == "projection_closed" {
+    projId = ""
+    msg = "投送窗口已关闭"
+    draw()
+  }
+}
+
+fn start_scene() {
+  let r1 = spawn("/System/Programs/Scene.osprog")
+  if type(r1) == "map" {
+    msg = "飞行场景进程启动失败: " + r1.error
+    return
+  }
+  scenePid = r1
+  let r2 = spawn("/System/Programs/Fx.osprog")
+  if type(r2) == "map" {
+    msg = "特效进程启动失败: " + r2.error
+    return
+  }
+  fxPid = r2
+  send(scenePid, {"t": "open", "win": win, "tl": self(), "fx": fxPid, "path": scenePath, "mode": mode})
+  send(fxPid, {"t": "open", "scene": scenePid})
+  send(scenePid, {"t": "camera", "op": "mode", "mode": camMode})
+}
+
+fn on_proj_input(m) {
+  let ev = m.ev
+  if scenePid == 0 {
+    return
+  }
+  if ev.t == "down" {
+    // 三维点选：把屏幕坐标交给场景进程（简化为朝向机体）
+    send(scenePid, {"t": "pick", "x": 0, "y": 0, "z": 0})
+  } else if ev.t == "move" {
+    send(scenePid, {"t": "camera", "op": "drag", "dx": ev.x, "dy": ev.y})
+  } else if ev.t == "wheel" {
+    send(scenePid, {"t": "camera", "op": "zoom", "dy": ev.dy})
+  } else if ev.t == "key" {
+    if ev.key == " " {
+      toggle_play()
+    }
+  }
+}
+
+fn on_click(x, y) {
+  clock = time()
+  // 工具栏
+  if y < 28 {
+    if x < 60 {
+      // 打开场景
+      send(wm, {"t": "text_focus", "win": win, "ctl": "path"})
+      msg = "输入场景路径后回车打开"
+    } else if x < 120 {
+      set_mode("show")
+    } else if x < 180 {
+      set_mode("rehearsal")
+    } else if x < 240 {
+      set_mode("replay")
+    } else if x < 300 {
+      // 保存记录
+      send(scenePid, {"t": "save_record", "path": "/Documents/rehearsal-" + str(floor(time() / 100) % 100000) + ".rec"})
+    } else if x < 360 {
+      // 投送
+      do_project()
+    }
+    draw()
+    return
+  }
+  // 播放控制条
+  if y >= 470 {
+    if x < 60 {
+      toggle_play()
+    } else if x < 120 {
+      send(scenePid, {"t": "playctl", "op": "stop"})
+      playing = 0
+      playT = 0
+    } else if x < 170 {
+      loopMode = 1 - loopMode
+      send(scenePid, {"t": "playctl", "op": "loop", "on": loopMode})
+    } else if x < 220 {
+      send(scenePid, {"t": "playctl", "op": "seek", "t": 0})
+      playT = 0
+    } else if x < 270 {
+      // 逐帧
+      send(scenePid, {"t": "playctl", "op": "pause"})
+      playing = 0
+      send(scenePid, {"t": "tick", "dt": 16.7})
+    } else if x >= 280 and x < 400 {
+      let r = 0.5
+      if x < 310 {
+        r = 0.5
+      } else if x < 340 {
+        r = 1
+      } else if x < 370 {
+        r = 2
+      } else {
+        r = 4
+      }
+      rate = r
+      send(scenePid, {"t": "playctl", "op": "rate", "rate": rate})
+    } else if x >= 410 and x < 560 {
+      let md = "orbit"
+      if x < 460 {
+        md = "orbit"
+      } else if x < 510 {
+        md = "chase"
+      } else {
+        md = "free"
+      }
+      camMode = md
+      send(scenePid, {"t": "camera", "op": "mode", "mode": camMode})
+    } else if x >= 700 and x < 756 {
+      // 进度条拖动
+      dragBar = 1
+      let t = (x - 12) / 700 * duration
+      if t < 0 {
+        t = 0
+      }
+      if t > duration {
+        t = duration
+      }
+      playT = t
+      send(scenePid, {"t": "playctl", "op": "seek", "t": t})
+    }
+    draw()
+    return
+  }
+  // 三维视图区域：点选部件 / 拖动镜头
+  if y >= 34 and y < 466 {
+    if scenePid != 0 {
+      send(scenePid, {"t": "pick", "x": 0, "y": 0, "z": 0})
+      send(scenePid, {"t": "camera", "op": "drag", "dx": 1, "dy": 0})
+    }
+  }
+}
+
+fn toggle_play() {
+  if playing == 1 {
+    playing = 0
+    send(scenePid, {"t": "playctl", "op": "pause"})
+  } else {
+    playing = 1
+    lastFrameT = time()
+    send(scenePid, {"t": "playctl", "op": "play"})
+  }
+  draw()
+}
+
+fn set_mode(md) {
+  mode = md
+  if scenePid != 0 {
+    send(scenePid, {"t": "set_mode", "mode": md, "path": scenePath})
+  }
+  if md == "rehearsal" {
+    msg = "飞行排演：飞控进程已接管，改动预算/速率会影响飞行"
+  } else if md == "replay" {
+    msg = "记录回放：选择 .rec 文件后从文件管理器打开"
+  } else {
+    msg = "默认演出：按资源中的飞行记录运行"
+  }
+  playing = 1
+  lastFrameT = time()
+  draw()
+}
+
+fn do_project() {
+  let sys = systems()
+  // 目标：根系统或任一祖先
+  let target = "outer"
+  let info = sys_info()
+  let par = get(info, "parent", "")
+  if par != "" {
+    target = par
+  }
+  let r = project(target, win, "3d", "播放器 · " + scenePath)
+  if type(r) == "map" {
+    msg = "投送失败: " + r.error
+  } else {
+    projId = r.projId
+    msg = "已投送到 " + target
+  }
+  draw()
+}
+
+// ---------------- 绘制 ----------------
+fn draw() {
+  if win == 0 {
+    return
+  }
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 760, "h": 540, "c": "#0e1420", "r": 8})
+  // 工具栏
+  let btns = ["打开", "演出", "排演", "回放", "存记录", "投送"]
+  let bx = 4
+  for b in btns {
+    push(p, {"t": "r", "x": bx, "y": 3, "w": 54, "h": 22, "c": "#1c2433", "r": 5, "s": "#33405a"})
+    push(p, {"t": "t", "x": bx + 27, "y": 18, "s": b, "c": "#e8ecf4", "fs": 11, "a": "c"})
+    bx = bx + 58
+  }
+  let mdText = "默认演出"
+  if mode == "rehearsal" {
+    mdText = "飞行排演"
+  } else if mode == "replay" {
+    mdText = "记录回放"
+  }
+  push(p, {"t": "t", "x": 360, "y": 18, "s": mdText + " · " + scenePath, "c": "#ffd23f", "fs": 11, "mw": 200})
+  // 三维视图区域（由显示设备绘制）
+  push(p, {"t": "r", "x": 8, "y": 30, "w": 744, "h": 436, "c": "#0a0f18", "r": 6, "s": "#33405a"})
+  push(p, {"t": "t", "x": 16, "y": 46, "s": "三维视图（可拖动旋转、滚轮缩放、点击部件查看损坏）", "c": "#93a1bb", "fs": 11})
+  if picked != "" {
+    let dmg = ""
+    if crashed == 1 {
+      dmg = "（已损坏）"
+    }
+    push(p, {"t": "t", "x": 16, "y": 62, "s": "选中部件: " + picked + dmg, "c": "#ffd23f", "fs": 11})
+  }
+  if projId != "" {
+    push(p, {"t": "t", "x": 600, "y": 46, "s": "投送中: " + projId, "c": "#43d9a3", "fs": 11, "a": "r"})
+  }
+  // 播放控制条
+  push(p, {"t": "r", "x": 0, "y": 470, "w": 760, "h": 70, "c": "#121826", "r": 8})
+  let ctl = ["播放", "停止", "循环", "归零", "逐帧"]
+  let cx = 4
+  for c in ctl {
+    push(p, {"t": "r", "x": cx, "y": 474, "w": 54, "h": 22, "c": "#1c2433", "r": 5, "s": "#33405a"})
+    push(p, {"t": "t", "x": cx + 27, "y": 489, "s": c, "c": "#e8ecf4", "fs": 11, "a": "c"})
+    cx = cx + 58
+  }
+  let rates = ["0.5×", "1×", "2×", "4×"]
+  let rx = 292
+  for r2 in rates {
+    push(p, {"t": "r", "x": rx, "y": 474, "w": 26, "h": 22, "c": "#1c2433", "r": 5, "s": "#33405a"})
+    push(p, {"t": "t", "x": rx + 13, "y": 489, "s": r2, "c": "#e8ecf4", "fs": 10, "a": "c"})
+    rx = rx + 30
+  }
+  let cams = ["演出", "跟随", "自由"]
+  let kx = 412
+  for c3 in cams {
+    push(p, {"t": "r", "x": kx, "y": 474, "w": 46, "h": 22, "c": "#1c2433", "r": 5, "s": "#33405a"})
+    push(p, {"t": "t", "x": kx + 23, "y": 489, "s": c3, "c": "#e8ecf4", "fs": 11, "a": "c"})
+    kx = kx + 50
+  }
+  // 进度条
+  push(p, {"t": "r", "x": 12, "y": 502, "w": 700, "h": 8, "c": "#1c2433", "r": 4})
+  let pw = playT / duration * 700
+  if pw < 0 {
+    pw = 0
+  }
+  if pw > 700 {
+    pw = 700
+  }
+  push(p, {"t": "r", "x": 12, "y": 502, "w": pw, "h": 8, "c": "#8b6cff", "r": 4})
+  push(p, {"t": "c", "x": 12 + pw, "y": 506, "r": 6, "c": "#ffd23f", "f": 1})
+  push(p, {"t": "t", "x": 718, "y": 512, "s": str(floor(playT * 10) / 10) + " / " + str(duration) + " s", "c": "#93a1bb", "fs": 10, "a": "r"})
+  push(p, {"t": "t", "x": 12, "y": 530, "s": msg, "c": "#43d9a3", "fs": 11, "mw": 730})
+  submit_window(win, p, {"path": scenePath, "view3d": viewId, "view3dRect": [8, 30, 744, 436]})
+}
+
+fn get(m, k, d) {
+  if m == null {
+    return d
+  }
+  let v = m[k]
+  if v == null {
+    return d
+  }
+  return v
+}
+
+// ---------------- 入口 ----------------
+boot()

@@ -1,0 +1,53 @@
+// =====================================================================
+// 飞行模拟进程（/System/apps/sim.ns）：直升机的刚体物理与输入日志。
+// 参数：args[0] 场景路径；args[1] 模式：preset（预置演出）、record（回放记录）、live（实时排演）；
+//       args[2] 可选，记录文件的内容（JSON，含 events）。
+// 消息：advance(t) 推进到时刻 t；seek(t) 回到 t 之前的检查点；input(kind, value) 施加实时输入；
+//       query（回复渲染状态）；sense（回复传感器读数，供飞控）；record（回复输入日志）。
+// 物理按固定子步推进，每步计费；预算不足时停在已完成的子步上，之后从那里继续。
+// =====================================================================
+var scText = "";
+var st = nil;
+
+func main(args) {
+    scText = sys_fs_read(args[0]);
+    if (scText == nil) { assert(false, "找不到场景：" + args[0]); }
+    var mode = args[1];
+    var evs = nil;
+    if (len(args) > 2 && args[2] != nil) {
+        var rec = parse(args[2]);
+        evs = rec.events;
+    }
+    if (mode == "live") {
+        st = sim_new(scText, false, nil);
+    } else if (mode == "record") {
+        st = sim_new(scText, true, evs);
+    } else {
+        st = sim_new(scText, true, nil);
+    }
+    var target = 0;
+    var me = sys_self();
+    while (true) {
+        var m = sys_recvt(0.05);
+        if (m != nil) {
+            if (m.type == "advance") {
+                if (m.t > target) { target = m.t; }
+            } else if (m.type == "seek") {
+                st = sim_seek(scText, st, m.t);
+                target = m.t;
+            } else if (m.type == "input") {
+                sim_input(st, [st.t, m.kind, m.value]);
+            } else if (m.type == "query") {
+                sys_send(m.reply, {type: "state", st: sim_render(scText, st), t: st.t, seq: m.seq});
+            } else if (m.type == "sense") {
+                sys_send(m.reply, {type: "sense", s: sim_sense(scText, st)});
+            } else if (m.type == "record") {
+                sys_send(m.reply, {type: "record", events: sim_log(st), t: st.t});
+            }
+        }
+        if (st.t < target) {
+            sim_run(scText, st, target);
+        }
+    }
+    return 0;
+}

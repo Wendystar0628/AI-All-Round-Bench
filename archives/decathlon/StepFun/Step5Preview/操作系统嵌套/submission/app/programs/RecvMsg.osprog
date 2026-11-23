@@ -1,0 +1,25 @@
+// 预置程序：消息接收
+// 循环等待消息并按到达顺序打印，用于核对消息投递
+let got = 0
+
+fn main() {
+  print("接收程序启动，pid=" + str(self()))
+  while true {
+    let m = recv()
+    got = got + 1
+    print("收到 #" + str(got) + " 来自 " + str(get(m, "from", 0)) + " 序号 " + str(get(m, "seq", 0)) + " 内容 " + get(m, "text", ""))
+  }
+}
+
+fn get(m, k, d) {
+  if m == null {
+    return d
+  }
+  let v = m[k]
+  if v == null {
+    return d
+  }
+  return v
+}
+
+main()

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>网络安全攻防战 · 动态路由塔防</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="ui"></div>
+
+<!-- 主菜单 -->
+<div class="screen" id="scr-menu">
+  <div class="menu-bg"></div>
+  <div class="menu-inner">
+    <div class="title-block">
+      <div class="title-pre">汐域自治域 · 守护进程管理界面</div>
+      <h1 class="title">网络安全攻防战</h1>
+      <div class="title-sub">动态路由塔防 · DYNAMIC ROUTE DEFENSE</div>
+      <div class="title-line"></div>
+      <div class="menu-desc">攻击组织“蛰影”正把蠕虫、木马、勒索软件和僵尸网络混进正常流量，涌向保存全域数据的“中枢”。<br>你是汐域的守护进程：布防、隔离、改道，维持各入口到中枢的连通。</div>
+    </div>
+    <div class="menu-btns">
+      <button class="mbtn big" id="btn-start">进入战场</button>
+      <button class="mbtn" id="btn-demo">实战演示</button>
+      <button class="mbtn" id="btn-codex">图鉴</button>
+      <button class="mbtn" id="btn-help">操作说明</button>
+      <button class="mbtn" id="btn-set">设置</button>
+    </div>
+    <div class="menu-foot">链路 / 交换节点 / 设备平台 · 六种守护设备 · 三类威胁演示</div>
+  </div>
+</div>
+
+<!-- 关卡选择 -->
+<div class="screen" id="scr-levels">
+  <div class="panel-head">
+    <button class="back" data-back="1">‹ 返回</button>
+    <h2>选择战场</h2>
+    <div class="ph-right">汐域网络拓扑</div>
+  </div>
+  <div class="levels" id="levels-list"></div>
+</div>
+
+<!-- 图鉴 -->
+<div class="screen" id="scr-codex">
+  <div class="panel-head">
+    <button class="back" data-back="1">‹ 返回</button>
+    <h2>图鉴</h2>
+    <div class="ph-right">设备手册 / 威胁档案</div>
+  </div>
+  <div class="codex-tabs" id="codex-tabs"></div>
+  <div class="codex-body" id="codex-body"></div>
+</div>
+
+<!-- 说明 -->
+<div class="screen" id="scr-help">
+  <div class="panel-head">
+    <button class="back" data-back="1">‹ 返回</button>
+    <h2>操作说明</h2>
+    <div class="ph-right">守护进程操作手册</div>
+  </div>
+  <div class="help-body" id="help-body"></div>
+</div>
+
+<!-- 设置 -->
+<div class="screen" id="scr-set">
+  <div class="panel-head">
+    <button class="back" data-back="1">‹ 返回</button>
+    <h2>设置</h2>
+    <div class="ph-right">音频</div>
+  </div>
+  <div class="set-body" id="set-body"></div>
+</div>
+
+<!-- 演示选择 -->
+<div class="screen" id="scr-demos">
+  <div class="panel-head">
+    <button class="back" data-back="1">‹ 返回</button>
+    <h2>实战演示</h2>
+    <div class="ph-right">实时演出 · 可随时退出</div>
+  </div>
+  <div class="levels" id="demos-list"></div>
+</div>
+
+<!-- 事件报告 -->
+<div class="screen" id="scr-report">
+  <div class="report-wrap">
+    <div class="report">
+      <div class="rp-head"><span id="rp-title">事件报告</span><span id="rp-sub"></span></div>
+      <div class="rp-body" id="rp-body"></div>
+      <div class="rp-btns">
+        <button class="mbtn" id="rp-again">重开本图</button>
+        <button class="mbtn" id="rp-levels">返回关卡选择</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div class="hud-top">
+    <div class="hud-res">
+      <div class="res compute" id="res-compute"><i>◆</i><span>算力</span><b>0</b></div>
+      <div class="res intel" id="res-intel"><i>◇</i><span>情报</span><b>0</b></div>
+    </div>
+    <div class="hud-mid">
+      <div class="integrity"><span>中枢完整度</span><div class="ibar"><div class="ifill" id="integrity-fill"></div></div><b id="integrity-num">100</b></div>
+      <div class="waveinfo"><span id="wave-label">准备</span><b id="wave-num">-/-</b></div>
+    </div>
+    <div class="hud-right">
+      <button class="icb" id="btn-pause" title="暂停 (空格)">⏸</button>
+      <button class="icb" id="btn-speed" title="速度 (F)">1×</button>
+      <button class="icb" id="btn-view" title="回到默认视角 (Home)">⌂</button>
+      <button class="icb" id="btn-menu" title="菜单 (Esc)">☰</button>
+    </div>
+  </div>
+  <div class="hud-left">
+    <div class="forecast" id="forecast">
+      <div class="fc-head">流量预报</div>
+      <div class="fc-body" id="fc-body"></div>
+    </div>
+  </div>
+  <div class="hud-bottom">
+    <div class="deck" id="deck"></div>
+    <div class="items" id="items"></div>
+  </div>
+  <div class="sel-panel hidden" id="sel-panel"></div>
+  <div class="info-panel hidden" id="info-panel"></div>
+  <div class="hud-events" id="hud-events"></div>
+  <div class="hud-tip" id="hud-tip"></div>
+</div>
+
+<div id="subtitle" class="hidden"></div>
+<div id="toast-wrap"></div>
+<div id="fps" class="hidden"></div>
+
+<script src="js/engine.js"></script>
+<script src="js/data.js"></script>
+<script src="js/route.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/view.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

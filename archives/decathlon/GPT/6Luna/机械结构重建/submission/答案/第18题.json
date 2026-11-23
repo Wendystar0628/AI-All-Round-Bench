@@ -1,0 +1,20 @@
+{
+  "problem": "18",
+  "parts": [
+    {
+      "name": "1",
+      "title": "复合环腔涡轮轴承箱",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-8,-8,112,82],"r":6}],"depth":8},
+        {"type":"extrude","plane":"XZ","origin":[0,72,0],"loops":[{"path":[[0,8],[104,8],[104,58],[80,82],[22,82],[0,58]]}],"depth":64},
+        {"type":"extrude","plane":"XZ","origin":[0,72,0],"loops":[{"circle":[38,46],"d":82}],"depth":48},
+        {"type":"extrude","plane":"XZ","origin":[0,72,0],"loops":[{"circle":[78,44],"d":58}],"depth":48},
+        {"type":"hole","plane":"XY","origin":[0,0,8],"at":[[0,0],[104,0],[0,74],[104,74]],"d":10,"through":true},
+        {"type":"hole","plane":"XZ","origin":[0,72,0],"at":[[38,46]],"d":38,"depth":64,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,72,0],"at":[[78,44]],"d":28,"depth":64,"reverse":true},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,58],"loops":[{"circle":[38,36],"d":70},{"circle":[38,36],"d":56}],"depth":12},
+        {"type":"hole","plane":{"origin":[0,0,0],"normal":[0.5,0,0.8660],"x_dir":[0,1,0]},"origin":[77,36,76],"at":[0,0],"d":24,"depth":56}
+      ]
+    }
+  ]
+}

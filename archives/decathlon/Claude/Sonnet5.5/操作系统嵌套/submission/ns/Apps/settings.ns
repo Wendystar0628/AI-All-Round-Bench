@@ -1,0 +1,104 @@
+// settings.ns — 设置：系统名称、壁纸、强调色、界面缩放。设置保存在本系统的 /System/settings.json，
+// 窗口管理程序与其他应用读取同一份状态（快速设置也使用它）。
+include "/System/lib/ui.ns";
+
+let S = {cfg: {}, msg: "", msg_t: 0, last: -9, info: nil};
+let WALLS = [["landscape", "暮色山湖"], ["dusk", "紫夜波纹"], ["meadow", "晴日草原"], ["aurora", "极光之夜"]];
+let ACCENTS = [["", "层级默认"], ["#8b6cff", "紫罗兰"], ["#2fd0b5", "青绿"], ["#ff7a6b", "珊瑚"], ["#4aa8ff", "天蓝"], ["#ffc83d", "琥珀"], ["#f472b6", "玫红"], ["#4ade80", "草绿"]];
+let SCALES = [0.75, 0.9, 1, 1.15, 1.25, 1.5];
+
+fn say(m) { S.msg = m; S.msg_t = time(); }
+fn load_cfg() {
+  let t = sys("fs_read", "/System/settings.json");
+  let c = typeof(t) == "str" ? json_parse(t) : nil;
+  S.cfg = c == nil ? {} : c;
+  if (S.cfg.wallpaper == nil) { S.cfg.wallpaper = "auto"; }
+  if (S.cfg.scale == nil) { S.cfg.scale = 1; }
+  if (S.cfg.accent == nil) { S.cfg.accent = ""; }
+  S.info = sys("screen_info");
+}
+fn save_cfg() {
+  let r = sys("fs_write", "/System/settings.json", json_stringify(S.cfg, true));
+  if (r != nil && r.err != nil) { say("保存失败：" + r.err); return false; }
+  send(APP.args.wm, {t: "settings"});
+  return true;
+}
+fn settings_frame(U, w, h) {
+  ui_rect(0, 0, w, h, TH.bg1, 0);
+  ui_rect(0, 0, w, 60, TH.bg2, 0);
+  ui_icon(18, 18, "gear", 24, TH.acc);
+  ui_text(52, 12, "系统设置", 17, TH.text, {b: true});
+  ui_text(52, 36, "更改会立即作用于本系统的桌面与应用，并保存到 /System/settings.json", 12, TH.muted);
+  let y = 76; let pad = 24;
+  // 名称
+  ui_header(pad, y, w, "系统名称", "tree"); y = y + 26;
+  if (S.cfg.name == nil || ui.vals["settings-name"] == nil) { if (ui.vals["settings-name"] == nil) { ui_set("settings-name", S.info == nil ? "" : S.info.name); } }
+  ui_input("settings-name", pad, y, 280, 34, {ph: "系统名称", size: 14, pad: 10, r: 17});
+  if (ui_button("settings-name-apply", pad + 292, y, 90, 34, "应用", {fill: TH.acc, b: true}) || ui_key_in("Enter", "settings-name") != nil) {
+    let nm = trim(ui_val("settings-name"));
+    if (nm != "") { S.cfg.name = nm; sys("rename_self", nm); if (save_cfg()) { say("系统名称已更改为 " + nm); S.info = sys("screen_info"); } }
+  }
+  y = y + 58;
+  // 壁纸
+  ui_header(pad, y, w, "壁纸", "scene"); y = y + 26;
+  let x = pad;
+  let cur = S.cfg.wallpaper;
+  for (let wp of WALLS) {
+    let on = cur == wp[0];
+    let b = ui_rect(x, y, 150, 100, "rgba(0,0,0,0)", 12); b.tid = "settings-wallpaper"; b.aria = wp[1]; b.d = {value: wp[0]}; b.cur = "pointer"; b.stroke = on ? TH.acc : TH.border; b.sw = on ? 3 : 1; b.key = "wp" + wp[0];
+    b.hf = "rgba(255,255,255,.08)";
+    let im = ui_node({o: "img", x: x + 4, y: y + 4, w: 142, h: 72, src: "wp:" + wp[0], r: 8, key: "wpi" + wp[0]});
+    ui_textc(x, y + 80, 150, wp[1], 12, on ? TH.text : TH.muted, {b: on});
+    if (ui_in(x, y, 150, 100) && ui_ev_is("up", 0)) { S.cfg.wallpaper = wp[0]; if (save_cfg()) { say("壁纸：" + wp[1]); } }
+    x = x + 162;
+  }
+  if (APP.args.depth > 0) {
+    let on = cur == "auto";
+    let b = ui_rect(x, y, 150, 100, "rgba(0,0,0,0)", 12); b.tid = "settings-wallpaper"; b.aria = "层级默认"; b.d = {value: "auto"}; b.cur = "pointer"; b.stroke = on ? TH.acc : TH.border; b.sw = on ? 3 : 1;
+    let g = ui_rect(x + 4, y + 4, 142, 72, "#1d1740", 8); g.grad = ["#120f26", "#1d1740", 160];
+    ui_rect(x + 80, y + 6, 70, 70, level_color(APP.args.depth), 35).op = 0.3;
+    ui_textc(x, y + 80, 150, "层级默认", 12, on ? TH.text : TH.muted);
+    if (ui_in(x, y, 150, 100) && ui_ev_is("up", 0)) { S.cfg.wallpaper = "auto"; save_cfg(); say("壁纸：层级默认"); }
+  }
+  y = y + 120;
+  // 强调色
+  ui_header(pad, y, w, "强调色", "star"); y = y + 28;
+  x = pad;
+  for (let a of ACCENTS) {
+    let on = S.cfg.accent == a[0];
+    let col = a[0] == "" ? level_color(APP.args.depth) : a[0];
+    let b = ui_rect(x, y, 40, 40, col, 20); b.tid = "settings-accent"; b.aria = a[1]; b.d = {value: a[0] == "" ? "auto" : a[0]}; b.cur = "pointer"; b.stroke = on ? "#fff" : "rgba(255,255,255,.2)"; b.sw = on ? 3 : 1; b.key = "ac" + a[0];
+    b.tip = a[1];
+    if (a[0] == "") { ui_icon(x + 11, y + 11, "reload", 18, "#fff"); }
+    if (ui_in(x, y, 40, 40) && ui_ev_is("up", 0)) { S.cfg.accent = a[0]; if (save_cfg()) { say("强调色：" + a[1]); } }
+    x = x + 52;
+  }
+  y = y + 62;
+  // 缩放
+  ui_header(pad, y, w, "界面缩放", "search"); y = y + 28;
+  x = pad;
+  if (APP.args.depth > 0) { ui_text(pad, y + 4, "界面缩放由根系统的显示设备提供，只能在根系统的设置里调整。", 13, TH.faint); }
+  else {
+    for (let s of SCALES) {
+      let on = abs(S.cfg.scale - s) < 0.001;
+      if (ui_button("settings-scale", x, y, 84, 36, floor(s * 100) + "%", {fill: on ? TH.acc : TH.bg3, b: on, d: {value: str(s)}, key: "sc" + s})) {
+        S.cfg.scale = s; save_cfg(); send(APP.args.wm, {t: "set_scale", scale: s}); say("界面缩放：" + floor(s * 100) + "%");
+      }
+      x = x + 92;
+    }
+  }
+  y = y + 56;
+  ui_rect(pad, y, w - pad * 2, 1, TH.border, 0);
+  ui_text(pad, y + 14, "免打扰 " + (S.cfg.dnd == true ? "开" : "关") + " · 与通知中心和小组件里的快速设置共用同一份状态", 12, TH.muted);
+  if (ui_button("settings-dnd", w - pad - 120, y + 8, 120, 30, S.cfg.dnd == true ? "关闭免打扰" : "开启免打扰", {size: 12})) { S.cfg.dnd = !(S.cfg.dnd == true); save_cfg(); }
+  ui_rect(0, h - 28, w, 28, TH.bg2, 0);
+  ui_textw(12, h - 21, w - 24, S.msg != "" && time() - S.msg_t < 8 ? S.msg : "系统：" + (S.info == nil ? "" : S.info.name + "（" + S.info.id + "，第 " + S.info.depth + " 层）"), 12, S.msg != "" && time() - S.msg_t < 8 ? TH.acc2 : TH.muted);
+}
+fn level_color(d) { let accs = ["#8b6cff", "#2fd0b5", "#ff7a6b", "#4aa8ff", "#ffc83d"]; return accs[d % 5]; }
+fn st_idle() { if (time() - S.last > 1) { S.last = time(); load_cfg(); return true; } return false; }
+fn st_msg(m) { }
+app_init(&settings_frame, &st_msg, 0);
+APP.on_idle = &st_idle;
+ui = app_view(0);
+load_cfg();
+app_run();

@@ -1,0 +1,89 @@
+# 文本与程序编辑器。可以打开内核、飞控和编译器，保存后运行。
+
+fn main() {
+  let st = { wm: 0, windowId: "", path: "/Programs/readme.txt", text: "", note: "", dirty: false, me: self() };
+  while (true) {
+    let m = wait_msg();
+    take(st, m);
+    let g = 0;
+    while (g < 16) {
+      let e = recv();
+      if (e == null) { g = 100; }
+      else { take(st, e); g = g + 1; }
+    }
+    if (st.wm != 0) { send(st.wm, { tag: "body", from: st.me, windowId: st.windowId, title: title_of(st), widgets: build(st) }); }
+  }
+}
+
+fn title_of(st) {
+  let t = "编辑器";
+  if (st.dirty) { t = t + " ●"; }
+  return t;
+}
+
+fn take(st, m) {
+  if (m == null) { return 0; }
+  if (m.tag == "boot") {
+    st.wm = m.wm;
+    st.windowId = m.windowId;
+    if (m.path != null && m.path != "") { load(st, m.path); }
+    else { load(st, st.path); }
+  }
+  if (m.tag == "open" && m.path != null && m.path != "") { load(st, m.path); }
+  if (m.tag == "value" && m.id == "editor-text") { st.text = str(m.value); st.dirty = true; }
+  if (m.tag == "ui") {
+    if (m.testid == "editor-save") { save(st); }
+    if (m.id == "run") { run(st); }
+    if (m.id == "selfc") {
+      st.note = self_compile();
+    }
+  }
+  return 0;
+}
+
+fn load(st, path) {
+  st.path = path;
+  let data = read_file(path);
+  if (data == null) { st.text = ""; st.note = "新文件"; }
+  else { st.text = data; st.note = "已打开"; }
+  st.dirty = false;
+  return 0;
+}
+
+fn save(st) {
+  let wr = write_file(st.path, st.text);
+  if (wr != null && wr.error != null) { st.note = wr.error; return 0; }
+  st.dirty = false;
+  st.note = "已保存";
+  return 0;
+}
+
+fn run(st) {
+  save(st);
+  let pname = "程序";
+  if (ends(st.path, "demo-send.npl")) { pname = "发送"; }
+  if (ends(st.path, "demo-recv.npl")) { pname = "接收"; }
+  if (ends(st.path, "demo-sum.npl")) { pname = "累加"; }
+  if (ends(st.path, "demo-spin.npl")) { pname = "自旋"; }
+  if (ends(st.path, "flight.npl")) { pname = "飞控"; }
+  let pid = spawn(st.path, pname);
+  if (pid == 0) { st.note = "没有跑起来"; }
+  else { st.note = "已启动 " + pname + " #" + str(pid); }
+  return 0;
+}
+
+fn ends(path, suf) {
+  if (path == null || len(path) < len(suf)) { return false; }
+  return slice(path, len(path) - len(suf), len(path)) == suf;
+}
+
+fn build(st) {
+  let w = [];
+  push(w, { t: "label", id: "editor-filename", testid: "editor-filename", x: 8, y: 8, w: 520, h: 22, text: st.path });
+  push(w, { t: "button", id: "editor-save", testid: "editor-save", x: 540, y: 6, w: 72, h: 28, label: "保存" });
+  push(w, { t: "button", id: "run", testid: "editor-run", x: 618, y: 6, w: 64, h: 28, label: "运行" });
+  push(w, { t: "text", id: "editor-text", testid: "editor-text", x: 8, y: 42, w: 670, h: 340, value: st.text });
+  push(w, { t: "button", id: "selfc", testid: "editor-self-compile", x: 8, y: 390, w: 120, h: 28, label: "编译自身" });
+  push(w, { t: "label", id: "note", testid: "editor-note", x: 140, y: 392, w: 520, h: 24, text: st.note });
+  return w;
+}

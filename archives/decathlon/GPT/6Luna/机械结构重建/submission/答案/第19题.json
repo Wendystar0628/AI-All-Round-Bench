@@ -1,0 +1,21 @@
+{
+  "problem": "19",
+  "parts": [
+    {
+      "name": "1",
+      "title": "斜交三轴变速箱壳",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-8,-8,132,92],"r":6}],"depth":8},
+        {"type":"extrude","plane":"XZ","origin":[0,80,0],"loops":[{"path":[[0,8],[124,8],[124,52],[102,78],[28,78],[0,54]]}],"depth":72},
+        {"type":"extrude","plane":"XZ","origin":[0,80,0],"loops":[{"circle":[28,48],"d":70},{"circle":[72,46],"d":62},{"circle":[106,44],"d":50}],"depth":56},
+        {"type":"hole","plane":"XY","origin":[0,0,8],"at":[[0,0],[124,0],[0,84],[124,84]],"d":10,"through":true},
+        {"type":"hole","plane":"XZ","origin":[0,80,0],"at":[[28,48]],"d":32,"depth":80,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,80,0],"at":[[72,46]],"d":30,"depth":80,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,80,0],"at":[[106,44]],"d":26,"depth":80,"reverse":true},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,60,0],"loops":[{"rect":[10,14,48,36]},{"rect":[58,14,90,36]}],"depth":40},
+        {"type":"hole","plane":{"origin":[0,0,0],"normal":[0.5,0,0.8660],"x_dir":[0,1,0]},"origin":[42,38,76],"at":[0,0],"d":28,"depth":58},
+        {"type":"hole","plane":{"origin":[0,0,0],"normal":[-0.5,0,0.8660],"x_dir":[0,1,0]},"origin":[94,38,70],"at":[0,0],"d":28,"depth":58}
+      ]
+    }
+  ]
+}

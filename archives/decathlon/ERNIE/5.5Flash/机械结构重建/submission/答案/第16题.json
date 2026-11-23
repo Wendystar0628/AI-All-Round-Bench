@@ -1,0 +1,20 @@
+{
+  "problem": "16",
+  "parts": [
+    {"name": "1", "title": "双蜗室异面三通泵壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 150, 130], "r": 6}], "depth": 12},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [75, 75], "d": 132}], "depth": [-45, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [75, 75], "d": 90}], "through": true},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [95, 60], "d": 70}], "through": true},
+      {"type": "revolve", "op": "cut", "plane": "XY", "origin": [75, 0, 75], "axis": "y", "loops": [{"path": [[49, -1], [54, -1], [54, 15], [49, 15]]}]},
+      {"type": "revolve", "op": "cut", "plane": "XY", "origin": [75, 0, 75], "axis": "y", "loops": [{"path": [[41, -1], [46, -1], [46, 19], [41, 19]]}]},
+      {"type": "extrude", "plane": {"origin": [73.23, 20.23, 79.33], "normal": [-0.354, -0.354, 0.866], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 48},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [73.23, 20.23, 79.33], "normal": [-0.354, -0.354, 0.866], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 49]},
+      {"type": "extrude", "plane": {"origin": [77.37, 24.37, 78.71], "normal": [0.473, 0.473, 0.743], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 72},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [77.37, 24.37, 78.71], "normal": [0.473, 0.473, 0.743], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 73]},
+      {"type": "extrude", "plane": {"origin": [79.41, 22, 77.35], "normal": [0.883, 0, 0.469], "x_dir": [0, 1, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 48},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [79.41, 22, 77.35], "normal": [0.883, 0, 0.469], "x_dir": [0, 1, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-1, 49]},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[20, 20], [130, 20], [20, 110], [130, 110]], "d": 10, "depth": 12, "cbore": {"d": 18, "depth": 6}}
+    ]}
+  ]
+}

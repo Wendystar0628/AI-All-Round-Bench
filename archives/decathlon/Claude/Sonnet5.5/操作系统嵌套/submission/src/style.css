@@ -1,0 +1,19 @@
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0f0c1d; color: #ece9ff; font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; user-select: none; }
+#stage { position: fixed; inset: 0; overflow: hidden; }
+#screen { position: absolute; left: 0; top: 0; transform-origin: 0 0; outline: none; overflow: hidden; }
+#fatal { position: fixed; inset: 0; background: #1a0f1f; color: #ffb4c0; padding: 40px; font-size: 16px; white-space: pre-wrap; z-index: 99999; }
+.surface, .surface-root { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; }
+.n { position: absolute; margin: 0; box-sizing: border-box; }
+.n-text { pointer-events: none; }
+.n-icon, .n-line, .n-path, .n-poly { pointer-events: none; }
+.n-input { user-select: text; -webkit-user-select: text; }
+.n-input::placeholder { color: rgba(200, 195, 235, .45); }
+.n-input::selection { background: rgba(139, 108, 255, .55); }
+.n-input::-webkit-scrollbar { width: 10px; height: 10px; }
+.n-input::-webkit-scrollbar-thumb { background: rgba(160,150,220,.28); border-radius: 5px; border: 2px solid transparent; background-clip: padding-box; }
+.n-input::-webkit-scrollbar-corner { background: transparent; }
+.hv { transition: background-color .08s linear, border-color .08s linear; }
+.hv:hover { background-color: var(--hf) !important; border-color: var(--hs) !important; }
+[data-tip]:hover::after { content: attr(data-tip); position: absolute; left: 50%; top: 100%; transform: translate(-50%, 6px); background: #0c0a18; color: #fff; border: 1px solid #4a4175; padding: 3px 8px; border-radius: 6px; font-size: 12px; white-space: pre; z-index: 9999; pointer-events: none; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+.native-host { overflow: hidden; background: #14111f; }
+canvas.n-view3d { display: block; background: #000; }

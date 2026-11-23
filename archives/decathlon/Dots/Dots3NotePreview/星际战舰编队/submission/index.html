@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>星际战舰编队：旗舰与护卫舰</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:"Microsoft YaHei",sans-serif}
+  #c{display:block;width:100vw;height:100vh}
+  #hud{position:fixed;left:8px;bottom:8px;color:#7f9;font-size:12px;opacity:.5;pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"></div>
+<script src="three.min.js"></script>
+<script>
+"use strict";
+/* =====================================================================
+   星际战舰编队 —— 体素舰队展示片
+   设计语言：向前延伸的分叉 + 层片嵌合的阶梯体块（"叠甲/分叉箭"母题）
+   主色：靛青 #1b2a45   深槽：墨青 #0a1422   板件：石板蓝 #33425a
+   发光：琥珀 #ffb03a（推进/主炮/装填）  护盾：青 #46f0d4 / 紫 #b46aff
+   陨石：赭红 #6b2a22
+   ===================================================================== */
+const THREE = window.THREE;
+
+/* ---------------- 基础设施 ---------------- */
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.5;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x070b1a);
+scene.fog = new THREE.FogExp2(0x0a1230, 0.00018);
+
+const camera = new THREE.PerspectiveCamera(52, window.innerWidth/window.innerHeight, 1, 8000);
+camera.position.set(0,0,0);
+
+/* 灯光 */
+const sun = new THREE.DirectionalLight(0x8fb8ff, 1.5); sun.position.set(-400, 260, 500); scene.add(sun);
+const sun2= new THREE.DirectionalLight(0x3a58a0, 0.8); sun2.position.set(300,-80,-300); scene.add(sun2);
+const fill= new THREE.DirectionalLight(0x405888, 0.7); fill.position.set(-600,80,-200); scene.add(fill);
+const amb = new THREE.AmbientLight(0x16203c, 1.8); scene.add(amb);
+
+/* ---------------- 材质 ---------------- */
+const M_HULL  = new THREE.MeshStandardMaterial({color:0x1b2a45, metalness:0.6, roughness:0.42});
+const M_DEEP  = new THREE.MeshStandardMaterial({color:0x0a1422, metalness:0.3, roughness:0.8});
+const M_PLATE = new THREE.MeshStandardMaterial({color:0x33425a, metalness:0.55, roughness:0.45});
+const M_GLOW  = new THREE.MeshStandardMaterial({color:0xffb03a, emissive:0xffb03a, emissiveIntensity:1.8, metalness:0.3, roughness:0.35, blending:THREE.AdditiveBlending, transparent:true});
+const M_SHC   = new THREE.MeshStandardMaterial({color:0x46f0d4, emissive:0x46f0d4, emissiveIntensity:1.3, metalness:0.4, roughness:0.25, transparent:true, blending:THREE.AdditiveBlending});
+const M_SHM   = new THREE.MeshStandardMaterial({color:0xb46aff, emissive:0xb46aff, emissiveIntensity:1.5, metalness:0.3, roughness:0.3, transparent:true, blending:THREE.AdditiveBlending});
+const M_BRIGHT= new THREE.MeshStandardMaterial({color:0xfff2c8, emissive:0xfff0c0, emissiveIntensity:0.8, metalness:0.7, roughness:0.2});
+const M_DARKP = new THREE.MeshStandardMaterial({color:0x2a1a34, metalness:0.4, roughness:0.6});
+const M_ROCK  = new THREE.MeshStandardMaterial({color:0x6b2a22, metalness:0.2, roughness:0.85});
+const M_ROCK2 = new THREE.MeshStandardMaterial({color:0x4a1a16, metalness:0.2, roughness:0.9});
+const M_FRAG  = new THREE.MeshStandardMaterial({color:0xffc050, emissive:0xff9a3a, emissiveIntensity:1.2, metalness:0.4, roughness:0.4, blending:THREE.AdditiveBlending, transparent:true});
+const M_FRAGR = new THREE.MeshStandardMaterial({color:0x7a3028, emissive:0x5a1810, emissiveIntensity:0.5, metalness:0.3, roughness:0.8, transparent:true});
+const MATS = [M_HULL,M_DEEP,M_PLATE,M_GLOW,M_SHC,M_SHM,M_BRIGHT,M_DARKP,M_ROCK,M_ROCK2,M_FRAG,M_FRAGR];
+const I_HULL=0,I_DEEP=1,I_PLATE=2,I_GLOW=3,I_SHC=4,I_SHM=5,I_BRIGHT=6,I_DARKP=7,I_ROCK=8,I_ROCK2=9,I_FRAG=10,I_FRAGR=11;
+
+/* ---------------- VoxelGrid ---------------- */
+class VoxelGrid {
+  constructor(){ this.map = new Map(); this.list = []; }
+  k(x,y,z){ return (x+32768)*67108864 + (y+32768)*262144 + (z+32768); }
+  has(x,y,z){ return this.map.has(this.k(x,y,z)); }
+  get(x,y,z){ return this.map.get(this.k(x,y,z)); }
+  set(x,y,z,m){ const kk=this.k(x,y,z); if(this.map.has(kk)) return; this.map.set(kk,m|0); this.list.push([x,y,z,m|0]); }
+  addBox(x0,x1,y0,y1,z0,z1,m){
+    x0|=0;x1|=0;y0|=0;y1|=0;z0|=0;z1|=0;
+    if(x1<x0)[x0,x1]=[x1,x0]; if(y1<y0)[y0,y1]=[y1,y0]; if(z1<z0)[z0,z1]=[z1,z0];
+    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)for(let z=z0;z<=z1;z++)this.set(x,y,z,m);
+  }
+}
+
+/* 体素网格 -> THREE.Mesh（贪婪合并同色暴露面，平面法线，多材质分组） */
+function buildMesh(grid){
+  const pos=[], norm=[], idx=[];
+  const gcount = MATS.map(()=>0);
+  const has=(x,y,z)=>grid.has(x,y,z);
+  let vi=0;
+  const emit=(mi,p0,p1,p2,p3,n)=>{
+    const b=vi; vi+=4;
+    pos.push(p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], p2[0],p2[1],p2[2], p3[0],p3[1],p3[2]);
+    for(let i=0;i<4;i++) norm.push(n[0],n[1],n[2]);
+    idx.push(b,b+1,b+2, b,b+2,b+3);
+    gcount[mi]+=6;
+  };
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+  const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+  const put=(a,fp,uu,vv,ua,va)=>{ const o=[0,0,0]; o[a]=fp; o[ua]=uu; o[va]=vv; return o; };
+
+  const dirs=[
+    {a:0,s:1,u:1,v:2},{a:0,s:-1,u:1,v:2},
+    {a:1,s:1,u:0,v:2},{a:1,s:-1,u:0,v:2},
+    {a:2,s:1,u:0,v:1},{a:2,s:-1,u:0,v:1},
+  ];
+  for(const {a,s,u,v} of dirs){
+    const planes = new Map();
+    for(const [x,y,z,m] of grid.list){
+      const p=[x,y,z]; const na=p[a]+s;
+      const nn=[0,0,0]; nn[a]=na; nn[u]=p[u]; nn[v]=p[v];
+      if(!has(nn[0],nn[1],nn[2])){
+        const fp=p[a]+s*0.5;
+        const ck=p[u]+','+p[v];
+        if(!planes.has(fp)) planes.set(fp,new Map());
+        planes.get(fp).set(ck,m);
+      }
+    }
+    for(const [fp,cellMap] of planes){
+      const used=new Set();
+      const cells=[...cellMap.entries()].map(([k,m])=>{const [uu,vv]=k.split(',').map(Number);return {u:uu,v:vv,m};});
+      cells.sort((A,B)=>A.u-B.u||A.v-B.v);
+      for(const {u,v,m} of cells){
+        const k0=u+','+v; if(used.has(k0))continue;
+        let v2=v+1;
+        while(true){const kk=u+','+v2; if(!cellMap.has(kk)||cellMap.get(kk)!==m||used.has(kk))break; v2++;}
+        let u2=u+1; outer: while(true){for(let vv=v;vv<v2;vv++){const kk=u2+','+vv; if(!cellMap.has(kk)||cellMap.get(kk)!==m||used.has(kk))break outer;} u2++;}
+        for(let uu=u;uu<u2;uu++)for(let vv=v;vv<v2;vv++)used.add(uu+','+vv);
+        const c0=put(a,fp,u,v,u,v), c1=put(a,fp,u2,v,u,v), c2=put(a,fp,u2,v2,u,v), c3=put(a,fp,u,v2,u,v);
+        const des=[0,0,0]; des[a]=s;
+        const cr=cross(sub(c1,c0),sub(c2,c0));
+        if(dot(cr,des)<0) emit(m,c0,c3,c2,c1,des); else emit(m,c0,c1,c2,c3,des);
+      }
+    }
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  geo.setAttribute('normal',new THREE.Float32BufferAttribute(norm,3));
+  geo.setIndex(idx);
+  let off=0;
+  for(let i=0;i<MATS.length;i++){ if(gcount[i]>0){ geo.addGroup(off,gcount[i],i); off+=gcount[i]; } }
+  return new THREE.Mesh(geo,MATS);
+}
+
+/* 单个体素立方体网格（用于碎块） */
+function buildOneVoxelMesh(m){
+  const g=new VoxelGrid(); g.set(0,0,0,m); return buildMesh(g);
+}
+const MESH_ONECUBE = buildOneVoxelMesh(I_HULL);
+
+/* ---------------- 形态母题：叠板 + 分叉 ---------------- */
+/* 在体素网格上铺设"层片"：沿舰身方向错落的薄板，构成叠甲 */
+function addPlates(g, axis, sign, x0,x1, y0,y1, z0,z1, m, step, th, count){
+  // 在 z 方向铺 count 块错落薄板
+  for(let i=0;i<count;i++){
+    const zz0 = z0 + (z1-z0)*i/count;
+    const zz1 = zz0 + step;
+    const yo = ((i%2)?1:-1)*((i%3)*3);
+    g.addBox(x0,x1, y0+yo, y1+yo, zz0, zz1, m);
+  }
+}
+
+/* =====================================================================
+   舰船生成器
+   坐标：x 横向 / y 竖向 / z 纵向（航向 +z，舰首在 +z）
+   旗舰约 1100 格长；近卫 ~180；前卫 ~200；小艇 ~26
+   ===================================================================== */
+/* 旗舰：约 1100 格，分叉舰首，多层叠板侧壳，光束主炮，脉冲炮台，多组喷口，侧向机库口 */
+function genFlagship(){
+  const g = new VoxelGrid();
+  const L=1100, X=78, Y=120;
+  const zS=-550, zB=550;          // 尾/首
+  const T=6;                       // 板厚
+  /* 中央脊管 */
+  g.addBox(-22,22, -16,24, zS+60, zB-60, I_HULL);
+  /* 上层甲板 */
+  g.addBox(-58,58, 20,30, zS+120, zB-180, I_HULL);
+  /* 下腹甲板 */
+  g.addBox(-58,58, -30,-20, zS+120, zB-180, I_HULL);
+  /* 侧叠板（母题核心）—— 逐层错落的薄壳 */
+  for(let i=0;i<22;i++){
+    const zz0 = zS+140 + i*36;
+    const zz1 = zz0+64;
+    const side = (i%2)?1:-1;
+    const xo = 30 + (i%4)*8;
+    const yo = -10 + (i%3)*8;
+    // 外层亮板
+    g.addBox(side*22, side*(xo+6), 14+yo, 54+yo, zz0, zz1, I_PLATE);
+    // 内层深槽
+    g.addBox(side*20, side*xo, -6+yo, 20+yo, zz0+10, zz1-10, I_DEEP);
+    // 底/顶搭接
+    g.addBox(-xo,xo, 54+yo, 54+yo+T, zz0, zz1, I_HULL);
+    g.addBox(-xo,xo, 14+yo-T, 14+yo, zz0, zz1, I_HULL);
+  }
+  /* 舰首分叉：中叉 + 两翼叉 */
+  g.addBox(-18,18, -10,60, zB-70, zB+40, I_HULL);       // 中叉（厚）
+  g.addBox(-62,-30, -6,40, zB-90, zB-10, I_HULL);       // 左叉
+  g.addBox(30,62, -6,40, zB-90, zB-10, I_HULL);         // 右叉
+  g.addBox(-30,30, 60,78, zB-70, zB-10, I_HULL);        // 中叉脊
+  /* 光束主炮：基座+炮身+炮口，从舰首长出 */
+  g.addBox(-16,16, 40,90, zB-120, zB-70, I_HULL);       // 基座
+  g.addBox(-11,11, 52,96, zB-70, zB+30, I_GLOW);        // 炮身发光槽
+  g.addBox(-16,16, 46,100, zB-70, zB-58, I_PLATE);      // 炮身外壳
+  g.addBox(-18,18, 44,104, zB+30, zB+58, I_BRIGHT);     // 炮口亮核
+  g.addBox(-22,22, 40,108, zB+58, zB+70, I_GLOW);       // 炮口辉光
+  /* 脉冲炮台 x6 沿上层边缘 */
+  for(let i=0;i<6;i++){
+    const xx = -150 + i*60;
+    const sgn = (i%2)?1:-1;
+    const zc = zS+220 + (i%3)*160;
+    g.addBox(xx-14,xx+14, 82,94, zc-14,zc+14, I_PLATE);         // 炮座
+    g.addBox(xx-18,xx+18, 94,104, zc-8,zc+8, I_HULL);           // 炮座上层
+    g.addBox(sgn*40,sgn*58, 88,100, zc-4,zc+4, I_GLOW);         // 炮管
+  }
+  /* 舰尾：多组喷口（5 组，逐层退让） */
+  for(let i=0;i<5;i++){
+    const zz0 = zS - 14*(4-i);
+    const yy0 = -34 + i*14;
+    g.addBox(-46,46, yy0, yy0+12, zz0-14, zz0, I_DEEP);         // 喷口内腔
+    g.addBox(-50,50, yy0-3, yy0+15, zz0-18, zz0-14, I_HULL);    // 口沿
+    g.addBox(-14,14, yy0+2, yy0+10, zz0-30, zz0-10, I_GLOW);    // 喷口亮核
+  }
+  /* 舰尾外壳收束 */
+  g.addBox(-58,58, -40,60, zS, zS+30, I_HULL);
+  /* 侧向机库口（左舷，约占舰长 1/3） */
+  g.addBox(-80,-62, -24,40, zS+60, zS+420, I_DEEP);           // 内凹开口
+  g.addBox(-86,-78, -28,44, zS+40, zS+440, I_HULL);           // 口沿
+  return g;
+}
+
+/* 近卫舰：紧凑厚实，短翼，速射近防炮。约 180 格 */
+function genEscortA(){
+  const g = new VoxelGrid();
+  const L=180, X=46, Y=34, T=5;
+  const zS=-90, zB=90;
+  g.addBox(-14,14, -10,12, zS+10, zB-10, I_HULL);
+  g.addBox(-22,22, -18,-12, zS+20, zB-20, I_HULL);
+  g.addBox(-22,22, 14,20, zS+20, zB-20, I_HULL);
+  /* 短翼 */
+  g.addBox(-24,-16, -4,4, zS+30, zB-30, I_PLATE);
+  g.addBox(16,24, -4,4, zS+30, zB-30, I_PLATE);
+  /* 叠板 */
+  for(let i=0;i<7;i++){
+    const zz0=zS+22+i*22; const zz1=zz0+20;
+    const sgn=(i%2)?1:-1;
+    g.addBox(sgn*14,sgn*24, -8,14, zz0, zz1, I_PLATE);
+  }
+  /* 近防炮 x3 */
+  for(let i=0;i<3;i++){
+    const xx=-24+i*24; const zc=zS+40+i*34;
+    g.addBox(xx-6,xx+10, 16,24, zc-5,zc+5, I_PLATE);
+    g.addBox(xx+2,xx+14, 24,30, zc-2,zc+2, I_GLOW);
+  }
+  /* 舰首 */
+  g.addBox(-16,16, -6,16, zB-24, zB+6, I_PLATE);
+  /* 喷口 */
+  g.addBox(-18,18, -14,2, zS-12, zS, I_DEEP);
+  g.addBox(-22,22, -17,5, zS-16, zS-12, I_HULL);
+  g.addBox(-6,6, -10,0, zS-22, zS-8, I_GLOW);
+  return g;
+}
+
+/* 前卫舰：舒展延伸，外伸导弹发射部。约 200 格 */
+function genEscortB(){
+  const g = new VoxelGrid();
+  const L=200, X=60, Y=40, T=5;
+  const zS=-100, zB=100;
+  g.addBox(-16,16, -12,14, zS+12, zB-12, I_HULL);
+  g.addBox(-26,26, -20,-14, zS+24, zB-24, I_HULL);
+  g.addBox(-26,26, 16,22, zS+24, zB-24, I_HULL);
+  /* 外伸导弹翼 */
+  g.addBox(-28,-18, -2,2, zS+30, zB-30, I_HULL);
+  g.addBox(18,28, -2,2, zS+30, zB-30, I_HULL);
+  /* 导弹发射槽列 x4 */
+  for(let i=0;i<4;i++){
+    const xx=-44+i*24; const zc=zS+44+i*30;
+    g.addBox(xx,xx+8, 2,12, zc-3,zc+3, I_DEEP);
+    g.addBox(xx+1,xx+7, 4,10, zc-1,zc+1, I_GLOW);
+    g.addBox(-xx-8,-xx, 2,12, zc-3,zc+3, I_DEEP);
+    g.addBox(-xx-7,-xx-1, 4,10, zc-1,zc+1, I_GLOW);
+  }
+  /* 叠板 */
+  for(let i=0;i<8;i++){
+    const zz0=zS+24+i*22; const zz1=zz0+20;
+    const sgn=(i%2)?1:-1;
+    g.addBox(sgn*16,sgn*28, -6,16, zz0, zz1, I_PLATE);
+  }
+  /* 舰首（分叉） */
+  g.addBox(-18,18, -4,18, zB-26, zB+4, I_PLATE);
+  g.addBox(-30,-16, -2,12, zB-40, zB-18, I_HULL);
+  g.addBox(16,30, -2,12, zB-40, zB-18, I_HULL);
+  /* 喷口 */
+  g.addBox(-20,20, -16,4, zS-14, zS, I_DEEP);
+  g.addBox(-24,24, -19,7, zS-18, zS-14, I_HULL);
+  g.addBox(-7,7, -12,2, zS-26, zS-10, I_GLOW);
+  return g;
+}
+
+/* 小艇：简练概括。约 26 格 */
+function genBoat(){
+  const g = new VoxelGrid();
+  const L=26, X=10, Y=8, T=3;
+  g.addBox(-4,4, -3,4, 2, L-2, I_HULL);
+  g.addBox(-5,5, -5,5, 0, L, I_HULL);
+  g.addBox(-6,6, 4,7, L-8, L+2, I_PLATE);     // 舰首
+  g.addBox(-3,3, -2,3, -4, 2, I_DEEP);        // 喷口内腔
+  g.addBox(-2,2, -1,2, -8, -2, I_GLOW);       // 喷口亮核
+  return g;
+}
+
+const MESH_FLAG = buildMesh(genFlagship());
+const MESH_ESC_A = buildMesh(genEscortA());
+const MESH_ESC_B = buildMesh(genEscortB());
+const MESH_BOAT = buildMesh(genBoat());
+
+/* ---------------- 陨石（体素不规则块） ---------------- */
+function genAsteroid(seed){
+  const g = new VoxelGrid();
+  const rnd = (s)=>{ const x=Math.sin(s*127.1+s*54.3)*43758.5453; return x-Math.floor(x); };
+  const R = 22 + Math.floor(rnd(seed)*18);
+  const cells=[];
+  for(let x=-R;x<=R;x++)for(let y=-R;y<=R;y++)for(let z=-R;z<=R;z++){
+    const d=Math.sqrt(x*x+y*y+z*z);
+    const n=rnd(x*13.7+y*31.4+z*57.3+seed);
+    if(d < R*(0.5+n*0.5)) cells.push([x,y,z]);
+  }
+  for(const [x,y,z] of cells){
+    const n=rnd(x*7.1+y*13.3+z*29.9+seed*3.7);
+    g.set(x,y,z, n>0.5?I_ROCK:I_ROCK2);
+  }
+  return g;
+}
+const ASTEROIDS = [];
+const ASTEROID_GRID = [];
+for(let i=0;i<10;i++){
+  const g = genAsteroid(i*17+3);
+  ASTEROID_GRID.push(g);
+  const m = buildMesh(g);
+  m.userData.grid = g;
+  m.userData.dead = false;
+  m.userData.splitted = false;
+  ASTEROIDS.push(m);
+}
+
+/* ---------------- 舰内空间 ---------------- */
+/* 舰桥：130x130x60，中枢+侧层控制台+显示板+观景开口 */
+function genBridge(){
+  const g = new VoxelGrid();
+  const W=130,D=130,H=60;
+  for(let z=-D/2;z<=D/2;z+=20) g.addBox(-W/2,W/2, -3,3, z-3,z+3, I_DARKP);
+  for(let x=-W/2;x<=W/2;x+=20) g.addBox(x-3,x+3, -3,3, -D/2,D/2, I_DARKP);
+  for(let z=-D/2;z<=D/2;z+=20) g.addBox(-W/2,W/2, 0,H, z-2,z+2, I_HULL);
+  for(let x=-W/2;x<=W/2;x+=20) g.addBox(x-2,x+2, 0,H, -D/2,D/2, I_HULL);
+  for(let z=-D/2;z<=D/2;z+=20) g.addBox(-W/2,W/2, H-3,H, z-2,z+2, I_HULL);
+  for(let x=-W/2;x<=W/2;x+=20) g.addBox(x-2,x+2, H-3,H, -D/2,D/2, I_HULL);
+  /* 中枢 */
+  g.addBox(-20,20, 6,24, -20,20, I_PLATE);
+  g.addBox(-12,12, 24,34, -12,12, I_GLOW);
+  /* 侧层控制台 */
+  for(let i=-3;i<=3;i++){ const x=i*28;
+    g.addBox(x-12,x+12, 2,9, -D/2+16,-D/2+34, I_DARKP);
+    g.addBox(x-10,x+10, 9,13, -D/2+18,-D/2+32, I_GLOW);
+  }
+  /* 悬示显示板 */
+  for(let i=-2;i<=2;i++){ const z=i*26;
+    g.addBox(-W/2+16,-W/2+42, 30,48, z-7,z+7, I_HULL);
+    g.addBox(-W/2+19,-W/2+39, 33,45, z-4,z+4, I_GLOW);
+  }
+  /* 前方观景开口（远处） */
+  g.addBox(-W/2,W/2, 0,H, D/2-4,D/2+2, I_HULL);
+  return g;
+}
+
+/* 动力核心中庭：250x250，跨层平台，中央核心，支撑 */
+function genCore(){
+  const g = new VoxelGrid();
+  const W=250,H=250;
+  for(let lv=0;lv<5;lv++){
+    const y=22+lv*46; const span=W*(0.72-lv*0.09);
+    for(let a=0;a<4;a++){
+      const ang=a*Math.PI/2; const cx=Math.cos(ang)*span*0.5, cz=Math.sin(ang)*span*0.5;
+      g.addBox(cx-span*0.5,cx+span*0.5, y,y+5, cz-span*0.5,cz+span*0.5, I_HULL);
+      g.addBox(cx-span*0.5+6,cx+span*0.5-6, y+5,y+9, cz-span*0.5+6,cz+span*0.5-6, I_PLATE);
+    }
+  }
+  /* 中央核心 */
+  g.addBox(-22,22, 95,158, -22,22, I_GLOW);
+  g.addBox(-30,30, 86,166, -30,30, I_SHC);
+  g.addBox(-38,38, 78,174, -38,38, I_SHM);
+  /* 支撑 x8 */
+  for(let a=0;a<8;a++){ const ang=a*Math.PI/4; const x=Math.cos(ang)*100, z=Math.sin(ang)*100;
+    g.addBox(x-4,x+4, 40,175, z-4,z+4, I_PLATE); }
+  /* 舱壁 */
+  for(let x=-W/2;x<=W/2;x+=28) g.addBox(x-3,x+3, 0,H, -W/2,-W/2+7, I_HULL);
+  for(let z=-W/2;z<=W/2;z+=28) g.addBox(-W/2,-W/2+7, 0,H, z-3,z+3, I_HULL);
+  for(let x=-W/2;x<=W/2;x+=28) g.addBox(x-3,x+3, 0,H, W/2-7,W/2, I_HULL);
+  for(let z=-W/2;z<=W/2;z+=28) g.addBox(W/2-7,W/2, 0,H, z-3,z+3, I_HULL);
+  return g;
+}
+
+/* 贯通机库：长约 360（≈旗舰 1/3），长轴沿 z，停泊凹位，跨舱桥架 */
+function genHangar(){
+  const g = new VoxelGrid();
+  const L=360, W=96, H=64;   // L 沿 z, W 沿 x, H 沿 y
+  const z0=0;
+  for(let z=z0;z<z0+L;z+=18) g.addBox(-W,W, -3,3, z,z+16, I_DARKP);
+  for(let x=-W;x<=W;x+=18) g.addBox(x-2,x+2, -3,3, z0,z0+L, I_DARKP);
+  for(let z=z0;z<z0+L;z+=22) g.addBox(-W,W, 0,H, z,z+22, I_HULL);
+  for(let x=-W;x<=W;x+=22) g.addBox(x-2,x+2, 0,H, z0,z0+L, I_HULL);
+  for(let z=z0;z<z0+L;z+=22) g.addBox(-W,W, H-4,H, z,z+22, I_HULL);
+  /* 停泊凹位（两侧） */
+  for(let i=0;i<5;i++){ const z=28+i*72;
+    g.addBox(-W+8,-W+24, -3,12, z,z+40, I_DARKP);
+    g.addBox(W-24,W-8, -3,12, z,z+40, I_DARKP);
+    g.addBox(-W+12,-W+20, 12,16, z+6,z+34, I_GLOW);
+    g.addBox(W-20,W-12, 12,16, z+6,z+34, I_GLOW);
+  }
+  /* 跨舱桥架 */
+  for(let z=40;z<z0+L;z+=56) g.addBox(-W,W, H-16,H-3, z-3,z+3, I_PLATE);
+  /* 维修构架 */
+  for(let i=0;i<4;i++){ const z=60+i*80;
+    g.addBox(-W+30,-W+36, 10,40, z-2,z+2, I_PLATE);
+    g.addBox(W-36,W-30, 10,40, z-2,z+2, I_PLATE);
+  }
+  /* 远端舱口 */
+  g.addBox(-34,34, 8,50, z0+L-12,z0+L+14, I_GLOW);
+  g.addBox(-40,40, 4,54, z0+L-20,z0+L+22, I_SHC);
+  return g;
+}
+
+/* 能量装填与导能长廊：长约 360，横向 100，挑高 70，长轴沿 z */
+function genCorridor(){
+  const g = new VoxelGrid();
+  const L=360, W=100, H=70;
+  const z0=0;
+  for(let z=z0;z<z0+L;z+=18) g.addBox(-W,W, -3,3, z,z+16, I_DARKP);
+  for(let x=-W;x<=W;x+=18) g.addBox(x-2,x+2, -3,3, z0,z0+L, I_DARKP);
+  for(let z=z0;z<z0+L;z+=22) g.addBox(-W,W, 0,H, z,z+22, I_HULL);
+  for(let x=-W;x<=W;x+=22) g.addBox(x-2,x+2, 0,H, z0,z0+L, I_HULL);
+  for(let z=z0;z<z0+L;z+=22) g.addBox(-W,W, H-4,H, z,z+22, I_HULL);
+  /* 装填装置 x6 */
+  for(let i=0;i<6;i++){ const z=22+i*58;
+    g.addBox(-W+12,-W+32, 6,44, z,z+34, I_HULL);
+    g.addBox(-W+16,-W+28, 12,40, z+5,z+29, I_GLOW);
+    g.addBox(W-32,W-12, 6,44, z,z+34, I_HULL);
+    g.addBox(W-28,W-16, 12,40, z+5,z+29, I_GLOW);
+  }
+  /* 悬置导能构件 */
+  for(let i=0;i<5;i++){ const z=40+i*72;
+    g.addBox(-W+40,-W+46, 44,60, z-2,z+2, I_SHC);
+    g.addBox(W-46,W-40, 44,60, z-2,z+2, I_SHC);
+  }
+  /* 远端发光腔口 */
+  g.addBox(-32,32, 10,56, z0+L-16,z0+L+16, I_GLOW);
+  g.addBox(-40,40, 6,60, z0+L-24,z0+L+24, I_SHC);
+  return g;
+}
+
+const MESH_BRIDGE = buildMesh(genBridge());
+const MESH_CORE = buildMesh(genCore());
+const MESH_HANGAR = buildMesh(genHangar());
+const MESH_CORRIDOR = buildMesh(genCorridor());
+
+/* 内景容器（放在旗舰内部对应位置；整体随舰队漂移 dz） */
+const oBridge = new THREE.Object3D(); oBridge.add(MESH_BRIDGE.clone());   // 局部中心 (0,40,315)
+const oCore   = new THREE.Object3D(); oCore.add(MESH_CORE.clone());       // 局部中心 (0,0,25)
+const oHangar = new THREE.Object3D(); oHangar.add(MESH_HANGAR.clone());   // 局部中心 (-55,-36,-280)
+const oCorridor = new THREE.Object3D(); oCorridor.add(MESH_CORRIDOR.clone()); // 局部中心 (0,10,200)
+scene.add(oBridge, oCore, oHangar, oCorridor);
+
+/* 旗舰外壳（进入内景时隐藏） */
+const oFlagship = new THREE.Object3D(); oFlagship.add(MESH_FLAG.clone());
+scene.add(oFlagship);
+
+/* ---------------- 舰队布局 ---------------- */
+/* 旗舰在原点，航向 +z。近卫环绕，前卫外展。 */
+function placeFleet(){
+  const grp = new THREE.Group();
+  const fl = MESH_FLAG.clone(); fl.position.set(0,0,0); grp.add(fl);
+  const rnd = (s)=>{ const x=Math.sin(s*127.1)*43758.5453; return x-Math.floor(x); };
+  const escA=[], escB=[], boats=[];
+  /* 近卫 12 艘：环绕旗舰，紧凑 */
+  for(let i=0;i<12;i++){
+    const ang=i/12*Math.PI*2+0.4;
+    const rr=130+Math.floor(rnd(i*7)*60);
+    const m=MESH_ESC_A.clone();
+    m.position.set(Math.cos(ang)*rr, (i%2?16:-14), Math.sin(ang)*rr);
+    m.rotation.y = ang+Math.PI + rnd(i*3)*0.3;
+    grp.add(m); escA.push(m);
+  }
+  /* 前卫 14 艘：外围铺开 */
+  for(let i=0;i<14;i++){
+    const ang=i/14*Math.PI*2-0.3;
+    const rr=340+Math.floor(rnd(i*11)*90);
+    const m=MESH_ESC_B.clone();
+    m.position.set(Math.cos(ang)*rr, (i%2?12:-18), Math.sin(ang)*rr);
+    m.rotation.y = ang+Math.PI + rnd(i*5)*0.4;
+    grp.add(m); escB.push(m);
+  }
+  /* 小艇 6 艘 */
+  for(let i=0;i<6;i++){
+    const ang=i/6*Math.PI*2+0.9;
+    const m=MESH_BOAT.clone();
+    m.position.set(Math.cos(ang)*46, 26, Math.sin(ang)*46);
+    m.rotation.y = ang+Math.PI;
+    grp.add(m); boats.push(m);
+  }
+  scene.add(grp);
+  return {grp, fl, escA, escB, boats};
+}
+const FLEET = placeFleet();
+
+/* 陨石：舰队前方 */
+for(let i=0;i<ASTEROIDS.length;i++){
+  const a=ASTEROIDS[i];
+  const ang=(i/ASTEROIDS.length)*Math.PI*2+0.6;
+  const rr=360+(i%3)*80;
+  a.position.set(620+Math.cos(ang)*rr*0.55, (i%2?40:-40), 900+Math.sin(ang)*rr);
+  a.rotation.set(0, i*0.8, 0);
+  scene.add(a);
+}
+
+/* 背景星点（世界坐标，P 周期平铺，随航行滚动） */
+const P_BACK = 5000;
+function buildStars(){
+  const N=2200, p=new Float32Array(N*3*3), c=new Float32Array(N*3*3);
+  const rnd=(s)=>{ const x=Math.sin(s*91.7)*43758.5453; return x-Math.floor(x); };
+  let k=0;
+  for(let copy=-1;copy<=1;copy++){
+    for(let i=0;i<N;i++){
+      const r=400+Math.random()*1600;
+      const th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+      const br=0.3+Math.random()*0.7;
+      p[k]=Math.sin(th)*Math.sin(ph)*r; p[k+1]=Math.cos(ph)*r; p[k+2]=Math.cos(th)*Math.sin(ph)*r + copy*P_BACK;
+      c[k]=br; c[k+1]=br*(0.7+Math.random()*0.6); c[k+2]=br*(0.8+Math.random()*0.4);
+      k+=3;
+    }
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(p,3));
+  g.setAttribute('color',new THREE.BufferAttribute(c,3));
+  const m=new THREE.PointsMaterial({size:1.7,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:0.95,depthWrite:false});
+  scene.add(new THREE_POINTS(g,m));
+}
+function THREE_POINTS(g,m){ return new THREE.Points(g,m); }
+buildStars();
+
+/* 星云（舰队系，随舰队移动，不做平铺） */
+function buildNebula(){
+  const n1=new THREE.Mesh(new THREE.SphereGeometry(1400,32,16), new THREE.MeshBasicMaterial({color:0x102044,side:THREE.BackSide,transparent:true,opacity:0.5}));
+  n1.position.set(-300,200,-600); scene.add(n1);
+  const n2=new THREE.Mesh(new THREE.SphereGeometry(1100,32,16), new THREE.MeshBasicMaterial({color:0x1a0a2a,side:THREE.BackSide,transparent:true,opacity:0.35}));
+  n2.position.set(400,-100,400); scene.add(n2);
+  const n3=new THREE.Mesh(new THREE.SphereGeometry(700,28,14), new THREE.MeshBasicMaterial({color:0x0d2240,side:THREE.BackSide,transparent:true,opacity:0.4}));
+  n3.position.set(-200,-200,800); scene.add(n3);
+}
+buildNebula();
+
+/* 引擎点光 */
+const engLights=[];
+for(let i=0;i<6;i++){ const l=new THREE.PointLight(0xff8a3a,0,80); scene.add(l); engLights.push(l); }
+
+/* =====================================================================
+   全局时间线
+   ===================================================================== */
+const TOTAL = 84;
+const ease = t=>t<0?0:t>1?1:t*t*(3-2*t);
+const lerp=(a,b,t)=>a+(b-a)*t;
+const lv=(ax,ay,az,bx,by,bz,t)=>new THREE.Vector3(lerp(ax,bx,t),lerp(ay,by,t),lerp(az,bz,t));
+
+/* 航行漂移：舰队相对背景前进，末段加速。P 周期平铺保证闭环 */
+function buildG(){
+  const N=800; const v=new Float32Array(N+1);
+  for(let i=0;i<=N;i++){
+    const s=i/N; let sp;
+    if(s<0.58) sp=1.0;
+    else if(s<0.76){const tt=(s-0.58)/0.18; sp=1.0+(0.3-1.0)*ease(tt);}
+    else {const tt=(s-0.76)/0.24; sp=0.3+(2.0-0.3)*ease(tt);}
+    v[i]=sp;
+  }
+  const g=new Float32Array(N+1);
+  for(let i=1;i<=N;i++) g[i]=g[i-1]+v[i-1]/N;
+  for(let i=0;i<=N;i++) g[i]/=g[N];
+  return {g,N};
+}
+const GB=buildG();
+function driftZ(t){ const s=t/TOTAL; const i=Math.min(GB.N,Math.floor(s*GB.N)); const f=s*GB.N-i; return P_BACK*(GB.g[i]*(1-f)+GB.g[i+1]*f); }
+
+/* 相机路径：闭环 Catmull-Rom 样条（舰队系坐标） */
+const KF = [
+  {p:0.00, pos:[-380,250,-2700], look:[-120,60,-600]},
+  {p:0.06, pos:[-220,150,-1850], look:[-70,58,-320]},
+  {p:0.12, pos:[ -30,100,-1050], look:[0,62,-20]},
+  {p:0.17, pos:[ 300,130,-320],  look:[0,86,300]},
+  {p:0.22, pos:[ -90,18,-300],   look:[-55,10,-110]},
+  {p:0.27, pos:[ -55,8,-235],    look:[-55,10,-40]},
+  {p:0.32, pos:[ -55,10,-120],   look:[-55,12,50]},
+  {p:0.37, pos:[ -55,14, 10],    look:[-55,16,130]},
+  {p:0.41, pos:[ 0,55, 275],     look:[0,70,350]},
+  {p:0.46, pos:[ 0,62, 295],     look:[0,78,345]},
+  {p:0.51, pos:[ 0,82,-30],      look:[0,155,40]},
+  {p:0.56, pos:[ 0,62, 18],      look:[0,145,62]},
+  {p:0.60, pos:[ 0,30, 235],     look:[0,42,490]},
+  {p:0.65, pos:[ 0,32, 440],     look:[0,44,545]},
+  {p:0.69, pos:[ 280,145,1450],  look:[-120,60,900]},
+  {p:0.75, pos:[-230,235,2050],  look:[0,70,1300]},
+  {p:0.82, pos:[-510,310,2550],  look:[0,60,1600]},
+  {p:0.89, pos:[-350,800,1950],  look:[0,150,900]},
+  {p:0.95, pos:[-530,430,-320],  look:[0,80,-180]},
+  {p:1.00, pos:[-380,250,-2700], look:[-120,60,-600]},
+];
+function catmull(p0,p1,p2,p3,t){
+  const t2=t*t,t3=t2*t;
+  return 0.5*((2*p1)+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t2+(-p0+3*p1-3*p2+p3)*t3);
+}
+function splineEval(keys, p, n){
+  // find segment
+  let i=0; while(i<n-1 && keys[i+1].p<p) i++;
+  const k0=keys[(i-1+n)%n], k1=keys[i], k2=keys[(i+1)%n], k3=keys[(i+2)%n];
+  const t=(p-k1.p)/(k2.p-k1.p);
+  const pos=new THREE.Vector3(
+    catmull(k0.pos[0],k1.pos[0],k2.pos[0],k3.pos[0],t),
+    catmull(k0.pos[1],k1.pos[1],k2.pos[1],k3.pos[1],t),
+    catmull(k0.pos[2],k1.pos[2],k2.pos[2],k3.pos[2],t));
+  const look=new THREE.Vector3(
+    catmull(k0.look[0],k1.look[0],k2.look[0],k3.look[0],t),
+    catmull(k0.look[1],k1.look[1],k2.look[1],k3.look[1],t),
+    catmull(k0.look[2],k1.look[2],k2.look[2],k3.look[2],t));
+  return {pos,look};
+}
+function cameraPose(T){
+  const p=T/TOTAL;
+  return splineEval(KF, p, KF.length);
+}
+
+/* 内景显隐 */
+function updateInteriors(T){
+  const p=T/TOTAL;
+  const show = (a,b)=>p>=a&&p<b;
+  oHangar.visible   = show(0.25,0.38);
+  oBridge.visible   = show(0.38,0.48);
+  oCore.visible     = show(0.48,0.58);
+  oCorridor.visible = show(0.58,0.68);
+  const inside = oHangar.visible||oBridge.visible||oCore.visible||oCorridor.visible;
+  oFlagship.visible = !inside;
+  FLEET.fl.visible = !inside;
+  FLEET.escA.forEach(m=>m.visible=!inside);
+  FLEET.escB.forEach(m=>m.visible=!inside);
+  FLEET.boats.forEach(m=>m.visible=!inside);
+  for(const a of ASTEROIDS) a.visible = !inside;
+}
+
+/* =====================================================================
+   武器与特效
+   ===================================================================== */
+/* 发射时序：光束主炮 -> 脉冲 -> 近防 -> 导弹 */
+const W = { beam:0, pulse:0, ciws:0, missile:0 };
+function updateWeapons(T){
+  const p=T/TOTAL;
+  if(p>=0.68 && p<0.78){
+    const lt=(p-0.68)/0.10;
+    if(lt<0.20) W.beam=lt/0.20;
+    else if(lt<0.42){W.beam=1; W.pulse=(lt-0.20)/0.22;}
+    else if(lt<0.62){W.pulse=1; W.ciws=(lt-0.42)/0.20;}
+    else if(lt<0.82){W.ciws=1; W.missile=(lt-0.62)/0.20;}
+    else {W.missile=1;}
+  } else {W.beam=0;W.pulse=0;W.ciws=0;W.missile=0;}
+}
+
+/* 护盾 */
+const SHIELD = {a:0}; // 0..1
+
+/* 护盾材质：通透曲面 + 流动波纹 + 沿曲面滑过的亮边 */
+const M_SHIELD = new THREE.ShaderMaterial({
+  uniforms:{ uTime:{value:0}, uA:{value:0}, uRipple:{value:0}, uColor:{value:new THREE.Color(0x46f0d4)}, uColor2:{value:new THREE.Color(0xb46aff)} },
+  vertexShader:`
+    varying vec3 vN; varying vec3 vP; varying float vEdge;
+    void main(){
+      vN = normalize(normalMatrix * normal);
+      vec4 wp = modelViewMatrix * vec4(position, 1.0);
+      vP = wp.xyz;
+      vEdge = dot(vN, vec3(0.0,0.0,-1.0));
+      gl_Position = projectionMatrix * wp;
+    }`,
+  fragmentShader:`
+    uniform float uTime, uA, uRipple;
+    uniform vec3 uColor, uColor2;
+    varying vec3 vN, vP; varying float vEdge;
+    // 简易 3D 噪声
+    vec3 hash(vec3 p){ p = fract(p*vec3(443.892,71.233,9.437)); return p-fract(p.yzx*vec3(23.1407,47.21,21.44)); }
+    float noise(vec3 p){ vec3 i=floor(p); vec3 f=fract(p); f=f*f*(3.0-2.0*f);
+      return mix(mix(mix(dot(hash(i+vec3(0,0,0)),f),dot(hash(i+vec3(1,0,0)),f-vec3(1,0,0)),f.x),
+                     mix(dot(hash(i+vec3(0,1,0)),f-vec3(0,1,0)),dot(hash(i+vec3(1,1,0)),f-vec3(1,1,0)),f.x),f.y),
+                 mix(mix(dot(hash(i+vec3(0,0,1)),f-vec3(0,0,1)),dot(hash(i+vec3(1,0,1)),f-vec3(1,0,1)),f.x),
+                     mix(dot(hash(i+vec3(0,1,1)),f-vec3(0,1,1)),dot(hash(i+vec3(1,1,1)),f-vec3(1,1,1)),f.x),f.y),f.z)*0.5+0.5; }
+    void main(){
+      vec3 n = normalize(vN);
+      float rim = pow(clamp(1.0 - dot(n, vec3(0.0,0.0,-1.0)), 0.0, 1.0), 2.2);
+      // 流动波纹：沿法线方向的条带
+      float t = uTime*0.9 + uRipple*3.0;
+      float wave = sin(dot(vP, vec3(0.4,0.5,0.3))*0.035 + t)*0.5+0.5;
+      float wave2= sin(dot(vP, vec3(-0.3,0.5,-0.4))*0.05 - t*1.3)*0.5+0.5;
+      float ripple = noise(vP*0.06 + vec3(t*0.2,0,0))*0.5+0.5;
+      float band = smoothstep(0.45,0.55, wave*0.6+wave2*0.25+ripple*0.15);
+      // 展开亮波：从中心向外扩散
+      float expand = smoothstep(0.0, 1.0, uRipple*1.4 - length(vP)*0.0018) * uA;
+      vec3 col = mix(uColor, uColor2, band);
+      col += vec3(0.9,0.95,1.0)*rim*0.9*uA;
+      col += vec3(1.0,0.9,0.6)*expand*0.8;
+      float a = (0.10 + 0.30*uA) * (0.35 + 0.65*rim) + expand*0.3;
+      gl_FragColor = vec4(col*a, a);
+    }`,
+  transparent:true, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.BackSide
+});
+
+const SHIELD_MESHES = [];
+function initShields(){
+  // 旗舰（半轴：x 宽 / y 高 / z 长）
+  const shF = new THREE.Mesh(new THREE.IcosahedronGeometry(1,3), M_SHIELD.clone());
+  shF.userData = {sx:95, sy:70, sz:620};
+  SHIELD_MESHES.push(shF); oFlagship.add(shF);
+  // 近卫
+  FLEET.escA.forEach((m,i)=>{
+    const sh = new THREE.Mesh(new THREE.IcosahedronGeometry(1,3), M_SHIELD.clone());
+    sh.userData = {sx:30, sy:24, sz:100};
+    SHIELD_MESHES.push(sh); m.add(sh);
+  });
+  // 前卫
+  FLEET.escB.forEach((m,i)=>{
+    const sh = new THREE.Mesh(new THREE.IcosahedronGeometry(1,3), M_SHIELD.clone());
+    sh.userData = {sx:34, sy:26, sz:115};
+    SHIELD_MESHES.push(sh); m.add(sh);
+  });
+}
+initShields();
+
+/* ---------- 粒子/特效渲染器 ---------- */
+/* 发光 sprite：软圆盘，additive */
+function makeSpriteMesh(){
+  const geo=new THREE.PlaneGeometry(1,1);
+  const m=new THREE.ShaderMaterial({
+    uniforms:{uColor:{value:new THREE.Color(1,1,1)}},
+    vertexShader:`varying vec2 vUV; void main(){ vUV=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader:`uniform vec3 uColor; varying vec2 vUV;
+      void main(){ vec2 c=vUV-0.5; float d=length(c); float a=smoothstep(0.5,0.0,d);
+        gl_FragColor=vec4(uColor*a,a); }`,
+    transparent:true, blending:THREE.AdditiveBlending, depthWrite:false
+  });
+  return {geo,m};
+}
+const SPR = makeSpriteMesh();
+function addSprite(pos, color, scale, life){
+  const m=SPR.m.clone(); m.uniforms.uColor.value.set(color);
+  const mesh=new THREE.Mesh(SPR.geo,m); mesh.position.copy(pos); mesh.scale.setScalar(scale);
+  scene.add(mesh); SPRITES.push({mesh, life, max:life, scale0:scale});
+}
+const SPRITES=[];
+
+/* 光束：从炮口到目标的发光条带（正确 ribbon） */
+function addBeam(p0, p1, color, width, life, core){
+  const n=32;
+  const dir=new THREE.Vector3().subVectors(p1,p0);
+  const len=Math.max(0.001,dir.length()); dir.normalize();
+  const up=new THREE.Vector3(0,1,0);
+  let perp=new THREE.Vector3().cross(dir,up);
+  if(perp.lengthSq()<1e-6) perp.set(1,0,0);
+  perp.normalize().multiplyScalar(width*0.5);
+  const pos=[]; const idx=[]; const al=[]; const aT=[];
+  for(let i=0;i<=n;i++){
+    const t=i/n; const p=new THREE.Vector3().lerpVectors(p0,p1,t);
+    // 中心亮、两端收细：宽度调制
+    const wob = core ? (0.5+0.5*Math.sin(t*Math.PI)) : (0.6+0.4*Math.sin(t*Math.PI));
+    const pp=perp.clone().multiplyScalar(wob);
+    pos.push(p.x+pp.x, p.y+pp.y, p.z+pp.z); al.push(1); aT.push(t);   // 左
+    pos.push(p.x-pp.x, p.y-pp.y, p.z-pp.z); al.push(1); aT.push(t);   // 右
+  }
+  for(let i=0;i<n;i++){ const a=i*2,b=i*2+1,c=(i+1)*2,d=(i+1)*2+1; idx.push(a,c,d,b); }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pos),3));
+  geo.setAttribute('aA',new THREE.BufferAttribute(new Float32Array(al),1));
+  geo.setAttribute('aT',new THREE.BufferAttribute(new Float32Array(aT),1));
+  geo.setIndex(idx);
+  const m=new THREE.ShaderMaterial({
+    uniforms:{uColor:{value:new THREE.Color(color)}, uTime:{value:0}, uCore:{value:core?1:0}},
+    vertexShader:`attribute float aA,aT; varying float vA,vT;
+      void main(){ vA=aA; vT=aT; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader:`uniform vec3 uColor; uniform float uTime,uCore; varying float vA,vT;
+      float flow(float t){ return 0.5+0.5*sin(t*28.0 - uTime*9.0); }
+      void main(){
+        float f = flow(vT);
+        vec3 hot = vec3(1.0,0.94,0.82);
+        vec3 col = mix(uColor*0.6, hot, pow(f,3.0)*uCore*0.8 + 0.2);
+        float a = vA * (0.55 + 0.45*f) * (uCore*0.5+0.5);
+        gl_FragColor = vec4(col, a);
+      }`,
+    transparent:true, blending:THREE.AdditiveBlending, depthWrite:false
+  });
+  const mesh=new THREE.Mesh(geo,m); scene.add(mesh);
+  BEAMS.push({mesh, life, max:life, p0,p1, width, core, len});
+}
+const BEAMS=[];
+
+/* 导弹实体 */
+function addMissile(pos, dir, color, life){
+  const g=new VoxelGrid(); g.addBox(-2,2,-2,2,-2,2,I_BRIGHT);
+  const m=buildMesh(g); m.position.copy(pos);
+  scene.add(m); MISSILES.push({mesh:m, pos:pos.clone(), vel:dir.clone().multiplyScalar(18), life, max:life, color});
+}
+const MISSILES=[];
+
+/* 碎块 */
+function addFragments(pos, color, count, speed){
+  for(let i=0;i<count;i++){
+    const mi = Math.random()<0.5?I_FRAG:I_FRAGR;
+    const mesh=MESH_ONECUBE.clone();
+    mesh.material=MATS[mi].clone();
+    mesh.material.emissiveIntensity = 1.0+Math.random();
+    mesh.scale.setScalar(0.6+Math.random()*1.4);
+    mesh.position.copy(pos);
+    const v=new THREE.Vector3(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize().multiplyScalar(speed*(0.4+Math.random()));
+    scene.add(mesh); FRAGMENTS.push({mesh, vel:v, life:1.0+Math.random()*0.6, max:1.6, spin:(Math.random()-0.5)*6});
+  }
+}
+const FRAGMENTS=[];
+
+/* 陨石命中记录 */
+const HIT = []; // {meteor, pos, t, type}
+
+/* 陨石碎裂：大块沿裂面分离、中块翻滚、小块飞散，露出真实空隙 */
+const SHARDS = []; // {mesh, vel, spin, life}
+function splitAsteroid(ast, worldPos, type){
+  if(ast.userData.splitted || ast.userData.dead) return;
+  ast.userData.splitted = true; ast.userData.dead = true;
+  const g = ast.userData.grid;
+  const lp = worldPos.clone().sub(ast.position);
+  // 裂面法线（随机，略偏向来向）
+  const nrm = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
+  const Rc = type==='beam' ? 13 : (type==='missile'?11:7);   // 凹坑半径
+  const groups=[[],[]]; let crater=[];
+  for(const [x,y,z,m] of g.list){
+    const dl = Math.sqrt((x-lp.x)**2+(y-lp.y)**2+(z-lp.z)**2);
+    if(dl < Rc){ crater.push([x,y,z]); continue; }
+    const side = ((x-lp.x)*nrm.x + (y-lp.y)*nrm.y + (z-lp.z)*nrm.z) > 0 ? 0 : 1;
+    groups[side].push([x,y,z,m]);
+  }
+  scene.remove(ast);
+  const speed = type==='missile' ? 280 : 160;
+  for(let s=0;s<2;s++){
+    if(groups[s].length < 10) continue;
+    const sg = new VoxelGrid();
+    for(const v of groups[s]) sg.set(v[0],v[1],v[2],v[3]);
+    const mesh = buildMesh(sg);
+    mesh.position.copy(ast.position);
+    const away = new THREE.Vector3(
+      (s===0?1:-1)*nrm.x + (Math.random()-0.5)*0.6,
+      (Math.random()-0.5)*0.8,
+      (Math.random()-0.5)*0.8
+    ).normalize();
+    const sp = speed*(0.55+Math.random()*0.9);
+    mesh.userData.vel = away.multiplyScalar(sp);
+    mesh.userData.spin = new THREE.Vector3(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).multiplyScalar(2.5+Math.random()*3);
+    mesh.userData.life = 2.0+Math.random()*2.0;
+    mesh.userData.mass = groups[s].length;
+    scene.add(mesh); SHARDS.push(mesh);
+  }
+  // 凹坑碎屑
+  for(let i=0;i<crater.length;i+=2){
+    const [x,y,z]=crater[i];
+    const wp = ast.position.clone().add(new THREE.Vector3(x,y,z));
+    addFragments(wp, 0xffc050, 1+Math.floor(Math.random()*2), 170);
+  }
+  // 命中爆闪
+  addSprite(worldPos.clone(), type==='beam'?0xffe080:0xffc860, 26+Math.random()*18, 0.18);
+}
+
+/* 武器发射点（旗舰系） */
+const GUN_BEAM = new THREE.Vector3(0, 72, 620);     // 光束主炮口
+const GUN_PULSE = [[-150,100,60],[-90,104,200],[-30,100,340],[30,100,340],[90,104,200],[150,100,60]];
+const GUN_CIWS_A = [[-30,28,-40],[0,30,-6],[30,28,28]]; // 近卫炮口（相对旗舰）
+const LAUNCH_B = [[-46,8,44],[-22,8,74],[2,8,44],[26,8,74]]; // 前卫发射槽
+
+/* 选择目标：最近的陨石 */
+function pickTarget(prefer){
+  let best=null,bd=1e9;
+  for(const a of ASTEROIDS){
+    if(HIT.some(h=>h.meteor===a && T-h.t<1.2)) continue;
+    const d=a.position.distanceTo(prefer);
+    if(d<bd){bd=d;best=a;}
+  }
+  return best;
+}
+
+function updateEffects(T){
+  const p=T/TOTAL;
+  /* 光束主炮 */
+  if(W.beam>0){
+    const tgt = pickTarget(GUN_BEAM) || ASTEROIDS[0];
+    const intensity = W.beam;
+    const beamLen = 600 + Math.sin(T*30)*20;
+    const end = new THREE.Vector3().copy(tgt.position).add(new THREE.Vector3((Math.random()-0.5)*40,(Math.random()-0.5)*40,(Math.random()-0.5)*40));
+    // 持续光束
+    addBeam(GUN_BEAM, end, 0xffe080, 6+intensity*8, 0.16, true);
+    // 炮口闪光
+    addSprite(GUN_BEAM.clone().add(new THREE.Vector3(0,0,0)), 0xffd060, 40+intensity*30, 0.12);
+    // 命中
+    if(Math.random()<0.6){
+      addSprite(end.clone(), 0xffe080, 30+intensity*24, 0.10);
+      addFragments(end.clone(), 0xffc050, 3+Math.floor(intensity*6), 220);
+      if(!HIT.some(h=>h.meteor===tgt&&T-h.t<0.6)){ HIT.push({meteor:tgt,pos:end.clone(),t:T,type:'beam'}); }
+    }
+  }
+  /* 脉冲炮台 */
+  if(W.pulse>0){
+    for(let i=0;i<GUN_PULSE.length;i++){
+      if(Math.random()<0.5*W.pulse){
+        const org=GUN_PULSE[i];
+        const tgt=pickTarget(org)||ASTEROIDS[0];
+        const end=new THREE.Vector3().copy(tgt.position).add(new THREE.Vector3((Math.random()-0.5)*30,(Math.random()-0.5)*30,(Math.random()-0.5)*30));
+        addBeam(org, end, 0x9af0ff, 2.5, 0.08, false);
+        addSprite(end.clone(), 0xd0f8ff, 14+Math.random()*10, 0.07);
+        addFragments(end.clone(), 0x9fd8e8, 2+Math.floor(Math.random()*3), 150);
+      }
+    }
+  }
+  /* 近防炮 */
+  if(W.ciws>0){
+    for(let i=0;i<GUN_CIWS_A.length;i++){
+      if(Math.random()<0.7*W.ciws){
+        const org=new THREE.Vector3().copy(GUN_CIWS_A[i]);
+        const tgt=pickTarget(org)||ASTEROIDS[0];
+        const end=new THREE.Vector3().copy(tgt.position).add(new THREE.Vector3((Math.random()-0.5)*24,(Math.random()-0.5)*24,(Math.random()-0.5)*24));
+        addSprite(org.clone(), 0xfff0c0, 10+Math.random()*8, 0.05);
+        addBeam(org, end, 0xfff0c0, 1.4, 0.05, false);
+        addFragments(end.clone(), 0xffd070, 1+Math.floor(Math.random()*2), 120);
+      }
+    }
+  }
+  /* 导弹 */
+  if(W.missile>0 && Math.random()<0.35){
+    const i=Math.floor(Math.random()*LAUNCH_B.length);
+    const org=new THREE.Vector3().copy(LAUNCH_B[i]);
+    const tgt=pickTarget(org)||ASTEROIDS[0];
+    const dir=new THREE.Vector3().subVectors(tgt,org).normalize().multiplyScalar(0.6);
+    addMissile(org, dir, 0xffe080, 1.0);
+  }
+  /* 导弹命中 */
+  for(let mi=MISSILES.length-1;mi>=0;mi--){
+    const ms=MISSILES[mi];
+    ms.life -= 0.016;
+    if(ms.life<=0){ scene.remove(ms.mesh); ms.mesh.geometry.dispose(); MISSILES.splice(mi,1); continue; }
+    ms.pos.addScaledVector(ms.vel,0.016);
+    ms.mesh.position.copy(ms.pos);
+    ms.mesh.rotation.y += 0.2;
+    // 尾迹
+    addSprite(ms.pos.clone(), ms.color, 6+Math.random()*4, 0.05);
+    // 接近目标即爆
+    for(const a of ASTEROIDS){
+      if(ms.pos.distanceTo(a.position) < 55){
+        addSprite(ms.pos.clone(), 0xffe080, 34, 0.14);
+        addFragments(ms.pos.clone(), 0xffc050, 6+Math.floor(Math.random()*5), 200);
+        if(!HIT.some(h=>h.meteor===a&&T-h.t<0.8)) HIT.push({meteor:a,pos:ms.pos.clone(),t:T,type:'missile'});
+        scene.remove(ms.mesh); ms.mesh.geometry.dispose(); MISSILES.splice(mi,1);
+        break;
+      }
+    }
+  }
+  /* 护盾 */
+  if(p>=0.76){ SHIELD.a = Math.min(1, SHIELD.a + 0.025); }
+  else { SHIELD.a = Math.max(0, SHIELD.a - 0.04); }
+  if(SHIELD.a>0){
+    // 全队护盾：通透曲面 + 流动纹（光效，不受体素限制）
+    const s=SHIELD.a;
+    for(const sh of SHIELD_MESHES){
+      // 从 0.55 倍尺寸向外撑开到 1.0
+      const k = 0.55 + 0.45*Math.min(1, s*1.5);
+      sh.scale.set(sh.userData.sx*k, sh.userData.sy*k, sh.userData.sz*k);
+      sh.visible = true;
+      sh.material.uniforms.uA.value = s;
+      sh.material.uniforms.uRipple.value = s;
+      sh.material.opacity = 0.10 + 0.32*s;
+    }
+  } else {
+    for(const sh of SHIELD_MESHES){ sh.visible = false; }
+  }
+}
+
+/* 小艇运动 */
+function updateBoats(T){
+  const p=T/TOTAL;
+  FLEET.boats.forEach((m,i)=>{
+    const a = p*Math.PI*2 + i/6*Math.PI*2;
+    const r = 44 + Math.sin(T*1.5+i)*4;
+    m.position.x = Math.cos(a)*r;
+    m.position.z = Math.sin(a)*r;
+    m.position.y = 26 + Math.sin(T*3+i)*1.5;
+    m.rotation.y = a + Math.PI;
+  });
+}
+
+/* 引擎发光 + 推进 */
+function updateEngines(T){
+  const p=T/TOTAL;
+  const thrust = (p>=0.76) ? 1.0 : (p>=0.60?0.5:0.35) + 0.3*Math.sin(T*3);
+  engLights.forEach((l,i)=>{
+    l.position.set((i-2.5)*18, -8 + (i%2)*6, -520 + (i%3)*40);
+    l.intensity = 2 + thrust*7 + Math.sin(T*6+i)*0.6;
+    l.color.set(thrust>0.8?0xffaa44:0xff8a3a);
+  });
+}
+
+/* =====================================================================
+   渲染
+   ===================================================================== */
+function render(T){
+  window.__dbg.renderCount++;
+  updateInteriors(T);
+  updateWeapons(T);
+  updateBoats(T);
+  updateEngines(T);
+  updateEffects(T);
+
+  const dz = driftZ(T);
+  // 舰队整体 + 漂移（舰队系对象全部 +dz；背景星点固定→形成航行感）
+  FLEET.grp.position.z = dz;
+  oFlagship.position.set(0,0,dz);
+  oBridge.position.set(0, 40, 315+dz);
+  oCore.position.set(0, 0, 25+dz);
+  oHangar.position.set(-55, -36, -280+dz);
+  oCorridor.position.set(0, 10, 200+dz);
+  for(const a of ASTEROIDS){ if(a.userData.bz===undefined) a.userData.bz=a.position.z; a.position.z=a.userData.bz+dz; }
+
+  const cam = cameraPose(T);
+  camera.position.copy(cam.pos);
+  camera.lookAt(cam.look);
+
+  // 清理过期特效
+  for(let i=SPRITES.length-1;i>=0;i--){ const s=SPRITES[i]; s.life-=0.016; if(s.life<=0){scene.remove(s.mesh);s.mesh.material.dispose();SPRITES.splice(i,1);} }
+  for(let i=BEAMS.length-1;i>=0;i--){ const b=BEAMS[i]; b.life-=0.016; b.mesh.material.uniforms.uTime.value=T; if(b.life<=0){scene.remove(b.mesh);b.mesh.geometry.dispose();b.mesh.material.dispose();BEAMS.splice(i,1);} }
+
+  M_SHIELD.uniforms.uTime.value = T;
+  renderer.render(scene, camera);
+}
+
+/* 主循环 */
+let T=0, running=true, exportMode=false;
+let last=performance.now();
+window.__dbg={scene,camera,renderer,renderCount:0};
+window.__dbg2={get scene(){return scene;},get camera(){return camera;},get renderer(){return renderer;}};
+function loop(now){
+  requestAnimationFrame(loop);
+  if(exportMode){ return; }
+  if(running){
+    const dt=Math.min(0.05,(now-last)/1000);
+    T += dt; if(T>=TOTAL) T-=TOTAL;
+    last=now;
+    window.__dbg.T=T; window.__dbg.running=running; window.__dbg.exportMode=exportMode;
+    document.getElementById('hud').textContent='T='+T.toFixed(1)+' / '+TOTAL;
+  }
+  render(T);
+}
+requestAnimationFrame(loop);
+
+/* =====================================================================
+   视频导出接口
+   ===================================================================== */
+window.videoExport = {
+  runs: ['approach','inspect','interior','combat'],
+  _fps:60, _frames:0, _i:0, _runId:null,
+  _starts:{approach:0, inspect:12, interior:28, combat:58},
+  _ends:{approach:12, inspect:28, interior:58, combat:84},
+  begin(runId, {fps=60}){
+    if(!(runId in this._starts)) throw new Error('unknown run '+runId);
+    this._runId=runId; this._fps=fps;
+    const frames=Math.ceil((this._ends[runId]-this._starts[runId])*fps);
+    this._frames=frames; T=this._starts[runId];
+    exportMode=true; return {frames};
+  },
+  frame(i){
+    const st=this._starts[this._runId];
+    T = st + i/this._fps;
+    render(T);
+  },
+  end(){ exportMode=false; running=true; }
+};
+
+/* 窗口自适应 */
+window.addEventListener('resize', ()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

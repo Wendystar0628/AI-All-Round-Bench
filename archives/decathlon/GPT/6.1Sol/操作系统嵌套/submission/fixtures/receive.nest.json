@@ -1,0 +1,22 @@
+{
+  "name": "消息接收",
+  "format": "nest-1",
+  "code": [
+    [
+      "label",
+      "again"
+    ],
+    [
+      "recv",
+      "message"
+    ],
+    [
+      "print",
+      "$message"
+    ],
+    [
+      "jump",
+      "again"
+    ]
+  ]
+}

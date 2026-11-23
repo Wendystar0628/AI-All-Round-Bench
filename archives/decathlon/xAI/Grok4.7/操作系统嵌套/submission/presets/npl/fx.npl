@@ -1,0 +1,54 @@
+# 环境进程。尘土、烟火和碎片只由消息里的时刻决定，跳转不会沿用旧画面。
+
+fn main() {
+  let last = null;
+  while (true) {
+    let m = wait_msg();
+    if (m != null && m.tag == "fx") { last = m; }
+    let g = 0;
+    while (g < 8) {
+      let e = recv();
+      if (e == null) { g = 100; }
+      else {
+        if (e.tag == "fx") { last = e; }
+        g = g + 1;
+      }
+    }
+    if (last != null) { present3d("fx", bake(last)); }
+  }
+}
+
+fn bake(m) {
+  let age = -1;
+  if (m.damage != null && m.damage >= 1) { age = m.t - m.crashT; }
+  if (m.crashAge != null && m.crashAge >= 0) { age = m.crashAge; }
+  let parts = [];
+  let i = 0;
+  while (i < 6) {
+    push(parts, piece(i, age, m.x, m.z));
+    i = i + 1;
+  }
+  return {
+    tag: "fx", t: m.t, x: m.x, y: m.y, z: m.z, rpm: m.rpm,
+    dust: m.dust, smoke: m.smoke, fire: m.fire, debris: parts
+  };
+}
+
+fn piece(i, age, x, z) {
+  if (age < 0) { return { id: i, show: 0, x: 0, y: -8, z: 0, rx: 0, ry: 0, rz: 0 }; }
+  let dir = i * 1.05;
+  let life = age;
+  if (life > 2.6) { life = 2.6; }
+  let fall = life * life * 1.4;
+  let yy = 3.2 - fall;
+  if (yy < 0.15) { yy = 0.15; }
+  return {
+    id: i, show: 1,
+    x: x + cos(dir) * (2 + life * 3.2),
+    y: yy,
+    z: z + sin(dir) * (2 + life * 2.4),
+    rx: life * (2 + i),
+    ry: life * 1.3,
+    rz: life * (1.2 + i * 0.3)
+  };
+}

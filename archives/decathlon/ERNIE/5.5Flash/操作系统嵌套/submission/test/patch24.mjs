@@ -1,0 +1,13 @@
+import fs from 'fs';
+let d = fs.readFileSync('js/data.js', 'utf8');
+d = d.replace("colorLow: '#3d5438', colorHigh: '#7d7a52', rock: '#4a4038'", "colorLow: '#33502f', colorHigh: '#6f7a45', rock: '#3d3a30'");
+d = d.replace("ambient: 0.55, hemiSky: '#b6c8ff', hemiGround: '#3a2d2a'", "ambient: 0.42, hemiSky: '#b6c8ff', hemiGround: '#3a2d2a'");
+d = d.replace("exposure: 1.05", "exposure: 0.95");
+d = d.replace("sunColor: '#ffd7a0', sun: [0.55, 0.42, -0.35]", "sunColor: '#ffd7a0', sun: [0.55, 0.42, -0.35], intensity: 1.55");
+fs.writeFileSync('js/data.js', d);
+let s = fs.readFileSync('js/scene.js', 'utf8');
+s = s.replace("const sun = new THREE.DirectionalLight(env.sunColor || '#ffd7a0', 2.1);", "const sun = new THREE.DirectionalLight(env.sunColor || '#ffd7a0', env.intensity ?? 1.55);");
+s = s.replace("sunSprite.scale.set(190, 190, 1);", "sunSprite.scale.set(130, 130, 1);");
+s = s.replace("new THREE.MeshStandardMaterial({ color: 0x5a7444, roughness: 1, side: THREE.DoubleSide })", "new THREE.MeshStandardMaterial({ color: 0x4f6b3a, roughness: 1, side: THREE.DoubleSide })");
+fs.writeFileSync('js/scene.js', s);
+console.log('done');

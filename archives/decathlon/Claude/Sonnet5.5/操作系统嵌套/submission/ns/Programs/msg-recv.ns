@@ -1,0 +1,7 @@
+// 消息接收：等待并输出收到的消息。收到内容为 "quit" 的消息后结束。
+print("接收者 pid=" + pid() + " 等待消息…");
+while (true) {
+  let m = recv();
+  print("收到来自 " + m.from + " 的消息：" + str(m.msg));
+  if (m.msg == "quit") { break; }
+}

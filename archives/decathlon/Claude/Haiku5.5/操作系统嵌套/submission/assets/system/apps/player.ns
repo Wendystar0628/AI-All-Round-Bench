@@ -1,0 +1,475 @@
+// =====================================================================
+// 三维场景播放器（/System/apps/player.ns）
+// 参数：args[0] 窗口号，args[1] 应用名，args[2] 场景（.scene）或记录（.rec）路径。
+// 播放器本身只负责界面：它启动物理（sim）、特效（fx）与时序（scene）三个进程，
+// 再由时序进程通过消息推送画面。排演时另外启动系统中的飞控程序（/Flight/controller.ns）。
+// 三维画面由宿主绘制：这里提交的是场景状态（3d 节点），不是图片。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var SELF = "";
+var VW = 960;
+var VH = 640;
+var PANEL = 118;
+var TOOL = 44;
+var scPath = "";
+var scene = nil;
+var recPath = "";
+var title = "直升机 24 号";
+var simPid = -1;
+var fxPid = -1;
+var scPid = -1;
+var ctlPid = -1;
+var rehearsal = false;
+var pos = 0;
+var dur = 15;
+var rate = 1;
+var playing = false;
+var loopOn = false;
+var camMode = "cine";
+var frame = nil;
+var views = {};
+var menu = false;
+var parents = [];
+var windIdx = 0;
+var windLevels = [[0, 0], [1.2, 0.4], [3.5, 1.0], [-2.5, 2.0]];
+var headingIdx = 0;
+var faultOn = false;
+var status = "";
+var seekDrag = false;
+var orbitDrag = false;
+var dragX = 0;
+var dragY = 0;
+var camYaw = 0.6;
+var camPitch = 0.28;
+var camDist = 22;
+var pendingSave = false;
+var loaded = false;
+
+func base_name(p) {
+    var i = len(p) - 1;
+    while (i >= 0 && substr(p, i, 1) != "/") { i = i - 1; }
+    return substr(p, i + 1, len(p) - i - 1);
+}
+
+func mmss(sec) {
+    var m = floor(sec / 60);
+    var s = sec - m * 60;
+    return two(m) + ":" + two(floor(s)) + "." + str(floor((s - floor(s)) * 100 / 10)) + str(floor((s * 100) % 10));
+}
+
+func load_scene(p) {
+    var text = sys_fs_read(p);
+    if (text == nil) { status = "找不到场景：" + p; return false; }
+    scene = parse(text);
+    dur = scene.record.duration;
+    if (dur == nil) { dur = 15; }
+    sys_res_put("scene:" + str(WID), scene);
+    title = scene.name;
+    return true;
+}
+
+// 启动一套进程（物理、特效、时序）；mode 为 preset / record / live
+func start_session(mode, recText) {
+    stop_session();
+    var simArgs = [scPath, mode, nil];
+    if (recText != nil) { simArgs[2] = recText; }
+    var r1 = sys_spawn("/System/apps/sim.ns", simArgs);
+    var r2 = sys_spawn("/System/apps/fx.ns", []);
+    if (!r1.ok || !r2.ok) { status = "无法启动模拟进程"; return; }
+    simPid = r1.pid;
+    fxPid = r2.pid;
+    var keys = scene.camera.keys;
+    var r3 = sys_spawn("/System/apps/scene.ns", [sys_self(), simPid, fxPid, dur, keys]);
+    if (!r3.ok) { status = "无法启动时序进程"; return; }
+    scPid = r3.pid;
+    pos = 0;
+    playing = false;
+}
+
+func stop_session() {
+    if (ctlPid >= 0) { sys_kill(ctlPid); ctlPid = -1; }
+    if (scPid >= 0) { sys_kill(scPid); scPid = -1; }
+    if (simPid >= 0) { sys_kill(simPid); simPid = -1; }
+    if (fxPid >= 0) { sys_kill(fxPid); fxPid = -1; }
+}
+
+func tl(op, value) {
+    if (scPid < 0) { return; }
+    var msg = {type: "ctl", op: op, value: value};
+    if (op == "cam") { msg = {type: "ctl", op: "cam", mode: value, yaw: camYaw, pitch: camPitch, dist: camDist}; }
+    sys_send(scPid, msg);
+}
+
+func start_rehearsal() {
+    rehearsal = true;
+    windIdx = 0;
+    headingIdx = 0;
+    faultOn = false;
+    dur = 3600;
+    start_session("live", nil);
+    if (simPid >= 0) {
+        var rc = sys_spawn("/Flight/controller.ns", [simPid, 0.02]);
+        if (rc.ok) { ctlPid = rc.pid; status = "排演开始：飞控进程 " + str(ctlPid) + " 正在驾驶"; } else { status = "飞控程序无法启动：" + rc.error; }
+        tl("live", true);
+    }
+}
+
+func stop_rehearsal() {
+    rehearsal = false;
+    dur = scene.record.duration;
+    start_session("preset", nil);
+    status = "已回到预置演出";
+}
+
+func send_input(kind, value) {
+    if (simPid >= 0) { sys_send(simPid, {type: "input", kind: kind, value: value}); }
+}
+
+func ensure_view(vid) {
+    return views[vid];
+}
+
+// ---------------------------- 绘制 ----------------------------
+func paint_view(sid, w, h) {
+    var L = [];
+    add_rect(L, 0, 0, w, h, "#101320");
+    var vh = h - TOOL - PANEL;
+    if (vh < 60) { vh = 60; }
+    var fr = frame;
+    var st = nil;
+    var cam = nil;
+    if (fr != nil) {
+        st = {heli: fr.heli, fx: fr.fx, cam: fr.cam, t: fr.t, playing: fr.playing, rate: fr.rate};
+    }
+    if (st != nil && rehearsal == false) { st.cam = fr.cam; }
+    var node = {t: "3d", sys: SELF, res: "scene:" + str(WID), st: st, x: 0, y: TOOL, w: w, h: vh, k: "view-" + sid};
+    node.tid = "player-view";
+    if (sid != "win-" + str(WID)) { node.tid = "player-view-projection"; }
+    push(L, node);
+    if (fr == nil) { add_text(L, 0, TOOL + vh / 2 - 12, w, 24, "正在载入场景…", 13, "#ffffff", "c"); }
+
+    // 工具栏
+    add_rect(L, 0, 0, w, TOOL, "#f4f5fa");
+    add_rect(L, 0, TOOL - 1, w, 1, THEME.line);
+    var x = 8;
+    x = tool_btn(L, x, "打开", "player-open", "#ffffff", THEME.text, 56);
+    x = tool_btn(L, x, playing ? "暂停" : "播放", playing ? "player-pause" : "player-play", accent_color("violet"), "#ffffff", 64);
+    x = tool_btn(L, x, "停止", "player-stop", "#ffffff", THEME.text, 56);
+    x = tool_btn(L, x, "重播", "player-replay", "#ffffff", THEME.text, 56);
+    x = tool_btn(L, x, "逐帧", "player-step", "#ffffff", THEME.text, 56);
+    x = tool_btn(L, x, loopOn ? "循环：开" : "循环：关", "player-loop", loopOn ? accent_color("violet") : "#ffffff", loopOn ? "#ffffff" : THEME.text, 80);
+    x = x + 6;
+    for (var rv in [0.25, 0.5, 1, 2]) {
+        var on = rate == rv;
+        var rb = add_btn(L, x, 7, 52, 30, fmt(rv, 2) + "x", "player-rate", pick(on, accent_color("violet"), "#ffffff"), pick(on, "#ffffff", THEME.text));
+        rb.da = {value: str(rv)};
+        x = x + 56;
+    }
+    x = x + 6;
+    for (var cm in [["cine", "演出"], ["follow", "跟随"], ["free", "自由"]]) {
+        var on2 = camMode == cm[0];
+        var cb = add_btn(L, x, 7, 56, 30, cm[1], "player-camera", pick(on2, accent_color("violet"), "#ffffff"), pick(on2, "#ffffff", THEME.text));
+        cb.da = {value: cm[0]};
+        x = x + 60;
+    }
+    add_btn(L, w - 84, 7, 76, 30, "投送", "window-project", "#ffffff", THEME.text);
+
+    // 底部面板
+    var py = TOOL + vh;
+    add_rect(L, 0, py, w, PANEL, "#ffffff");
+    add_rect(L, 0, py, w, 1, THEME.line);
+    var sx = 16;
+    var sw = w - 32;
+    var bar = add_rect(L, sx, py + 14, sw, 10, "#e6e8f0");
+    bar.r = 5;
+    bar.tid = "player-seek";
+    bar.cur = "pointer";
+    var prog = 0;
+    if (dur > 0) { prog = pos / dur; }
+    if (prog > 1) { prog = 1; }
+    var fill = add_rect(L, sx, py + 14, sw * prog, 10, accent_color("violet"));
+    fill.r = 5;
+    var knob = add_rect(L, sx + sw * prog - 7, py + 9, 14, 20, "#ffffff");
+    knob.r = 7;
+    knob.s = accent_color("violet");
+    knob.sw = 2;
+    var tt = add_text(L, sx, py + 30, 320, 22, mmss(pos) + " / " + mmss(dur) + "   倍速 " + fmt(rate, 2) + "x" + pick(playing, "", "   已暂停"), 12, THEME.text, "l");
+    tt.tid = "player-time";
+    var sel = add_text(L, sx + 330, py + 30, sw - 330, 22, selection_text(), 12, THEME.sub, "r");
+    sel.tid = "player-selection";
+
+    add_btn(L, sx, py + 60, 96, 30, pick(rehearsal, "停止排演", "排演"), "rehearsal-start", pick(rehearsal, THEME.danger, accent_color("violet")), "#ffffff");
+    var wl = windLevels[windIdx];
+    var wb = add_btn(L, sx + 104, py + 60, 130, 30, "风 " + fmt(sqrt(wl[0] * wl[0] + wl[1] * wl[1]), 1) + " 米/秒", "rehearsal-wind", "#f0f1f6", THEME.text);
+    wb.da = {value: str(windIdx)};
+    add_btn(L, sx + 242, py + 60, 110, 30, "航向 " + str(headingIdx * 45) + "°", "rehearsal-heading", "#f0f1f6", THEME.text);
+    add_btn(L, sx + 360, py + 60, 96, 30, pick(faultOn, "清除故障", "尾桨故障"), "rehearsal-fault", pick(faultOn, THEME.warn, "#f0f1f6"), THEME.text);
+    add_btn(L, sx + 464, py + 60, 96, 30, "保存记录", "player-save-record", "#f0f1f6", THEME.text);
+    add_text(L, sx + 570, py + 60, sw - 570, 30, "控制器：/Flight/controller.ns", 11, THEME.sub, "l").tid = "rehearsal-controller";
+    add_text(L, sx, py + 92, sw, 20, status, 11, THEME.sub, "l");
+
+    if (menu) { paint_menu(L, w, TOOL); }
+    sys_submit(sid, L);
+}
+
+func tool_btn(L, x, label, tid, fill, color, w) {
+    add_btn(L, x, 7, w, 30, label, tid, fill, color);
+    return x + w + 4;
+}
+
+func crash_text(why) {
+    if (why == "spin") { return "失控旋转（尾桨故障）"; }
+    if (why == "ground") { return "撞击地面"; }
+    if (starts(why, "box:")) { return "撞上障碍物"; }
+    return why;
+}
+
+func selection_text() {
+    if (frame == nil || frame.heli == nil) { return ""; }
+    var h = frame.heli;
+    if (h.crashed) {
+        return "坠毁：" + crash_text(h.crashWhy) + " · 时刻 " + fmt(h.crashT, 1) + " 秒";
+    }
+    return "高度 " + fmt(h.alt, 1) + " 米 · 速度 " + fmt(h.speed, 1) + " 米/秒 · 旋翼 " + fmt(h.rotor * 100, 0) + "%";
+}
+
+func paint_menu(L, w, top) {
+    var mx = w - 260;
+    var f = add_frame(L, mx, top + 6, 240, 40 + len(parents) * 32, "#ffffff", THEME.line, 10);
+    f.sh = true;
+    f.tid = "project-menu";
+    var y = top + 14;
+    for (var p in parents) {
+        var b = add_rect(L, mx + 8, y, 224, 28, "#00000000");
+        b.hv = true;
+        b.r = 6;
+        b.cur = "pointer";
+        b.tid = "project-target";
+        b.tg = p.id;
+        add_text(L, mx + 18, y, 210, 28, "投送到 " + p.id, 12, THEME.text, "l");
+        y = y + 32;
+    }
+}
+
+func paint_all() {
+    paint_view("win-" + str(WID), VW, VH);
+    for (var k in keys(views)) {
+        var v = views[k];
+        paint_view(k, v.w, v.h);
+    }
+}
+
+// ---------------------------- 输入 ----------------------------
+func on_pointer(m, w, h) {
+    var x = m.x;
+    var y = m.y;
+    var py = h - PANEL;
+    if (m.kind == "wheel") {
+        if (y > TOOL && y < py) {
+            camDist = clamp(camDist + m.dy * 0.02, 6, 80);
+            if (camMode == "free") { tl("cam", "free"); }
+        }
+        return;
+    }
+    if (m.kind == "move") {
+        if (orbitDrag) {
+            camYaw = camYaw + (x - dragX) * 0.008;
+            camPitch = clamp(camPitch + (y - dragY) * 0.005, -0.2, 1.2);
+            dragX = x;
+            dragY = y;
+            tl("cam", "free");
+        }
+        if (seekDrag) { seek_from_x(x, w); }
+        return;
+    }
+    if (m.kind == "up") {
+        orbitDrag = false;
+        seekDrag = false;
+        return;
+    }
+    if (m.kind != "down") { return; }
+    if (menu) {
+        var i = 0;
+        for (var p in parents) {
+            if (inside(x, y, w - 252, TOOL + 14 + i * 32, 224, 28)) {
+                sys_send("wm", {type: "project", win: WID, target: p.id});
+                menu = false;
+                return;
+            }
+            i = i + 1;
+        }
+        menu = false;
+        return;
+    }
+    if (y < TOOL) { on_toolbar(x, y, w); return; }
+    if (y >= py && y < py + 14 + 30) {
+        if (inside(x, y, 16, py + 14, w - 32, 10) || inside(x, y, 16, py + 9, w - 32, 20)) { seekDrag = true; seek_from_x(x, w); return; }
+    }
+    if (y >= py + 60 && y < py + 90) { on_panel(x, y, w); return; }
+    if (y > TOOL && y < py) {
+        orbitDrag = true;
+        dragX = x;
+        dragY = y;
+    }
+}
+
+func seek_from_x(x, w) {
+    var sx = 16;
+    var sw = w - 32;
+    var k = clamp((x - sx) / sw, 0, 1);
+    tl("seek", k * dur);
+}
+
+func on_toolbar(x, y, w) {
+    if (inside(x, y, 8, 7, 56, 30)) { tl("replay", nil); return; }
+    var bx = 8 + 56 + 4;
+    if (inside(x, y, bx, 7, 64, 30)) { tl("toggle", nil); return; }
+    bx = bx + 68;
+    if (inside(x, y, bx, 7, 56, 30)) { tl("stop", nil); return; }
+    bx = bx + 60;
+    if (inside(x, y, bx, 7, 56, 30)) { tl("replay", nil); return; }
+    bx = bx + 60;
+    if (inside(x, y, bx, 7, 56, 30)) { tl("step", nil); return; }
+    bx = bx + 60;
+    if (inside(x, y, bx, 7, 80, 30)) { loopOn = !loopOn; tl("loop", loopOn); return; }
+    bx = bx + 84 + 6;
+    for (var rv in [0.25, 0.5, 1, 2]) {
+        if (inside(x, y, bx, 7, 52, 30)) { rate = rv; tl("rate", rv); return; }
+        bx = bx + 56;
+    }
+    bx = bx + 6;
+    for (var cm in ["cine", "follow", "free"]) {
+        if (inside(x, y, bx, 7, 56, 30)) { camMode = cm; tl("cam", cm); return; }
+        bx = bx + 60;
+    }
+    if (inside(x, y, w - 84, 7, 76, 30)) {
+        parents = sys_ancestors();
+        menu = true;
+    }
+}
+
+func on_panel(x, y, w) {
+    var sx = 16;
+    var py = VH - PANEL;
+    if (y < py + 60 || y > py + 90) { return; }
+    if (inside(x, y, sx, py + 60, 96, 30)) {
+        if (rehearsal) { stop_rehearsal(); } else { start_rehearsal(); }
+        return;
+    }
+    if (inside(x, y, sx + 104, py + 60, 130, 30)) {
+        windIdx = (windIdx + 1) % len(windLevels);
+        var wl = windLevels[windIdx];
+        send_input("wind", wl);
+        return;
+    }
+    if (inside(x, y, sx + 242, py + 60, 110, 30)) {
+        headingIdx = (headingIdx + 1) % 8;
+        var h = headingIdx * 0.785398;
+        var base = [0, 0];
+        if (frame != nil && frame.heli != nil) { base = [frame.heli.p[0], frame.heli.p[2]]; }
+        send_input("target", [base[0] + 60 * sin(h), base[1] + 60 * cos(h)]);
+        return;
+    }
+    if (inside(x, y, sx + 360, py + 60, 96, 30)) {
+        faultOn = !faultOn;
+        send_input("fault", pick(faultOn, "tail", "clear"));
+        return;
+    }
+    if (inside(x, y, sx + 464, py + 60, 96, 30)) {
+        if (simPid >= 0) { sys_send(simPid, {type: "record", reply: sys_self()}); pendingSave = true; status = "正在保存记录…"; }
+        return;
+    }
+}
+
+func on_key(m) {
+    if (m.key == " " || m.key == "Space") { tl("toggle", nil); }
+}
+
+func save_record(events) {
+    ensure_dir();
+    var name = "排演-" + str(floor(sys_now())) + ".rec";
+    if (!rehearsal) { name = "演出-" + str(floor(sys_now())) + ".rec"; }
+    var path2 = "/Documents/" + name;
+    // 记录长度取保存时已推进的时刻（排演的时间轴上限为 3600 秒，不代表实际长度）
+    var span = pos;
+    if (span < 1) { span = 1; }
+    var doc = {format: "rec", version: 1, scene: scPath, events: events, duration: span};
+    var r = sys_fs_write(path2, json(doc));
+    if (r.ok) { status = "已保存记录 " + name; sys_notify("记录已保存", name); } else { status = r.error; }
+}
+
+func ensure_dir() {
+    return true;
+}
+
+func handle_frame(m) {
+    frame = m;
+    pos = m.pos;
+    rate = m.rate;
+    playing = m.playing;
+    loopOn = m.loop;
+    if (m.cammode != nil) { camMode = m.cammode; }
+    paint_all();
+}
+
+func main(args) {
+    WID = args[0];
+    SELF = sys_info().id;
+    scPath = "/Demo/helicopter-24.scene";
+    if (len(args) > 2 && args[2] != nil) { scPath = args[2]; }
+    if (ends(scPath, ".rec")) {
+        var recText = sys_fs_read(scPath);
+        var doc = parse(recText);
+        scPath = doc.scene;
+        load_scene(scPath);
+        // 时间轴长度以记录保存时为准（load_scene 会取场景自身的时长）
+        if (doc.duration != nil) { dur = doc.duration; }
+        recPath = args[2];
+        start_session("record", recText);
+    } else {
+        load_scene(scPath);
+        start_session("preset", nil);
+    }
+    if (scene != nil) { loaded = true; }
+    paint_all();
+    while (true) {
+        var m = sys_recvt(0.5);
+        if (m == nil) {
+            paint_all();
+        } else if (m.type == "frame") {
+            handle_frame(m);
+        } else if (m.type == "view") {
+            if (m.view == "win") {
+                VW = m.w;
+                VH = m.h;
+            } else {
+                views[m.view] = {w: m.w, h: m.h};
+            }
+            paint_all();
+        } else if (m.type == "pointer") {
+            var vw = VW;
+            var vh = VH;
+            if (m.view != nil && m.view != "win" && has(views, m.view)) {
+                vw = views[m.view].w;
+                vh = views[m.view].h;
+            }
+            on_pointer(m, vw, vh);
+            paint_all();
+        } else if (m.type == "key") {
+            on_key(m);
+        } else if (m.type == "record") {
+            if (pendingSave) {
+                pendingSave = false;
+                save_record(m.events);
+                paint_all();
+            }
+        } else if (m.type == "close-req") {
+            stop_session();
+            sys_send("wm", {type: "close", win: WID});
+            return 0;
+        }
+    }
+    return 0;
+}

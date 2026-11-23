@@ -1,0 +1,15 @@
+{
+  "problem": "19",
+  "parts": [
+    {"name": "1", "title": "斜交三轴变速箱壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-50, -40, 50, 40]}], "depth": 100},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [0, 0], "d": 58, "depth": 70},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [0, 0], "d": 46, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [-18, 0, 100], "at": [0, 0], "d": 34, "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [18, 0, 100], "at": [0, 0], "d": 34, "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [0, -18, 100], "at": [0, 0], "d": 26, "depth": 45},
+      {"type": "hole", "plane": "XY", "origin": [0, 18, 100], "at": [0, 0], "d": 26, "depth": 45},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -40, 0], [0, 40, 0], [-50, 0, 0], [50, 0, 0]]}
+    ]}
+  ]
+}

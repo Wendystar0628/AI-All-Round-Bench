@@ -1,0 +1,404 @@
+// ============================================================
+// 图表工作台（Chart.osprog）
+// 从根系统电子表格显式建立实时数据连接：选择工作簿、
+// 矩形区域、标签列与数值列，生成分组柱状图或折线图。
+// 数据经系统服务以副本跨层传递，图表更新由本系统进程完成。
+// ============================================================
+
+let win = 0
+let wm = 0
+let dataPid = 0
+let workbook = "/Demo/sample.sheet"
+let range = "A1:D4"
+let labelCol = "A"
+let valueCols = ["D"]
+let vcolBuf = "D"
+let state = "idle"
+let version = 0
+let rows = []
+let chartType = "bar"
+let msg = ""
+let hover = -1
+let clock = 0
+let booted = 0
+let projId = ""
+let editField = ""
+let editBuf = ""
+let maxV = 0
+
+fn boot() {
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    wm = m.wm
+    send(wm, {"t": "win_open", "pid": self(), "key": "chart", "title": "图表工作台", "w": 680, "h": 500})
+  } else if m.t == "win_opened" {
+    win = m.win
+    reg_win(win)
+    let r = spawn("/System/Programs/ChartData.osprog")
+    if type(r) == "map" {
+      msg = "数据进程启动失败: " + r.error
+    } else {
+      dataPid = r
+      send(dataPid, {"t": "open", "view": self()})
+    }
+    draw()
+  } else if m.t == "closing" {
+    if dataPid != 0 {
+      kill(dataPid)
+    }
+    kill(self())
+  } else if m.t == "click" {
+    on_click(m.x, m.y)
+  } else if m.t == "move" {
+    let h = hit_bar(m.x, m.y)
+    if h != hover {
+      hover = h
+      draw()
+    }
+  } else if m.t == "text" {
+    apply_text(m.ctl, m.value)
+  } else if m.t == "data_state" {
+    on_data(m)
+  } else if m.t == "projection_input" {
+    if m.ev.t == "down" {
+      let h = hit_bar(m.ev.x, m.ev.y)
+      if h >= 0 and h < len(rows) {
+        hover = h
+        draw()
+      }
+    }
+  } else if m.t == "projection_closed" {
+    projId = ""
+    msg = "投送窗口已关闭"
+    draw()
+  }
+}
+
+fn on_data(m) {
+  state = m.state
+  version = m.version
+  rows = m.rows
+  chartType = m.chartType
+  labelCol = m.labelCol
+  valueCols = m.valueCols
+  range = m.range
+  if m.error != null {
+    msg = "连接失败: " + m.error
+  } else if state == "live" {
+    msg = "已连接 · 版本 " + str(version) + " · " + range
+  } else if state == "closed" {
+    msg = "数据源已关闭，保留已接收数据"
+  }
+  draw()
+}
+
+fn apply_text(ctl, v) {
+  if ctl == "workbook" {
+    workbook = v
+  } else if ctl == "range" {
+    range = upper(v)
+  } else if ctl == "labelCol" {
+    labelCol = upper(v)
+  } else if ctl == "valueCols" {
+    vcolBuf = upper(v)
+    valueCols = split(vcolBuf, ",")
+  }
+  msg = "参数已更新，点击“连接”生效"
+  draw()
+}
+
+fn on_click(x, y) {
+  clock = time()
+  if y < 30 {
+    if x < 60 {
+      do_connect()
+    } else if x < 120 {
+      do_disconnect()
+    } else if x < 180 {
+      chartType = "bar"
+      send(dataPid, {"t": "set_type", "type": "bar"})
+    } else if x < 240 {
+      chartType = "line"
+      send(dataPid, {"t": "set_type", "type": "line"})
+    } else if x < 300 {
+      do_project()
+    }
+    draw()
+    return
+  }
+  // 参数区
+  if y >= 34 and y < 94 {
+    if y < 52 {
+      if x >= 90 and x < 250 {
+        send(wm, {"t": "text_focus", "win": win, "ctl": "workbook"})
+      } else if x >= 260 and x < 400 {
+        send(wm, {"t": "text_focus", "win": win, "ctl": "range"})
+      }
+    } else if y < 72 {
+      if x >= 90 and x < 160 {
+        send(wm, {"t": "text_focus", "win": win, "ctl": "labelCol"})
+      } else if x >= 170 and x < 280 {
+        send(wm, {"t": "text_focus", "win": win, "ctl": "valueCols"})
+      }
+    }
+    return
+  }
+  let h = hit_bar(x, y)
+  if h >= 0 {
+    hover = h
+    draw()
+  }
+}
+
+fn do_connect() {
+  if dataPid == 0 {
+    msg = "数据进程未启动"
+    draw()
+    return
+  }
+  send(dataPid, {"t": "connect", "workbook": workbook, "range": range, "labelCol": labelCol, "valueCols": valueCols})
+  msg = "正在向根系统请求数据…"
+  draw()
+}
+
+fn do_disconnect() {
+  if dataPid != 0 {
+    send(dataPid, {"t": "disconnect"})
+  }
+  msg = "已断开连接，保留最后图表"
+  draw()
+}
+
+fn do_project() {
+  let info = sys_info()
+  let target = get(info, "parent", "outer")
+  if target == "" {
+    target = "outer"
+  }
+  let r = project(target, win, "2d", "图表 · " + range)
+  if type(r) == "map" {
+    msg = "投送失败: " + r.error
+  } else {
+    projId = r.projId
+    msg = "已投送到 " + target
+  }
+  draw()
+}
+
+fn hit_bar(x, y) {
+  if y < 100 or y > 440 {
+    return -1
+  }
+  if len(rows) == 0 {
+    return -1
+  }
+  let plotX = 60
+  let plotW = 600
+  let bw = plotW / len(rows)
+  let i = floor((x - plotX) / bw)
+  if i < 0 or i >= len(rows) {
+    return -1
+  }
+  return i
+}
+
+// ---------------- 绘制 ----------------
+fn draw() {
+  if win == 0 {
+    return
+  }
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 680, "h": 500, "c": "#121826", "r": 8})
+  let btns = ["连接", "断开", "柱状图", "折线图", "投送"]
+  let bx = 4
+  for b in btns {
+    push(p, {"t": "r", "x": bx, "y": 3, "w": 54, "h": 22, "c": "#1c2433", "r": 5, "s": "#33405a"})
+    push(p, {"t": "t", "x": bx + 27, "y": 18, "s": b, "c": "#e8ecf4", "fs": 11, "a": "c"})
+    bx = bx + 58
+  }
+  push(p, {"t": "t", "x": 300, "y": 18, "s": "状态: " + state_text(), "c": "#ffd23f", "fs": 11, "mw": 180})
+  // 参数区
+  push(p, {"t": "r", "x": 4, "y": 30, "w": 672, "h": 62, "c": "#0e1420", "r": 6, "s": "#33405a"})
+  push(p, {"t": "t", "x": 12, "y": 46, "s": "工作簿", "c": "#93a1bb", "fs": 11})
+  push(p, {"t": "r", "x": 62, "y": 34, "w": 190, "h": 18, "c": "#0a0f18", "r": 4, "s": "#33405a"})
+  push(p, {"t": "t", "x": 68, "y": 47, "s": workbook, "c": "#e8ecf4", "fs": 11, "mw": 180})
+  push(p, {"t": "t", "x": 262, "y": 46, "s": "区域", "c": "#93a1bb", "fs": 11})
+  push(p, {"t": "r", "x": 292, "y": 34, "w": 110, "h": 18, "c": "#0a0f18", "r": 4, "s": "#33405a"})
+  push(p, {"t": "t", "x": 298, "y": 47, "s": range, "c": "#e8ecf4", "fs": 11})
+  push(p, {"t": "t", "x": 12, "y": 68, "s": "标签列", "c": "#93a1bb", "fs": 11})
+  push(p, {"t": "r", "x": 62, "y": 56, "w": 40, "h": 18, "c": "#0a0f18", "r": 4, "s": "#33405a"})
+  push(p, {"t": "t", "x": 68, "y": 69, "s": labelCol, "c": "#e8ecf4", "fs": 11})
+  push(p, {"t": "t", "x": 112, "y": 68, "s": "数值列", "c": "#93a1bb", "fs": 11})
+  push(p, {"t": "r", "x": 162, "y": 56, "w": 120, "h": 18, "c": "#0a0f18", "r": 4, "s": "#33405a"})
+  push(p, {"t": "t", "x": 168, "y": 69, "s": join(valueCols, ","), "c": "#e8ecf4", "fs": 11})
+  push(p, {"t": "t", "x": 296, "y": 68, "s": "版本 " + str(version) + " · " + str(len(rows)) + " 行", "c": "#93a1bb", "fs": 11})
+  // 图表区
+  push(p, {"t": "r", "x": 4, "y": 96, "w": 672, "h": 348, "c": "#0a0f18", "r": 6, "s": "#33405a"})
+  push(p, {"t": "clip", "x": 4, "y": 96, "w": 672, "h": 348})
+  let plotX = 60
+  let plotY = 120
+  let plotW = 600
+  let plotH = 280
+  push(p, {"t": "l", "x1": plotX, "y1": plotY, "x2": plotX, "y2": plotY + plotH, "c": "#33405a", "w": 1})
+  push(p, {"t": "l", "x1": plotX, "y1": plotY + plotH, "x2": plotX + plotW, "y2": plotY + plotH, "c": "#33405a", "w": 1})
+  maxV = 0
+  for r2 in rows {
+    for v in r2.values {
+      if v > maxV {
+        maxV = v
+      }
+    }
+  }
+  if maxV <= 0 {
+    maxV = 1
+  }
+  let gy = plotY + plotH
+  let i = 0
+  while i <= 4 {
+    let vv = maxV * (4 - i) / 4
+    push(p, {"t": "l", "x1": plotX, "y1": plotY + i * plotH / 4, "x2": plotX + plotW, "y2": plotY + i * plotH / 4, "c": "#1c2433", "w": 1})
+    push(p, {"t": "t", "x": plotX - 6, "y": plotY + i * plotH / 4 + 4, "s": str(floor(vv)), "c": "#93a1bb", "fs": 10, "a": "r"})
+    i = i + 1
+  }
+  if len(rows) == 0 {
+    push(p, {"t": "t", "x": 340, "y": 260, "s": "尚未连接数据：填写参数后点击“连接”", "c": "#93a1bb", "fs": 13, "a": "c"})
+  } else if chartType == "bar" {
+    draw_bars(p, plotX, plotY, plotW, plotH, gy)
+  } else {
+    draw_lines(p, plotX, plotY, plotW, plotH)
+  }
+  push(p, {"t": "unclip"})
+  // 悬停信息
+  if hover >= 0 and hover < len(rows) {
+    let r3 = rows[hover]
+    push(p, {"t": "r", "x": 4, "y": 448, "w": 672, "h": 22, "c": "#1c2433", "r": 5})
+    let txt = r3.label + ": " + join(nums_to_strs(r3.values), ", ")
+    push(p, {"t": "t", "x": 12, "y": 463, "s": txt, "c": "#ffd23f", "fs": 12, "mw": 650})
+  } else {
+    push(p, {"t": "r", "x": 4, "y": 448, "w": 672, "h": 22, "c": "#1c2433", "r": 5})
+    push(p, {"t": "t", "x": 12, "y": 463, "s": msg, "c": "#43d9a3", "fs": 12, "mw": 650})
+  }
+  push(p, {"t": "t", "x": 672, "y": 492, "s": "图例: " + join(valueCols, ","), "c": "#93a1bb", "fs": 10, "a": "r"})
+  submit_window(win, p)
+}
+
+fn state_text() {
+  if state == "live" {
+    return "已连接"
+  }
+  if state == "connecting" {
+    return "连接中"
+  }
+  if state == "closed" {
+    return "已关闭"
+  }
+  if state == "error" {
+    return "错误"
+  }
+  return "未连接"
+}
+
+fn draw_bars(p, plotX, plotY, plotW, plotH, gy) {
+  let n = len(rows)
+  let bw = plotW / n
+  let ci = 0
+  for r2 in rows {
+    let bx = plotX + ci * bw + bw * 0.15
+    let bwid = bw * 0.7 / len(r2.values)
+    let vi = 0
+    for v in r2.values {
+      let h = v / maxV * plotH
+      if h < 1 {
+        h = 1
+      }
+      let col = "#8b6cff"
+      if vi == 1 {
+        col = "#ffd23f"
+      } else if vi == 2 {
+        col = "#43d9a3"
+      } else if vi == 3 {
+        col = "#ff8fab"
+      }
+      push(p, {"t": "r", "x": bx + vi * bwid, "y": gy - h, "w": bwid - 1, "h": h, "c": col, "r": 2})
+      vi = vi + 1
+    }
+    push(p, {"t": "t", "x": plotX + ci * bw + bw / 2, "y": gy + 14, "s": r2.label, "c": "#93a1bb", "fs": 10, "a": "c", "mw": bw - 2})
+    if hover == ci {
+      push(p, {"t": "r", "x": plotX + ci * bw, "y": plotY, "w": bw, "h": plotH, "c": "#8b6cff1f", "r": 2})
+    }
+    ci = ci + 1
+  }
+}
+
+fn draw_lines(p, plotX, plotY, plotW, plotH) {
+  let n = len(rows)
+  if n < 2 {
+    return
+  }
+  let step = plotW / (n - 1)
+  let vi = 0
+  let ncol = len(rows[0].values)
+  while vi < ncol {
+    let pts = []
+    let ci = 0
+    for r2 in rows {
+      let h = r2.values[vi] / maxV * plotH
+      push(pts, [plotX + ci * step, plotY + plotH - h])
+      ci = ci + 1
+    }
+    let col = "#8b6cff"
+    if vi == 1 {
+      col = "#ffd23f"
+    } else if vi == 2 {
+      col = "#43d9a3"
+    } else if vi == 3 {
+      col = "#ff8fab"
+    }
+    push(p, {"t": "p", "pts": pts, "c": col, "w": 2})
+    ci = 0
+    for r2 in rows {
+      let h = r2.values[vi] / maxV * plotH
+      push(p, {"t": "c", "x": plotX + ci * step, "y": plotY + plotH - h, "r": 3, "c": col, "f": 1})
+      ci = ci + 1
+    }
+    vi = vi + 1
+  }
+  let ci2 = 0
+  for r2 in rows {
+    push(p, {"t": "t", "x": plotX + ci2 * step, "y": plotY + plotH + 14, "s": r2.label, "c": "#93a1bb", "fs": 10, "a": "c", "mw": step})
+    ci2 = ci2 + 1
+  }
+}
+
+fn nums_to_strs(a) {
+  let out = []
+  for v in a {
+    push(out, str(floor(v * 100) / 100))
+  }
+  return out
+}
+
+fn get(m, k, d) {
+  if m == null {
+    return d
+  }
+  let v = m[k]
+  if v == null {
+    return d
+  }
+  return v
+}
+
+// ---------------- 入口 ----------------
+boot()

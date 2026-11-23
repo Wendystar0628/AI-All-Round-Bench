@@ -1,0 +1,18 @@
+{
+  "problem": "06",
+  "parts": [
+    {"name": "1", "title": "双斜接口差压控制块", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 70, 50]}], "depth": 12},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [0, 0, 70, 50]}], "depth": 48},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[25, 30]], "d": 40, "depth": 18, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[25, 30]], "d": 36, "depth": 40, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[25, 30]], "d": 28, "through": true, "reverse": true},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [35, 30], "d": 30}], "through": true},
+      {"type": "hole", "plane": {"origin": [52, 25, 60], "normal": [0.7071, 0, 0.7071], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 16, "depth": 50},
+      {"type": "hole", "plane": {"origin": [18, 25, 60], "normal": [-0.7071, 0, 0.7071], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 14, "depth": 48},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [[14, 14], [56, 14], [14, 38], [56, 38]], "d": 7, "depth": 10},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 6]]},
+      {"type": "chamfer", "distance": 1, "edges": [[35, 0, 0]]}
+    ]}
+  ]
+}

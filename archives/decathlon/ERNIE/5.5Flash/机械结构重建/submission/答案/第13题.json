@@ -1,0 +1,15 @@
+{
+  "problem": "13",
+  "parts": [
+    {"name": "1", "title": "斜耳叉架减速箱体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 90, 60], "r": 6}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [0, 0, 90, 60]}], "depth": 56},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 42], "d": 66}], "depth": [-32, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 42], "d": 44}], "depth": [-16, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 42], "d": 30}], "through": true},
+      {"type": "extrude", "plane": "YZ", "origin": [0, 0, 0], "loops": [{"circle": [30, 28], "d": 54}], "depth": [0, 90]},
+      {"type": "extrude", "op": "cut", "plane": "YZ", "origin": [0, 0, 0], "loops": [{"circle": [30, 28], "d": 36}], "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [[25, 18], [65, 18], [25, 44], [65, 44]], "d": 9, "depth": 10, "cbore": {"d": 16, "depth": 4}}
+    ]}
+  ]
+}

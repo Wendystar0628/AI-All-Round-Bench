@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>锻字 · AE 风味动效设计编辑器</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+  <header class="menubar">
+    <div class="brand">
+      <span class="brand-mark">AE</span>
+      <span class="brand-name">锻造动效</span>
+    </div>
+    <nav class="menu" id="menuBar">
+      <div class="menu-item" data-menu="file">文件</div>
+      <div class="menu-item" data-menu="edit">编辑</div>
+      <div class="menu-item" data-menu="comp">合成</div>
+      <div class="menu-item" data-menu="layer">图层</div>
+      <div class="menu-item" data-menu="view">视图</div>
+      <div class="menu-item" data-menu="window">窗口</div>
+      <div class="menu-item" data-menu="help">帮助</div>
+    </nav>
+    <div class="menu-title" id="projectTitle">锻字 · AE 风味动效设计</div>
+    <div class="menu-right">
+      <button class="ghost-btn" id="btnUndo" title="撤销 (Ctrl+Z)">↶</button>
+      <button class="ghost-btn" id="btnRedo" title="重做 (Ctrl+Shift+Z)">↷</button>
+      <button class="ghost-btn" id="btnSave" title="保存 (Ctrl+S)">保存</button>
+      <button class="ghost-btn" id="btnExport" title="导出工程">导出</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="left">
+      <section class="panel">
+        <div class="panel-head"><span>项目</span><button class="mini-btn" id="btnNewComp">+</button></div>
+        <div class="panel-body" id="projectPanel">
+          <div class="section-label">合成</div>
+          <div id="compList" class="comp-list"></div>
+          <div class="section-label">素材</div>
+          <div class="asset-list">
+            <div class="asset-item"><span class="asset-ico">字</span><span>字体 · 思源黑体 / 微软雅黑</span></div>
+            <div class="asset-item"><span class="asset-ico">音</span><span>音色 · 内置锻炉合成器</span></div>
+          </div>
+          <div class="hint-box">工程自动保存在本地。可随时导出 .json 工程文件。</div>
+        </div>
+      </section>
+      <section class="panel grow">
+        <div class="panel-head"><span>效果与预设</span></div>
+        <div class="panel-body" id="fxPanel">
+          <div class="section-label">效果</div>
+          <div class="fx-list" id="fxList"></div>
+          <div class="section-label">形状</div>
+          <div class="fx-list">
+            <div class="fx-item" data-add-shape="rect">矩形</div>
+            <div class="fx-item" data-add-shape="ellipse">椭圆</div>
+            <div class="fx-item" data-add-shape="path">路径</div>
+          </div>
+          <div class="section-label">图层</div>
+          <div class="fx-list">
+            <div class="fx-item" data-add-layer="null">空对象</div>
+            <div class="fx-item" data-add-layer="adjust">调整图层</div>
+            <div class="fx-item" data-add-layer="geo3d">三维几何</div>
+            <div class="fx-item" data-add-layer="particle">粒子</div>
+            <div class="fx-item" data-add-layer="camera">摄像机</div>
+            <div class="fx-item" data-add-layer="light">灯光</div>
+            <div class="fx-item" data-add-layer="audio">音色</div>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <main class="center">
+      <div class="stage-head">
+        <div class="tool-group" id="toolGroup">
+          <button class="tool active" data-tool="select" title="选择 (V)">V</button>
+          <button class="tool" data-tool="hand" title="手形 (H)">H</button>
+          <button class="tool" data-tool="zoom" title="缩放 (Z)">Z</button>
+          <span class="tool-sep"></span>
+          <button class="tool" data-tool="rect" title="矩形">▭</button>
+          <button class="tool" data-tool="ellipse" title="椭圆">◯</button>
+          <button class="tool" data-tool="pen" title="钢笔">✎</button>
+          <button class="tool" data-tool="text" title="文字 (T)">T</button>
+          <button class="tool" data-tool="pin" title="图钉">⊕</button>
+        </div>
+        <div class="comp-meta" id="compMeta">1920 × 1080 · 30 fps · 15.00 s</div>
+        <div class="view-group">
+          <button class="mini-btn" id="btnFit" title="适合窗口">适合</button>
+          <span class="zoom-label" id="zoomLabel">100%</span>
+        </div>
+      </div>
+      <div class="stage-wrap" id="stageWrap">
+        <div class="comp-frame" id="compFrame">
+          <canvas id="compCanvas"></canvas>
+          <canvas id="overlay"></canvas>
+        </div>
+        <div class="stage-empty" id="stageEmpty" hidden>
+          <div class="stage-empty-inner">
+            <h2>空合成</h2>
+            <p>使用左侧工具绘制形状或文字，或按 <kbd>Ctrl+Shift+C</kbd> 预合成。</p>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div class="foot-left">
+          <span class="dot"></span>
+          <span id="stageStatus">就绪</span>
+        </div>
+        <div class="foot-right">
+          <span id="mouseInfo">x: — y: —</span>
+          <span class="foot-sep"></span>
+          <span id="fpsInfo">30 fps</span>
+          <span class="foot-sep"></span>
+          <span>空格 播放 · F9 缓动</span>
+        </div>
+      </div>
+    </main>
+
+    <aside class="right">
+      <div class="panel-head"><span>属性</span><span class="head-note" id="selCount">未选择</span></div>
+      <div class="panel-body props-body" id="propsPanel"></div>
+      <div class="panel-head sub"><span>曲线</span><span class="head-note">值 / 速度</span></div>
+      <div class="mini-graph"><canvas id="miniGraph"></canvas></div>
+    </aside>
+  </div>
+
+  <section class="timeline">
+    <div class="tl-head">
+      <div class="tl-tabs">
+        <button class="tl-tab active" data-tl="layers">图层</button>
+        <button class="tl-tab" data-tl="graph">曲线</button>
+      </div>
+      <div class="tl-controls">
+        <button class="tl-btn" id="btnStart" title="跳到开头">�ih</button>
+        <button class="tl-btn" id="btnPrevKey" title="上一个关键帧">◀|</button>
+        <button class="tl-btn" id="btnPlay" title="播放/暂停 (空格)">▶</button>
+        <button class="tl-btn" id="btnNextKey" title="下一个关键帧">|▶</button>
+        <button class="tl-btn" id="btnEnd" title="跳到结尾">▶h</button>
+        <span class="tl-sep"></span>
+        <button class="tl-btn" id="btnPrevFrame" title="上一帧 (←)">◀</button>
+        <button class="tl-btn" id="btnNextFrame" title="下一帧 (→)">▶</button>
+        <span class="tl-sep"></span>
+        <button class="tl-btn" id="btnLoop" title="循环">↻</button>
+        <button class="tl-btn" id="btnWorkArea" title="循环工作区">◧</button>
+        <span class="tl-sep"></span>
+        <button class="tl-btn" id="btnZoomOut" title="缩小时间轴">−</button>
+        <input type="range" id="tlZoom" min="0.4" max="4" step="0.05" value="1" />
+        <button class="tl-btn" id="btnZoomIn" title="放大时间轴">+</button>
+      </div>
+      <div class="tl-time">
+        <span class="timecode" id="timecode">00:00:00:00</span>
+        <span class="time-sub" id="timeSub">0.00 s / 15.00 s</span>
+      </div>
+    </div>
+    <div class="tl-body" id="tlBody">
+      <canvas id="timelineCanvas"></canvas>
+      <div class="tl-empty" id="tlEmpty" hidden>没有图层</div>
+    </div>
+  </section>
+
+  <footer class="statusbar">
+    <span id="statusLeft">AE 风味动效设计编辑器</span>
+    <span class="status-mid">选择: <b id="statusSel">无</b></span>
+    <span id="statusRight">WebGL2 · 30 fps</span>
+  </footer>
+</div>
+
+<div id="dropdown" class="dropdown" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script src="js/math.js"></script>
+<script src="js/geom.js"></script>
+<script src="js/anim.js"></script>
+<script src="js/expr.js"></script>
+<script src="js/project.js"></script>
+<script src="js/text.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/renderer2d.js"></script>
+<script src="js/renderer3d.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/panels.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

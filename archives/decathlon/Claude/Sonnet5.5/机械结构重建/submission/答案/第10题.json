@@ -1,0 +1,26 @@
+{
+  "problem": "10",
+  "parts": [
+    {"name": "1", "title": "双斜座多腔阀体铸件", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [0, 0, 168, 120], "r": 6}], "depth": 16},
+      {"type": "extrude", "name": "本体", "plane": "XZ", "loops": [{"path": [[12, 0], [156, 0], [156, 76], [112, 110], [44, 110], [12, 78]]}], "depth": [-108, -12]},
+      {"type": "extrude", "name": "左圆台Φ64", "plane": "YZ", "origin": [-12, 0, 0], "loops": [{"circle": [60, 54], "d": 64}], "depth": 24},
+      {"type": "extrude", "name": "右圆台Φ72", "plane": "YZ", "origin": [156, 0, 0], "loops": [{"circle": [60, 54], "d": 72}], "depth": 24},
+      {"type": "extrude", "name": "前凸台Φ30", "plane": "XZ", "origin": [0, 12, 0], "loops": [{"circle": [60, 64], "d": 30}], "depth": [0, 10]},
+      {"type": "extrude", "name": "前支撑肋", "plane": "XZ", "origin": [0, 12, 0], "loops": [{"path": [[28, 16], [56, 16], [56, 49]]}], "depth": [0, 10]},
+      {"type": "extrude", "name": "后凸台Φ32", "plane": "XZ", "origin": [0, 108, 0], "loops": [{"circle": [112, 48], "d": 32}], "depth": [-14, 0]},
+      {"type": "extrude", "op": "cut", "name": "腔1", "plane": "XY", "origin": [0, 0, 28], "loops": [{"rect": [24, 24, 72, 96]}], "depth": 60},
+      {"type": "extrude", "op": "cut", "name": "腔2", "plane": "XY", "origin": [0, 0, 28], "loops": [{"rect": [82, 24, 140, 96]}], "depth": 46},
+      {"type": "extrude", "op": "cut", "name": "连通孔Φ20", "plane": "YZ", "origin": [70, 0, 0], "loops": [{"circle": [60, 48], "d": 20}], "depth": 14},
+      {"type": "extrude", "op": "cut", "name": "左进孔Φ30", "plane": "YZ", "origin": [-13, 0, 0], "loops": [{"circle": [60, 54], "d": 30}], "depth": 38},
+      {"type": "extrude", "op": "cut", "name": "右出孔Φ34", "plane": "YZ", "origin": [138, 0, 0], "loops": [{"circle": [60, 54], "d": 34}], "depth": 43},
+      {"type": "hole", "name": "顶孔Φ8", "plane": "XY", "origin": [0, 0, 110], "at": [[80, 60]], "d": 8, "depth": 20},
+      {"type": "hole", "name": "前孔Φ10", "plane": "XZ", "origin": [0, 2, 0], "at": [[60, 64]], "d": 10, "depth": 22},
+      {"type": "hole", "name": "后孔Φ12", "plane": "XZ", "origin": [0, 122, 0], "reverse": true, "at": [[112, 48]], "d": 12, "depth": 26},
+      {"type": "hole", "name": "左斜孔Φ22", "plane": {"origin": [30, 60, 96], "normal": [-0.76604444, 0, 0.64278761], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 22, "depth": 58},
+      {"type": "hole", "name": "右斜孔Φ24", "plane": {"origin": [140, 60, 88.6], "normal": [0.64278761, 0, 0.76604444], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 24, "depth": 64},
+      {"type": "hole", "name": "底板Φ8", "plane": "XY", "origin": [0, 0, 16], "at": [[10, 10], [158, 10], [10, 110], [158, 110]], "d": 8, "through": true},
+      {"type": "chamfer", "distance": 2, "edges": [[-12, 70.6, 64.6]], "name": "左进水孔口C2"}
+    ]}
+  ]
+}

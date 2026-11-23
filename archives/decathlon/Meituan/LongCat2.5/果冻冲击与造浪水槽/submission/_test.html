@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%}canvas{width:100%;height:100%;display:block}</style></head>
+<body><canvas id="c"></canvas><script>
+(async()=>{
+ const cv=document.getElementById('c'); cv.width=800; cv.height=600;
+ const ad=await navigator.gpu.requestAdapter(); const dev=await ad.requestDevice();
+ const ctx=cv.getContext('webgpu'); const fmt=navigator.gpu.getPreferredCanvasFormat();
+ ctx.configure({device:dev,format:fmt,alphaMode:'opaque'});
+ const pipe=dev.createRenderPipeline({layout:'auto',
+   vertex:{module:dev.createShaderModule({code:`@vertex fn vs(@builtin(vertex_index)i:u32)->@builtin(position)vec4f{let p=array(vec2f(0.,0.),vec2f(2.,0.),vec2f(0.,2.));return vec4f(p[i],0.,1.);}`}),entryPoint:'vs'},
+   fragment:{module:dev.createShaderModule({code:`@fragment fn fs()->@location(0)vec4f{return vec4f(1.,0.2,0.1,1.);}`}),entryPoint:'fs',targets:[{format:fmt}]},
+   primitive:{topology:'triangle-list'}});
+ function frame(){const e=dev.createCommandEncoder();const v=ctx.getCurrentTexture().createView();
+  const p=e.beginRenderPass({colorAttachments:[{view:v,clearValue:{r:0,g:0,b:0,a:1},loadOp:'clear',storeOp:'store'}]});
+  p.setPipeline(pipe);p.draw(3);p.end();dev.queue.submit([e.finish()]);requestAnimationFrame(frame);}
+ frame();
+ window.__ok=true;
+})().catch(e=>{window.__err=String(e)});
+</script></body></html>

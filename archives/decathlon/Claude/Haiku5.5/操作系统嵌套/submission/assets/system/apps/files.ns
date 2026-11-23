@@ -1,0 +1,577 @@
+// =====================================================================
+// 文件管理器（/System/apps/files.ns）
+// 参数：args[0] = 窗口号，args[1] = 应用名，args[2] = 可选的起始目录。
+// 操作：导航、新建、重命名、复制粘贴、删除到回收站、恢复、多选、排序、拖放。
+// 双击文件按类型交给窗口管理程序打开（.sheet 电子表格、.scene 播放器、.ns/.txt 编辑器）。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var SIDEBAR = 176;
+var TOOL_H = 44;
+var HEAD_Y = 50;
+var LIST_Y = 76;
+var ROW = 30;
+var STATUS_H = 28;
+var VW = 820;
+var VH = 540;
+var dir = "/Documents";
+var items = [];
+var sel = {};
+var anchor = -1;
+var scroll = 0;
+var sortKey = "name";
+var sortAsc = true;
+var rename = nil;
+var menu = nil;
+var clip = [];
+var status = "";
+var pressIdx = -1;
+var pressX = 0;
+var pressY = 0;
+var dragging = false;
+var lastClick = -1;
+var lastT = -10;
+var NAV = [
+    {id: "Documents", path: "/Documents", label: "文档"},
+    {id: "Downloads", path: "/Downloads", label: "下载"},
+    {id: "Demo", path: "/Demo", label: "示例"},
+    {id: "Programs", path: "/Programs", label: "程序"},
+    {id: "System", path: "/System", label: "系统"},
+    {id: "Trash", path: "/Trash", label: "回收站"}
+];
+
+func join_dir(d, name) {
+    if (d == "/") { return "/" + name; }
+    return d + "/" + name;
+}
+
+func parent_dir(p) {
+    var i = len(p) - 1;
+    while (i > 0 && substr(p, i, 1) != "/") { i = i - 1; }
+    if (i <= 0) { return "/"; }
+    return substr(p, 0, i);
+}
+
+func base_name(p) {
+    var i = len(p) - 1;
+    while (i >= 0 && substr(p, i, 1) != "/") { i = i - 1; }
+    return substr(p, i + 1, len(p) - i - 1);
+}
+
+func less(a, b) {
+    if (a.type != b.type) { return a.type == "d"; }
+    if (sortKey == "size") { return a.size < b.size; }
+    if (sortKey == "time") { return a.mtime < b.mtime; }
+    if (sortKey == "type") { return ext_of(a.name) < ext_of(b.name); }
+    return lower(a.name) < lower(b.name);
+}
+
+func sort_items(list) {
+    var out = [];
+    for (var it in list) {
+        var j = len(out);
+        push(out, it);
+        while (j > 0 && less(it, out[j - 1]) && !(less(out[j - 1], it))) {
+            out[j] = out[j - 1];
+            j = j - 1;
+            out[j] = it;
+        }
+    }
+    if (!sortAsc) { out = reverse(out); }
+    return out;
+}
+
+func refresh() {
+    var list = sys_fs_list(dir);
+    if (list == nil) {
+        dir = "/Documents";
+        list = sys_fs_list(dir);
+    }
+    items = sort_items(list);
+    var ns = {};
+    for (var it in items) {
+        if (has(sel, it.path)) { ns[it.path] = true; }
+    }
+    sel = ns;
+}
+
+func send_title() {
+    var name = base_name(dir);
+    if (dir == "/") { name = "根目录"; }
+    sys_send("wm", {type: "title", win: WID, title: "文件管理器 — " + name});
+}
+
+func navigate(p) {
+    dir = norm_path(p);
+    sel = {};
+    anchor = -1;
+    scroll = 0;
+    menu = nil;
+    rename = nil;
+    refresh();
+    send_title();
+    status = str(len(items)) + " 项";
+}
+
+func norm_path(p) {
+    if (p == "" || p == nil) { return "/"; }
+    if (p != "/" && substr(p, len(p) - 1, 1) == "/") { return substr(p, 0, len(p) - 1); }
+    return p;
+}
+
+func selected_list() {
+    var out = [];
+    for (var it in items) {
+        if (has(sel, it.path)) { push(out, it); }
+    }
+    return out;
+}
+
+func unique_name(d, name) {
+    var base = name;
+    var ext = "";
+    var dot = -1;
+    var i = len(name) - 1;
+    while (i > 0) {
+        if (substr(name, i, 1) == ".") { dot = i; break; }
+        i = i - 1;
+    }
+    if (dot > 0) {
+        base = substr(name, 0, dot);
+        ext = substr(name, dot, len(name) - dot);
+    }
+    var cand = name;
+    var n = 2;
+    while (sys_fs_stat(join_dir(d, cand)) != nil) {
+        cand = base + " (" + str(n) + ")" + ext;
+        n = n + 1;
+    }
+    return cand;
+}
+
+// ---------------------------- 操作 ----------------------------
+func open_item(it) {
+    if (it.type == "d") {
+        navigate(it.path);
+        return;
+    }
+    if (starts(it.path, "/Trash/")) {
+        status = "回收站中的文件需要先恢复";
+        return;
+    }
+    sys_send("wm", {type: "open-file", win: WID, path: it.path});
+}
+
+func new_file() {
+    var name = unique_name(dir, "新建文本.txt");
+    var r = sys_fs_write(join_dir(dir, name), "");
+    if (!r.ok) { status = r.error; return; }
+    refresh();
+    sel = {};
+    sel[join_dir(dir, name)] = true;
+    start_rename(join_dir(dir, name));
+}
+
+func new_folder() {
+    var name = unique_name(dir, "新建文件夹");
+    var r = sys_fs_mkdir(join_dir(dir, name));
+    if (!r.ok) { status = r.error; return; }
+    refresh();
+    sel = {};
+    sel[join_dir(dir, name)] = true;
+    start_rename(join_dir(dir, name));
+}
+
+func start_rename(path) {
+    rename = {path: path, text: base_name(path)};
+}
+
+func commit_rename() {
+    if (rename == nil) { return; }
+    var t = trim(rename.text);
+    if (t == "" || indexOf(t, "/") >= 0) {
+        status = "名称无效";
+        rename = nil;
+        return;
+    }
+    if (t != base_name(rename.path)) {
+        var to = join_dir(parent_dir(rename.path), t);
+        var r = sys_fs_move(rename.path, to);
+        if (!r.ok) { status = r.error; } else { status = "已重命名"; }
+    }
+    rename = nil;
+    refresh();
+}
+
+func delete_selected() {
+    var list = selected_list();
+    if (len(list) == 0) { return; }
+    for (var it in list) {
+        var r = sys_fs_delete(it.path);
+        if (!r.ok) { status = r.error; }
+    }
+    status = pick(starts(dir, "/Trash"), "已永久删除", "已移入回收站");
+    sel = {};
+    refresh();
+}
+
+func restore_selected() {
+    for (var it in selected_list()) {
+        var r = sys_fs_restore(it.path);
+        if (!r.ok) { status = r.error; }
+    }
+    sel = {};
+    refresh();
+}
+
+func copy_selected() {
+    clip = [];
+    for (var it in selected_list()) { push(clip, it.path); }
+    status = "已复制 " + str(len(clip)) + " 项";
+}
+
+func paste_clip() {
+    var n = 0;
+    for (var p in clip) {
+        var name = unique_name(dir, base_name(p));
+        var r = sys_fs_copy(p, join_dir(dir, name));
+        if (r.ok) { n = n + 1; } else { status = r.error; }
+    }
+    status = "已粘贴 " + str(n) + " 项";
+    refresh();
+}
+
+func select_all() {
+    var s = {};
+    for (var it in items) { s[it.path] = true; }
+    sel = s;
+}
+
+// 把外来的文件（拖放或投送而来）复制到目录
+func accept_drop(target, payload) {
+    if (payload.text == nil) {
+        status = "只能接收文件";
+        return;
+    }
+    var name = unique_name(target, payload.name);
+    var r = sys_fs_write(join_dir(target, name), payload.text);
+    if (r.ok) { status = "已接收 " + name; } else { status = r.error; }
+    refresh();
+}
+
+// ---------------------------- 布局 ----------------------------
+func row_index_at(y) {
+    var idx = floor((y - LIST_Y + scroll) / ROW);
+    if (y < LIST_Y || idx < 0 || idx >= len(items)) { return -1; }
+    return idx;
+}
+
+func menu_list() {
+    if (starts(dir, "/Trash")) {
+        return [{label: "恢复", act: "restore", tid: "files-restore"}, {label: "永久删除", act: "delete", tid: "files-purge"}];
+    }
+    return [
+        {label: "打开", act: "open", tid: "files-open"},
+        {label: "复制", act: "copy", tid: "files-copy"},
+        {label: "粘贴", act: "paste", tid: "files-paste"},
+        {label: "重命名", act: "rename", tid: "files-rename"},
+        {label: "删除", act: "delete", tid: "files-delete"},
+        {label: "新建文本文件", act: "new-file", tid: "files-new-file"},
+        {label: "新建文件夹", act: "new-folder", tid: "files-new-folder"}
+    ];
+}
+
+func run_action(act) {
+    if (act == "open") {
+        var list = selected_list();
+        if (len(list) > 0) { open_item(list[0]); }
+    } else if (act == "copy") {
+        copy_selected();
+    } else if (act == "paste") {
+        paste_clip();
+    } else if (act == "rename") {
+        var l2 = selected_list();
+        if (len(l2) > 0) { start_rename(l2[0].path); }
+    } else if (act == "delete") {
+        delete_selected();
+    } else if (act == "restore") {
+        restore_selected();
+    } else if (act == "new-file") {
+        new_file();
+    } else if (act == "new-folder") {
+        new_folder();
+    } else if (act == "up") {
+        if (dir != "/") { navigate(parent_dir(dir)); }
+    }
+}
+
+// ---------------------------- 绘制 ----------------------------
+func da(node, key, value) {
+    if (node.da == nil) { node.da = {}; }
+    node.da[key] = value;
+}
+
+func paint() {
+    var L = [];
+    add_rect(L, 0, 0, VW, VH, THEME.panel);
+    add_rect(L, 0, 0, SIDEBAR, VH, "#f6f7fb");
+    add_rect(L, SIDEBAR, 0, 1, VH, THEME.line);
+    var ny = 16;
+    for (var n in NAV) {
+        var on = dir == n.path || starts(dir, n.path + "/");
+        var r = add_rect(L, 10, ny, SIDEBAR - 20, 32, pick(on, accent_color("violet"), "#00000000"));
+        r.r = 8;
+        r.hv = true;
+        r.cur = "pointer";
+        r.tid = "files-nav";
+        da(r, "file-path", n.path);
+        add_text(L, 22, ny, SIDEBAR - 40, 32, n.label, 13, pick(on, "#ffffff", THEME.text), "l");
+        ny = ny + 36;
+    }
+    add_text(L, 22, VH - 60, SIDEBAR - 30, 22, "本系统的文件", 11, THEME.hint, "l");
+    add_text(L, 22, VH - 40, SIDEBAR - 30, 22, "共 " + str(len(items)) + " 项", 11, THEME.sub, "l");
+
+    var tx = SIDEBAR + 10;
+    var up = add_btn(L, tx, 8, 30, 28, "↑", "files-up", "#f0f1f6", THEME.text);
+    up.da = {"file-path": parent_dir(dir)};
+    var path = add_frame(L, tx + 38, 8, VW - tx - 38 - 380, 28, "#f4f5fa", THEME.line, 8);
+    path.tid = "files-path";
+    add_text(L, tx + 46, 8, VW - tx - 56 - 380, 28, dir, 12, THEME.sub, "l");
+    var bx = VW - 370;
+    var btns = [["新建文件", "files-new-file", "new-file"], ["新建文件夹", "files-new-folder", "new-folder"], ["复制", "files-copy", "copy"], ["粘贴", "files-paste", "paste"], ["删除", "files-delete", "delete"]];
+    for (var b in btns) {
+        var w = 64;
+        if (b[2] == "delete") { w = 52; }
+        if (b[2] == "copy" || b[2] == "paste") { w = 46; }
+        if (b[2] == "new-file" || b[2] == "new-folder") { w = 74; }
+        var bt = add_btn(L, bx, 8, w, 28, b[0], b[1], "#f0f1f6", THEME.text);
+        bt.da = {"act": b[2]};
+        bx = bx + w + 4;
+    }
+
+    add_rect(L, SIDEBAR, TOOL_H, VW - SIDEBAR, 1, THEME.line);
+    var cx = SIDEBAR + 12;
+    add_text(L, cx, HEAD_Y, VW - cx - 300, 22, "名称", 12, THEME.sub, "l");
+    add_text(L, VW - 290, HEAD_Y, 80, 22, "类型", 12, THEME.sub, "l");
+    add_text(L, VW - 200, HEAD_Y, 80, 22, "大小", 12, THEME.sub, "r");
+    add_text(L, VW - 110, HEAD_Y, 100, 22, "修改时间", 12, THEME.sub, "l");
+    add_rect(L, SIDEBAR, LIST_Y - 4, VW - SIDEBAR, 1, THEME.line);
+
+    var clipL = [SIDEBAR, LIST_Y, VW - SIDEBAR, VH - LIST_Y - STATUS_H];
+    var i = 0;
+    for (var it in items) {
+        var y = LIST_Y + i * ROW - scroll;
+        if (y + ROW >= LIST_Y && y < VH - STATUS_H) {
+            var isSel = has(sel, it.path);
+            var row = add_rect(L, SIDEBAR + 4, y, VW - SIDEBAR - 8, ROW - 2, pick(isSel, THEME.select, "#00000000"));
+            row.r = 6;
+            row.hv = pick(isSel, false, true);
+            row.tid = "files-item";
+            row.cur = "pointer";
+            da(row, "file-path", it.path);
+            da(row, "file-name", it.name);
+            if (it.type == "d") {
+                add_text(L, SIDEBAR + 14, y, 22, ROW - 2, "▸", 13, accent_color("violet"), "c");
+            } else {
+                add_text(L, SIDEBAR + 14, y, 22, ROW - 2, "▪", 12, THEME.hint, "c");
+            }
+            if (rename != nil && rename.path == it.path) {
+                add_frame(L, SIDEBAR + 36, y + 2, 360, ROW - 6, "#ffffff", accent_color("violet"), 6);
+                add_text(L, SIDEBAR + 44, y + 2, 344, ROW - 6, rename.text + "▏", 13, THEME.text, "l");
+            } else {
+                var label = it.name;
+                if (it.type == "d") { label = it.name; }
+                add_text(L, SIDEBAR + 36, y, 360, ROW - 2, fit_text(label, 13, 350), 13, THEME.text, "l");
+            }
+            var typeText = pick(it.type == "d", "文件夹", pick(ext_of(it.name) == "", "文件", upper(ext_of(it.name)) + " 文件"));
+            add_text(L, VW - 290, y, 90, ROW - 2, typeText, 12, THEME.sub, "l");
+            add_text(L, VW - 200, y, 90, ROW - 2, pick(it.type == "d", "", size_text(it.size)), 12, THEME.sub, "r");
+                    }
+        i = i + 1;
+    }
+    if (len(items) == 0) {
+        add_text(L, SIDEBAR + 20, LIST_Y + 40, VW - SIDEBAR - 40, 30, pick(dir == "/Trash", "回收站是空的", "这个文件夹是空的"), 13, THEME.hint, "c");
+    }
+
+    add_rect(L, SIDEBAR, VH - STATUS_H, VW - SIDEBAR, 1, THEME.line);
+    add_text(L, SIDEBAR + 12, VH - STATUS_H, VW - SIDEBAR - 24, STATUS_H, pick(status == "", str(len(items)) + " 项", status), 12, THEME.sub, "l");
+
+    if (menu != nil) {
+        var mh = 12 + len(menu.items) * 32;
+        var mf = add_frame(L, menu.x, menu.y, 190, mh, "#ffffff", THEME.line, 10);
+        mf.sh = true;
+        var my = menu.y + 6;
+        for (var m in menu.items) {
+            var mr = add_rect(L, menu.x + 6, my, 178, 30, "#00000000");
+            mr.hv = true;
+            mr.r = 6;
+            mr.cur = "pointer";
+            mr.tid = m.tid;
+            mr.lbl = m.label;
+            add_text(L, menu.x + 16, my, 170, 30, m.label, 13, THEME.text, "l");
+            my = my + 32;
+        }
+    }
+    sys_submit("win-" + str(WID), L);
+}
+
+// ---------------------------- 输入 ----------------------------
+func on_pointer(m) {
+    var x = m.x;
+    var y = m.y;
+    if (m.kind == "wheel") {
+        scroll = clamp(scroll + m.dy * 0.5, 0, max(0, len(items) * ROW - (VH - LIST_Y - STATUS_H)));
+        return;
+    }
+    if (m.kind == "down") {
+        if (menu != nil) {
+            var my = menu.y + 6;
+            for (var it in menu.items) {
+                if (inside(x, y, menu.x + 6, my, 178, 30)) {
+                    var act = it.act;
+                    menu = nil;
+                    run_action(act);
+                    return;
+                }
+                my = my + 32;
+            }
+            menu = nil;
+            return;
+        }
+        if (x < SIDEBAR) {
+            var ny = 16;
+            for (var n in NAV) {
+                if (inside(x, y, 10, ny, SIDEBAR - 20, 32)) { navigate(n.path); return; }
+                ny = ny + 36;
+            }
+            return;
+        }
+        if (y < TOOL_H) {
+            if (inside(x, y, SIDEBAR + 10, 8, 30, 28)) { navigate(parent_dir(dir)); return; }
+            var bx = VW - 370;
+            for (var b in [["", "", "new-file", 74], ["", "", "new-folder", 74], ["", "", "copy", 46], ["", "", "paste", 46], ["", "", "delete", 52]]) {
+                if (inside(x, y, bx, 8, b[3], 28)) { run_action(b[2]); return; }
+                bx = bx + b[3] + 4;
+            }
+            return;
+        }
+        if (rename != nil) {
+            commit_rename();
+        }
+        var idx = row_index_at(y);
+        if (m.b == 2) {
+            if (idx >= 0 && !has(sel, items[idx].path)) { sel = {}; sel[items[idx].path] = true; }
+            menu = {x: min(x, VW - 200), y: min(y, VH - 200), items: menu_list()};
+            return;
+        }
+        if (idx < 0) {
+            sel = {};
+            return;
+        }
+        var it2 = items[idx];
+        if (m.dbl == true) {
+            open_item(it2);
+            return;
+        }
+        if (m.ctrl == true) {
+            if (has(sel, it2.path)) { del(sel, it2.path); } else { sel[it2.path] = true; }
+        } else if (m.shift == true && anchor >= 0) {
+            var s = {};
+            for (var k = min(anchor, idx); k <= max(anchor, idx); k = k + 1) { s[items[k].path] = true; }
+            sel = s;
+        } else {
+            sel = {};
+            sel[it2.path] = true;
+        }
+        anchor = idx;
+        pressIdx = idx;
+        pressX = x;
+        pressY = y;
+        dragging = false;
+        return;
+    }
+    if (m.kind == "move") {
+        if (pressIdx >= 0 && !dragging && (abs(x - pressX) > 6 || abs(y - pressY) > 6)) {
+            dragging = true;
+            var it3 = items[pressIdx];
+            var txt = nil;
+            if (it3.type == "f") { txt = sys_fs_read(it3.path); }
+            sys_drag_begin({from: WID, name: it3.name, path: it3.path, text: txt});
+            status = "拖放到目标位置";
+        }
+        return;
+    }
+    if (m.kind == "up") {
+        if (dragging) {
+            sys_drag_end();
+            dragging = false;
+        }
+        pressIdx = -1;
+        return;
+    }
+}
+
+func on_key(m) {
+    if (rename != nil) {
+        if (m.key == "Enter") { commit_rename(); return; }
+        if (m.key == "Escape") { rename = nil; return; }
+        if (m.key == "Backspace") {
+            if (len(rename.text) > 0) { rename.text = substr(rename.text, 0, len(rename.text) - 1); }
+            return;
+        }
+        if (m.text != nil && m.text != "" && m.text != "\n") { rename.text = rename.text + m.text; }
+        return;
+    }
+    if (menu != nil && m.key == "Escape") { menu = nil; return; }
+    if (m.key == "Enter") { var l = selected_list(); if (len(l) > 0) { open_item(l[0]); } return; }
+    if (m.key == "Backspace") { if (dir != "/") { navigate(parent_dir(dir)); } return; }
+    if (m.key == "F2") { var l2 = selected_list(); if (len(l2) > 0) { start_rename(l2[0].path); } return; }
+    if (m.key == "Delete") { delete_selected(); return; }
+    if (m.ctrl == true) {
+        if (m.key == "a") { select_all(); return; }
+        if (m.key == "c") { copy_selected(); return; }
+        if (m.key == "v") { paste_clip(); return; }
+    }
+}
+
+func handle_drop(m) {
+    var idx = row_index_at(m.y);
+    var target = dir;
+    if (idx >= 0 && items[idx].type == "d") { target = items[idx].path; }
+    accept_drop(target, m.payload);
+}
+
+func main(args) {
+    WID = args[0];
+    if (len(args) > 2 && args[2] != nil) { dir = norm_path(args[2]); }
+    refresh();
+    send_title();
+    status = str(len(items)) + " 项";
+    paint();
+    while (true) {
+        var m = sys_recv();
+        if (m.type == "view") {
+            VW = m.w;
+            VH = m.h;
+            paint();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+            paint();
+        } else if (m.type == "key") {
+            on_key(m);
+            refresh();
+            paint();
+        } else if (m.type == "drop") {
+            handle_drop(m);
+            paint();
+        } else if (m.type == "close-req") {
+            sys_send("wm", {type: "close", win: WID});
+            return 0;
+        } else if (m.type == "open-dir") {
+            navigate(m.path);
+            paint();
+        }
+    }
+    return 0;
+}

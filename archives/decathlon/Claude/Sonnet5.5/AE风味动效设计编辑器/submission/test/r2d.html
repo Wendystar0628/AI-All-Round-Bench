@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><body style="background:#222;margin:0">
+<canvas id="c" width="960" height="540"></canvas><pre id="log" style="color:#fff"></pre>
+<script>
+window.onerror=(m,s,l,c)=>document.getElementById('log').textContent+=m+' @'+l+':'+c+'\n';
+</script>
+<script src="../js/util.js"></script><script src="../js/geom.js"></script><script src="../js/mesh.js"></script><script src="../js/font.js"></script><script src="../js/model.js"></script><script src="../js/expr.js"></script><script src="../js/evalr.js"></script><script src="../js/shapes.js"></script><script src="../js/nodes.js"></script><script src="../js/gl.js"></script><script src="../js/render2d.js"></script><script src="../js/comp.js"></script>
+<script>
+AE.Renderer.prototype.render3DGroup=function(){return null;};
+const {Model,U,G}=AE; const proj=Model.newProject(); const comp=proj.comps[0]; comp.dur=5;
+const mk=(type,name)=>{const L=Model.newLayer(type,comp,{name}); comp.layers.unshift(L); return L;};
+const bgL=mk('shape','bg'); { const gr=Model.addShapeItem(bgL,'group',null); Model.addShapeItem(bgL,'rect',gr,{params:{size:[1920,1080]}}); const f=Model.addShapeItem(bgL,'fill',gr,{}); f.gradient={type:'radial',p0:[0,0],p1:[1200,0],stops:[[0,[0.2,0.2,0.3,1]],[1,[0.02,0.02,0.04,1]]]}; bgL.props['transform.position'].v=[960,540,0]; }
+const L1=mk('shape','rect'); { const gr=Model.addShapeItem(L1,'group',null); Model.addShapeItem(L1,'rect',gr,{params:{size:[300,200],round:30}}); Model.addShapeItem(L1,'fill',gr,{params:{color:[1,0.5,0.1,1]}}); Model.addShapeItem(L1,'stroke',gr,{params:{width:12,color:[1,1,1,1]}}); L1.props['transform.position'].v=[600,400,0]; L1.props['transform.rotation'].v=15; Model.addEffect(L1,'shadow'); }
+const L2=mk('shape','circ'); { const gr=Model.addShapeItem(L2,'group',null); Model.addShapeItem(L2,'ellipse',gr,{params:{size:[250,250]}}); Model.addShapeItem(L2,'fill',gr,{params:{color:[0.2,0.6,1,0.7]}}); L2.props['transform.position'].v=[900,500,0]; L2.blend='screen'; Model.addEffect(L2,'glow'); }
+const T=mk('text','txt'); T.text.text='锻字\n多行 AE'; T.props['text.size'].v=180; T.props['transform.position'].v=[1300,500,0]; T.props['text.fill'].v=[1,0.9,0.5,1]; T.text.font='forge';
+const a=Model.addAnimator(T); T.props['an.'+a+'.end'].v=50; T.props['an.'+a+'.pos'].v=[0,-40]; T.props['an.'+a+'.rot'].v=20; T.props['an.'+a+'.soft'].v=30;
+const S=mk('shape','stroke'); { const gr=Model.addShapeItem(S,'group',null); const gl=Model.addShapeItem(S,'glyphs',gr,{statics:{source:T.id,mode:'strokes'}}); Model.addShapeItem(S,'stroke',gr,{params:{width:10,color:[1,0.6,0.2,1]}}); const tr=Model.addShapeItem(S,'trim',gr,{statics:{mode:'seq'}}); S.props['sh.'+tr.id+'.end'].v=60; S.props['transform.position'].v=[400,200,0]; S.props['transform.scale'].v=[60,60,100];}
+const M1=mk('shape','masked'); { const gr=Model.addShapeItem(M1,'group',null); Model.addShapeItem(M1,'rect',gr,{params:{size:[400,300]}}); Model.addShapeItem(M1,'fill',gr,{params:{color:[0.9,0.2,0.5,1]}}); M1.props['transform.position'].v=[1500,200,0]; Model.addMask(M1,G.ellipseShape(300,200),{feather:30}); }
+const ev=new AE.Evaluator(()=>proj,()=>0);
+const cv=document.getElementById('c'); const g=new AE.GLCtx(cv); const r=new AE.Renderer(g); r.ev=ev;
+const t0=performance.now();
+const rt=r.renderComp(comp,0,1920,1080,{root:true});
+r.present(rt,[0,0,960,540],false);
+document.title='ok '+(performance.now()-t0).toFixed(0)+'ms';
+window.__r=r; window.__rt=rt;
+</script>

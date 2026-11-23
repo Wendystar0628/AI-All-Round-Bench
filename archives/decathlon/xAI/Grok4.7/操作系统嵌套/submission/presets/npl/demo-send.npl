@@ -1,0 +1,13 @@
+# 向名为「接收」的进程发三条消息。先运行 demo-recv，再运行本程序。
+
+fn main() {
+  let peer = find("接收");
+  let i = 0;
+  while (i < 3) {
+    let text = "巢航消息 " + str(i);
+    let r = send(peer, text);
+    log(str(peer) + " " + r + " " + text);
+    i = i + 1;
+  }
+  return "sent";
+}

@@ -1,0 +1,100 @@
+// ============================================================
+// 飞控程序（FlightControl.osprog）
+// 排演中保持直升机稳定的被调度进程：读取带时间戳的传感器值，
+// 以 PD 控制计算总距与舵面并写入。控制量保持到下一次写入；
+// 执行预算不足时控制周期变长，机体将抖动发散。
+// 修改本程序会改变飞行结果。
+// ============================================================
+
+// 可调参数（在编辑器中修改后重新排演生效）
+let hoverAlt = 6.0        // 目标悬停高度（米）
+let targetYaw = 0.5       // 目标航向（弧度）
+let kpAlt = 0.16          // 高度比例
+let kdAlt = 0.09          // 垂速阻尼
+let baseCol = 0.62        // 基准总距
+let kpAtt = 2.4           // 姿态比例
+let kdAtt = 1.15          // 姿态阻尼
+let kpYaw = 1.1           // 航向比例
+let kdYaw = 0.45          // 偏航阻尼
+let period = 20           // 控制周期（毫秒，虚拟时间）
+let maxCol = 1.0
+
+fn main() {
+  while true {
+    let s = sensors()
+    if s == null {
+      sleep(period)
+      continue
+    }
+    let alt = get(s, "alt", 0)
+    let vy = get(s, "vy", 0)
+    let pitch = get(s, "pitch", 0)
+    let roll = get(s, "roll", 0)
+    let prate = get(s, "pitchRate", 0)
+    let rrate = get(s, "rollRate", 0)
+    let yaw = get(s, "yaw", 0)
+    let yrate = get(s, "yawRate", 0)
+    let rotor = get(s, "rotor", 0)
+    // 高度通道
+    let altErr = hoverAlt - alt
+    let col = baseCol + kpAlt * altErr - kdAlt * vy
+    if col > maxCol {
+      col = maxCol
+    }
+    if col < 0 {
+      col = 0
+    }
+    // 旋翼失效时无法产生升力，仍尽力拉平
+    if rotor < 0.35 {
+      col = maxCol
+    }
+    // 姿态通道（不稳定机体需要较强反馈）
+    let cz = 0 - kpAtt * pitch - kdAtt * prate
+    let cx = 0 - kpAtt * roll - kdAtt * rrate
+    if cz > 1 {
+      cz = 1
+    }
+    if cz < -1 {
+      cz = -1
+    }
+    if cx > 1 {
+      cx = 1
+    }
+    if cx < -1 {
+      cx = -1
+    }
+    // 航向通道
+    let yawErr = targetYaw - yaw
+    while yawErr > 3.14159 {
+      yawErr = yawErr - 6.28318
+    }
+    while yawErr < -3.14159 {
+      yawErr = yawErr + 6.28318
+    }
+    let yw = kpYaw * yawErr - kdYaw * yrate
+    if yw > 1 {
+      yw = 1
+    }
+    if yw < -1 {
+      yw = -1
+    }
+    let r = write_controls({"col": col, "cx": cx, "cz": cz, "yaw": yw, "t": get(s, "t", 0)})
+    if type(r) == "map" and r.error != null {
+      print("飞控写入失败: " + r.error)
+    }
+    sleep(period)
+  }
+}
+
+fn get(m, k, d) {
+  if m == null {
+    return d
+  }
+  let v = m[k]
+  if v == null {
+    return d
+  }
+  return v
+}
+
+main()

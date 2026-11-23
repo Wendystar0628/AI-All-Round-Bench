@@ -1,0 +1,7 @@
+kernel v1
+policy = round_robin
+quantum = 12
+let kernelTicks = 0
+while true {
+  kernelTicks = kernelTicks + 1
+}

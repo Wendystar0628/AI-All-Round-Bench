@@ -1,0 +1,316 @@
+// =====================================================================
+// 小组件（/System/apps/widgets.ns）：时钟与日历、倒计时与秒表、便笺、
+// 剪贴板历史、通知摘要、勿扰开关。可放在小组件面板中，也可由桌面与任务栏打开。
+// 倒计时到时发出通知；剪贴板历史记录实际复制的文本与表格选区。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var VW = 360;
+var VH = 640;
+var baseSec = 0;
+var calY = 2026;
+var calM = 11;
+var timerInput = "30";
+var timerRunning = false;
+var timerEnd = 0;
+var timerLeft = 30;
+var timerDone = false;
+var noteText = "";
+var noteSaved = true;
+var focus = "";
+var notes = [];
+var clips = [];
+var dnd = false;
+var accent = "violet";
+var SY = 0;
+var CONTENT_H = 880;
+
+// 西历某月 1 日是星期几（0=周日）
+func weekday_first(y, m) {
+    var t = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+    var yy = y;
+    if (m < 3) { yy = y - 1; }
+    return (yy + floor(yy / 4) - floor(yy / 100) + floor(yy / 400) + t[m - 1] + 1) % 7;
+}
+
+func days_in(y, m) {
+    if (m == 2) {
+        if ((y % 4 == 0 && y % 100 != 0) || y % 400 == 0) { return 29; }
+        return 28;
+    }
+    if (m == 4 || m == 6 || m == 9 || m == 11) { return 30; }
+    return 31;
+}
+
+func now_sec() {
+    return baseSec + floor(sys_now());
+}
+
+func clock_hm() {
+    var s = now_sec() + 9 * 3600 + 12 * 60;
+    return two(floor(s / 3600) % 24) + ":" + two(floor(s / 60) % 60) + ":" + two(s % 60);
+}
+
+func load_note() {
+    var t = sys_fs_read("/Documents/便笺.txt");
+    if (t != nil) { noteText = t; }
+}
+
+func save_note() {
+    var r = sys_fs_write("/Documents/便笺.txt", noteText);
+    noteSaved = r.ok;
+    if (r.ok) { sys_notify("便笺已保存", "/Documents/便笺.txt"); }
+}
+
+func timer_seconds() {
+    var v = num(timerInput);
+    if (v <= 0) { v = 1; }
+    return v;
+}
+
+func timer_update() {
+    if (timerRunning) {
+        var left = timerEnd - sys_now();
+        if (left <= 0) {
+            timerRunning = false;
+            timerDone = true;
+            timerLeft = 0;
+            sys_notify("倒计时结束", "计时 " + str(timer_seconds()) + " 秒已到");
+        } else {
+            timerLeft = left;
+        }
+    }
+}
+
+func paint() {
+    var L = [];
+    add_rect(L, 0, 0, VW, VH, "#f5f6fb");
+    var pad = 14;
+    var w = VW - pad * 2;
+
+    // 时钟
+    var c1 = add_frame(L, pad, pad, w, 96, "#ffffff", THEME.line, 14);
+    add_bold(L, pad + 16, pad + 10, w - 32, 44, clock_hm(), 30, THEME.text, "l");
+    add_text(L, pad + 16, pad + 56, w - 32, 22, "2026 年 11 月 9 日 · 系统时间", 12, THEME.sub, "l");
+
+    // 日历
+    var cy0 = pad + 110;
+    var c2 = add_frame(L, pad, cy0, w, 214, "#ffffff", THEME.line, 14);
+    c2.tid = "widget-calendar";
+    add_text(L, pad + 14, cy0 + 10, 180, 24, str(calY) + " 年 " + str(calM) + " 月", 13, THEME.text, "l");
+    var pv = add_btn(L, pad + w - 98, cy0 + 8, 40, 26, "‹", "widget-calendar-prev", "#f0f1f6", THEME.text);
+    var nx = add_btn(L, pad + w - 52, cy0 + 8, 40, 26, "›", "widget-calendar-next", "#f0f1f6", THEME.text);
+    var heads = ["日", "一", "二", "三", "四", "五", "六"];
+    var cw = floor((w - 20) / 7);
+    for (var i = 0; i < 7; i = i + 1) {
+        add_text(L, pad + 10 + i * cw, cy0 + 44, cw, 20, heads[i], 11, THEME.hint, "c");
+    }
+    var first = weekday_first(calY, calM);
+    var nd = days_in(calY, calM);
+    for (var d = 1; d <= nd; d = d + 1) {
+        var idx = first + d - 1;
+        var col = idx % 7;
+        var row = floor(idx / 7);
+        var isToday = calY == 2026 && calM == 11 && d == 9;
+        if (isToday) {
+            add_rect(L, pad + 10 + col * cw + 4, cy0 + 68 + row * 28, cw - 8, 24, accent_color(accent)).r = 12;
+        }
+        add_text(L, pad + 10 + col * cw, cy0 + 68 + row * 28, cw, 24, str(d), 12, pick(isToday, "#ffffff", THEME.text), "c");
+    }
+
+    // 倒计时
+    var cy1 = cy0 + 230;
+    var c3 = add_frame(L, pad, cy1, w, 124, "#ffffff", THEME.line, 14);
+    add_text(L, pad + 14, cy1 + 10, 120, 22, "倒计时（秒）", 12, THEME.sub, "l");
+    var ti = add_frame(L, pad + 14, cy1 + 34, 120, 36, "#f7f8fc", pick(focus == "timer", accent_color(accent), THEME.line), 8);
+    ti.tid = "widget-timer-input";
+    add_text(L, pad + 24, cy1 + 34, 100, 36, timerInput + pick(focus == "timer" && !timerRunning, "▏", ""), 16, THEME.text, "l");
+    var big = pick(timerRunning || timerDone, clock_text(timerLeft), clock_text(timer_seconds()));
+    add_bold(L, pad + 150, cy1 + 30, w - 164, 44, big, 22, pick(timerDone, THEME.danger, THEME.text), "r");
+    add_btn(L, pad + 14, cy1 + 84, 74, 30, pick(timerRunning, "暂停中", "开始"), pick(timerRunning, "widget-timer-pause", "widget-timer-start"), accent_color(accent), "#ffffff");
+    add_btn(L, pad + 96, cy1 + 84, 74, 30, "暂停", "widget-timer-pause", "#f0f1f6", THEME.text);
+    add_btn(L, pad + 178, cy1 + 84, 74, 30, "重置", "widget-timer-reset", "#f0f1f6", THEME.text);
+
+    // 便笺
+    var cy2 = cy1 + 136;
+    var c4 = add_frame(L, pad, cy2, w, 150, "#ffffff", THEME.line, 14);
+    add_text(L, pad + 14, cy2 + 10, 120, 22, "便笺", 12, THEME.sub, "l");
+    var nt = add_frame(L, pad + 14, cy2 + 34, w - 28, 76, "#f7f8fc", pick(focus == "note", accent_color(accent), THEME.line), 8);
+    nt.tid = "widget-note-text";
+    var lines = split(noteText, "\n");
+    var ly = 0;
+    for (var ln in lines) {
+        if (ly >= 3) { break; }
+        add_text(L, pad + 22, cy2 + 40 + ly * 22, w - 44, 20, fit_text(ln, 12, w - 52), 12, THEME.text, "l");
+        ly = ly + 1;
+    }
+    if (noteText == "") { add_text(L, pad + 22, cy2 + 40, w - 44, 20, "点击这里输入文字", 12, THEME.hint, "l"); }
+    add_btn(L, pad + w - 86, cy2 + 116, 72, 28, pick(noteSaved, "已保存", "保存"), "widget-note-save", pick(noteSaved, "#f0f1f6", accent_color(accent)), pick(noteSaved, THEME.sub, "#ffffff"));
+
+    // 剪贴板历史
+    var cy3 = cy2 + 162;
+    var c5 = add_frame(L, pad, cy3, w, 118, "#ffffff", THEME.line, 14);
+    add_text(L, pad + 14, cy3 + 10, 200, 22, "剪贴板历史", 12, THEME.sub, "l");
+    var cl = add_rect(L, pad + 10, cy3 + 34, w - 20, 74, "#00000000");
+    cl.tid = "widget-clipboard-list";
+    var k = 0;
+    for (var cp in clips) {
+        if (k >= 3) { break; }
+        var cb = add_rect(L, pad + 14, cy3 + 36 + k * 24, w - 28, 22, "#00000000");
+        cb.hv = true;
+        cb.r = 6;
+        cb.cur = "pointer";
+        cb.tid = "widget-clipboard-item";
+        cb.da = {index: str(k)};
+        add_text(L, pad + 20, cy3 + 36 + k * 24, w - 40, 22, fit_text(cp, 12, w - 50), 12, THEME.text, "l");
+        k = k + 1;
+    }
+    if (len(clips) == 0) { add_text(L, pad + 14, cy3 + 40, w - 28, 22, "复制文本或表格选区后会出现在这里", 12, THEME.hint, "l"); }
+
+    // 通知与快捷设置
+    var cy4 = cy3 + 130;
+    var c6 = add_frame(L, pad, cy4, w, 90, "#ffffff", THEME.line, 14);
+    var nlist = notes;
+    add_text(L, pad + 14, cy4 + 10, 200, 22, "通知（" + str(len(nlist)) + "）", 12, THEME.sub, "l");
+    var nn = 0;
+    var ni = len(nlist) - 1;
+    while (ni >= 0 && nn < 2) {
+        add_text(L, pad + 14, cy4 + 34 + nn * 22, w - 28, 20, fit_text(nlist[ni].title + " · " + nlist[ni].body, 12, w - 40), 12, THEME.text, "l");
+        nn = nn + 1;
+        ni = ni - 1;
+    }
+    var dndBtn = add_btn(L, pad + w - 118, cy4 + 8, 104, 24, pick(dnd, "勿扰：开", "勿扰：关"), "widget-dnd", pick(dnd, accent_color(accent), "#f0f1f6"), pick(dnd, "#ffffff", THEME.text));
+    dndBtn.tid = "widget-dnd";
+    // 内容超过窗口高度时整体上下滚动
+    var out = [];
+    for (var nd1 in L) {
+        if (nd1.y != nil) { nd1.y = nd1.y - SY; }
+        push(out, nd1);
+    }
+    sys_submit("win-" + str(WID), out);
+}
+
+func on_pointer(m) {
+    if (m.kind == "wheel") {
+        SY = clamp(SY + m.dy * 0.6, 0, max(0, CONTENT_H - VH));
+        return;
+    }
+    if (m.kind != "down") { return; }
+    var x = m.x;
+    var y = m.y + SY;
+    var pad = 14;
+    var w = VW - 28;
+    var cy0 = pad + 110;
+    var cy1 = cy0 + 230;
+    var cy2 = cy1 + 136;
+    var cy3 = cy2 + 162;
+    focus = "";
+    if (inside(x, y, pad + w - 98, cy0 + 8, 40, 26)) { calM = calM - 1; if (calM < 1) { calM = 12; calY = calY - 1; } return; }
+    if (inside(x, y, pad + w - 52, cy0 + 8, 40, 26)) { calM = calM + 1; if (calM > 12) { calM = 1; calY = calY + 1; } return; }
+    if (inside(x, y, pad + 14, cy1 + 34, 120, 36)) { focus = "timer"; return; }
+    if (inside(x, y, pad + 14, cy1 + 84, 74, 30)) { timer_start(); return; }
+    if (inside(x, y, pad + 96, cy1 + 84, 74, 30)) { timer_pause(); return; }
+    if (inside(x, y, pad + 178, cy1 + 84, 74, 30)) { timer_reset(); return; }
+    if (inside(x, y, pad + 14, cy2 + 34, w - 28, 76)) { focus = "note"; return; }
+    if (inside(x, y, pad + w - 86, cy2 + 116, 72, 28)) { save_note(); return; }
+    var k = 0;
+    for (var cp in clips) {
+        if (k >= 3) { break; }
+        if (inside(x, y, pad + 14, cy3 + 36 + k * 24, w - 28, 22)) {
+            sys_clip_set(cp);
+            clips = sys_clip_hist();
+            return;
+        }
+        k = k + 1;
+    }
+    if (inside(x, y, pad + w - 118, cy3 + 130 + 8, 104, 24)) { toggle_dnd(); return; }
+}
+
+func timer_start() {
+    if (timerRunning) { return; }
+    if (timerDone || timerLeft <= 0) { timerLeft = timer_seconds(); }
+    timerEnd = sys_now() + timerLeft;
+    timerRunning = true;
+    timerDone = false;
+}
+
+func timer_pause() {
+    if (!timerRunning) { return; }
+    timerLeft = timerEnd - sys_now();
+    timerRunning = false;
+}
+
+func timer_reset() {
+    timerRunning = false;
+    timerDone = false;
+    timerLeft = timer_seconds();
+}
+
+func toggle_dnd() {
+    dnd = !dnd;
+    sys_set("dnd", dnd);
+}
+
+func on_key(m) {
+    if (focus == "timer") {
+        if (m.key == "Backspace") { if (len(timerInput) > 0) { timerInput = substr(timerInput, 0, len(timerInput) - 1); } }
+        else if (m.key == "Enter") { focus = ""; }
+        else if (m.text != nil && m.text >= "0" && m.text <= "9" && len(timerInput) < 4) { timerInput = timerInput + m.text; timerLeft = timer_seconds(); }
+        return;
+    }
+    if (focus == "note") {
+        if (m.key == "Backspace") { if (len(noteText) > 0) { noteText = substr(noteText, 0, len(noteText) - 1); noteSaved = false; } }
+        else if (m.key == "Enter") { noteText = noteText + "\n"; noteSaved = false; }
+        else if (m.key == "Escape") { focus = ""; }
+        else if (m.text != nil && m.text != "") { noteText = noteText + m.text; noteSaved = false; }
+    }
+}
+
+func main(args) {
+    WID = args[0];
+    baseSec = 0;
+    var st = sys_settings();
+    dnd = st.dnd;
+    accent = st.accent;
+    timerLeft = 30;
+    load_note();
+    notes = sys_notes();
+    clips = sys_clip_hist();
+    paint();
+    while (true) {
+        var m = sys_recvt(0.2);
+        if (m == nil) {
+            timer_update();
+            notes = sys_notes();
+            paint();
+        } else if (m.type == "view") {
+            VW = m.w;
+            VH = m.h;
+            paint();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+            clips = sys_clip_hist();
+            notes = sys_notes();
+            timer_update();
+            paint();
+        } else if (m.type == "key") {
+            on_key(m);
+            paint();
+        } else if (m.type == "text") {
+            on_key(m);
+            paint();
+        } else if (m.type == "notice") {
+            notes = sys_notes();
+            paint();
+        } else if (m.type == "settings") {
+            if (m.key == "accent") { accent = m.value; }
+            if (m.key == "dnd") { dnd = m.value; }
+            paint();
+        } else if (m.type == "close-req") {
+            sys_send("wm", {type: "close", win: WID});
+            return 0;
+        }
+    }
+    return 0;
+}

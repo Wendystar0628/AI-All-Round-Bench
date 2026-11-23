@@ -1,0 +1,62 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem1.lean 包含主定理 problem1；单独编译退出码为 0，无错误、无 declaration uses 'sorry' 警告，仅有不影响计分的风格警告。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "评分版本中没有 Problem2.lean，也未找到包含主定理 problem2 的其他对应文件。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "Problem3.lean 单独编译成功且无 sorry 警告，但只有两个辅助引理，没有主定理 problem3，按缺题计 0 分。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "评分版本中没有 Problem4.lean，也未找到包含主定理 problem4 的其他对应文件。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "评分版本中没有 Problem5.lean，也未找到包含主定理 problem5 的其他对应文件。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem6.lean 包含主定理 problem6；单独编译退出码为 0，无错误、无 declaration uses 'sorry' 警告，仅有不影响计分的风格警告。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem7.lean 包含主定理 problem7；单独编译退出码为 0，无错误、无 declaration uses 'sorry' 警告，其余风格及弃用警告不影响计分。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "Problem8.lean 单独编译成功且无 sorry 警告，但只有辅助定义和引理，没有主定理 problem8，按缺题计 0 分。"
+    }
+  ],
+  "metrics": {
+    "总分": 37.5,
+    "满分": 100,
+    "得分题数": 3,
+    "独立编译文件数": 5
+  },
+  "notes": "评分版本：评原始提交的工作目录，副本位于 work/working-tree。最近提交为 7b5f37c191c03cef484acd4a8fe207453a88b43c；仅 Problem7.lean 相比该提交有内容变更，工作目录中的主定理 problem7 已完整且通过独立编译，因此不回退提交。对全部五个现有 Lean 文件分别调用 C:\\Lean\\lean.cmd，退出码均为 0，均无 sorry 警告；缺主定理的第 3、8 题仍按指南计 0 分。未另查公理或逐字核对命题；未运行性能基准或采集性能数据。编译日志及进程 PID 记录保存在 work/logs/working-tree。 所有本次启动的编译进程均已退出。"
+}

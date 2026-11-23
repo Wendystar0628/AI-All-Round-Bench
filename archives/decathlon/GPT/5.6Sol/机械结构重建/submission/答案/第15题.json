@@ -1,0 +1,15 @@
+{
+  "problem":"15","parts":[{"name":"1","title":"双轴错层传动箱体","features":[
+    {"type":"extrude","plane":"XY","origin":[0,0,-2],"loops":[{"rect":[-7,-5,107,75]}],"depth":3},
+    {"type":"extrude","plane":"XZ","loops":[{"path":[[0,0],[100,0],[100,34],[78,56],[24,56],[0,34]]}],"depth":-70},
+    {"type":"extrude","op":"cut","plane":"XZ","origin":[0,8,0],"loops":[{"rect":[8,8,44,44]},{"rect":[52,6,92,38]}],"depth":-54},
+    {"type":"extrude","plane":"XZ","origin":[0,-4,0],"loops":[{"circle":[28,40],"d":78}],"depth":-10},
+    {"type":"extrude","plane":"XZ","origin":[0,-4,0],"loops":[{"circle":[72,24],"d":74}],"depth":-10},
+    {"type":"extrude","plane":"XZ","origin":[0,-4,0],"loops":[{"rect":[0,0,100,3]}],"depth":-12},
+    {"type":"hole","plane":"XZ","origin":[0,-4,0],"at":[28,40],"d":38,"through":true,"cbore":{"d":68,"depth":2}},
+    {"type":"hole","plane":"XZ","origin":[0,-4,0],"at":[72,24],"d":32,"through":true,"cbore":{"d":52,"depth":3}},
+    {"type":"hole","plane":{"origin":[78,35,56],"normal":[0.707106781,0,0.707106781],"x_dir":[0,1,0]},"at":[0,0],"d":30,"depth":58},
+    {"type":"hole","plane":{"origin":[56,70,48],"normal":[0,0.422618262,0.906307787],"x_dir":[1,0,0]},"at":[0,0],"d":10,"depth":62},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[0,0],[100,0],[0,70],[100,70]],"d":10,"through":true,"reverse":true,"cbore":{"d":16,"depth":2}},
+    {"type":"fillet","radius":2,"edges":[[-7,-5,-1]]}
+  ]}]}

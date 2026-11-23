@@ -1,0 +1,115 @@
+// ============================================================
+// 程序控制台（Console.osprog）
+// 启动预置的演示程序并查看它们的实际输出，
+// 用于核对调度、消息与工作量读数。
+// ============================================================
+
+let win = 0
+let wm = 0
+let lines = []
+let clock = 0
+let lastPull = -9999
+let running = []
+let msg = ""
+
+fn boot() {
+  loop_main()
+}
+
+fn loop_main() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    wm = m.wm
+    send(wm, {"t": "win_open", "pid": self(), "key": "console", "title": "程序控制台", "w": 600, "h": 420})
+  } else if m.t == "win_opened" {
+    win = m.win
+    reg_win(win)
+    draw()
+  } else if m.t == "closing" {
+    kill(self())
+  } else if m.t == "click" {
+    on_click(m.x, m.y)
+  }
+}
+
+fn on_click(x, y) {
+  clock = time()
+  if y < 30 {
+    if x < 100 {
+      start("/System/Programs/Accumulate.osprog", "累加计算")
+    } else if x < 200 {
+      start("/System/Programs/SendMsg.osprog", "消息发送")
+    } else if x < 300 {
+      start("/System/Programs/RecvMsg.osprog", "消息接收")
+    } else if x < 400 {
+      start("/System/Programs/Compute.osprog", "持续计算")
+    } else if x < 500 {
+      stop_all()
+    }
+    draw()
+    return
+  }
+}
+
+fn start(path, name) {
+  let r = spawn(path, 1200)
+  if type(r) == "map" {
+    msg = "启动失败: " + r.error
+    return
+  }
+  push(running, {"pid": r, "name": name})
+  msg = "已启动 " + name + "（pid " + str(r) + "）"
+}
+
+fn stop_all() {
+  for r in running {
+    kill(r.pid)
+  }
+  running = []
+  msg = "已结束全部演示进程"
+}
+
+// ---------------- 绘制 ----------------
+fn draw() {
+  if win == 0 {
+    return
+  }
+  clock = time()
+  if clock - lastPull > 500 {
+    lastPull = clock
+    lines = console_tail(0, 40)
+  }
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 600, "h": 420, "c": "#0b1018", "r": 8})
+  let btns = ["累加", "发消息", "收消息", "持续计算", "全部结束"]
+  let bx = 4
+  for b in btns {
+    push(p, {"t": "r", "x": bx, "y": 3, "w": 92, "h": 22, "c": "#1c2433", "r": 5, "s": "#33405a"})
+    push(p, {"t": "t", "x": bx + 46, "y": 18, "s": b, "c": "#e8ecf4", "fs": 11, "a": "c"})
+    bx = bx + 96
+  }
+  push(p, {"t": "r", "x": 4, "y": 30, "w": 592, "h": 356, "c": "#070b12", "r": 5, "s": "#33405a"})
+  let y = 48
+  let n = 0
+  for l in lines {
+    push(p, {"t": "t", "x": 12, "y": y, "s": l, "c": "#7fd0ff", "fs": 11, "mw": 576})
+    y = y + 14
+    n = n + 1
+  }
+  push(p, {"t": "r", "x": 4, "y": 390, "w": 592, "h": 24, "c": "#121826", "r": 5})
+  push(p, {"t": "t", "x": 12, "y": 406, "s": msg, "c": "#43d9a3", "fs": 11, "mw": 580})
+  submit_window(win, p)
+}
+
+fn boot() {
+  loop_main()
+}
+
+// ---------------- 入口 ----------------
+boot()

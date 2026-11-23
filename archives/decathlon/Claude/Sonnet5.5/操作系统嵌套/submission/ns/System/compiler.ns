@@ -1,0 +1,539 @@
+// compiler.ns — NestScript 系统内编译器（自举）。把 .ns 源文件编译成 .nsx 可执行文件。
+// 用法：由内核以 {src, out} 参数启动；输出文件默认为源路径后加 x。修改本文件并用当前编译器编译自身，
+// 新编译器即用于此后启动的程序。
+// #noprelude
+fn print(x) { return sys("print", x); }
+fn exit(code) { return sys("exit", code); }
+// ---- 常量表 ----
+let O_CONST = 1; let O_NIL = 2; let O_TRUE = 3; let O_FALSE = 4; let O_POP = 5; let O_DUP = 6; let O_DUP2 = 7;
+let O_LOADL = 8; let O_STOREL = 9; let O_LOADG = 10; let O_STOREG = 11;
+let O_ADD = 12; let O_SUB = 13; let O_MUL = 14; let O_DIV = 15; let O_MOD = 16; let O_NEG = 17; let O_NOT = 18;
+let O_EQ = 19; let O_NE = 20; let O_LT = 21; let O_LE = 22; let O_GT = 23; let O_GE = 24;
+let O_JMP = 25; let O_JF = 26; let O_JT = 27; let O_JFK = 28; let O_JTK = 29;
+let O_CALL = 30; let O_CALLN = 31; let O_CALLV = 32; let O_RET = 33;
+let O_MKARR = 34; let O_MKMAP = 35; let O_GETI = 36; let O_SETI = 37; let O_SYS = 38; let O_FNREF = 39; let O_CALLX = 40; let O_FNREFX = 41;
+
+let KW = {let: 1, const: 1, fn: 1, if: 1, else: 1, while: 1, for: 1, of: 1, in: 1, return: 1, break: 1, continue: 1, true: 1, false: 1, nil: 1, include: 1};
+let OPS2 = ["==", "!=", "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "++", "--"];
+let OPS1 = "+-*/%()[]{},;:.?!=<>&";
+let BINPREC = {"||": 2, "&&": 3, "==": 4, "!=": 4, "<": 5, "<=": 5, ">": 5, ">=": 5, "+": 6, "-": 6, "*": 7, "/": 7, "%": 7};
+let BINOP = {"+": 12, "-": 13, "*": 14, "/": 15, "%": 16, "==": 19, "!=": 20, "<": 21, "<=": 22, ">": 23, ">=": 24};
+let ASSIGNOPS = {"=": 0, "+=": 12, "-=": 13, "*=": 14, "/=": 15, "%=": 16, "++": 12, "--": 13};
+
+fn fail(C, msg) {
+  let m = C.file + ":" + C.line + ": " + msg;
+  print("编译错误 " + m);
+  exit({ok: false, msg: m});
+}
+
+fn is_id_start(c) { return (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c == 95 || c == 36 || c > 127; }
+fn is_digit(c) { return c >= 48 && c <= 57; }
+fn is_hex(c) { return is_digit(c) || (c >= 97 && c <= 102) || (c >= 65 && c <= 70); }
+fn hex_val(s) {
+  let v = 0;
+  for (let i = 0; i < len(s); i++) {
+    let c = ord(s, i);
+    let d = c >= 97 ? c - 87 : (c >= 65 ? c - 55 : c - 48);
+    v = v * 16 + d;
+  }
+  return v;
+}
+
+// ---- 词法 ----
+fn next(C) {
+  let s = C.src; let p = C.p; let nl = false; let n = len(s);
+  while (true) {
+    let c = ord(s, p);
+    if (c == 10) { C.line++; nl = true; p++; }
+    else if (c == 32 || c == 9 || c == 13) { p++; }
+    else if (c == 47 && ord(s, p + 1) == 47) { while (p < n && ord(s, p) != 10) { p++; } }
+    else if (c == 47 && ord(s, p + 1) == 42) {
+      p += 2;
+      while (p < n && !(ord(s, p) == 42 && ord(s, p + 1) == 47)) { if (ord(s, p) == 10) { C.line++; nl = true; } p++; }
+      p += 2;
+    } else { break; }
+  }
+  C.nl = nl;
+  if (p >= n) { C.p = p; C.t = "e"; C.v = ""; return nil; }
+  let c = ord(s, p);
+  if (is_digit(c)) {
+    let q = p;
+    let c1 = substr(s, p + 1, 1);
+    if (c == 48 && (c1 == "x" || c1 == "X")) {
+      q = p + 2; while (is_hex(ord(s, q))) { q++; }
+      C.t = "n"; C.v = hex_val(substr(s, p + 2, q - p - 2));
+    } else {
+      while (is_digit(ord(s, q))) { q++; }
+      if (substr(s, q, 1) == "." && is_digit(ord(s, q + 1))) { q++; while (is_digit(ord(s, q))) { q++; } }
+      let e = substr(s, q, 1);
+      if ((e == "e" || e == "E") && (is_digit(ord(s, q + 1)) || ((substr(s, q + 1, 1) == "-" || substr(s, q + 1, 1) == "+") && is_digit(ord(s, q + 2))))) {
+        q += 2; while (is_digit(ord(s, q))) { q++; }
+      }
+      C.t = "n"; C.v = num(substr(s, p, q - p));
+    }
+    C.p = q; return nil;
+  }
+  if (is_id_start(c)) {
+    let q = p + 1;
+    while (q < n && (is_id_start(ord(s, q)) || is_digit(ord(s, q)))) { q++; }
+    let w = substr(s, p, q - p);
+    C.p = q; C.v = w; C.t = has(KW, w) ? "k" : "i"; return nil;
+  }
+  if (c == 34 || c == 39) {
+    let q = p + 1; let parts = [];
+    while (q < n && ord(s, q) != c) {
+      let ch = substr(s, q, 1);
+      if (ch == "\n") { C.line++; }
+      if (ch == "\\") {
+        q++; let e = substr(s, q, 1);
+        if (e == "n") { ch = "\n"; } else if (e == "t") { ch = "\t"; } else if (e == "r") { ch = "\r"; } else if (e == "0") { ch = chr(0); }
+        else if (e == "u") { ch = chr(hex_val(substr(s, q + 1, 4))); q += 4; }
+        else { ch = e; }
+      }
+      push(parts, ch); q++;
+    }
+    if (q >= n) { fail(C, "字符串未结束"); }
+    C.p = q + 1; C.t = "s"; C.v = join(parts, ""); return nil;
+  }
+  let two = substr(s, p, 2);
+  if (contains(OPS2, two)) { C.p = p + 2; C.t = "o"; C.v = two; return nil; }
+  let one = substr(s, p, 1);
+  if (contains(OPS1, one)) { C.p = p + 1; C.t = "o"; C.v = one; return nil; }
+  fail(C, "非法字符 " + one);
+}
+
+fn is_op(C, v) { return C.t == "o" && C.v == v; }
+fn is_kw(C, v) { return C.t == "k" && C.v == v; }
+fn expect_op(C, v) { if (!is_op(C, v)) { fail(C, "需要 \"" + v + "\"，实际为 \"" + C.v + "\""); } next(C); }
+fn expect_id(C) { if (C.t != "i") { fail(C, "需要标识符，实际为 \"" + C.v + "\""); } let v = C.v; next(C); return v; }
+
+// ---- 代码发射 ----
+fn emit(C, op, a, b) {
+  let f = C.fn; let at = len(f.code);
+  push(f.code, op); push(f.code, a == nil ? 0 : a); push(f.code, b == nil ? 0 : b); push(f.lines, C.line);
+  return at;
+}
+fn here(C) { return len(C.fn.code); }
+fn patch(C, at) { C.fn.code[at + 1] = len(C.fn.code); }
+fn const_idx(C, v) {
+  let key = (typeof(v) == "num" ? "n" : "s") + v;
+  let i = C.constMap[key];
+  if (i == nil) { i = len(C.consts); push(C.consts, v); C.constMap[key] = i; }
+  return i;
+}
+fn global_idx(C, name) {
+  let i = C.globalMap[name];
+  if (i == nil) { i = len(C.gnames); push(C.gnames, name); C.globalMap[name] = i; }
+  return i;
+}
+fn native_idx(C, name) {
+  let i = C.natMap[name];
+  if (i == nil) { i = len(C.nat); push(C.nat, name); C.natMap[name] = i; }
+  return i;
+}
+fn new_fn(C, name, file) {
+  return {name: name, argc: 0, code: [], lines: [], locals: [], depth: 0, nlocals: 0, loops: [], file: file, index: 0};
+}
+fn decl_local(C, name) {
+  let f = C.fn; let slot = f.nlocals; f.nlocals++;
+  push(f.locals, {name: name, slot: slot, depth: f.depth});
+  return slot;
+}
+fn find_local(C, name) {
+  let L = C.fn.locals;
+  for (let i = len(L) - 1; i >= 0; i--) { if (L[i].name == name) { return L[i].slot; } }
+  return -1;
+}
+fn begin_scope(C) { C.fn.depth++; }
+fn end_scope(C) {
+  let f = C.fn; f.depth--;
+  while (len(f.locals) > 0 && f.locals[len(f.locals) - 1].depth > f.depth) { pop(f.locals); }
+}
+
+// ---- 表达式 ----
+fn is_assign(C) { return C.t == "o" && has(ASSIGNOPS, C.v); }
+
+fn parse_expr(C) {
+  parse_binary(C, 2);
+  if (is_op(C, "?")) {
+    next(C);
+    let jf = emit(C, O_JF);
+    parse_expr(C); expect_op(C, ":");
+    let jend = emit(C, O_JMP);
+    patch(C, jf);
+    parse_expr(C);
+    patch(C, jend);
+  }
+}
+
+fn parse_binary(C, min_prec) {
+  parse_unary(C, min_prec == 2);
+  while (true) {
+    if (C.t != "o") { break; }
+    let op = C.v; let prec = BINPREC[op];
+    if (prec == nil || prec < min_prec) { break; }
+    next(C);
+    if (op == "&&") { let j = emit(C, O_JFK); parse_binary(C, prec + 1); patch(C, j); }
+    else if (op == "||") { let j = emit(C, O_JTK); parse_binary(C, prec + 1); patch(C, j); }
+    else { parse_binary(C, prec + 1); emit(C, BINOP[op]); }
+  }
+}
+
+fn parse_unary(C, can_assign) {
+  if (is_op(C, "-")) { next(C); parse_unary(C, false); emit(C, O_NEG); return nil; }
+  if (is_op(C, "!")) { next(C); parse_unary(C, false); emit(C, O_NOT); return nil; }
+  parse_postfix(C, can_assign);
+}
+
+fn parse_args(C) {
+  let n = 0;
+  expect_op(C, "(");
+  while (!is_op(C, ")")) {
+    parse_expr(C); n++;
+    if (is_op(C, ",")) { next(C); } else { break; }
+  }
+  expect_op(C, ")");
+  return n;
+}
+
+fn compound_rhs(C, kind) {
+  if (kind == "++" || kind == "--") { emit(C, O_CONST, const_idx(C, 1)); }
+  else { parse_expr(C); }
+}
+
+fn parse_postfix(C, can_assign) {
+  let assigned = parse_primary(C, can_assign);
+  while (!assigned) {
+    if (is_op(C, "(") && !C.nl) { let n = parse_args(C); emit(C, O_CALLV, n); }
+    else if ((is_op(C, "[") && !C.nl) || is_op(C, ".")) {
+      if (is_op(C, "[")) { next(C); parse_expr(C); expect_op(C, "]"); }
+      else {
+        next(C);
+        if (C.t != "i" && C.t != "k") { fail(C, "需要字段名"); }
+        let nm = C.v; next(C); emit(C, O_CONST, const_idx(C, nm));
+      }
+      if (can_assign && is_assign(C)) {
+        let k = C.v; next(C);
+        if (k == "=") { parse_expr(C); emit(C, O_SETI); }
+        else { emit(C, O_DUP2); emit(C, O_GETI); compound_rhs(C, k); emit(C, ASSIGNOPS[k]); emit(C, O_SETI); }
+        assigned = true;
+      } else { emit(C, O_GETI); }
+    } else { break; }
+  }
+}
+
+fn parse_primary(C, can_assign) {
+  let t = C.t; let v = C.v;
+  if (t == "n") { next(C); emit(C, O_CONST, const_idx(C, v)); return false; }
+  if (t == "s") { next(C); emit(C, O_CONST, const_idx(C, v)); return false; }
+  if (t == "k") {
+    if (v == "true") { next(C); emit(C, O_TRUE); return false; }
+    if (v == "false") { next(C); emit(C, O_FALSE); return false; }
+    if (v == "nil") { next(C); emit(C, O_NIL); return false; }
+    if (v == "fn") { next(C); parse_lambda(C); return false; }
+    fail(C, "表达式中不能使用关键字 " + v);
+  }
+  if (t == "o") {
+    if (v == "(") { next(C); parse_expr(C); expect_op(C, ")"); return false; }
+    if (v == "[") {
+      next(C); let n = 0;
+      while (!is_op(C, "]")) { parse_expr(C); n++; if (is_op(C, ",")) { next(C); } else { break; } }
+      expect_op(C, "]"); emit(C, O_MKARR, n); return false;
+    }
+    if (v == "{") {
+      next(C); let n = 0;
+      while (!is_op(C, "}")) {
+        if (C.t == "i" || C.t == "k") { emit(C, O_CONST, const_idx(C, C.v)); next(C); }
+        else if (C.t == "s") { emit(C, O_CONST, const_idx(C, C.v)); next(C); }
+        else if (C.t == "n") { emit(C, O_CONST, const_idx(C, str(C.v))); next(C); }
+        else { fail(C, "映射键必须是标识符或字符串"); }
+        expect_op(C, ":"); parse_expr(C); n++;
+        if (is_op(C, ",")) { next(C); } else { break; }
+      }
+      expect_op(C, "}"); emit(C, O_MKMAP, n); return false;
+    }
+    if (v == "&") { next(C); let nm = expect_id(C); emit(C, O_FNREFX, const_idx(C, nm)); return false; }
+    fail(C, "意外的 \"" + v + "\"");
+  }
+  if (t == "i") {
+    next(C);
+    if ((v == "sys" || v == "sysv") && is_op(C, "(") && !C.nl) {
+      let n = parse_args(C); emit(C, O_SYS, n, v == "sysv" ? 1 : 0); return false;
+    }
+    let slot = find_local(C, v);
+    if (is_op(C, "(") && !C.nl && slot < 0 && !has(C.globalMap, v)) {
+      let n = parse_args(C); emit(C, O_CALLX, const_idx(C, v), n); return false;
+    }
+    let load = slot >= 0 ? O_LOADL : O_LOADG;
+    let store = slot >= 0 ? O_STOREL : O_STOREG;
+    let idx = slot >= 0 ? slot : global_idx(C, v);
+    if (can_assign && is_assign(C)) {
+      let k = C.v; next(C);
+      if (k == "=") { parse_expr(C); }
+      else { emit(C, load, idx); compound_rhs(C, k); emit(C, ASSIGNOPS[k]); }
+      emit(C, store, idx); return true;
+    }
+    emit(C, load, idx); return false;
+  }
+  fail(C, "意外的记号 \"" + v + "\"");
+}
+
+fn parse_lambda(C) {
+  C.lambdaCount++;
+  let fi = compile_function(C, "$lambda" + C.lambdaCount);
+  emit(C, O_FNREF, fi);
+}
+
+fn compile_function(C, name) {
+  let f = new_fn(C, name, C.file);
+  let saved = C.fn; C.fn = f;
+  expect_op(C, "(");
+  while (!is_op(C, ")")) { decl_local(C, expect_id(C)); f.argc++; if (is_op(C, ",")) { next(C); } else { break; } }
+  expect_op(C, ")");
+  let idx = len(C.funcs); push(C.funcs, f);
+  if (substr(name, 0, 1) != "$") {
+    if (has(C.fnIdx, name) && !has(C.preludeNames, name)) { fail(C, "函数 " + name + " 重复定义"); }
+    if (C.inPrelude) { C.preludeNames[name] = 1; } else { del(C.preludeNames, name); }
+    C.fnIdx[name] = idx;
+  }
+  f.index = idx;
+  parse_block(C);
+  emit(C, O_NIL); emit(C, O_RET);
+  C.fn = saved;
+  return idx;
+}
+
+fn parse_block(C) {
+  expect_op(C, "{");
+  begin_scope(C);
+  while (!is_op(C, "}")) { if (C.t == "e") { fail(C, "缺少 \"}\""); } parse_stmt(C); }
+  next(C);
+  end_scope(C);
+}
+
+fn end_stmt(C) {
+  if (is_op(C, ";")) { next(C); return nil; }
+  if (C.nl || is_op(C, "}") || C.t == "e") { return nil; }
+  fail(C, "语句末尾需要 \";\"，实际为 \"" + C.v + "\"");
+}
+
+fn parse_var_decl(C) {
+  next(C);
+  while (true) {
+    let name = expect_id(C);
+    let is_global = C.fn == C.main && C.fn.depth == 0;
+    if (!is_global) {
+      if (is_op(C, "=")) { next(C); parse_expr(C); } else { emit(C, O_NIL); }
+      let slot = decl_local(C, name);
+      emit(C, O_STOREL, slot); emit(C, O_POP);
+    } else {
+      if (is_op(C, "=")) { next(C); parse_expr(C); } else { emit(C, O_NIL); }
+      emit(C, O_STOREG, global_idx(C, name)); emit(C, O_POP);
+    }
+    if (is_op(C, ",")) { next(C); continue; }
+    break;
+  }
+}
+
+fn push_loop(C) { let l = {breaks: [], conts: []}; push(C.fn.loops, l); return l; }
+fn pop_loop(C, l, cont_addr) {
+  pop(C.fn.loops);
+  let end = here(C);
+  for (let j of l.breaks) { C.fn.code[j + 1] = end; }
+  for (let j of l.conts) { C.fn.code[j + 1] = cont_addr; }
+}
+
+fn parse_stmt(C) {
+  let t = C.t; let v = C.v;
+  if (t == "o") {
+    if (v == "{") { parse_block(C); return nil; }
+    if (v == ";") { next(C); return nil; }
+  }
+  if (t == "k") {
+    if (v == "let" || v == "const") { parse_var_decl(C); end_stmt(C); return nil; }
+    if (v == "fn") {
+      next(C);
+      if (C.t == "i") {
+        if (C.fn != C.main) { fail(C, "函数只能在顶层声明"); }
+        let name = C.v; next(C);
+        compile_function(C, name); return nil;
+      }
+      parse_lambda(C); emit(C, O_POP); end_stmt(C); return nil;
+    }
+    if (v == "include") { parse_include(C); return nil; }
+    if (v == "if") {
+      next(C); expect_op(C, "("); parse_expr(C); expect_op(C, ")");
+      let jf = emit(C, O_JF);
+      parse_stmt(C);
+      if (is_kw(C, "else")) {
+        next(C);
+        let jend = emit(C, O_JMP);
+        patch(C, jf);
+        parse_stmt(C);
+        patch(C, jend);
+      } else { patch(C, jf); }
+      return nil;
+    }
+    if (v == "while") {
+      next(C);
+      let top = here(C);
+      expect_op(C, "("); parse_expr(C); expect_op(C, ")");
+      let jf = emit(C, O_JF);
+      let l = push_loop(C);
+      parse_stmt(C);
+      emit(C, O_JMP, top);
+      patch(C, jf);
+      pop_loop(C, l, top);
+      return nil;
+    }
+    if (v == "for") { parse_for(C); return nil; }
+    if (v == "return") {
+      next(C);
+      if (is_op(C, ";") || C.nl || is_op(C, "}") || C.t == "e") { emit(C, O_NIL); } else { parse_expr(C); }
+      emit(C, O_RET); end_stmt(C); return nil;
+    }
+    if (v == "break" || v == "continue") {
+      next(C);
+      let loops = C.fn.loops;
+      if (len(loops) == 0) { fail(C, v + " 只能在循环中使用"); }
+      let l = loops[len(loops) - 1];
+      let j = emit(C, O_JMP);
+      if (v == "break") { push(l.breaks, j); } else { push(l.conts, j); }
+      end_stmt(C); return nil;
+    }
+  }
+  parse_expr(C); emit(C, O_POP); end_stmt(C);
+}
+
+fn parse_for(C) {
+  next(C); expect_op(C, "(");
+  begin_scope(C);
+  if (is_kw(C, "let") || is_kw(C, "const")) {
+    let sp = C.p; let sl = C.line; let st = C.t; let sv = C.v; let sn = C.nl;
+    next(C);
+    if (C.t == "i") {
+      let name = C.v; next(C);
+      if (is_kw(C, "of") || is_kw(C, "in")) {
+        let is_in = C.v == "in"; next(C);
+        parse_expr(C); expect_op(C, ")");
+        if (is_in) { emit(C, O_CALLN, native_idx(C, "keys"), 1); }
+        let arr = decl_local(C, "$arr" + C.fn.nlocals); emit(C, O_STOREL, arr); emit(C, O_POP);
+        let idx = decl_local(C, "$i" + C.fn.nlocals); emit(C, O_CONST, const_idx(C, 0)); emit(C, O_STOREL, idx); emit(C, O_POP);
+        let top = here(C);
+        emit(C, O_LOADL, idx); emit(C, O_LOADL, arr); emit(C, O_CALLN, native_idx(C, "len"), 1); emit(C, O_LT);
+        let jf = emit(C, O_JF);
+        let x = decl_local(C, name);
+        emit(C, O_LOADL, arr); emit(C, O_LOADL, idx); emit(C, O_GETI); emit(C, O_STOREL, x); emit(C, O_POP);
+        let l = push_loop(C);
+        parse_stmt(C);
+        let cont = here(C);
+        emit(C, O_LOADL, idx); emit(C, O_CONST, const_idx(C, 1)); emit(C, O_ADD); emit(C, O_STOREL, idx); emit(C, O_POP);
+        emit(C, O_JMP, top);
+        patch(C, jf);
+        pop_loop(C, l, cont);
+        end_scope(C);
+        return nil;
+      }
+    }
+    C.p = sp; C.line = sl; C.t = st; C.v = sv; C.nl = sn;
+  }
+  if (is_op(C, ";")) { next(C); }
+  else if (is_kw(C, "let") || is_kw(C, "const")) { parse_var_decl(C); expect_op(C, ";"); }
+  else { parse_expr(C); emit(C, O_POP); expect_op(C, ";"); }
+  let top = here(C);
+  let jf = -1;
+  if (!is_op(C, ";")) { parse_expr(C); jf = emit(C, O_JF); }
+  expect_op(C, ";");
+  let jbody = emit(C, O_JMP);
+  let step_at = here(C);
+  if (!is_op(C, ")")) { parse_expr(C); emit(C, O_POP); }
+  expect_op(C, ")");
+  emit(C, O_JMP, top);
+  patch(C, jbody);
+  let l = push_loop(C);
+  parse_stmt(C);
+  emit(C, O_JMP, step_at);
+  if (jf >= 0) { patch(C, jf); }
+  pop_loop(C, l, step_at);
+  end_scope(C);
+}
+
+fn parse_include(C) {
+  next(C);
+  if (C.t != "s") { fail(C, "include 需要字符串路径"); }
+  let path = C.v; next(C);
+  end_stmt(C);
+  if (C.fn != C.main) { fail(C, "include 只能在顶层"); }
+  include_file(C, path);
+}
+
+fn read_source(path) {
+  let st = sys("fs_stat", path);
+  if (st == nil || st.err != nil) { return nil; }
+  let text = sys("fs_read", path);
+  if (typeof(text) != "str") { return nil; }
+  return {text: text, sig: st.sig};
+}
+
+fn include_file(C, path) {
+  if (has(C.included, path)) { return nil; }
+  C.included[path] = 1;
+  let r = read_source(path);
+  if (r == nil) { fail(C, "找不到包含文件 " + path); }
+  push(C.deps, [path, r.sig == nil ? "" : r.sig]);
+  let sv_src = C.src; let sv_p = C.p; let sv_line = C.line; let sv_t = C.t; let sv_v = C.v; let sv_nl = C.nl; let sv_file = C.file;
+  C.src = r.text; C.p = 0; C.line = 1; C.file = path;
+  next(C);
+  while (C.t != "e") { parse_stmt(C); }
+  C.src = sv_src; C.p = sv_p; C.line = sv_line; C.t = sv_t; C.v = sv_v; C.nl = sv_nl; C.file = sv_file;
+}
+
+fn link(C, native_set) {
+  for (let f of C.funcs) {
+    let code = f.code;
+    for (let i = 0; i < len(code); i += 3) {
+      let op = code[i];
+      if (op == O_CALLX) {
+        let name = C.consts[code[i + 1]];
+        if (has(C.fnIdx, name)) { code[i] = O_CALL; code[i + 1] = C.fnIdx[name]; }
+        else if (has(native_set, name)) { code[i] = O_CALLN; code[i + 1] = native_idx(C, name); }
+        else { C.file = f.file; C.line = f.lines[i / 3]; fail(C, "未定义的函数 " + name); }
+      } else if (op == O_FNREFX) {
+        let name = C.consts[code[i + 1]];
+        if (!has(C.fnIdx, name)) { C.file = f.file; C.line = f.lines[i / 3]; fail(C, "未定义的函数引用 &" + name); }
+        code[i] = O_FNREF; code[i + 1] = C.fnIdx[name];
+      }
+    }
+  }
+}
+
+fn compile(src, name, sig, prelude, native_set) {
+  let C = {src: src, p: 0, line: 1, file: name, t: "e", v: "", nl: false,
+    consts: [], constMap: {}, globalMap: {}, gnames: [], nat: [], natMap: {},
+    funcs: [], fnIdx: {}, fn: nil, main: nil, included: {}, deps: [], lambdaCount: 0, inPrelude: false, preludeNames: {}};
+  let main = new_fn(C, "$main", name); main.index = 0;
+  C.main = main; C.fn = main; push(C.funcs, main);
+  if (prelude != nil && !contains(slice(src, 0, 200), "#noprelude")) { C.inPrelude = true; include_file(C, prelude); C.inPrelude = false; }
+  C.src = src; C.p = 0; C.line = 1; C.file = name;
+  next(C);
+  while (C.t != "e") { parse_stmt(C); }
+  emit(C, O_NIL); emit(C, O_RET);
+  link(C, native_set);
+  let fl = [];
+  for (let f of C.funcs) { push(fl, {n: f.name, a: f.argc, l: f.nlocals, c: f.code, ln: f.lines, fl: f.file}); }
+  return {v: 1, n: name, sig: sig, deps: C.deps, k: C.consts, f: fl, g: len(C.gnames), gn: C.gnames, nat: C.nat};
+}
+
+// ---- 入口 ----
+let A = args();
+let src_path = A.src;
+let out_path = A.out == nil ? src_path + "x" : A.out;
+let nset = {};
+for (let nm of native_names()) { nset[nm] = 1; }
+let r = read_source(src_path);
+if (r == nil) { print("找不到源文件 " + src_path); exit({ok: false, msg: "找不到源文件 " + src_path}); }
+let prog = compile(r.text, src_path, r.sig == nil ? "" : r.sig, A.prelude == nil ? "/System/lib/sys.ns" : A.prelude, nset);
+let w = sys("fs_write", out_path, json_stringify(prog));
+if (w != nil && w.err != nil) { print("写入失败 " + w.err); exit({ok: false, msg: "写入失败 " + w.err}); }
+print("编译完成 " + src_path + " → " + out_path + "（" + len(prog.f) + " 个函数）");
+exit({ok: true, out: out_path});

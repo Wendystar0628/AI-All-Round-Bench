@@ -1,0 +1,12 @@
+# 累加 0 到 99。改循环上界后再运行，结果会变。
+
+fn main() {
+  let i = 0;
+  let s = 0;
+  while (i < 100) {
+    s = s + i;
+    i = i + 1;
+  }
+  log(s);
+  return s;
+}

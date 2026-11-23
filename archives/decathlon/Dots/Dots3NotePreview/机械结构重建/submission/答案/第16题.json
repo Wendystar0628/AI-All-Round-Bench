@@ -1,0 +1,15 @@
+{
+  "problem": "16",
+  "parts": [
+    {"name": "1", "title": "双蜗室异面三通泵壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-45, -40, 45, 40]}], "depth": 90},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [0, 0], "d": 50, "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 90], "at": [0, 0], "d": 40, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [-15, 0, 90], "at": [0, 0], "d": 30, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [15, 0, 90], "at": [0, 0], "d": 30, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [0, -15, 90], "at": [0, 0], "d": 22, "depth": 35},
+      {"type": "hole", "plane": "XY", "origin": [0, 15, 90], "at": [0, 0], "d": 22, "depth": 35},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -40, 0], [0, 40, 0], [-45, 0, 0], [45, 0, 0]]}
+    ]}
+  ]
+}

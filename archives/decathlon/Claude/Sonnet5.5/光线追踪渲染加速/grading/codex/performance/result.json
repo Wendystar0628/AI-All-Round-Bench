@@ -1,0 +1,51 @@
+{
+    "task":  "光线追踪渲染加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "score":  83.4,
+                      "name":  "渲染加速",
+                      "reason":  "基线最小用时 510.065900 ms，提交 67.773800 ms，加速 7.526004 倍，速度分 q=83.390759；5 次计时画面及 12 个隐藏输入全部通过，c=h=1。源码核查未发现实质性违规。",
+                      "max":  100
+                  }
+              ],
+    "metrics":  {
+                    "timing_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "R_ms":  510.0659,
+                    "speedup":  7.526004149095964,
+                    "evaluation_report":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Claude\\Sonnet5.5\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json",
+                    "q":  83.39075851799845,
+                    "hidden_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "source_sha256":  "22579797A4E292C7BFF2878BF163A652E742F5D578AC78660C68544BE8316C3C",
+                    "h":  1,
+                    "c":  1,
+                    "score_unrounded":  83.39075851799845,
+                    "public_boundary_factors":  [
+                                                    1,
+                                                    1,
+                                                    1
+                                                ],
+                    "C_ms":  67.7738
+                },
+    "notes":  "评的是作答结束时工作目录的副本，不看 git 提交。副本 solution.cu 与原文件 SHA256 一致；使用官方主程序和头文件。正式 evaluate.py 完整运行一次，formal=true：逻辑处理器16–27、高优先级、基线与提交各5次取最小值，3个公开边界和12个隐藏输入均通过。源码审查：静态指针仅复用分配容量，每次重新建树；主机线程在 render 返回前全部 join；NO_AO、SKIPFB 等实验分支未启用，未发现实质性违规。所有本会话启动的评测程序及运行子进程均已退出。"
+}

@@ -1,0 +1,19 @@
+{
+  "problem": "05",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双层交汇混流阀箱",
+      "features": [
+        {"type":"extrude","plane":"XZ","origin":[0,54,0],"loops":[{"path":[[-4,0],[64,0],[64,20],[42,40],[0,40],[0,6],[-4,6]]}],"depth":58},
+        {"type":"hole","plane":"XY","origin":[0,0,6],"at":[[0,0],[60,0],[0,50],[60,50]],"d":8,"through":true},
+        {"type":"hole","plane":"XZ","origin":[0,48,0],"at":[[16,24]],"d":26,"depth":14,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,48,0],"at":[[46,20]],"d":24,"depth":14,"reverse":true},
+        {"type":"hole","plane":"YZ","origin":[0,0,0],"at":[[22,22]],"d":24,"depth":14,"reverse":true},
+        {"type":"hole","plane":"XY","origin":[0,0,40],"at":[[30,24]],"d":14,"depth":16},
+        {"type":"hole","plane":"XY","origin":[0,0,40],"at":[[30,24]],"d":20,"depth":8},
+        {"type":"hole","plane":{"origin":[0,0,0],"normal":[0.7071,0,0.7071],"x_dir":[0,1,0]},"origin":[42,24,38],"at":[0,0],"d":16,"depth":62}
+      ]
+    }
+  ]
+}

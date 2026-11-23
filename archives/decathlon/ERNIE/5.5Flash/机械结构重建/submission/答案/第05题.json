@@ -1,0 +1,18 @@
+{
+  "problem": "05",
+  "parts": [
+    {"name": "1", "title": "双层交汇混流阀箱", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 90, 60]}], "depth": 12},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [0, 0, 90, 60]}], "depth": 48},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[30, 30]], "d": 34, "depth": 16, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[30, 30]], "d": 24, "through": true, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[30, 48]], "d": 16, "through": true, "reverse": true},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 30], "d": 26}], "through": true},
+      {"type": "hole", "plane": {"origin": [70, 30, 60], "normal": [0.7071, 0, 0.7071], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 16, "depth": 62},
+      {"type": "hole", "plane": {"origin": [40, 45, 60], "normal": [0, 0.5, 0.866], "x_dir": [1, 0, 0]}, "at": [0, 0], "d": 8, "depth": 38},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [[18, 18], [72, 18], [18, 42], [72, 42]], "d": 8, "depth": 10},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 6]]},
+      {"type": "chamfer", "distance": 1, "edges": [[45, 0, 0]]}
+    ]}
+  ]
+}

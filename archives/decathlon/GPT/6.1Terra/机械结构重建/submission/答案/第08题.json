@@ -1,0 +1,26 @@
+﻿{"problem":"08","parts":[{"name":"1","title":"交错隔板双层润滑箱","features":[
+ {"type":"extrude","plane":"XY","loops":[{"rect":[-12,-12,186,130]}],"depth":12},
+ {"type":"extrude","plane":"XY","origin":[0,0,12],"loops":[{"rect":[0,0,174,118]}],"depth":84},
+ {"type":"extrude","plane":"XY","origin":[0,0,12],"loops":[{"rect":[54,118,118,126]}],"depth":28},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,12],"loops":[{"rect":[10,10,54,108]},{"rect":[118,10,164,108]}],"depth":74},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,12],"loops":[{"rect":[62,10,110,108]}],"depth":32},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,52],"loops":[{"rect":[62,10,110,108]}],"depth":34},
+ {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[30,64],"d":24,"depth":10},
+ {"type":"hole","plane":"XY","origin":[0,0,96],"at":[86,78],"d":18,"depth":10,"cbore":{"d":30,"depth":5}},
+ {"type":"hole","plane":"XY","origin":[0,0,12],"at":[[-6,-6],[-6,124],[180,-6],[180,124]],"d":8,"through":true},
+ {"type":"hole","plane":"XY","origin":[0,0,96],"at":[[5,30],[169,88]],"d":5,"depth":16},
+ {"type":"extrude","op":"cut","plane":"XZ","loops":[{"rect":[68,62,104,74]}],"depth":-10},
+ {"type":"hole","plane":"XZ","origin":[0,118,0],"at":[142,28],"d":24,"depth":10,"reverse":true},
+ {"type":"hole","plane":"XY","origin":[0,0,52],"at":[86,32],"d":18,"depth":8},
+ {"type":"hole","plane":"XY","origin":[0,0,12],"at":[140,78],"d":12,"depth":12},
+ {"type":"fillet","radius":2,"edges":[[-12,-12,6]]},
+ {"type":"chamfer","distance":1,"edges":[[80,-12,0]]}
+]}]}
+
+
+
+
+
+
+
+

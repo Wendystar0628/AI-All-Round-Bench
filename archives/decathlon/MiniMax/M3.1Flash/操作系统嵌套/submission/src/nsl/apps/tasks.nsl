@@ -1,0 +1,151 @@
+/*
+ * 子系统应用：进程管理器（NSL 程序）
+ * 操作本系统自己的进程表：查看状态、工作量、剩余工作、内存、消息与错误；
+ * 执行挂起、继续、结束；调整额度与配额。
+ */
+var WIN = 0;
+var ROWS = [];
+var STATUS = "就绪";
+var SELECT = 0;
+var BUDGET = 0;
+var MEMQ = 0;
+var STOQ = 0;
+
+function A(o, k) { return obj.get(o, k); }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function wid(id, type, x, y, ww, wh, value, data, testid) {
+  return [id, type, x, y, ww, wh, value, data, testid];
+}
+
+function refresh() {
+  ROWS = [];
+  var res = call("proc.list", {});
+  var list = res;
+  for (var i = 0; i < arr.len(list); i = i + 1) {
+    var p = arr.get(list, i);
+    var nm = A(p, "name");
+    var st = A(p, "state");
+    var used = A(p, "used");
+    var quota = A(p, "quota");
+    var remain = A(p, "remaining");
+    var err = A(p, "error");
+    var mem = A(p, "memory");
+    var inbox = A(p, "inbox");
+    var line = "PID " + num.toStr(A(p, "pid")) + " · " + nm + " · " + st +
+      " · 消耗 " + num.toStr(used) + "/" + num.toStr(quota) +
+      " · 剩余 " + num.toStr(remain) +
+      " · 内存 " + num.toStr(math.floor(mem / 1024)) + "K" +
+      " · 消息 " + num.toStr(inbox);
+    if (err != null && str.len(strOf(err)) > 0) { line = line + " · 错误：" + err; }
+    arr.push(ROWS, [num.toStr(A(p, "pid")), line, "tasks-item"]);
+  }
+  var rules = call("sys.rules", {});
+  var rtxt = "";
+  for (var k = 0; k < arr.len(rules); k = k + 1) {
+    var kv = arr.get(rules, k);
+    rtxt = rtxt + arr.get(kv, 0) + "=" + arr.get(kv, 1) + "  ";
+  }
+  var info = call("sys.info", {});
+  BUDGET = num.toInt(A(info, "budgetTotal"));
+  MEMQ = num.toInt(A(info, "memQuota"));
+  STOQ = num.toInt(A(info, "storageQuota"));
+  draw(rtxt, BUDGET, MEMQ, STOQ);
+}
+
+function draw(rules, budget, memq, storq) {
+  var ws = [];
+  arr.push(ws, wid("rows", "list", 12, 8, 596, 250, "", ROWS, "tasks-list"));
+  arr.push(ws, wid("susp", "button", 12, 264, 70, 26, "挂起", null, "tasks-suspend"));
+  arr.push(ws, wid("resu", "button", 86, 264, 70, 26, "继续", null, "tasks-resume"));
+  arr.push(ws, wid("kill", "button", 160, 264, 70, 26, "结束", null, "tasks-kill"));
+  arr.push(ws, wid("grant", "button", 234, 264, 86, 26, "增加额度", null, "tasks-grant"));
+  arr.push(ws, wid("bud", "input", 324, 264, 96, 26, num.toStr(budget), null, "tasks-budget"));
+  arr.push(ws, wid("mem", "input", 424, 264, 96, 26, num.toStr(math.floor(memq / 1024 / 1024)), null, "tasks-memory"));
+  arr.push(ws, wid("sto", "input", 524, 264, 84, 26, num.toStr(math.floor(storq / 1024 / 1024)), null, "tasks-storage"));
+  arr.push(ws, wid("apply", "button", 424, 296, 184, 26, "应用配额", null, "tasks-apply"));
+  arr.push(ws, wid("rules", "text", 12, 296, 404, 26, "规则：" + rules, null, "tasks-rules"));
+  arr.push(ws, wid("stat", "text", 12, 330, 596, 22, STATUS, null, "tasks-status"));
+  arr.push(ws, wid("help", "text", 12, 356, 596, 40,
+    "预算=每逻辑步可执行的指令数；额度是进程上限，不是额外预算。消耗按实际执行指令计。",
+    null, "tasks-help"));
+  call("ui.declare", { windowId: WIN, widgets: ws });
+}
+
+function selPid() {
+  if (arr.len(ROWS) == 0) { return 0; }
+  if (SELECT >= arr.len(ROWS)) { SELECT = arr.len(ROWS) - 1; }
+  if (SELECT < 0) { SELECT = 0; }
+  return num.toInt(arr.get(ROWS, SELECT, 0));
+}
+
+function onEvent(ev) {
+  var type = A(ev, "type");
+  var w = A(ev, "widget");
+  var ly = num.toInt(A(ev, "ly"));
+  if (w == "rows") {
+    var row = math.floor(ly / 22);
+    if (row >= 0 && row < arr.len(ROWS)) { SELECT = row; STATUS = "已选择 " + arr.get(ROWS, row, 1); }
+    refresh();
+    return;
+  }
+  if (type == "value") {
+    if (w == "bud") { BUDGET = num.toInt(A(ev, "value")); return; }
+    if (w == "mem") { MEMQ = num.toInt(A(ev, "value")) * 1024 * 1024; return; }
+    if (w == "sto") { STOQ = num.toInt(A(ev, "value")) * 1024 * 1024; return; }
+    return;
+  }
+  if (type != "click") { return; }
+  if (w == "susp") {
+    var res = call("proc.suspend", { pid: selPid() });
+    STATUS = A(res, "ok") ? "已挂起进程" : "挂起失败";
+    refresh(); return;
+  }
+  if (w == "resu") {
+    var res2 = call("proc.resume", { pid: selPid() });
+    STATUS = A(res2, "ok") ? "已继续进程" : "继续失败";
+    refresh(); return;
+  }
+  if (w == "kill") {
+    var res3 = call("proc.kill", { pid: selPid() });
+    STATUS = A(res3, "ok") ? "已结束进程" : "结束失败";
+    refresh(); return;
+  }
+  if (w == "grant") {
+    call("sys.setrule", { name: "quota", value: "12000" });
+    STATUS = "进程额度上限已调整为 12000 指令/轮";
+    refresh(); return;
+  }
+  if (w == "apply") {
+    var res4 = call("sys.quota", { budget: BUDGET, memory: MEMQ, storage: STOQ });
+    STATUS = A(res4, "ok") ? ("配额已更新：预算 " + num.toStr(BUDGET) + " 指令/步") : "配额更新失败";
+    refresh(); return;
+  }
+}
+
+function main() {
+  var r = call("win.open", { app: "tasks", title: "进程管理器", w: 640, h: 420 });
+  WIN = num.toInt(A(r, "id"));
+  refresh();
+  while (true) {
+    var guard = 0;
+    var got = 0;
+    while (guard < 32) {
+      guard = guard + 1;
+      var raw = sys.takeMsg();
+      if (raw == null || str.len(raw) == 0) { break; }
+      got = got + 1;
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        var et = A(ev, "type");
+        if (et == "click" || et == "value") { onEvent(ev); }
+      }
+    }
+    if (got == 0) { nap(20); refresh(); }
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

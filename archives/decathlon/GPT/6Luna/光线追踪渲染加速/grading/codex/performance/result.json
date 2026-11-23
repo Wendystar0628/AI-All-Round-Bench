@@ -1,0 +1,46 @@
+{
+    "task":  "光线追踪渲染加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "渲染加速",
+                      "max":  100,
+                      "score":  34.3,
+                      "reason":  "官方 evaluate.py 正式评测：R=516.714100 ms，C=190.324800 ms，加速比 2.714907，q=34.345275324；5次计时及12个隐藏输入全部通过，c=h=1，最终得分34.3。源码核查未发现实质性违规。"
+                  }
+              ],
+    "metrics":  {
+                    "R_ms":  516.7141,
+                    "C_ms":  190.3248,
+                    "s":  2.7149068329508292,
+                    "q":  34.3452753236548,
+                    "c":  1,
+                    "h":  1,
+                    "timed_factors":  [
+                                          1,
+                                          1,
+                                          1,
+                                          1,
+                                          1
+                                      ],
+                    "hidden_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "score_unrounded":  34.3452753236548,
+                    "formal":  true,
+                    "report":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GPT\\6Luna\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json"
+                },
+    "notes":  "评的是作答结束时工作目录内容，已完整复制到 work\\submission；不看 git 提交。源码 SHA256=9A2EE2DCE66E29994B71BF07A782B5322D2CD4E9071575716AC125006888CD43。采用官方评分端源码、头文件与固定编译命令，16–27号逻辑处理器、高优先级，各5次取最小值；仅运行一次正式 evaluate.py。 3个公开边界输入也全部通过。扫描唯一命中的静态节点指针为内存复用，每次调用均重建并上传当前场景；未发现作弊。所有本次启动的评测进程均已退出，无环境异常。"
+}

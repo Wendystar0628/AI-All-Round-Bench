@@ -1,0 +1,22 @@
+# 图表接收进程。跨层表格消息先到这里，再按顺序交给绘图进程。
+
+fn main() {
+  let draw = 0;
+  while (true) {
+    let m = wait_msg();
+    draw = ingest(draw, m);
+    let g = 0;
+    while (g < 12) {
+      let e = recv();
+      if (e == null) { g = 100; }
+      else { draw = ingest(draw, e); g = g + 1; }
+    }
+  }
+}
+
+fn ingest(draw, m) {
+  if (m == null) { return draw; }
+  if (m.tag == "boot") { return m.draw; }
+  if (draw != 0 && m.tag != "tick") { send(draw, m); }
+  return draw;
+}

@@ -1,0 +1,24 @@
+{
+  "problem": "14",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏置双出口泵体铸件",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 177, 116]}], "depth": 14, "name": "地脚底板"},
+        {"type": "fillet", "radius": 5, "edges": [[0, 0, 7], [177, 0, 7], [0, 116, 7], [177, 116, 7]], "name": "地脚四竖棱R5"},
+        {"type": "extrude", "plane": "ZX", "origin": [0, 10, 0], "loops": [{"path": [[0, 21], [55, 21], [95, 55], [95, 153], [0, 153]]}], "depth": 96, "name": "泵体 斜肩"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 95], "loops": [{"rect": [50, 34, 88, 82]}], "depth": 20, "name": "顶部接头"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 25], "loops": [{"rect": [153, 34, 191, 82]}], "depth": 70, "name": "出口法兰"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 34], "loops": [{"rect": [130, 44, 195, 72]}], "depth": 19, "name": "出口通道"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 106, 0], "at": [[52, 84]], "d": 54, "depth": 106, "name": "泵腔Φ54"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 106, 0], "at": [[52, 84]], "d": 66, "depth": 10, "name": "前沉孔Φ66"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 106, 0], "at": [[52, 84]], "d": 46, "depth": 30, "name": "轴承孔Φ46"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 106, 0], "at": [[52, 84]], "d": 32, "depth": 40, "name": "轴孔Φ32"},
+        {"type": "hole", "plane": {"origin": [40, 70, 95], "normal": [0, 0.866, 0.5], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 8, "depth": 52, "name": "斜孔Φ8 深52 倾角60 方位90"},
+        {"type": "hole", "plane": {"origin": [40, 30, 95], "normal": [0, -0.819, 0.574], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 10, "depth": 50, "name": "斜孔Φ10 深50 倾角55 方位270"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[12, 12], [165, 12], [12, 104], [165, 104]], "d": 9, "through": true, "cbore": {"d": 16, "depth": 3}, "name": "地脚孔Φ9 沉孔Φ16"}
+      ]
+    }
+  ]
+}

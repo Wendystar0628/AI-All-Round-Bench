@@ -1,0 +1,15 @@
+{
+  "name": "taiyangyu-fishing-port",
+  "version": "1.0.0",
+  "private": true,
+  "description": "太阳雨中的小渔港堤岸 - Three.js 微缩场景",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --format=iife --outfile=dist/app.js --minify"
+  },
+  "dependencies": {
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

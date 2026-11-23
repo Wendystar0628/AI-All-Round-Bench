@@ -1,0 +1,80 @@
+/*
+ * 子系统应用：时序进程（NSL 程序）
+ * ------------------------------------------------------------
+ * 播放器把“播放位置”交给时序进程管理：它按所属系统的虚拟时间推进播放头，
+ * 并把每一拍的消息发给飞行场景进程与环境特效进程。
+ * 修改本文件即可改变播放节奏与时序推进方式。
+ */
+var PARENT = 0;
+var SCENE = 0;
+var FX = 0;
+var PLAYING = 0;
+var POS = 0;
+var RATE = 1;
+var LAST = 0;
+var MODE = "show";
+var DUR = 15;
+var LOOP = 1;
+
+function A(o, k) { return obj.get(o, k); }
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function send(to, obj) { call("msg.send", { to: to, payload: json.str(obj) }); }
+
+function onCtl(m) {
+  var a = A(m, "action");
+  if (a == "play") { PLAYING = 1; if (POS >= DUR - 0.01) { POS = 0; } }
+  if (a == "pause") { PLAYING = 0; }
+  if (a == "stop") { PLAYING = 0; POS = 0; }
+  if (a == "seek") { POS = num.toInt(A(m, "t")) / 1000; if (POS < 0) { POS = 0; } }
+  if (a == "rate") { RATE = num.toInt(A(m, "rate")) / 100; if (RATE <= 0) { RATE = 1; } }
+  if (a == "mode") { MODE = A(m, "mode") == null ? "show" : A(m, "mode"); }
+  if (a == "loop") { LOOP = A(m, "loop") == 1 ? 1 : 0; }
+}
+
+function main() {
+  var args = json.parse(sys.syscall("app.args", "{}"));
+  PARENT = num.toInt(A(args, "parent"));
+  SCENE = num.toInt(A(args, "scenePid"));
+  FX = num.toInt(A(args, "fxPid"));
+  DUR = num.toInt(A(args, "dur"));
+  if (DUR <= 0) { DUR = 15; }
+  LAST = sys.time();
+  while (true) {
+    var raw = sys.takeMsg();
+    if (raw != null && str.len(raw) > 0) {
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        if (A(ev, "type") == "ctl") { onCtl(ev); }
+      }
+    }
+    var now = sys.time();
+    var dt = (now - LAST) / 1000;
+    LAST = now;
+    if (dt < 0) { dt = 0; }
+    if (dt > 0.5) { dt = 0.5; }
+    if (PLAYING == 1) {
+      POS = POS + dt * RATE;
+      if (POS >= DUR) {
+        if (LOOP == 1) { POS = 0; } else { POS = DUR; PLAYING = 0; }
+      }
+    }
+    var tick = [];
+    oput(tick, "type", "tick");
+    oput(tick, "t", POS);
+    oput(tick, "playing", PLAYING);
+    oput(tick, "mode", MODE);
+    oput(tick, "dur", DUR);
+    oput(tick, "rate", RATE);
+    send(PARENT, tick);
+    /* 时序进程直接驱动飞行场景进程 */
+    if (SCENE > 0) { send(SCENE, tick); }
+    nap(16);
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

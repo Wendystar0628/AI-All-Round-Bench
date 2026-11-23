@@ -1,0 +1,26 @@
+{
+  "problem": "06",
+  "parts": [
+    {"name": "1", "title": "双斜接口差压控制块", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [-10, -10, 166, 114]}], "depth": 12},
+      {"type": "extrude", "name": "本体", "plane": "XZ", "loops": [{"path": [[0, 0], [0, 48], [32, 80], [118, 80], [156, 42], [156, 0]]}], "depth": [-104, 0]},
+      {"type": "extrude", "name": "后凸台", "plane": "XZ", "origin": [0, 104, 0], "loops": [{"rect": [52, 44, 100, 76]}], "depth": [-8, 0]},
+      {"type": "extrude", "op": "cut", "name": "主孔Φ28", "plane": "YZ", "origin": [-1, 0, 0], "loops": [{"circle": [52, 30], "d": 28}], "depth": 158},
+      {"type": "extrude", "op": "cut", "name": "左端沉孔Φ40", "plane": "YZ", "origin": [-1, 0, 0], "loops": [{"circle": [52, 30], "d": 40}], "depth": 23},
+      {"type": "extrude", "op": "cut", "name": "右端沉孔Φ36", "plane": "YZ", "origin": [130, 0, 0], "loops": [{"circle": [52, 30], "d": 36}], "depth": 27},
+      {"type": "extrude", "op": "cut", "name": "前沉孔Φ30", "plane": "XZ", "origin": [0, 8, 0], "loops": [{"circle": [76, 60], "d": 30}], "depth": [0, 9]},
+      {"type": "extrude", "op": "cut", "name": "贯穿孔Φ18", "plane": "XZ", "origin": [0, 113, 0], "loops": [{"circle": [76, 60], "d": 18}], "depth": [0, 114]},
+      {"type": "extrude", "op": "cut", "name": "后沉孔Φ26", "plane": "XZ", "origin": [0, 113, 0], "loops": [{"circle": [76, 60], "d": 26}], "depth": [0, 6]},
+      {"type": "hole", "name": "顶孔Φ12", "plane": "XY", "origin": [0, 0, 80], "at": [[76, 52]], "d": 12, "depth": 40},
+      {"type": "hole", "name": "顶孔Φ6", "plane": "XY", "origin": [0, 0, 80], "at": [[48, 22], [104, 82]], "d": 6, "depth": 16},
+      {"type": "hole", "name": "前孔Φ8", "plane": "XZ", "origin": [0, 0, 0], "at": [[40, 30]], "d": 8, "depth": 40},
+      {"type": "hole", "name": "后孔Φ10", "plane": "XZ", "origin": [0, 104, 0], "reverse": true, "at": [[112, 30]], "d": 10, "depth": 38},
+      {"type": "hole", "name": "底板Φ7", "plane": "XY", "origin": [0, 0, 12], "at": [[-5, -5], [161, -5], [-5, 109], [161, 109]], "d": 7, "through": true},
+      {"type": "extrude", "op": "cut", "name": "底面凹坑", "plane": "XY", "loops": [{"rect": [58, 32, 98, 72]}], "depth": 5},
+      {"type": "hole", "name": "斜孔Φ14", "plane": {"origin": [16, 52, 64], "normal": [-0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 14, "depth": 48},
+      {"type": "hole", "name": "斜孔Φ16", "plane": {"origin": [137, 52, 61], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 16, "depth": 50},
+      {"type": "fillet", "radius": 2, "edges": [[-10, -10, 6]], "name": "底板左前竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[80, -10, 0]], "name": "前下直棱C1"}
+    ]}
+  ]
+}

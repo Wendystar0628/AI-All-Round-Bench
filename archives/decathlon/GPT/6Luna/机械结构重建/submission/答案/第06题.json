@@ -1,0 +1,19 @@
+{
+  "problem": "06",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双斜接口差压控制块",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-5,-5,75,55]}],"depth":6},
+        {"type":"extrude","plane":"XZ","origin":[0,50,0],"loops":[{"path":[[0,6],[70,6],[70,24],[54,42],[16,42],[0,28]]}],"depth":40},
+        {"type":"hole","plane":"XY","origin":[0,0,6],"at":[[0,0],[70,0],[0,50],[70,50]],"d":7,"through":true},
+        {"type":"hole","plane":"YZ","origin":[70,0,0],"at":[[25,18]],"d":40,"through":true},
+        {"type":"hole","plane":"XZ","origin":[0,50,0],"at":[[35,27]],"d":28,"depth":40,"reverse":true},
+        {"type":"hole","plane":"XY","origin":[0,0,42],"at":[[35,25]],"d":18,"depth":28},
+        {"type":"hole","plane":{"origin":[0,0,0],"normal":[0.7071,0,0.7071],"x_dir":[0,1,0]},"origin":[50,25,38],"at":[0,0],"d":16,"depth":50},
+        {"type":"chamfer","distance":1,"edges":[[35,-5,0]]}
+      ]
+    }
+  ]
+}

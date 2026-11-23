@@ -1,0 +1,15 @@
+{
+  "problem": "13",
+  "parts": [
+    {"name": "1", "title": "斜耳叉架减速箱体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-40, -35, 40, 35]}], "depth": 80},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, 0], "d": 48, "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, 0], "d": 38, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [-15, 0], "d": 24, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [15, 0], "d": 24, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, -20], "d": 18, "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, 20], "d": 18, "depth": 30},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -35, 0], [0, 35, 0], [-40, 0, 0], [40, 0, 0]]}
+    ]}
+  ]
+}

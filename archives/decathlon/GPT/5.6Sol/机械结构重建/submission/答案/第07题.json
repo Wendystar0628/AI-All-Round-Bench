@@ -1,0 +1,23 @@
+{
+  "problem":"07",
+  "parts":[
+    {
+      "name":"1","title":"双轴错层回油支承座",
+      "features":[
+        {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,104,48]}],"depth":4,"name":"底板"},
+        {"type":"extrude","plane":"YZ","origin":[10,0,0],"loops":[{"circle":[24,40],"d":62}],"depth":20,"name":"左轴承座"},
+        {"type":"extrude","plane":"YZ","origin":[70,0,0],"loops":[{"circle":[24,40],"d":70}],"depth":24,"name":"右轴承座"},
+        {"type":"extrude","plane":"XY","origin":[0,0,4],"loops":[{"rect":[10,9,30,39]},{"rect":[70,6,94,42]}],"depth":20,"name":"两座下部支撑"},
+        {"type":"extrude","plane":"XZ","origin":[0,18,0],"loops":[{"path":[[24,4],[80,4],[70,18],[34,18]]}],"depth":-12,"name":"中间加强肋"},
+        {"type":"hole","plane":"YZ","origin":[0,0,0],"at":[24,40],"d":32,"through":true,"reverse":true},
+        {"type":"hole","plane":"YZ","origin":[10,0,0],"at":[24,40],"d":38,"depth":10,"reverse":true},
+        {"type":"hole","plane":"ZY","origin":[94,0,0],"at":[40,24],"d":50,"depth":12,"reverse":true},
+        {"type":"hole","plane":"YZ","origin":[0,0,0],"at":[24,15],"d":10,"through":true,"reverse":true},
+        {"type":"hole","plane":"XY","origin":[0,0,75],"at":[[20,24],[82,24]],"d":8,"through":true},
+        {"type":"hole","plane":"XY","origin":[0,0,4],"at":[[5,5],[99,5],[5,43],[99,43]],"d":8,"through":true,"reverse":true,"cbore":{"d":13,"depth":2}},
+        {"type":"fillet","radius":2,"edges":[[0,0,2]]},
+        {"type":"chamfer","distance":1,"edges":[[52,0,0]]}
+      ]
+    }
+  ]
+}

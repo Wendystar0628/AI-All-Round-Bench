@@ -1,0 +1,13 @@
+{
+  "problem":"18","parts":[{"name":"1","title":"复合环腔涡轮轴承箱","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,205,145],"r":6}],"depth":12},
+    {"type":"extrude","plane":"XZ","origin":[0,14,0],"loops":[{"path":[[10,12],[195,12],[195,76],[176,112],[144,132],[54,132],[22,108],[10,72]]}],"depth":-117},
+    {"type":"extrude","plane":"XZ","origin":[0,14,0],"loops":[{"circle":[70,72],"d":112},{"circle":[154,70],"d":78}],"depth":14},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[70,72],"d":62,"through":true,"cbore":{"d":88,"depth":5}},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[154,70],"d":38,"through":true,"cbore":{"d":60,"depth":4}},
+    {"type":"extrude","plane":{"origin":[42,72,112],"normal":[-0.5,0,0.866],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":46},{"circle":[0,0],"d":28}],"depth":44},
+    {"type":"extrude","plane":{"origin":[110,74,128],"normal":[0,0,1],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":52},{"circle":[0,0],"d":32}],"depth":45},
+    {"type":"extrude","plane":{"origin":[184,72,92],"normal":[0.766,0,0.643],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":40},{"circle":[0,0],"d":24}],"depth":40},
+    {"type":"extrude","plane":{"origin":[100,128,62],"normal":[0,1,0.25],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":36},{"circle":[0,0],"d":22}],"depth":32},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[13,13],[192,13],[13,132],[192,132]],"d":10,"through":true,"reverse":true}
+  ]}]}

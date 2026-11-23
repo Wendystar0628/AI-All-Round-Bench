@@ -1,0 +1,46 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 39.8,
+      "reason": "官方 evaluate.py 完整评测：基线最小用时 514.266900 ms，提交 165.329000 ms，加速 3.110567 倍，速度分 q=39.840969804。5 次计时画面与 12 个隐藏输入均通过，c=h=1；源码人工核查未发现实质性违规，最终得分按官方 score 保留一位小数。"
+    }
+  ],
+  "metrics": {
+    "R_ms": 514.2669,
+    "C_ms": 165.329,
+    "speedup": 3.110566809210725,
+    "q": 39.840969804052506,
+    "c": 1,
+    "h": 1,
+    "official_score_unrounded": 39.840969804052506,
+    "timing_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_passed": 3,
+    "results_path": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\ERNIE\\5.5Flash\\光线追踪渲染加速\\codex\\performance\\work\\official\\results.json"
+  },
+  "notes": "评的是作答结束时工作目录中的内容，已完整复制至本评分工作目录的 submission（排除评分表和 .git），不看 git 提交。官方 evaluate.py 运行一次，通过指定 process_job.py --cpus 16-27 包装，并保留入口 --cpus 16-27；formal=true，高优先级，各5次取最小值。全部运行前监测未发现其他 CUDA 进程；未发现作弊或实质性违规。本会话启动的 Job 包装进程及全部评测子进程均已退出，未启动浏览器或服务器。"
+}

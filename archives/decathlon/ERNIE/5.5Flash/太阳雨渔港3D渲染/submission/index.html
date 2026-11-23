@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>太阳雨中的小渔港堤岸</title>
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#dceff1;}
+  canvas{display:block;width:100%;height:100%;outline:none;filter:saturate(1.10) contrast(1.04) brightness(1.02);}
+  #grade{position:fixed;inset:0;pointer-events:none;z-index:2;
+    background:
+      linear-gradient(180deg, rgba(150,198,218,0.14) 0%, rgba(190,222,230,0.04) 26%, rgba(255,255,255,0) 52%),
+      radial-gradient(120% 90% at 50% 42%, rgba(255,255,255,0) 55%, rgba(120,160,168,0.07) 82%, rgba(70,105,115,0.12) 100%),
+      linear-gradient(180deg, rgba(255,250,235,0.05) 0%, rgba(255,255,255,0) 35%, rgba(120,170,175,0.05) 100%);
+    mix-blend-mode:multiply;}
+  #glow{position:fixed;inset:0;pointer-events:none;z-index:3;
+    background:radial-gradient(60% 45% at 62% 18%, rgba(255,244,205,0.06), rgba(255,244,205,0) 70%);}
+</style>
+</head>
+<body>
+<div id="grade"></div>
+<div id="glow"></div>
+<script src="js/three.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/textures.js"></script>
+<script src="js/materials.js"></script>
+<script src="js/sky.js"></script>
+<script src="js/water.js"></script>
+<script src="js/base.js"></script>
+<script src="js/buildings.js"></script>
+<script src="js/boats.js"></script>
+<script src="js/props.js"></script>
+<script src="js/life.js"></script>
+<script src="js/rain.js"></script>
+<script src="js/tour.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

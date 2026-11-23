@@ -1,0 +1,251 @@
+{
+ "problem": "02",
+ "parts": [
+  {
+   "name": "1",
+   "title": "夹具底座",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        -90.0,
+        -45.0,
+        90.0,
+        45.0
+       ]
+      }
+     ],
+     "depth": [
+      0.0,
+      16.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2",
+   "title": "左阶梯导柱",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0.0,
+      84.0
+     ]
+    }
+   ],
+   "placement": {
+    "translate": [
+     35,
+     25,
+     16
+    ]
+   }
+  },
+  {
+   "name": "3",
+   "title": "右阶梯导柱",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0.0,
+      84.0
+     ]
+    }
+   ],
+   "placement": {
+    "translate": [
+     145,
+     85,
+     16
+    ]
+   }
+  },
+  {
+   "name": "4",
+   "title": "上横梁",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        -55.0,
+        -30.0,
+        55.0,
+        30.0
+       ]
+      }
+     ],
+     "depth": [
+      0.0,
+      20.0
+     ]
+    }
+   ],
+   "placement": {
+    "translate": [
+     90,
+     55,
+     100
+    ]
+   }
+  },
+  {
+   "name": "5",
+   "title": "双孔滑动压头",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        -30.0,
+        -20.0,
+        30.0,
+        20.0
+       ]
+      }
+     ],
+     "depth": [
+      0.0,
+      28.0
+     ]
+    }
+   ],
+   "placement": {
+    "translate": [
+     90,
+     55,
+     28
+    ]
+   }
+  },
+  {
+   "name": "6",
+   "title": "驱动斜楔",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        -15.0,
+        -12.0,
+        15.0,
+        12.0
+       ]
+      }
+     ],
+     "depth": [
+      0.0,
+      60.0
+     ]
+    }
+   ],
+   "placement": {
+    "translate": [
+     120,
+     30,
+     16
+    ]
+   }
+  },
+  {
+   "name": "7",
+   "title": "右止推座",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        -20.0,
+        -15.0,
+        20.0,
+        15.0
+       ]
+      }
+     ],
+     "depth": [
+      0.0,
+      60.0
+     ]
+    }
+   ],
+   "placement": {
+    "translate": [
+     180,
+     31,
+     16
+    ]
+   }
+  },
+  {
+   "name": "8",
+   "title": "调节推轴",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0,
+      68
+     ]
+    }
+   ],
+   "placement": {
+    "translate": [
+     112,
+     31,
+     60
+    ]
+   }
+  }
+ ]
+}

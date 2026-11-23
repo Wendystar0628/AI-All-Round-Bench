@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>tank test</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block;width:100vw;height:100vh}</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="js/util.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/water.js"></script>
+<script src="js/debug.js"></script>
+<script>
+(async () => {
+  const canvas = document.getElementById('c');
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  canvas.width = Math.floor(innerWidth * dpr);
+  canvas.height = Math.floor(innerHeight * dpr);
+  await initGPU(canvas);
+  await initRenderer(canvas);
+
+  const T = { Lx: 2.6, Ly: 1.1, Lz: 1.4, h: 0.05, waterLevel: 0.58 };
+  const water = createWater(T);
+  water.init(7);
+  water.paddleBase = 0.04; water.paddleAmp = 0.06; water.paddleFreq = 0.9; water.waveOn = true;
+  console.log('particles', water.nParticles, 'cells', water.cells);
+
+  const proj = M4.perspective(0.72, canvas.width / canvas.height, 0.05, 100);
+  const eye = [3.0, 1.75, 3.2], target = [1.3, 0.42, 0.7];
+  const view = M4.lookAt(eye, target, [0, 1, 0]);
+  const vp = M4.mul(proj, view);
+  const fy = 1 / Math.tan(0.72 / 2), fx = fy / (canvas.width / canvas.height);
+
+  const balls = [
+    { x: 1.0, y: 1.0, z: 0.7, r: 0.09, vx: 0, vy: 0, vz: 0 },
+  ];
+  let last = performance.now();
+  let acc = 0;
+  let frameCount = 0;
+
+  function frame() {
+    const now = performance.now();
+    let dt = Math.min((now - last) / 1000, 0.05); last = now;
+    acc += dt;
+    const hdt = 1 / 60;
+    let steps = 0;
+    while (acc >= hdt && steps < 3) {
+      for (const b of balls) {
+        const surf = water.info ? water.sampleHeight(b.x, b.z) : T.waterLevel;
+        const sub = Math.max(0, Math.min(1, (surf - (b.y - b.r)) / (2 * b.r)));
+        b.vy += (-9.8 + sub * 14.0) * hdt;
+        b.vy *= 0.995;
+        b.y += b.vy * hdt;
+        b.x += b.vx * hdt; b.z += b.vz * hdt;
+        if (b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy) * 0.3; }
+      }
+      water.step(hdt, balls);
+      acc -= hdt; steps++;
+    }
+    if (frameCount % 20 === 0) water.asyncReadInfo();
+
+    beginFrame();
+    setFrameUniforms({ viewProj: vp, camPos: eye, time: now / 1000 });
+    shadowPass();
+    for (const b of balls) pushShadow(R.meshes.sphere, M4.fromTRS([b.x, b.y, b.z], [0, 0, 0, 1], [b.r, b.r, b.r]));
+    endShadow();
+    beginScene();
+    drawMesh(R.meshes.disc, M4.fromTRS([1.3, -0.001, 0.7], [0, 0, 0, 1], [8, 1, 8]), [0.10, 0.11, 0.13, 1], [0.35, 0.1]);
+    drawMesh(R.meshes.box, M4.fromTRS([1.3, 0.0, 0.7], [0, 0, 0, 1], [2.7, 0.04, 1.5]), [0.16, 0.20, 0.23, 1], [0.25, 0.0]);
+    for (const b of balls) drawMesh(R.meshes.sphere, M4.fromTRS([b.x, b.y, b.z], [0, 0, 0, 1], [b.r, b.r, b.r]), [0.95, 0.5, 0.15, 1], [0.25, 0.3]);
+    endScene();
+
+    const wp = waterPasses();
+    let dp = wp.depth();
+    water.renderDepth(dp, vp, eye, T.h * 0.95, fy, fx);
+    dp.end();
+    let tp = wp.thick();
+    water.renderThick(tp, vp, eye, T.h * 0.95, fy, fx);
+    tp.end();
+
+    composite();
+    frameCount++;
+    requestAnimationFrame(frame);
+  }
+  frame();
+  window.__ready = true;
+  window.__water = water;
+  window.__balls = balls;
+})().catch(e => { document.title = 'ERR'; console.error(e); window.__err = String(e) + '\n' + e.stack; });
+</script>
+</body></html>

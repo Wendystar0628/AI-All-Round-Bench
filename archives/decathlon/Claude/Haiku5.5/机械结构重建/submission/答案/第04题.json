@@ -1,0 +1,22 @@
+{
+  "problem": "04",
+  "parts": [
+    {"name": "1", "title": "偏心双级迷宫泵盖", "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0], "loops": [{"circle": [0, 0], "d": 144}], "depth": 14},
+      {"type": "chamfer", "distance": 1, "edges": [[-50.9, -50.9, 0]], "name": "大法兰下外圆棱C1"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0], "loops": [{"rect": [-69, 30, -55, 50]}], "depth": 14, "name": "左上耳"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, -1], "loops": [{"rect": [-73, -6, -62, 6]}], "depth": 16, "name": "左侧缺口"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 14], "loops": [{"circle": [12, 0], "d": 90}], "depth": 24},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 38], "loops": [{"circle": [12, 0], "d": 68}], "depth": 14},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 52], "at": [[12, 0]], "d": 50, "depth": 22},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 52], "at": [[12, 0]], "d": 30, "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 0], "at": [[12, 0]], "d": 66, "depth": 7, "reverse": true, "name": "底部凹腔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[42, 42], [-42, 42], [42, -42], [-42, -42]], "d": 9, "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[-40, 0]], "d": 12, "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[-62, 40]], "d": 6, "through": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, -80, 0], "at": [[12, 22]], "d": 8, "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 52], "at": [[12, -27]], "d": 8, "through": true},
+      {"type": "hole", "plane": {"origin": [39, -8, 52], "normal": [0.5, 0, 0.866], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 6, "depth": 28, "name": "斜孔"}
+    ]}
+  ]
+}

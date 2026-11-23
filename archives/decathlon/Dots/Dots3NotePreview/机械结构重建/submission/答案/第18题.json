@@ -1,0 +1,15 @@
+{
+  "problem": "18",
+  "parts": [
+    {"name": "1", "title": "复合环腔涡轮轴承箱", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-45, -40, 45, 40]}], "depth": 95},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 95], "at": [0, 0], "d": 55, "depth": 65},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 95], "at": [0, 0], "d": 44, "depth": 45},
+      {"type": "hole", "plane": "XY", "origin": [-15, 0, 95], "at": [0, 0], "d": 32, "depth": 55},
+      {"type": "hole", "plane": "XY", "origin": [15, 0, 95], "at": [0, 0], "d": 32, "depth": 55},
+      {"type": "hole", "plane": "XY", "origin": [0, -15, 95], "at": [0, 0], "d": 24, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 15, 95], "at": [0, 0], "d": 24, "depth": 40},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -40, 0], [0, 40, 0], [-45, 0, 0], [45, 0, 0]]}
+    ]}
+  ]
+}

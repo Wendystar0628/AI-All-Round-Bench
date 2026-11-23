@@ -1,0 +1,47 @@
+// timeline.ns — 时序进程：播放位置由本进程根据所属系统的虚拟时间推进（暂停时不推进，继续时不补跑），
+// 并通过消息驱动“飞行场景”和“环境特效”两个进程更新。播放速率与系统时间速率共同生效。
+let A = args();
+let PLAYER = A.player;
+let FPS = 30;
+let T = {playing: false, pos: 0, rate: 1, loop: false, dur: 15, live: false, seq: 0, flight: 0, fx: 0, sent: -1, last: 0, skip: false};
+
+fn push_state(force) {
+  T.seq++;
+  let m = {t: "at", pos: T.pos, seq: T.seq};
+  if (T.flight > 0) { send(T.flight, m); }
+  send(PLAYER, {t: "tl", pos: T.pos, playing: T.playing, rate: T.rate, loop: T.loop, dur: T.dur, seq: T.seq, live: T.live});
+  T.sent = T.pos;
+}
+fn cmd(m) {
+  let op = m.op;
+  if (op == "cfg") { T.flight = m.flight; T.fx = m.fx; T.dur = m.dur; FPS = m.fps == nil ? 30 : m.fps; T.live = m.live == true; T.pos = m.pos == nil ? 0 : m.pos; push_state(true); }
+  else if (op == "play") { if (!T.live && T.pos >= T.dur - 1e-6) { T.pos = 0; } T.playing = true; T.last = time(); T.skip = true; push_state(true); }
+  else if (op == "pause") { T.playing = false; push_state(true); }
+  else if (op == "stop") { T.playing = false; T.pos = 0; push_state(true); }
+  else if (op == "replay") { T.pos = 0; T.playing = true; T.last = time(); T.skip = true; push_state(true); }
+  else if (op == "step") { T.playing = false; T.pos = T.live ? T.pos + 1 / FPS : min(T.dur, T.pos + 1 / FPS); push_state(true); }
+  else if (op == "seek") { T.pos = clamp(m.v, 0, T.live ? 1e9 : T.dur); T.last = time(); T.skip = true; push_state(true); }
+  else if (op == "rate") { T.rate = clamp(m.v, 0.05, 8); push_state(true); }
+  else if (op == "loop") { T.loop = m.v == true; push_state(true); }
+  else if (op == "live") { T.live = m.v == true; T.dur = m.dur == nil ? T.dur : m.dur; if (m.pos != nil) { T.pos = m.pos; } T.playing = m.play == true; T.last = time(); T.skip = true; push_state(true); }
+  else if (op == "dur") { T.dur = m.v; push_state(true); }
+}
+T.last = time();
+while (true) {
+  let e = recv_timeout(1 / FPS);
+  let now = time();
+  let dt = now - T.last; T.last = now;
+  while (e != nil) {
+    let m = e.msg;
+    if (typeof(m) == "map" && m.t == "cmd") { cmd(m); }
+    e = poll_msg();
+  }
+  if (T.skip) { dt = 0; T.skip = false; }
+  if (T.playing) {
+    T.pos = T.pos + dt * T.rate;
+    if (!T.live && T.pos >= T.dur) {
+      if (T.loop) { T.pos = T.pos - T.dur; } else { T.pos = T.dur; T.playing = false; }
+    }
+    push_state(false);
+  }
+}

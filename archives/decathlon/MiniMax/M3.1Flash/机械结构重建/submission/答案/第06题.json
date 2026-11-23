@@ -1,0 +1,30 @@
+{
+  "problem": "06",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双斜接口差压控制块",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 178, 125]}], "depth": 5, "name": "底板"},
+        {"type": "extrude", "plane": "ZX", "loops": [{"path": [[5, 10], [45, 10], [45, 28], [82, 37], [82, 123], [45, 141], [45, 167], [5, 167]]}], "depth": 125, "name": "主体 双斜面"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 2]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[90, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 5], "loops": [{"rect": [22, 18, 70, 107]}], "depth": 40, "name": "左腔"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 5], "loops": [{"rect": [110, 18, 156, 107]}], "depth": 40, "name": "右腔"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 0, 0], "at": [[55, 95]], "d": 28, "depth": 14, "reverse": true, "name": "中心通孔Φ28"},
+        {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[62, 45], [62, 45]], "d": 40, "depth": 30, "reverse": true, "name": "斜接口大孔Φ40"},
+        {"type": "hole", "plane": "YZ", "origin": [178, 0, 0], "at": [[62, 45]], "d": 36, "depth": 30, "name": "斜接口小孔Φ36"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 0, 0], "at": [[30, 40]], "d": 30, "depth": 14, "reverse": true, "name": "前通口Φ30"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 125, 0], "at": [[30, 40]], "d": 18, "depth": 14, "name": "后通口Φ18"},
+        {"type": "hole", "plane": {"origin": [95, 62, 82], "normal": [0.7071, 0, 0.7071], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 16, "depth": 50, "name": "斜孔Φ16 深50 倾角45 方位0"},
+        {"type": "hole", "plane": {"origin": [95, 62, 82], "normal": [-0.7071, 0, 0.7071], "x_dir": [-1, 0, 0]}, "at": [[0, 0]], "d": 14, "depth": 48, "name": "斜孔Φ14 深48 倾角45 方位180"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 0, 0], "at": [[40, 20]], "d": 26, "depth": 12, "reverse": true, "name": "孔Φ26"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 0, 0], "at": [[45, 150]], "d": 12, "depth": 12, "reverse": true, "name": "孔Φ12"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 82], "at": [[62, 62]], "d": 10, "depth": 20, "name": "孔Φ10"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 82], "at": [[128, 62]], "d": 8, "depth": 20, "name": "孔Φ8"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 5], "at": [[8, 8], [170, 8], [8, 117], [170, 117]], "d": 7, "through": true, "name": "底板孔Φ7"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 5], "at": [[40, 62], [128, 62]], "d": 6, "through": true, "name": "孔Φ6"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+const {app,BrowserWindow}=require('electron');
+const path=require('path');
+const args=process.argv.slice(2); const val=(n,d)=>{let i=args.indexOf(n);return i>=0?args[i+1]:d};
+const data=val('--data-dir',null); if(data) app.setPath('userData',path.resolve(data));
+app.commandLine.appendSwitch('disable-background-timer-throttling'); app.commandLine.appendSwitch('disable-renderer-backgrounding'); app.commandLine.appendSwitch('disable-backgrounding-occluded-windows'); app.commandLine.appendSwitch('disable-features','CalculateNativeWinOcclusion');
+app.on('web-contents-created',(_,contents)=>{if(contents.getType()!=='webview')return;contents.on('will-navigate',(event,url)=>{if(/^(file|javascript|chrome|devtools):/i.test(url))event.preventDefault()});contents.setWindowOpenHandler(({url})=>{if(/^https?:/i.test(url))contents.loadURL(url);return {action:'deny'}})});
+app.whenReady().then(()=>{let w=new BrowserWindow({title:'Nested OS',width:+val('--width',1440),height:+val('--height',900),useContentSize:true,backgroundColor:'#111c2d',webPreferences:{webviewTag:true,backgroundThrottling:false,contextIsolation:true,nodeIntegration:false}});w.setMenuBarVisibility(false);w.webContents.on('will-attach-webview',(_event,prefs)=>{delete prefs.preload;prefs.nodeIntegration=false;prefs.contextIsolation=true;prefs.sandbox=true});w.loadFile('index.html');}); app.on('window-all-closed',()=>app.quit());

@@ -1,0 +1,26 @@
+{
+  "problem": "17",
+  "parts": [
+    {
+      "name": "1",
+      "title": "五斜座交汇比例阀体",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-6,-6,106,106],"r":6}],"depth":8},
+        {"type":"extrude","plane":"XZ","origin":[0,100,0],"loops":[{"path":[[0,8],[100,8],[100,58],[82,76],[18,76],[0,58]]}],"depth":94},
+        {"type":"extrude","plane":{"origin":[25,22,70],"normal":[-0.332,-0.332,0.883],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":64}],"depth":62},
+        {"type":"extrude","plane":{"origin":[50,22,70],"normal":[0,-0.616,0.788],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":64}],"depth":62},
+        {"type":"extrude","plane":{"origin":[75,22,70],"normal":[0.525,-0.525,0.669],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":64}],"depth":62},
+        {"type":"extrude","plane":{"origin":[25,78,70],"normal":[-0.395,0.395,0.829],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":64}],"depth":62},
+        {"type":"extrude","plane":{"origin":[75,78,70],"normal":[0.557,0.557,0.616],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":64}],"depth":62},
+        {"type":"hole","plane":{"origin":[4.4,1.4,124.7],"normal":[-0.332,-0.332,0.883],"x_dir":[1,0,0]},"at":[0,0],"d":32,"depth":112},
+        {"type":"hole","plane":{"origin":[50, -16.2,118.9],"normal":[0,-0.616,0.788],"x_dir":[1,0,0]},"at":[0,0],"d":32,"depth":112},
+        {"type":"hole","plane":{"origin":[107.6,-10.6,111.5],"normal":[0.525,-0.525,0.669],"x_dir":[1,0,0]},"at":[0,0],"d":32,"depth":112},
+        {"type":"hole","plane":{"origin":[0.5,102.5,121.4],"normal":[-0.395,0.395,0.829],"x_dir":[1,0,0]},"at":[0,0],"d":32,"depth":112},
+        {"type":"hole","plane":{"origin":[109.5,112.5,108.2],"normal":[0.557,0.557,0.616],"x_dir":[1,0,0]},"at":[0,0],"d":32,"depth":112},
+        {"type":"hole","plane":"XY","origin":[0,0,76],"at":[[50,50]],"d":50,"depth":48},
+        {"type":"hole","plane":"XY","origin":[0,0,8],"at":[[0,0],[100,0],[0,100],[100,100]],"d":10,"through":true},
+        {"type":"fillet","radius":6,"edges":[[-6,-6,4]]}
+      ]
+    }
+  ]
+}

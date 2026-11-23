@@ -1,0 +1,17 @@
+{
+  "problem": "16",
+  "parts": [
+    {"name": "1", "title": "双蜗室异面三通泵壳(粗略)", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [0, 0, 280, 180], "r": 6}], "depth": 18},
+      {"type": "extrude", "name": "左蜗室Φ132", "plane": "XZ", "origin": [0, 13, 0], "loops": [{"circle": [77, 83], "d": 132}], "depth": [-152, 0]},
+      {"type": "extrude", "name": "右蜗室Φ112", "plane": "XZ", "origin": [0, 13, 0], "loops": [{"circle": [206, 98], "d": 112}], "depth": [-152, 0]},
+      {"type": "extrude", "name": "左支座", "plane": "XZ", "origin": [0, 13, 0], "loops": [{"path": [[28, 18], [126, 18], [77, 83]]}], "depth": [-152, 0]},
+      {"type": "extrude", "name": "右支座", "plane": "XZ", "origin": [0, 13, 0], "loops": [{"path": [[165, 18], [247, 18], [206, 98]]}], "depth": [-152, 0]},
+      {"type": "extrude", "op": "cut", "name": "左主腔Φ90", "plane": "XZ", "origin": [0, 34, 0], "loops": [{"circle": [77, 83], "d": 90}], "depth": [-116, 0]},
+      {"type": "extrude", "op": "cut", "name": "右主腔Φ70", "plane": "XZ", "origin": [0, 34, 0], "loops": [{"circle": [206, 98], "d": 70}], "depth": [-116, 0]},
+      {"type": "extrude", "op": "cut", "name": "左轴封孔Φ36", "plane": "XZ", "origin": [0, 35, 0], "loops": [{"circle": [77, 83], "d": 36}], "depth": [0, 40]},
+      {"type": "extrude", "op": "cut", "name": "左轴承沉台Φ52", "plane": "XZ", "origin": [0, 20, 0], "loops": [{"circle": [77, 83], "d": 52}], "depth": [0, 10]},
+      {"type": "hole", "name": "底板孔", "plane": "XY", "origin": [0, 0, 18], "at": [[12, 12], [268, 12], [12, 168], [268, 168]], "d": 10, "through": true, "cbore": {"d": 18, "depth": 4}}
+    ]}
+  ]
+}

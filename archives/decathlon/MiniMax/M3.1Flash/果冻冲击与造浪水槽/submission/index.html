@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>果冻冲击与造浪水槽</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="view"></canvas>
+
+  <header id="topbar">
+    <div class="brand">
+      <span class="logo"></span>
+      <span class="title">果冻冲击与造浪水槽</span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-scene="1">场景一 · 果冻冲击</button>
+      <button class="tab" data-scene="2">场景二 · 造浪水槽</button>
+    </nav>
+    <div class="runs" id="runs">
+      <button class="run" data-run="jelly-center">正中单击</button>
+      <button class="run" data-run="jelly-multi">连击砸裂</button>
+      <button class="run" data-run="jelly-offset">偏心撞击</button>
+      <button class="run" data-run="tank-full">风浪全开</button>
+    </div>
+    <div class="tools">
+      <button class="tool" id="soundBtn" title="音效开关">音效 开</button>
+      <button class="tool" id="pauseBtn" title="暂停 / 继续">暂停</button>
+      <button class="tool" id="slowBtn" title="慢放">慢放</button>
+      <button class="tool" id="resetBtn" title="重置">重置</button>
+      <button class="tool" id="helpBtn" title="说明">说明</button>
+    </div>
+  </header>
+
+  <aside id="panel">
+    <section class="pane" id="pane1">
+      <h2>场景一 · 重球冲击果冻</h2>
+      <p class="hint">台上共有五块果冻，软硬、结实程度与形状各不相同；重球为金属与石质。</p>
+      <div class="row"><label>果冻软硬</label><input type="range" id="s_soft" min="0" max="1" step="0.01" value="0.5"><output id="o_soft">0.50</output></div>
+      <div class="row"><label>结实程度</label><input type="range" id="s_tough" min="0" max="1" step="0.01" value="0.5"><output id="o_tough">0.50</output></div>
+      <div class="row"><label>重球质量</label><input type="range" id="s_mass" min="2" max="16" step="0.1" value="9"><output id="o_mass">9.0 kg</output></div>
+      <div class="row"><label>下落高度</label><input type="range" id="s_height" min="0.4" max="2.6" step="0.05" value="1.35"><output id="o_height">1.35 m</output></div>
+      <div class="row"><label>偏心距离</label><input type="range" id="s_offset" min="0" max="1" step="0.01" value="0.3"><output id="o_offset">0.30</output></div>
+      <div class="label">触发冲击</div>
+      <div class="btns">
+        <button class="act" data-impact="center">正中</button>
+        <button class="act" data-impact="offset">偏心</button>
+        <button class="act" data-impact="multi">连续</button>
+      </div>
+      <div class="note" id="note1">轻击只压出浅坑并复原；重击会把果冻砸扁、四周鼓出并把它弹起；冲击够重而果冻不结实时开裂。</div>
+    </section>
+
+    <section class="pane hidden" id="pane2">
+      <h2>场景二 · 多密度球与造浪水槽</h2>
+      <p class="hint">同尺寸小球按 5 组密度分色；造浪装置推动水体，幅度可由平缓长波调到破碎浪。</p>
+      <div class="row"><label>造浪幅度</label><input type="range" id="w_amp" min="0" max="0.16" step="0.002" value="0.055"><output id="o_amp">0.055</output></div>
+      <div class="row"><label>造浪频率</label><input type="range" id="w_freq" min="0.3" max="2.2" step="0.01" value="0.85"><output id="o_freq">0.85 Hz</output></div>
+      <div class="label">各组密度（相对水）</div>
+      <div class="row"><label><i class="dot" style="background:#ffcc2e"></i>浮球</label><input type="range" class="dens" data-g="0" min="0.1" max="3.5" step="0.01" value="0.32"><output>0.32</output></div>
+      <div class="row"><label><i class="dot" style="background:#99e65c"></i>轻球</label><input type="range" class="dens" data-g="1" min="0.1" max="3.5" step="0.01" value="0.62"><output>0.62</output></div>
+      <div class="row"><label><i class="dot" style="background:#61dbff"></i>中性</label><input type="range" class="dens" data-g="2" min="0.1" max="3.5" step="0.01" value="1.00"><output>1.00</output></div>
+      <div class="row"><label><i class="dot" style="background:#ff8033"></i>沉球</label><input type="range" class="dens" data-g="3" min="0.1" max="3.5" step="0.01" value="1.55"><output>1.55</output></div>
+      <div class="row"><label><i class="dot" style="background:#e6478f"></i>重球</label><input type="range" class="dens" data-g="4" min="0.1" max="3.5" step="0.01" value="3.10"><output>3.10</output></div>
+      <div class="btns">
+        <button class="act" id="releaseBtn">释放小球</button>
+        <button class="act" id="waveBtn">开始造浪</button>
+      </div>
+      <div class="note" id="note2">球越重落得越快，入水越猛；浪从装置处长出，越往前越陡，浪顶翻卷破碎成白水，远端拍壁后反射回来。</div>
+    </section>
+  </aside>
+
+  <div id="hud">
+    <div class="hud-row"><span id="hud_mode">交互模式</span></div>
+    <div class="hud-row"><span id="hud_fps">-- fps</span></div>
+    <div class="hud-row"><span id="hud_info">--</span></div>
+  </div>
+
+  <div id="hint">左键拖动旋转视角 · 滚轮缩放 · 右键拖动平移</div>
+
+  <div id="overlay">
+    <div class="ov-card">
+      <h3 id="ov_title">正在初始化 WebGPU…</h3>
+      <p id="ov_text">水体在 WebGPU 计算着色器上求解，果冻用 XPBD 四面体软体求解。</p>
+    </div>
+  </div>
+
+  <div id="modal" class="hidden">
+    <div class="ov-card">
+      <h3>操作说明</h3>
+      <ul>
+        <li><b>场景一</b>：重球正中、偏心或连续落下，果冻受击变形、回弹，超过强度会开裂，碎块仍是有弹性的果冻。</li>
+        <li><b>场景二</b>：造浪装置推动水体，幅度决定浪是平缓长波还是破碎浪；频率改变浪的间距；各组球的密度决定其浮沉。</li>
+        <li>演示按钮播放四段预置演示（正中单击 / 连击砸裂 / 偏心撞击 / 风浪全开）。</li>
+        <li>导出接口：<code>window.videoExport.begin(runId,{fps})</code> → <code>frame(i)</code> → <code>end()</code>，可逐帧取画面。</li>
+        <li>音效为实时合成，需要先点击页面才会发声。</li>
+      </ul>
+      <button id="modalClose">知道了</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/wgsl.js"></script>
+<script src="js/jelly.wgsl.js"></script>
+<script src="js/water.wgsl.js"></script>
+<script src="js/water.sim.js"></script>
+<script src="js/surface.sim.js"></script>
+<script src="js/geometry.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/jelly.js"></script>
+<script src="js/scene1.js"></script>
+<script src="js/water.js"></script>
+<script src="js/scene2.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/demos.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

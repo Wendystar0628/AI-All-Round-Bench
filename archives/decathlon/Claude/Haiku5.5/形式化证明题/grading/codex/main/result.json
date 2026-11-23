@@ -1,0 +1,60 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem1.lean 含主定理 problem1；使用 C:\\Lean\\lean.cmd 单独编译，退出码 0，输出为空，无错误或 sorry 警告。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交对应的 Lean 文件；已检查子目录，也未找到主定理 problem2。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交对应的 Lean 文件；已检查子目录，也未找到主定理 problem3。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交对应的 Lean 文件；已检查子目录，也未找到主定理 problem4。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交对应的 Lean 文件；已检查子目录，也未找到主定理 problem5。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem6.lean 含主定理 problem6；使用 C:\\Lean\\lean.cmd 单独编译，退出码 0，输出为空，无错误或 sorry 警告。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交对应的 Lean 文件；已检查子目录，也未找到主定理 problem7。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交对应的 Lean 文件；已检查子目录，也未找到主定理 problem8。"
+    }
+  ],
+  "metrics": {
+    "总分": 25.0,
+    "通过题数": 2
+  },
+  "notes": "评的是原始工作目录：已提交的第 1、6 题完整可编译，内容与最新提交 0abe2db2f19fedf6391d926b7987e1de299f45cb 完全一致；其余六题无对应主定理。所有编译均在副本上进行，日志见工作目录 Problem1.compile.log、Problem6.compile.log。"
+}

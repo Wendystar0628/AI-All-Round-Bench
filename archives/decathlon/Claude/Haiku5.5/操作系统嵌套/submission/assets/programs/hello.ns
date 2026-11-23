@@ -1,0 +1,9 @@
+// 示例程序：向窗口管理程序发送一条消息，并在消息输出中显示结果。
+func main(args) {
+    var now = sys_now();
+    print("你好，这里是进程", sys_self(), "，虚拟时间", now);
+    sys_sleep(0.5);
+    var r = sys_fs_write("/Documents/hello.txt", "写入自示例程序\n");
+    print("写入文件：", r.ok);
+    return 0;
+}

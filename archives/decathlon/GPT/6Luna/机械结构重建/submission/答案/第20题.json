@@ -1,0 +1,18 @@
+{
+  "problem": "20",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双级迷宫旋流分离壳",
+      "features": [
+        {"type":"revolve","plane":"XZ","axis":"y","loops":[{"path":[[0,0],[68,0],[68,62],[56,76],[44,76],[44,30],[32,30],[32,68],[18,68],[18,20],[0,20]]}]},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,76],"loops":[{"circle":[0,0],"d":40}],"depth":-46},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,68],"loops":[{"circle":[0,0],"d":56},{"circle":[0,0],"d":48}],"depth":-6},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,68],"loops":[{"circle":[0,0],"d":46},{"circle":[0,0],"d":40}],"depth":-5},
+        {"type":"hole","plane":"YZ","origin":[68,0,0],"at":[[0,42]],"d":22,"depth":42},
+        {"type":"hole","plane":"XZ","origin":[0,68,0],"at":[[0,40]],"d":18,"depth":50,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,68,0],"at":[[0,20]],"d":12,"depth":50,"reverse":true}
+      ]
+    }
+  ]
+}

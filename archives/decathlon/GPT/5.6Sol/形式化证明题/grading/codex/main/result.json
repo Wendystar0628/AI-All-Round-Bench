@@ -1,0 +1,59 @@
+{
+    "task":  "形式化证明题",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "第 1 题",
+                      "max":  12.5,
+                      "score":  12.5,
+                      "reason":  "Lyapunov 不等式证明的原文件与追加 #print axioms、#check @problem1 的副本均编译成功，无 sorry 警告；命题与题面一致，仅依赖 propext、Classical.choice、Quot.sound。"
+                  },
+                  {
+                      "name":  "第 2 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "所选评分版本没有对应的 Problem2.lean 或主定理 problem2，按缺题计 0 分。"
+                  },
+                  {
+                      "name":  "第 3 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "所选评分版本没有对应的 Problem3.lean 或主定理 problem3，按缺题计 0 分。"
+                  },
+                  {
+                      "name":  "第 4 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "所选评分版本没有对应的 Problem4.lean 或主定理 problem4，按缺题计 0 分。"
+                  },
+                  {
+                      "name":  "第 5 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "所选评分版本没有对应的 Problem5.lean 或主定理 problem5，按缺题计 0 分。"
+                  },
+                  {
+                      "name":  "第 6 题",
+                      "max":  12.5,
+                      "score":  12.5,
+                      "reason":  "Cohn 不可约判别证明的原文件与追加检查副本均编译成功，无 sorry 警告；#check @problem6 与题面一致，公理依赖仅为三条标准公理。弃用与风格警告不影响得分。"
+                  },
+                  {
+                      "name":  "第 7 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "所选评分版本没有对应的 Problem7.lean 或主定理 problem7，按缺题计 0 分。"
+                  },
+                  {
+                      "name":  "第 8 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "Problem8.lean 仅实现 Chevalley–Warning 计数辅助引理，虽然原文件能编译，但没有题面要求的主定理 problem8；追加查询报 Unknown constant/identifier problem8，按缺题计 0 分。"
+                  }
+              ],
+    "metrics":  {
+
+                },
+    "notes":  "评分版本：工作目录中的 Problem8.lean 仍在追加辅助引理且未声明 problem8，按规则评最近提交 851d95288b88456e7ec7c2aec7c051941163a16b（Build Chevalley-Warning counting core for Problem 8）。已 git clone 并仅在副本检出和编译；第 1、6 题与工作目录内容一致（仅换行形式不同）。原文件与追加检查日志保存在 work/logs。自然检查未发现绕过编译、公理限制或改写命题的行为；所有本次编译进程均已退出。"
+}

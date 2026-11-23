@@ -1,0 +1,49 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 0,
+      "reason": "官方正式评测：R=512.3851ms，C=3200.5054ms，s=0.1600950587，q=0.000000，c=1，h=1，qch=0.0。最终版本的5次画面与12个隐藏输入全通过，但速度低于0.2倍零分锚点；按更新规则往前评3个历史版本均为0分。"
+    }
+  ],
+  "metrics": {
+    "baseline_ms": 512.3851,
+    "submission_ms": 3200.5054,
+    "speedup": 0.16009505873666077,
+    "q": 0,
+    "c": 1,
+    "h": 1,
+    "timed_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "score_unrounded": 0,
+    "evaluated_versions": 4,
+    "historical_versions_considered": 3,
+    "final_score": 0,
+    "report": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\xAI\\Grok4.7\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_final\\results.json"
+  },
+  "notes": "首先评的是作答结束时工作目录的副本 submission/solution.cu，不看 git 提交；最终版本正式得分为0。无 versions 快照，从归档会话 session.log 的成功 write/search_replace 操作完整还原11个实际版本，最后版本与提交文本一致；还原来源和行号见 recovered_versions/index.json。按更新后的规则，除最终版本外最多回溯3个历史版本；本次按规则往前纳入最近3个历史版本v10、v09、v08，均为0分，因此以0分定稿，不再向前寻找；此前已运行的更早版本结果不纳入此次规则回溯与计分。未找到可替代计分版本，表中保留最终版本的数值。实际计分源码：E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\xAI\\Grok4.7\\光线追踪渲染加速\\codex\\performance\\work\\submission\\solution.cu；报告：E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\xAI\\Grok4.7\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_final\\results.json。逐版结果见 work/evaluation_summary.json。所有编译和评测均在 process_job --cpus 16-27 中串行运行，官方入口保留 --cpus 16-27、高优先级；未见评测前有其他CUDA计算进程。规则扫描的静态缓存命中经源码确认只复用资源，每次render重新建树和上传；未发现篡改评测、伪造计时、预存图像、减少采样或其他实质性作弊。正常路径stderr耗时诊断未伪造render_ms，不作为实质性违规判零。本会话未启动浏览器或服务器；所启动评测及编译进程均已自然退出。",
+  "anomaly": "最终采用逐像素串行样本内核，耗时为基线约6.25倍。"
+}

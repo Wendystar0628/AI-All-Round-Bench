@@ -1,0 +1,49 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 15.7,
+      "reason": "（11-16 光追锚点改为 s≤0.2 得 0、s=1 得 12，2 倍起不变；按本次记录的加速比重算速度分。）官方完整评测：基线最小用时 512.8335 ms，提交 396.4371 ms，加速比 1.293606224，速度分 q=8.170767557；5 次计时画面及 12 个隐藏输入均通过，c=h=1，最终按一位小数计 8.2 分。源码核对未确认实质性违规。"
+    }
+  ],
+  "metrics": {
+    "R_ms": 512.8335,
+    "C_ms": 396.4371,
+    "s": 1.293606224039072,
+    "q": 15.71398525303852,
+    "c": 1,
+    "h": 1,
+    "score_raw": 8.17076755668474,
+    "timing_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_passed": 3,
+    "timing_passed": 5,
+    "hidden_passed": 12,
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Dots\\Dots3NotePreview\\光线追踪渲染加速\\codex\\performance\\work\\official_report\\results.json"
+  },
+  "notes": "评的是作答结束时工作目录的副本 submission，不看 git 提交；源文件 SHA256=E4E63081F29EBD000B3124A863AE3EC1830FFB6257D30391E5A7ED27BCE7041A。官方 evaluate.py 仅运行一次，所有编译和测量均经 process_job.py --cpus 16-27 包装，入口保留 --cpus 16-27；formal=true、valid=true，3 个公开边界全部通过。源码核对未见作弊或实质性违规：构树线程 join 后返回，静态指针仅复用内存，每次重新建树和上传场景；采样着色代码与官方头文件去除注释及空白后相同。已确认本次包装进程、评测入口及报告记录的所有评测 PID 均已退出；未启动浏览器或网页服务器。",
+  "total": 15.714
+}

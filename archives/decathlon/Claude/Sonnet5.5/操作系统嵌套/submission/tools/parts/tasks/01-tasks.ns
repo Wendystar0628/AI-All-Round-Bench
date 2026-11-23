@@ -1,0 +1,183 @@
+// tasks.ns — 任务管理器 / 进程管理器：查看本系统自己的进程表（状态、实际工作量、剩余工作、内存、消息、错误），
+// 挂起 / 继续 / 结束进程，调整进程额度、本系统总预算与内存、存储配额，以及直属子系统的拨付上限。
+include "/System/lib/ui.ns";
+
+let S = {ps: [], bi: nil, sel: 0, out: [], last: -9, msg: "", msg_t: 0, natives: [], pending_note: "", usage: nil};
+
+fn say(m) { S.msg = m; S.msg_t = time(); }
+fn reload() {
+  let p = sys("ps");
+  S.ps = typeof(p) == "arr" ? p : [];
+  S.bi = sys("budget_info");
+  S.usage = sys("fs_usage");
+  if (APP.args.depth == 0) { let n = sys("dev", "native", "list"); S.natives = typeof(n) == "arr" ? n : []; }
+  if (S.sel > 0) { S.out = sys("proc_out", S.sel); if (typeof(S.out) != "arr") { S.out = []; } }
+  S.last = time();
+}
+fn find_p(pid) { for (let p of S.ps) { if (p.pid == pid) { return p; } } return nil; }
+fn depth_of(p) {
+  let d = 0; let cur = p;
+  while (cur != nil && cur.parent != nil && cur.parent > 0 && d < 5) { cur = find_p(cur.parent); if (cur != nil) { d++; } }
+  return d;
+}
+fn state_color(p) {
+  if (p.raw == "error") { return TH.danger; } if (p.raw == "done") { return TH.faint; } if (p.susp) { return TH.warn; }
+  if (p.raw == "waiting") { return TH.muted; } return TH.ok;
+}
+fn num_input_val(id, dflt) { let v = num(trim(ui_val(id))); return v == nil ? dflt : v; }
+fn card(x, y, w, h, title, icon) {
+  let b = ui_rect(x, y, w, h, TH.bg2, 12); b.stroke = TH.border;
+  ui_icon(x + 12, y + 10, icon, 16, TH.acc);
+  ui_text(x + 34, y + 10, title, 12, TH.muted, {b: true});
+}
+fn tasks_frame(U, w, h) {
+  ui_rect(0, 0, w, h, TH.bg1, 0);
+  let bi = S.bi;
+  let cw = floor((w - 12 * 5) / 4);
+  // 预算卡片
+  card(12, 12, cw, 118, "逻辑执行预算（每逻辑步）", "cpu");
+  if (bi != nil) {
+    ui_text(24, 36, str(bi.total), 22, TH.text, {b: true, fam: "num"});
+    ui_text(24 + text_w(str(bi.total), 22) + 8, 46, "单位 / 步", 11, TH.faint);
+    ui_progress(24, 70, cw - 24, 6, bi.total > 0 ? bi.used / bi.total : 0, TH.acc);
+    ui_text(24, 82, "实际拨付 " + bi.granted + " · 本步已用 " + bi.used + (bi.svc > 0 ? " · 应用服务 " + bi.svc : ""), 11, TH.muted);
+    ui_input("tasks-budget", 24, 100, cw - 88, 24, {ph: "新的总预算", size: 12, pad: 5, r: 8});
+    if (ui_button("tasks-budget-apply", 24 + cw - 82, 100, 58, 24, "应用", {size: 12, fill: TH.acc})) {
+      let v = num(trim(ui_val("tasks-budget")));
+      if (v == nil || v < 1000) { say("总预算需是不小于 1000 的数字"); } else { let r = sys("cfg_set", {budget: v}); say(r != nil && r.err != nil ? r.err : "总预算已调整为 " + v); reload(); }
+    }
+  }
+  // 内核 vs 内部
+  card(12 + (cw + 12), 12, cw, 118, "内核自身与内部工作", "system");
+  if (bi != nil) {
+    ui_text(12 + (cw + 12) + 12, 36, "内核自身", 11, TH.faint); ui_text(12 + (cw + 12) + 12, 50, str(bi.kernel_own), 17, TH.text, {b: true, fam: "num"});
+    ui_text(12 + (cw + 12) + 12 + cw / 2, 36, "内部工作（含用户程序与子系统）", 11, TH.faint); ui_text(12 + (cw + 12) + 12 + cw / 2, 50, str(bi.kernel_inner), 17, TH.text, {b: true, fam: "num"});
+    let tot = bi.kernel_own + bi.kernel_inner;
+    ui_progress(12 + (cw + 12) + 12, 82, cw - 24, 6, tot > 0 ? bi.kernel_own / tot : 0, TH.acc2);
+    ui_text(12 + (cw + 12) + 12, 94, "内核占 " + (tot > 0 ? floor(bi.kernel_own * 100 / tot) : 0) + "%；层数越深，到达用户程序的份额越小", 11, TH.muted);
+    ui_text(12 + (cw + 12) + 12, 110, "进程 " + bi.nprocs + " 个 · 逻辑时间 " + fmt(bi.now, 1) + " s", 11, TH.faint);
+  }
+  // 内存
+  card(12 + (cw + 12) * 2, 12, cw, 118, "内存配额", "memory");
+  if (bi != nil) {
+    let mq = bi.mem_quota == nil ? 0 : bi.mem_quota;
+    ui_text(12 + (cw + 12) * 2 + 12, 36, fmt_size(bi.mem), 19, TH.text, {b: true, fam: "num"});
+    ui_text(12 + (cw + 12) * 2 + 12 + text_w(fmt_size(bi.mem), 19) + 8, 44, mq > 0 ? "/ " + fmt_size(mq) : "（未设上限）", 11, TH.faint);
+    ui_progress(12 + (cw + 12) * 2 + 12, 70, cw - 24, 6, mq > 0 ? bi.mem / mq : 0, mq > 0 && bi.mem > mq * 0.85 ? TH.danger : TH.acc);
+    ui_text(12 + (cw + 12) * 2 + 12, 82, "程序变量、消息队列、显示设备中的场景", 11, TH.muted);
+    ui_input("tasks-memory", 12 + (cw + 12) * 2 + 12, 100, cw - 88, 24, {ph: "配额（KB，0=不限）", size: 12, pad: 5, r: 8});
+    if (ui_button("tasks-memory-apply", 12 + (cw + 12) * 2 + 12 + cw - 82, 100, 58, 24, "应用", {size: 12, fill: TH.acc})) {
+      let v = num(trim(ui_val("tasks-memory")));
+      if (v == nil || v < 0) { say("请输入内存配额（KB）"); } else { sys("cfg_set", {mem: floor(v * 1024)}); say("内存配额已设为 " + (v == 0 ? "不限" : v + " KB")); reload(); }
+    }
+  }
+  // 存储
+  card(12 + (cw + 12) * 3, 12, cw, 118, "存储配额", "disk");
+  if (S.usage != nil && S.usage.err == nil) {
+    let sq = S.usage.quota;
+    let bx = 12 + (cw + 12) * 3 + 12;
+    ui_text(bx, 36, fmt_size(S.usage.tree), 19, TH.text, {b: true, fam: "num"});
+    ui_text(bx + text_w(fmt_size(S.usage.tree), 19) + 8, 44, sq > 0 ? "/ " + fmt_size(sq) : "（未设上限）", 11, TH.faint);
+    ui_progress(bx, 70, cw - 24, 6, sq > 0 ? S.usage.tree / sq : 0, sq > 0 && S.usage.tree > sq * 0.85 ? TH.danger : TH.acc);
+    ui_text(bx, 82, "文件占用存储（含子系统的文件）", 11, TH.muted);
+    ui_input("tasks-storage", bx, 100, cw - 88, 24, {ph: "配额（KB，0=不限）", size: 12, pad: 5, r: 8});
+    if (ui_button("tasks-storage-apply", bx + cw - 82, 100, 58, 24, "应用", {size: 12, fill: TH.acc})) {
+      let v = num(trim(ui_val("tasks-storage")));
+      if (v == nil || v < 0) { say("请输入存储配额（KB）"); } else { sys("cfg_set", {storage: floor(v * 1024)}); say("存储配额已设为 " + (v == 0 ? "不限" : v + " KB")); reload(); }
+    }
+  }
+  // 进程表
+  let ty = 142;
+  ui_rect(12, ty, w - 24, 26, TH.bg2, 8);
+  let cols = [["名称", 22], ["PID", w * 0.27], ["状态", w * 0.33], ["本步", w * 0.41], ["总工作量", w * 0.48], ["内核自身 / 内部", w * 0.58], ["内存", w * 0.72], ["消息", w * 0.80], ["额度", w * 0.86]];
+  for (let c of cols) { ui_text(c[1], ty + 6, c[0], 11, TH.muted, {b: true}); }
+  ui_text(w - 218, ty + 6, "操作", 11, TH.muted, {b: true});
+  let ph = h - ty - 26 - 170 - 8;
+  let rows = [];
+  for (let p of S.ps) { push(rows, p); }
+  let nn = S.natives;
+  let rh = 32;
+  let content = (len(rows) + len(nn)) * rh + 8;
+  let off = ui_scroll_begin("tasks-list", 12, ty + 30, w - 24, ph, content);
+  let y = 2;
+  for (let p of rows) {
+    let sel = S.sel == p.pid;
+    let d = depth_of(p);
+    let r = ui_rect(0, y, w - 28, rh - 2, sel ? "rgba(139,108,255,.28)" : (p.kind == "system" ? "rgba(255,200,61,.07)" : "rgba(255,255,255,.03)"), 6);
+    r.hf = "rgba(255,255,255,.08)"; r.tid = "tasks-item"; r.aria = p.name; r.d = {pid: str(p.pid), state: p.raw}; r.key = "r" + p.pid;
+    if (ui_in(0, y, w - 28 - 220, rh - 2) && ui_ev_is("down", 0)) { S.sel = p.pid; S.out = sys("proc_out", p.pid); }
+    let nx = 10 + d * 16;
+    ui_icon(nx, y + 7, p.kind == "system" ? "system" : "code", 16, p.kind == "system" ? TH.acc2 : TH.acc);
+    ui_textw(nx + 22, y + 7, w * 0.27 - nx - 30, p.name, 12, TH.text, {b: p.kind == "system"});
+    ui_text(w * 0.27 - 12, y + 7, str(p.pid), 12, TH.muted, {fam: "num"});
+    ui_text(w * 0.33 - 12, y + 7, p.state + (p.wait != nil && p.raw == "waiting" ? "·" + wait_name(p.wait) : ""), 12, state_color(p));
+    ui_text(w * 0.41 - 12, y + 7, str(p.used_step), 12, TH.muted, {fam: "num"});
+    ui_text(w * 0.48 - 12, y + 7, str(p.used), 12, TH.muted, {fam: "num"});
+    ui_text(w * 0.58 - 12, y + 7, p.own + " / " + p.inner, 12, TH.muted, {fam: "num"});
+    ui_text(w * 0.72 - 12, y + 7, fmt_size(p.mem), 12, TH.muted, {fam: "num"});
+    ui_text(w * 0.80 - 12, y + 7, p.mailbox + "", 12, TH.muted, {fam: "num"});
+    ui_text(w * 0.86 - 12, y + 7, p.quota > 0 ? str(p.quota) : "不限", 12, TH.muted, {fam: "num"});
+    let live = p.raw != "done" && p.raw != "error";
+    let ax = w - 28 - 214;
+    if (live && p.kind != "system") {
+      if (p.susp) { if (ui_button("task-resume", ax, y + 3, 54, 24, "继续", {size: 11, d: {pid: str(p.pid)}, key: "tr" + p.pid})) { sys("resume", p.pid); say("已继续 " + p.name); reload(); } }
+      else { if (ui_button("task-suspend", ax, y + 3, 54, 24, "挂起", {size: 11, d: {pid: str(p.pid)}, key: "ts" + p.pid})) { sys("suspend", p.pid); say("已挂起 " + p.name); reload(); } }
+      if (ui_button("task-quota", ax + 58, y + 3, 62, 24, "额度±", {size: 11, d: {pid: str(p.pid)}, key: "tq" + p.pid, tip: "循环切换该进程每逻辑步的额度上限"})) {
+        let qs = [0, 2000, 500, 100]; let ni = 0;
+        for (let i = 0; i < len(qs); i++) { if (qs[i] == p.quota) { ni = (i + 1) % len(qs); } }
+        sys("setquota", p.pid, qs[ni]); say(p.name + " 额度：" + (qs[ni] == 0 ? "不限" : qs[ni])); reload();
+      }
+    }
+    if (p.kind == "system") {
+      let ci = p.sys;
+      ui_text(ax - 120, y + 7, "拨付", 11, TH.faint);
+      ui_input("tasks-grant-" + ci.id, ax - 84, y + 3, 74, 24, {ph: ci.grant > 0 ? str(ci.grant) : "不限", size: 11, pad: 4, r: 6, tid: "tasks-grant", d: {"target-system-id": ci.id}});
+      if (ui_button("tasks-grant-apply", ax, y + 3, 54, 24, "应用", {size: 11, fill: TH.acc, d: {"target-system-id": ci.id}, key: "tg" + ci.id})) {
+        let v = num(trim(ui_val("tasks-grant-" + ci.id)));
+        if (v == nil || v < 0) { say("请输入拨付上限（每逻辑步的单位数，0=不限）"); }
+        else { let r2 = sys("sysctl", "grant", p.pid, {budget: floor(v)}); say(ci.id + " 的拨付上限：" + (v == 0 ? "不限" : v)); reload(); }
+      }
+    }
+    if (live && p.kind != "system") { if (ui_button("task-kill", ax + 124, y + 3, 56, 24, "结束", {size: 11, color: TH.danger, d: {pid: str(p.pid)}, key: "tk" + p.pid})) { sys("kill", p.pid); say("已结束 " + p.name); reload(); } }
+    else if (p.kind == "system") { if (ui_button("task-kill", ax + 58, y + 3, 120, 24, "停止子系统", {size: 11, color: TH.danger, d: {pid: str(p.pid)}, key: "tk" + p.pid})) { sys("sysctl", "pause", p.pid); say("请在“系统管理”中关闭子系统；这里已暂停它"); reload(); } }
+    else { if (ui_button("task-kill", ax + 124, y + 3, 56, 24, "清除", {size: 11, d: {pid: str(p.pid)}, key: "tk" + p.pid})) { sys("kill", p.pid); reload(); } }
+    y = y + rh;
+  }
+  for (let n of nn) {
+    let r = ui_rect(0, y, w - 28, rh - 2, "rgba(74,168,255,.08)", 6); r.tid = "tasks-item"; r.aria = n.title; r.d = {native: str(n.nid)}; r.key = "n" + n.nid;
+    ui_icon(10, y + 7, n.app == "browser" ? "globe" : "sheet", 16, TH.acc2);
+    ui_textw(32, y + 7, w * 0.26, n.title + "（宿主承载的应用）", 12, TH.text);
+    ui_text(w * 0.33 - 12, y + 7, n.kind == "web" ? "网页视图 " + n.views + " 个" : "运行", 12, TH.muted);
+    ui_text(w * 0.41 - 12, y + 7, "不计入指令读数", 11, TH.faint);
+    if (ui_button("task-kill", w - 28 - 90, y + 3, 80, 24, "结束应用", {size: 11, color: TH.danger, d: {native: str(n.nid)}, key: "nk" + n.nid})) { sys("dev", "native", "close", n.nid); say("已结束 " + n.title); reload(); }
+    y = y + rh;
+  }
+  ui_scroll_end();
+  ui_scrollbar(w - 18, ty + 32, 6, ph - 4, content, off);
+  // 详情
+  let dy = h - 170 - 26 + 4;
+  ui_rect(12, dy, w - 24, 164, "#0b0818", 10);
+  let sp = find_p(S.sel);
+  if (sp == nil) { ui_text(26, dy + 14, "选择一个进程查看它的输出与错误", 12, TH.faint); }
+  else {
+    ui_text(26, dy + 10, sp.name + "（pid " + sp.pid + "）输出 · 位置 " + (sp.fn == nil ? "—" : sp.fn + ":" + sp.line) + " · 已收 " + sp.recv + " 条 / 已发 " + sp.sent + " 条消息", 12, TH.muted, {b: true});
+    if (sp.err != nil) { ui_textw(26, dy + 30, w - 60, "✗ " + sp.err.msg + "（" + sp.err.fn + " 第 " + sp.err.line + " 行）", 12, TH.danger, {fam: "mono"}); }
+    let oy = dy + (sp.err != nil ? 50 : 32); let ml = floor((164 - (oy - dy) - 6) / 16);
+    let st = max(0, len(S.out) - ml);
+    for (let i = st; i < len(S.out); i++) { ui_textw(26, oy, w - 60, S.out[i], 12, TH.text, {fam: "mono"}); oy = oy + 16; }
+    if (len(S.out) == 0 && sp.err == nil) { ui_text(26, oy, "（没有输出）", 12, TH.faint); }
+  }
+  ui_rect(0, h - 26, w, 26, TH.bg2, 0);
+  ui_textw(12, h - 20, w - 24, S.msg != "" && time() - S.msg_t < 8 ? S.msg : "每 0.5 秒刷新 · 单位为逻辑执行单位（指令/明确定义的计算步），宿主绘制与网页执行不计入", 12, S.msg != "" && time() - S.msg_t < 8 ? TH.acc2 : TH.muted);
+}
+fn wait_name(w) { if (w == "recv") { return "收消息"; } if (w == "sleep") { return "睡眠"; } if (w == "job") { return "编译"; } if (w == "boot") { return "启动"; } return w; }
+fn tasks_idle() {
+  if (time() - S.last >= 0.5) { reload(); return true; }
+  return false;
+}
+fn tasks_msg(m) { }
+app_init(&tasks_frame, &tasks_msg, 0);
+APP.on_idle = &tasks_idle;
+ui = app_view(0);
+reload();
+app_run();

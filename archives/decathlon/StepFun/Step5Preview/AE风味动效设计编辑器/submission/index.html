@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>锻火 FORGE · AE风味动效设计编辑器</title>
+<style>
+:root{
+  --bg:#101216; --bg2:#15181e; --panel:#191d24; --panel2:#1f242d; --line:#2a3038; --line2:#39414d;
+  --txt:#d7dde6; --txt2:#8b95a3; --txt3:#5c6672;
+  --acc:#ff9a3c; --acc2:#ff6a13; --cy:#4fd6ff; --gr:#7ddb6a; --rd:#ff5d5d; --yl:#ffd34d; --pu:#b78cff;
+  --sel:#ffb066;
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-user-select:none; user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
+  font:12px/1.45 "Microsoft YaHei","PingFang SC","Segoe UI",system-ui,sans-serif;}
+button{font:inherit;color:var(--txt);background:var(--panel2);border:1px solid var(--line);border-radius:3px;padding:2px 8px;cursor:pointer;}
+button:hover{background:#2a313b;border-color:var(--line2);}
+button.on{background:var(--acc2);border-color:var(--acc);color:#fff;}
+button.icon{padding:2px 6px;min-width:26px;}
+input,select,textarea{font:inherit;color:var(--txt);background:#0d0f13;border:1px solid var(--line);border-radius:3px;padding:2px 5px;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);}
+input[type=number]{width:58px;}
+input[type=checkbox]{width:13px;height:13px;accent-color:#ff8a2a;}
+::-webkit-scrollbar{width:9px;height:9px;}
+::-webkit-scrollbar-track{background:#0d0f13;}
+::-webkit-scrollbar-thumb{background:#333b46;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:#46505d;}
+.hidden{display:none !important;}
+
+#app{display:grid;width:100%;height:100%;
+  grid-template-columns:236px 1fr 306px;
+  grid-template-rows:32px 30px 1fr 244px 20px;}
+
+/* ---------- top bar ---------- */
+#topbar{grid-column:1/4;display:flex;align-items:center;background:linear-gradient(#20252e,#171b21);border-bottom:1px solid var(--line);padding:0 8px;gap:10px;}
+.brand{font-weight:700;font-size:14px;letter-spacing:1px;color:var(--acc);text-shadow:0 0 12px rgba(255,120,30,.45);}
+.brand span{font-size:10px;color:var(--txt3);letter-spacing:0;font-weight:400;margin-left:4px;}
+#menubar{display:flex;gap:1px;}
+#menubar>button{background:none;border:none;padding:3px 9px;border-radius:3px;}
+#menubar>button:hover{background:#2b323d;}
+#playbar{display:flex;align-items:center;gap:4px;margin-left:auto;}
+#playbar button{min-width:26px;}
+#timeRead{font-family:Consolas,monospace;font-size:12px;color:var(--cy);background:#0d0f13;border:1px solid var(--line);padding:2px 8px;border-radius:3px;min-width:104px;text-align:center;}
+#fpsLabel{color:var(--txt3);font-size:11px;}
+#topright{display:flex;gap:4px;}
+
+/* ---------- toolbar ---------- */
+#toolbar{grid-column:1/4;display:flex;align-items:center;gap:5px;background:var(--panel);border-bottom:1px solid var(--line);padding:0 8px;overflow:hidden;}
+#toolbar .sep{width:1px;height:18px;background:var(--line2);margin:0 3px;}
+#toolbar button{padding:2px 7px;}
+#toolbar .lbl{color:var(--txt3);font-size:11px;}
+.zoomval{font-family:Consolas,monospace;color:var(--cy);min-width:44px;text-align:center;}
+
+/* ---------- panels ---------- */
+aside{background:var(--panel);overflow:hidden;display:flex;flex-direction:column;}
+#leftpanel{grid-column:1;border-right:1px solid var(--line);}
+#rightpanel{grid-column:3;border-left:1px solid var(--line);}
+.panel-h{font-size:11px;color:var(--txt2);background:var(--panel2);border-bottom:1px solid var(--line);border-top:1px solid var(--line);
+  padding:3px 8px;display:flex;align-items:center;gap:6px;flex:none;}
+.panel-h:first-child{border-top:none;}
+.panel-h .sp{flex:1;}
+.panel-h button{padding:0 6px;font-size:11px;}
+.scroll{overflow:auto;flex:1;min-height:0;}
+
+/* comp list */
+.comp-item{padding:4px 8px;display:flex;gap:6px;align-items:center;cursor:pointer;border-left:2px solid transparent;}
+.comp-item:hover{background:#222831;}
+.comp-item.sel{background:#2a2118;border-left-color:var(--acc);color:#fff;}
+.comp-item .ci{width:14px;text-align:center;opacity:.8;}
+.comp-item .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.comp-item .dim{color:var(--txt3);font-size:10px;font-family:Consolas,monospace;}
+
+/* layer list */
+#layerList{overflow:auto;flex:1;min-height:0;}
+.layer-item{display:flex;align-items:center;gap:4px;padding:2px 6px 2px 4px;border-left:2px solid transparent;cursor:pointer;height:23px;}
+.layer-item:hover{background:#222831;}
+.layer-item.sel{background:#2a2118;border-left-color:var(--acc);}
+.layer-item .toggles{display:flex;gap:1px;flex:none;}
+.layer-item .toggles span{width:15px;height:15px;line-height:14px;text-align:center;border-radius:2px;font-size:10px;color:#3d444d;cursor:pointer;}
+.layer-item .toggles span.on{color:var(--acc);}
+.layer-item .ticon{width:16px;text-align:center;font-size:11px;flex:none;}
+.layer-item .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;}
+.layer-item.parent{padding-left:14px;color:var(--txt2);}
+#layerTools{display:flex;flex-wrap:wrap;gap:3px;padding:5px;border-top:1px solid var(--line);flex:none;background:var(--panel2);}
+#layerTools button{font-size:11px;padding:2px 6px;}
+
+/* ---------- stage ---------- */
+#stage{grid-column:2;display:flex;flex-direction:column;background:#0a0b0d;min-width:0;min-height:0;}
+#compTabs{display:flex;background:var(--panel2);border-bottom:1px solid var(--line);overflow-x:auto;flex:none;}
+#compTabs .ctab{padding:4px 12px;border-right:1px solid var(--line);cursor:pointer;color:var(--txt2);white-space:nowrap;font-size:12px;}
+#compTabs .ctab:hover{background:#252b34;color:var(--txt);}
+#compTabs .ctab.sel{background:var(--bg);color:var(--acc);border-top:2px solid var(--acc);}
+#canvasWrap{flex:1;position:relative;overflow:hidden;min-height:0;display:flex;align-items:center;justify-content:center;
+  background:
+   repeating-conic-gradient(#121418 0% 25%, #0e1013 0% 50%) 50% / 22px 22px;}
+#gl,#ov{position:absolute;image-rendering:auto;}
+#gl{z-index:1;}
+#ov{z-index:2;pointer-events:auto;}
+#canvasInfo{position:absolute;left:8px;bottom:6px;z-index:3;font-family:Consolas,monospace;font-size:11px;color:#6e7783;
+  background:rgba(10,11,13,.6);padding:2px 8px;border-radius:3px;pointer-events:none;}
+#viewAxes{position:absolute;right:10px;bottom:8px;z-index:3;pointer-events:none;}
+
+/* ---------- properties ---------- */
+#props{overflow:auto;flex:1;min-height:0;padding-bottom:20px;}
+.prop-group{border-bottom:1px solid var(--line);}
+.pg-h{display:flex;align-items:center;gap:5px;padding:4px 8px;background:var(--panel2);cursor:pointer;font-size:12px;color:var(--txt);}
+.pg-h:hover{background:#262c35;}
+.pg-h .arw{color:var(--txt3);font-size:9px;width:9px;}
+.pg-h .nm{flex:1;}
+.pg-h .badge{font-size:10px;color:var(--acc);}
+.pg-b{padding:4px 6px 6px;}
+.prop-row{display:flex;align-items:center;gap:4px;padding:1px 0;min-height:22px;}
+.prop-row .plabel{width:74px;flex:none;color:var(--txt2);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prop-row .pctrl{flex:1;display:flex;gap:3px;align-items:center;min-width:0;}
+.num{background:#0d0f13;border:1px solid transparent;border-radius:2px;padding:1px 4px;width:100%;min-width:0;font-family:Consolas,monospace;font-size:11px;color:var(--txt);}
+.num:hover{border-color:var(--line2);}
+.num:focus{border-color:var(--acc);background:#131720;color:#fff;}
+.num.anim{color:var(--acc);}
+.sw{width:16px;height:16px;flex:none;line-height:14px;text-align:center;border-radius:2px;cursor:pointer;font-size:9px;color:#4a525d;border:1px solid transparent;}
+.sw:hover{border-color:var(--line2);color:var(--txt2);}
+.sw.on{color:#fff;background:var(--acc2);border-color:var(--acc);}
+.sw.key{color:var(--acc);}
+.expr-btn{width:16px;height:16px;flex:none;line-height:14px;text-align:center;border-radius:2px;cursor:pointer;font-size:9px;font-style:italic;color:#4a525d;border:1px solid transparent;font-family:Consolas,monospace;}
+.expr-btn:hover{border-color:var(--line2);}
+.expr-btn.on{color:#0d0f13;background:var(--cy);border-color:var(--cy);font-weight:700;}
+.expr-box{width:100%;height:52px;font-family:Consolas,monospace;font-size:11px;resize:vertical;display:block;margin-top:3px;}
+.sel-chip{background:#0d0f13;border:1px solid var(--line);border-radius:3px;padding:2px 6px;font-size:11px;color:var(--txt2);}
+.rowbtns{display:flex;gap:4px;padding:3px 0;}
+.rowbtns button{font-size:11px;padding:2px 7px;flex:1;}
+.mini-note{color:var(--txt3);font-size:10px;padding:2px 8px 4px;line-height:1.4;}
+.swatch{width:22px;height:16px;border:1px solid var(--line2);border-radius:2px;flex:none;cursor:pointer;}
+select{max-width:130px;}
+
+/* ---------- bottom ---------- */
+#bottom{grid-column:1/4;display:flex;flex-direction:column;background:var(--panel);border-top:1px solid var(--line);min-height:0;}
+#bottomTabs{display:flex;gap:0;background:var(--panel2);border-bottom:1px solid var(--line);flex:none;align-items:stretch;}
+#bottomTabs button{background:none;border:none;border-radius:0;padding:3px 14px;color:var(--txt2);border-bottom:2px solid transparent;}
+#bottomTabs button.sel{color:var(--acc);border-bottom-color:var(--acc);background:#151820;}
+#bottomTabs .ts{margin-left:auto;display:flex;align-items:center;gap:6px;padding-right:8px;color:var(--txt3);font-size:11px;}
+.tabpane{flex:1;position:relative;min-height:0;overflow:hidden;}
+.tabpane canvas{position:absolute;left:0;top:0;}
+#tlCanvas,#grCanvas,#ndCanvas{cursor:default;}
+#statusbar{grid-column:1/4;background:var(--panel2);border-top:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 8px;font-size:11px;color:var(--txt3);}
+#statusbar b{color:var(--txt2);font-weight:400;}
+#statusMsg{color:var(--cy);}
+#statusRight{margin-left:auto;display:flex;gap:14px;}
+
+/* menus */
+.menu-pop{position:fixed;z-index:100;background:#1c2129;border:1px solid var(--line2);border-radius:4px;box-shadow:0 8px 26px rgba(0,0,0,.6);padding:4px 0;min-width:180px;}
+.menu-pop .mi{padding:4px 14px;display:flex;gap:10px;cursor:pointer;font-size:12px;color:var(--txt);}
+.menu-pop .mi:hover{background:var(--acc2);color:#fff;}
+.menu-pop .mi .k{margin-left:auto;color:var(--txt3);font-family:Consolas,monospace;}
+.menu-pop .mi:hover .k{color:#ffd;}
+.menu-pop .msep{height:1px;background:var(--line);margin:3px 0;}
+
+/* boot */
+#boot{position:fixed;inset:0;background:radial-gradient(circle at 50% 45%,#1b2028,#08090b 70%);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+#boot h1{font-size:34px;letter-spacing:10px;color:var(--acc);text-shadow:0 0 30px rgba(255,110,20,.7);font-weight:700;}
+#boot p{color:var(--txt3);letter-spacing:2px;}
+#bootbar{width:340px;height:3px;background:#222;border-radius:2px;overflow:hidden;}
+#bootbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--yl));transition:width .2s;}
+#bootlog{font-family:Consolas,monospace;font-size:11px;color:#5c6672;height:16px;}
+
+/* tooltip-ish */
+.tip{position:fixed;z-index:150;background:#0d0f13f0;border:1px solid var(--line2);padding:3px 8px;border-radius:3px;font-size:11px;color:var(--txt2);pointer-events:none;max-width:260px;}
+</style>
+</head>
+<body>
+<div id="boot">
+  <h1>锻 火</h1>
+  <p>FORGE · AE 风味动效设计编辑器</p>
+  <div id="bootbar"><i></i></div>
+  <div id="bootlog">初始化…</div>
+</div>
+
+<div id="app" class="hidden">
+  <header id="topbar">
+    <div class="brand">锻火<span>FORGE 动效设计编辑器</span></div>
+    <nav id="menubar">
+      <button data-menu="file">文件</button>
+      <button data-menu="edit">编辑</button>
+      <button data-menu="comp">合成</button>
+      <button data-menu="layer">图层</button>
+      <button data-menu="anim">动画</button>
+      <button data-menu="view">视图</button>
+      <button data-menu="help">帮助</button>
+    </nav>
+    <div id="playbar">
+      <button id="btnFirst" class="icon" title="跳到开头 (Home)">⏮</button>
+      <button id="btnPrev" class="icon" title="上一关键帧 (PgUp)">◀|</button>
+      <button id="btnPlay" class="icon" title="播放/暂停 (空格)">▶</button>
+      <button id="btnNext" class="icon" title="下一关键帧 (PgDn)">|▶</button>
+      <button id="btnLast" class="icon" title="跳到末尾 (End)">⏭</button>
+      <button id="btnLoop" class="on" title="循环工作区">循环</button>
+      <span id="timeRead">0:00:00</span>
+      <span id="fpsLabel">30 fps</span>
+    </div>
+    <div id="topright">
+      <button id="btnUndo" class="icon" title="撤销 (Ctrl+Z)">↶</button>
+      <button id="btnRedo" class="icon" title="重做 (Ctrl+Shift+Z)">↷</button>
+      <button id="btnSaveJson" title="保存工程为 .forge 文件">保存</button>
+      <button id="btnOpenJson" title="打开工程文件">打开</button>
+      <button id="btnSnap" title="导出当前帧 PNG">帧</button>
+    </div>
+  </header>
+
+  <div id="toolbar">
+    <button id="toolSelect" class="on" title="选择工具 (V)">⬚ 选择</button>
+    <button id="toolPen" title="钢笔工具 (P)：画布中绘制路径">✒ 钢笔</button>
+    <button id="toolRect" title="矩形工具 (R)">▭ 矩形</button>
+    <button id="toolEllipse" title="椭圆工具 (E)">◯ 椭圆</button>
+    <button id="toolText" title="文字工具 (T)">T 文字</button>
+    <button id="toolPin" title="图钉工具 (W)：网格变形">⌖ 图钉</button>
+    <div class="sep"></div>
+    <button id="btnAddShape" title="新建形状图层">+形状</button>
+    <button id="btnAddText" title="新建文字图层">+文字</button>
+    <button id="btnAddNull" title="新建空对象">+空对象</button>
+    <button id="btnAddGeo" title="新建三维几何">+三维</button>
+    <button id="btnAddParticle" title="新建粒子系统">+粒子</button>
+    <button id="btnAddLight" title="新建灯光">+灯光</button>
+    <button id="btnAddCam" title="新建摄像机">+摄像机</button>
+    <div class="sep"></div>
+    <span class="lbl">缩放</span>
+    <button id="btnZoomOut" class="icon">−</button><span class="zoomval" id="zoomVal">100%</span><button id="btnZoomIn" class="icon">+</button>
+    <button id="btnFit" title="适应窗口">适应</button>
+    <div class="sep"></div>
+    <button id="tgGrid" class="on" title="网格">网格</button>
+    <button id="tgTitle" class="on" title="标题/动作安全区">安全框</button>
+    <button id="tgHandles" class="on" title="控制点与手柄">控制点</button>
+    <button id="tgPaths" class="on" title="运动路径">运动路径</button>
+    <button id="tgFields" class="on" title="场范围">场</button>
+    <button id="tgLights" class="on" title="光源与摄像机">相机/灯</button>
+    <div class="sep"></div>
+    <span class="lbl">通道</span>
+    <select id="chanSel" title="显示通道">
+      <option value="rgb">RGB</option><option value="alpha">Alpha</option><option value="r">红</option><option value="g">绿</option><option value="b">蓝</option>
+    </select>
+    <select id="resSel" title="预览分辨率">
+      <option value="1">完整</option><option value="0.5">1/2</option><option value="0.25">1/4</option>
+    </select>
+    <span style="flex:1"></span>
+    <span class="lbl" id="selInfo">无选择</span>
+  </div>
+
+  <aside id="leftpanel">
+    <div class="panel-h">工程 <span class="sp"></span><button id="btnNewComp">+合成</button></div>
+    <div id="compList" class="scroll" style="max-height:150px"></div>
+    <div class="panel-h">图层 <span class="sp"></span><span id="layerCount" style="color:var(--txt3)"></span></div>
+    <div id="layerList" class="scroll"></div>
+    <div id="layerTools">
+      <button data-add="shape">形状</button><button data-add="text">文字</button><button data-add="null">空对象</button>
+      <button data-add="adjust">调整</button><button data-add="precomp">预合成</button><button data-add="camera">摄像机</button>
+      <button data-add="light">灯光</button><button data-add="geo3d">三维几何</button><button data-add="particle">粒子</button>
+      <button data-add="audio">音色</button>
+    </div>
+  </aside>
+
+  <main id="stage">
+    <div id="compTabs"></div>
+    <div id="canvasWrap">
+      <canvas id="gl"></canvas>
+      <canvas id="ov"></canvas>
+      <canvas id="viewAxes" width="90" height="90"></canvas>
+      <div id="canvasInfo"></div>
+    </div>
+  </main>
+
+  <aside id="rightpanel">
+    <div id="props" class="scroll"></div>
+  </aside>
+
+  <footer id="bottom">
+    <div id="bottomTabs">
+      <button data-tab="timeline" class="sel">时间轴</button>
+      <button data-tab="graph">曲线编辑器</button>
+      <button data-tab="nodes">节点编辑器</button>
+      <div class="ts">
+        <span id="tlInfo"></span>
+        <button id="btnGraphMode" title="值曲线 / 速度曲线">值曲线</button>
+        <button id="btnEasyEase" title="缓入缓出 (F9)">F9 缓动</button>
+      </div>
+    </div>
+    <div id="tabTimeline" class="tabpane"><canvas id="tlCanvas"></canvas></div>
+    <div id="tabGraph" class="tabpane hidden"><canvas id="grCanvas"></canvas></div>
+    <div id="tabNodes" class="tabpane hidden"><canvas id="ndCanvas"></canvas></div>
+  </footer>
+
+  <div id="statusbar">
+    <span id="statusMsg">就绪</span>
+    <b id="stComp"></b><b id="stSel"></b><b id="stTime"></b>
+    <div id="statusRight"><b id="stPerf"></b><b id="stMem"></b></div>
+  </div>
+</div>
+
+<input type="file" id="fileOpen" accept=".forge,.json" class="hidden">
+<input type="color" id="colorPick" class="hidden">
+
+<script src="js/core.js"></script>
+<script src="js/font.js"></script>
+<script src="js/geom.js"></script>
+<script src="js/project.js"></script>
+<script src="js/expr.js"></script>
+<script src="js/anim.js"></script>
+<script src="js/content.js"></script>
+<script src="js/render.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

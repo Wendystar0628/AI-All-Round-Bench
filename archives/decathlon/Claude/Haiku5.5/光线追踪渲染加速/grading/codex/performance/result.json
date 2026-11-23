@@ -1,0 +1,77 @@
+{
+    "task":  "光线追踪渲染加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "渲染加速",
+                      "max":  100,
+                      "score":  26.8,
+                      "reason":  "固定命令编译成功，基线与提交最小用时分别为 511.600000 ms、226.903100 ms，加速比 2.254706965；速度分 q=26.842318450。5 次计时画面与 12 个隐藏输入全部通过，c=h=1，最终 q×c×h=26.8 分；源码核查未发现实质性违规。"
+                  }
+              ],
+    "metrics":  {
+                    "R_ms":  511.6,
+                    "C_ms":  226.9031,
+                    "speedup":  2.254706965219955,
+                    "q":  26.84231845042578,
+                    "c":  1,
+                    "h":  1,
+                    "raw_score":  26.84231845042578,
+                    "timing_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "hidden_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "public_boundary_factors":  [
+                                                    1,
+                                                    1,
+                                                    1
+                                                ],
+                    "baseline_times_ms":  [
+                                              515.3249,
+                                              511.6,
+                                              511.8558,
+                                              511.9471,
+                                              511.8166
+                                          ],
+                    "submission_times_ms":  [
+                                                227.0632,
+                                                227.5385,
+                                                232.8234,
+                                                228.7686,
+                                                226.9031
+                                            ],
+                    "timing_exception_pixels":  [
+                                                    805,
+                                                    805,
+                                                    805,
+                                                    805,
+                                                    805
+                                                ],
+                    "timing_exception_limit":  3232,
+                    "timing_rmse":  3.9222564438686618E-05,
+                    "formal":  true,
+                    "cpu_affinity":  "16-27",
+                    "timing_statistic":  "min",
+                    "official_results":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Claude\\Haiku5.5\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json",
+                    "source_sha256":  "718A1FEBB48ED5CA6279F167D0D1F8B7765C9FF0C0A44149A3E265501F91574C"
+                },
+    "notes":  "评分版本：评的是作答结束时工作目录中的内容，已复制至 work\\submission，不看 git 提交。仅运行一次本题专属 evaluate.py，使用官方头文件及固定编译命令，逻辑处理器 16–27、高优先级，5 次交错运行各取最小值；formal=true。扫描命中的建树线程均 join，静态显存仅复用容量且每次重建并上传场景；减少采样的实验宏未启用。3 个公开边界均通过但不计分。本次启动的评测程序及其子进程均已退出。"
+}

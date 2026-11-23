@@ -1,0 +1,23 @@
+{
+  "problem": "14",
+  "parts": [
+    {"name": "1", "title": "偏置双出口泵体铸件", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [0, 0, 176, 124], "r": 5}], "depth": 14},
+      {"type": "extrude", "name": "本体", "plane": "XZ", "loops": [{"path": [[18, 0], [156, 0], [156, 68], [124, 106], [46, 106], [18, 68]]}], "depth": [-108, -16]},
+      {"type": "extrude", "name": "前凸缘Φ82", "plane": "XZ", "origin": [0, 16, 0], "loops": [{"circle": [86, 62], "d": 82}], "depth": [0, 14]},
+      {"type": "extrude", "name": "后凸台Φ50", "plane": "XZ", "origin": [0, 108, 0], "loops": [{"circle": [86, 62], "d": 50}], "depth": [-12, 0]},
+      {"type": "extrude", "name": "顶凸台Φ38", "plane": "XY", "origin": [0, 0, 100], "loops": [{"circle": [68, 55], "d": 38}], "depth": 20},
+      {"type": "extrude", "name": "出口管Φ46", "plane": "YZ", "origin": [150, 0, 0], "loops": [{"circle": [63, 68], "d": 46}], "depth": 32},
+      {"type": "extrude", "name": "出口法兰Φ68", "plane": "YZ", "origin": [180, 0, 0], "loops": [{"circle": [63, 68], "d": 68}], "depth": 12},
+      {"type": "extrude", "op": "cut", "name": "泵腔Φ54", "plane": "XZ", "origin": [0, 28, 0], "loops": [{"circle": [86, 62], "d": 54}], "depth": [-68, 0]},
+      {"type": "extrude", "op": "cut", "name": "前孔Φ46", "plane": "XZ", "origin": [0, 1, 0], "loops": [{"circle": [86, 62], "d": 46}], "depth": [-11, 0]},
+      {"type": "extrude", "op": "cut", "name": "前孔Φ32", "plane": "XZ", "origin": [0, 12, 0], "loops": [{"circle": [86, 62], "d": 32}], "depth": [-17, 0]},
+      {"type": "extrude", "op": "cut", "name": "后孔Φ38", "plane": "XZ", "origin": [0, 96, 0], "loops": [{"circle": [86, 62], "d": 38}], "depth": [-25, 0]},
+      {"type": "extrude", "op": "cut", "name": "出口孔Φ28", "plane": "YZ", "origin": [105, 0, 0], "loops": [{"circle": [63, 68], "d": 28}], "depth": 88},
+      {"type": "hole", "name": "顶孔Φ18", "plane": "XY", "origin": [0, 0, 120], "at": [[68, 55]], "d": 18, "depth": 45},
+      {"type": "hole", "name": "底板Φ9沉头", "plane": "XY", "origin": [0, 0, 14], "at": [[10, 9], [166, 9], [10, 115], [166, 115]], "d": 9, "through": true, "cbore": {"d": 16, "depth": 4}},
+      {"type": "fillet", "radius": 3, "edges": [[115, 16, 33]], "name": "前凸缘根部R3"},
+      {"type": "chamfer", "distance": 1.5, "edges": [[69.74, 2, 78.26]], "name": "前轴承沉孔口C1.5"}
+    ]}
+  ]
+}

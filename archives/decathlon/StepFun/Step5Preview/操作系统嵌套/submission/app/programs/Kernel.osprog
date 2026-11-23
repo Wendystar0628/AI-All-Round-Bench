@@ -1,0 +1,781 @@
+// ============================================================
+// 子系统内核程序（Kernel.osprog）
+// 存放于父系统文件系统 /System/Kernels/<实例名>.osprog，
+// 由父系统中的承载进程执行。负责：
+//   - 进程表与调度（轮转 + 量子 + 每进程额度）
+//   - 消息投递（按收件人身份、发送顺序）
+//   - 文件操作与配额
+//   - 窗口内容收集与显示提交
+//   - 直属子系统的创建、拨付、暂停、单步、快照
+// 改写本程序并重启子系统后，系统按新规则运行。
+// ============================================================
+
+let vtime = 0          // 本系统虚拟时钟（毫秒）
+let rate = 1           // 时间速率
+let ownPaused = 0      // 本实例自身暂停
+let cfg = null         // 配置：budget/memQuota/storageQuota/procQuota/childGrant/quantum
+let pendingDt = 0      // 待处理的逻辑时间
+let stepDt = 0
+let apps = []          // 应用登记表
+let appWins = []       // 已打开的应用窗口 {key,pid,win}
+let wmPid = 0          // 窗口管理程序
+let sysId = ""
+let sysName = ""
+let parentId = ""
+let rootId = ""
+let depth = 1
+let rndState = 97531
+let stat = {"steps": 0, "kernelUsed": 0, "appUsed": 0, "msgIn": 0, "msgOut": 0, "schedRounds": 0}
+const RESERVE = 260    // 每步为内核自身循环保留的指令数
+
+// ---------------- 启动 ----------------
+fn boot() {
+  sysId = SYS_ID
+  sysName = SYS_NAME
+  parentId = PARENT_ID
+  rootId = ROOT_ID
+  depth = DEPTH
+  cfg = load_cfg()
+  vtime = 0
+  rate = 1
+  ownPaused = 0
+  apps = [
+    {"key": "files", "path": "/System/Programs/Files.osprog", "title": "文件管理器", "quota": 2500, "w": 640, "h": 420},
+    {"key": "editor", "path": "/System/Programs/Editor.osprog", "title": "程序编辑器", "quota": 2500, "w": 620, "h": 440},
+    {"key": "proc", "path": "/System/Programs/Process.osprog", "title": "进程管理器", "quota": 2500, "w": 660, "h": 440},
+    {"key": "player", "path": "/System/Programs/Player.osprog", "title": "三维场景播放器", "quota": 5000, "w": 720, "h": 520},
+    {"key": "chart", "path": "/System/Programs/Chart.osprog", "title": "图表工作台", "quota": 3000, "w": 640, "h": 460},
+    {"key": "console", "path": "/System/Programs/Console.osprog", "title": "程序控制台", "quota": 1500, "w": 560, "h": 380},
+    {"key": "help", "path": "/System/Programs/Help.osprog", "title": "操作说明", "quota": 1500, "w": 640, "h": 480}
+  ]
+  let r = K_spawn_file("/System/Programs/Window.osprog", "window", "app", 3000)
+  if type(r) == "map" {
+    K_fail("窗口管理程序启动失败: " + r.error)
+    return
+  }
+  wmPid = r
+  K_send(wmPid, {"t": "boot", "sys": sysId, "name": sysName, "apps": apps, "depth": depth})
+  // 启动编译器程序：此后本系统所有程序都由它编译
+  let cr = K_spawn_file("/System/Programs/Compiler.osprog", "compiler", "app", 500)
+  if type(cr) != "map" {
+    K_set_compiler(cr)
+  }
+  loop()
+}
+
+fn load_cfg() {
+  let txt = K_fs_read("/System/config.json")
+  if txt == null {
+    return {"budget": 12000, "memQuota": 4000000, "storageQuota": 2000000, "procQuota": 4000, "childGrant": 5000, "quantum": 900}
+  }
+  let c = fromjson(txt)
+  if type(c) != "map" {
+    return {"budget": 12000, "memQuota": 4000000, "storageQuota": 2000000, "procQuota": 4000, "childGrant": 5000, "quantum": 900}
+  }
+  if c.budget == null { c.budget = 12000 }
+  if c.memQuota == null { c.memQuota = 4000000 }
+  if c.storageQuota == null { c.storageQuota = 2000000 }
+  if c.procQuota == null { c.procQuota = 4000 }
+  if c.childGrant == null { c.childGrant = 5000 }
+  if c.quantum == null { c.quantum = 900 }
+  return c
+}
+
+// ---------------- 主循环 ----------------
+fn loop() {
+  while true {
+    let m = K_recv()
+    if type(m) == "map" {
+      handle(m)
+    }
+  }
+}
+
+fn handle(m) {
+  if m.t == "step" {
+    pendingDt = pendingDt + m.dt
+    do_step()
+  } else if m.t == "command" {
+    on_command(m)
+  } else if m.t == "focus" {
+    K_qpush(wmPid, m)
+  } else if m.t == "sysmsg" {
+    stat.msgIn = stat.msgIn + 1
+    route(m)
+  } else if m.t == "boot" or m.t == "resume_from_snapshot" {
+    // 承载进程启动/快照恢复后的再入消息：无需处理
+  } else {
+    route(m)
+  }
+}
+
+// 父系统下发的控制命令
+fn on_command(m) {
+  if m.cmd == "set_rate" {
+    rate = m.rate
+  } else if m.cmd == "pause" {
+    ownPaused = 1
+  } else if m.cmd == "resume" {
+    ownPaused = 0
+  } else if m.cmd == "self_close" {
+    K_self_close()
+  } else if m.cmd == "self_restart" {
+    K_self_restart()
+  }
+}
+
+// ---------------- 一个逻辑步 ----------------
+fn do_step() {
+  vtime = vtime + pendingDt
+  stepDt = pendingDt
+  pendingDt = 0
+  stat.steps = stat.steps + 1
+  K_set_time(vtime)
+  if ownPaused == 1 {
+    return
+  }
+  wake_all()
+  fwd_input()
+  chk_wm()
+  let total = K_budget_left()
+  let cap = cfg.budget
+  if total < cap {
+    cap = total
+  }
+  let eff = cap - RESERVE
+  if eff < 0 {
+    eff = 0
+  }
+  let guard = 0
+  while eff > 240 and guard < 48 {
+    guard = guard + 1
+    let spent = sched_round(eff)
+    eff = eff - spent
+    stat.schedRounds = stat.schedRounds + 1
+    if spent <= 0 {
+      break
+    }
+  }
+}
+
+// 一轮轮转调度：返回实际消耗的指令数
+fn sched_round(eff) {
+  let ps = K_procs()
+  let spent = 0
+  let quantum = cfg.quantum
+  if quantum > eff {
+    quantum = eff
+  }
+  for p in ps {
+    if p.status != "ready" and p.status != "running" {
+      continue
+    }
+    if p.kind == "carrier" {
+      let info = K_child_info(p.child)
+      if info != null and info.alive == 1 and info.paused == 0 {
+        let grant = cfg.childGrant
+        if grant > eff - spent {
+          grant = eff - spent
+        }
+        if grant > 260 {
+          K_send(p.pid, {"t": "step", "dt": stepDt * info.rate, "budget": grant})
+          let r = K_run(p.pid, grant)
+          spent = spent + r.used
+        }
+      }
+    } else {
+      let q = quantum
+      if p.quota > 0 and p.quota < q {
+        q = p.quota
+      }
+      if q > eff - spent {
+        q = eff - spent
+      }
+      if q > 24 {
+        let r = K_run(p.pid, q)
+        spent = spent + r.used
+        if p.kind == "kernel" {
+          stat.kernelUsed = stat.kernelUsed + r.used
+        } else {
+          stat.appUsed = stat.appUsed + r.used
+        }
+      }
+    }
+  }
+  return spent
+}
+
+fn wake_all() {
+  prune_apps()
+  let ps = K_procs()
+  for p in ps {
+    if p.status == "waiting" and p.blocked != null {
+      if p.blocked.kind == "msg" {
+        if K_qlen(p.pid) > 0 {
+          K_resume(p.pid)
+        }
+      } else if p.blocked.kind == "vtime" {
+        if vtime >= p.blocked.until {
+          K_resume(p.pid)
+        }
+      }
+    }
+  }
+}
+
+fn fwd_input() {
+  let evs = K_input()
+  if evs == null {
+    return
+  }
+  for e in evs {
+    K_qpush(wmPid, {"t": "input", "ev": e})
+  }
+}
+
+fn chk_wm() {
+  let ps = K_procs()
+  for p in ps {
+    if p.pid == wmPid {
+      if p.status == "ended" or p.status == "error" {
+        K_fail("窗口管理程序已停止（" + str(p.status) + "），内核终止")
+      }
+      return
+    }
+  }
+}
+
+fn prune_apps() {
+  let out = []
+  for w in appWins {
+    let alive = 0
+    let ps = K_procs()
+    for p in ps {
+      if p.pid == w.pid and p.status != "ended" and p.status != "error" {
+        alive = 1
+      }
+    }
+    if alive == 1 {
+      push(out, w)
+    }
+  }
+  appWins = out
+}
+
+fn h_reg_win(c) {
+  let winId = c.args[0]
+  for w in appWins {
+    if w.pid == c.pid {
+      w.win = winId
+    }
+  }
+  return {"ok": true}
+}
+
+// ---------------- 跨系统与应用消息路由 ----------------
+fn route(m) {
+  if m.t == "data_snapshot" or m.t == "data_version" or m.t == "data_closed" {
+    for w in appWins {
+      if w.key == "chart" {
+        K_qpush(w.pid, m)
+      }
+    }
+  } else if m.t == "file_incoming" {
+    for w in appWins {
+      if w.key == "files" {
+        K_qpush(w.pid, m)
+      }
+    }
+  } else if m.t == "projection_open" or m.t == "projection_closed" or m.t == "projection_focus" {
+    K_qpush(wmPid, m)
+  } else if m.t == "projection_input" or m.t == "projection_restored" {
+    let win = m.win
+    if win == null {
+      win = 0
+    }
+    let delivered = 0
+    for w in appWins {
+      if w.win == win and win != 0 {
+        K_qpush(w.pid, m)
+        delivered = 1
+      }
+    }
+    if delivered == 0 {
+      for w in appWins {
+        if w.key == "player" or w.key == "chart" {
+          K_qpush(w.pid, m)
+        }
+      }
+    }
+  } else if m.t == "app_msg" {
+    if m.to != 0 {
+      K_qpush(m.to, m.msg)
+    }
+  } else if m.t == "viewport" {
+    K_qpush(wmPid, m)
+  }
+}
+
+// ---------------- 来自应用（窗口管理等）的请求 ----------------
+fn h_request(c) {
+  let m = c.args[0]
+  if type(m) != "map" {
+    return {"error": "请求格式无效"}
+  }
+  if m.cmd == "open_app" {
+    app_spawn(m.key, m.path)
+    return {"ok": true}
+  } else if m.cmd == "close_app" {
+    app_close(m.pid)
+    return {"ok": true}
+  } else if m.cmd == "set_rate" {
+    rate = m.rate
+    return {"ok": true, "rate": rate}
+  } else if m.cmd == "pause" {
+    ownPaused = 1
+    return {"ok": true, "paused": 1}
+  } else if m.cmd == "resume" {
+    ownPaused = 0
+    return {"ok": true, "paused": 0}
+  } else if m.cmd == "create_system" {
+    create_child(m)
+    return {"ok": true}
+  } else if m.cmd == "close_system" {
+    close_child(m)
+    return {"ok": true}
+  } else if m.cmd == "restart_system" {
+    restart_child(m)
+    return {"ok": true}
+  } else if m.cmd == "step_system" {
+    return step_child(m)
+  } else if m.cmd == "snapshot" {
+    return save_snap(m)
+  } else if m.cmd == "restore" {
+    return load_snap(m)
+  } else if m.cmd == "fork" {
+    return fork_snap(m)
+  } else if m.cmd == "set_config" {
+    return cfg_set(m)
+  } else if m.cmd == "proc_ctl" {
+    if m.op == "kill" {
+      K_kill(m.pid)
+    } else if m.op == "suspend" {
+      K_suspend(m.pid)
+    } else if m.op == "resume" {
+      K_resume(m.pid)
+    }
+    return {"ok": true}
+  } else if m.cmd == "set_proc_quota" {
+    K_set_quota(m.pid, m.quota)
+    return {"ok": true}
+  } else if m.cmd == "set_child_rate" {
+    let r = K_send_system(m.id, {"t": "command", "cmd": "set_rate", "rate": m.rate})
+    return {"ok": true}
+  } else if m.cmd == "child_pause" or m.cmd == "child_resume" {
+    let cc = "pause"
+    if m.cmd == "child_resume" {
+      cc = "resume"
+    }
+    let r = K_send_system(m.id, {"t": "command", "cmd": cc})
+    return {"ok": true}
+  }
+  return {"error": "未知命令: " + str(m.cmd)}
+}
+
+fn app_spawn(key, path) {
+  if path == null {
+    path = ""
+  }
+  for a in apps {
+    if a.key == key {
+      if K_mem_used() > cfg.memQuota * 9 / 10 {
+        K_qpush(wmPid, {"t": "app_error", "key": key, "error": "内存配额不足，无法启动应用"})
+        return
+      }
+      let r = K_spawn_file(a.path, a.title, "app", a.quota)
+      if type(r) == "map" {
+        K_qpush(wmPid, {"t": "app_error", "key": key, "error": r.error})
+        return
+      }
+      push(appWins, {"key": key, "pid": r, "win": 0})
+      K_send(r, {"t": "open", "key": key, "title": a.title, "w": a.w, "h": a.h, "wm": wmPid, "sys": sysId, "path": path})
+      return
+    }
+  }
+  K_qpush(wmPid, {"t": "app_error", "key": key, "error": "未知应用: " + key})
+}
+
+fn app_ready(m) {
+  let found = 0
+  for w in appWins {
+    if w.pid == m.pid {
+      w.win = m.win
+      found = 1
+    }
+  }
+  if found == 0 {
+    push(appWins, {"key": m.key, "pid": m.pid, "win": m.win})
+  }
+}
+
+fn app_gone(m) {
+  let out = []
+  for w in appWins {
+    if w.pid != m.pid {
+      push(out, w)
+    }
+  }
+  appWins = out
+}
+
+fn app_close(pid) {
+  K_kill(pid)
+  let out = []
+  for w in appWins {
+    if w.pid != pid {
+      push(out, w)
+    }
+  }
+  appWins = out
+}
+
+fn create_child(m) {
+  let src = K_fs_read("/System/Kernels/Kernel.osprog")
+  if src == null {
+    return {"error": "内核模板缺失: /System/Kernels/Kernel.osprog"}
+  }
+  let name = m.name
+  if name == null {
+    name = ""
+  }
+  let r = K_create_system({"name": name, "kernelSource": src})
+  if r.error != null {
+    return {"error": r.error}
+  }
+  K_qpush(wmPid, {"t": "system_added", "id": r.id, "name": r.name})
+  return {"ok": true, "id": r.id, "name": r.name}
+}
+
+fn close_child(m) {
+  let r = K_send_system(m.id, {"t": "command", "cmd": "self_close"})
+  return {"ok": true}
+}
+
+fn restart_child(m) {
+  let r = K_send_system(m.id, {"t": "command", "cmd": "self_restart"})
+  return {"ok": true}
+}
+
+fn step_child(m) {
+  let r = K_step_child(m.id)
+  if r.error != null {
+    return {"error": r.error}
+  }
+  return {"ok": true, "dt": r.dt}
+}
+
+fn save_snap(m) {
+  let path = m.path
+  if path == null or path == "" {
+    path = "/System/Snapshots/snap-" + str(vtime) + ".ossnap"
+  }
+  let r = K_snapshot_save(m.id, path)
+  if r.error != null {
+    return {"error": r.error}
+  }
+  K_qpush(wmPid, {"t": "snapshot_saved", "path": path, "id": m.id})
+  return {"ok": true, "path": path, "size": r.size}
+}
+
+fn load_snap(m) {
+  let r = K_snapshot_load(m.path)
+  if r.error != null {
+    return {"error": r.error}
+  }
+  K_qpush(wmPid, {"t": "snapshot_restored", "path": m.path})
+  return {"ok": true}
+}
+
+fn fork_snap(m) {
+  let r = K_snapshot_fork(m.path)
+  if r.error != null {
+    return {"error": r.error}
+  }
+  K_qpush(wmPid, {"t": "snapshot_forked", "path": m.path, "ids": r.ids})
+  return {"ok": true, "ids": r.ids}
+}
+
+fn cfg_set(m) {
+  let c = m.cfg
+  for k in ["budget", "memQuota", "storageQuota", "procQuota", "childGrant", "quantum"] {
+    if c[k] != null {
+      cfg[k] = c[k]
+    }
+  }
+  K_fs_write("/System/config.json", tojson(cfg))
+  return {"ok": true, "config": cfg}
+}
+
+// ---------------- 系统调用处理函数（改写即改变系统行为） ----------------
+fn h_time(c) { return vtime }
+fn h_self(c) { return c.pid }
+fn h_sleep(c) {
+  let ms = c.args[0]
+  if ms == null {
+    ms = 0
+  }
+  return {"block": {"kind": "vtime", "until": vtime + ms}}
+}
+fn h_poll(c) { return K_qpop(c.pid) }
+fn h_recv(c) {
+  let m = K_qpop(c.pid)
+  if m == null {
+    return {"block": {"kind": "msg"}}
+  }
+  return m
+}
+fn h_send(c) {
+  let to = c.args[0]
+  let msg = c.args[1]
+  let ps = K_procs()
+  let found = 0
+  for p in ps {
+    if p.pid == to {
+      found = 1
+    }
+  }
+  if found == 0 {
+    return {"ok": false, "error": "目标进程不存在: " + str(to)}
+  }
+  stat.msgOut = stat.msgOut + 1
+  K_send(to, msg)
+  return {"ok": true, "to": to}
+}
+fn h_kill(c) { return K_kill(c.args[0]) }
+fn h_procs(c) { return K_procs() }
+fn h_spawn(c) {
+  let path = c.args[0]
+  if K_mem_used() > cfg.memQuota * 9 / 10 {
+    return {"error": "内存配额不足，无法启动程序"}
+  }
+  let src = K_fs_read(path)
+  if src == null {
+    return {"error": "程序文件不存在: " + path}
+  }
+  let c2 = K_compile(src)
+  if c2.error != null {
+    return {"error": c2.error}
+  }
+  let quota = c.args[1]
+  if quota == null {
+    quota = 0
+  }
+  let pid = K_spawn(c2.code, path, "app", quota)
+  return pid
+}
+fn h_read_file(c) {
+  let path = c.args[0]
+  let v = K_fs_read(path)
+  if v == null {
+    return {"error": "文件不存在: " + path}
+  }
+  return v
+}
+fn h_write_file(c) {
+  let path = c.args[0]
+  let content = c.args[1]
+  if K_storage_used() + len(content) > cfg.storageQuota {
+    return {"error": "存储配额不足（已用 " + str(K_storage_used()) + " / " + str(cfg.storageQuota) + "）"}
+  }
+  let r = K_fs_write(path, content)
+  if r.error != null {
+    return {"error": r.error}
+  }
+  return {"ok": true}
+}
+fn h_list_dir(c) {
+  let l = K_fs_list(c.args[0])
+  if l == null {
+    return {"error": "目录不存在: " + c.args[0]}
+  }
+  let dirs = []
+  let files = []
+  for e in l {
+    if e.type == "dir" {
+      push(dirs, e)
+    } else {
+      push(files, e)
+    }
+  }
+  sort_by_name(dirs)
+  sort_by_name(files)
+  let out = []
+  for e in dirs {
+    push(out, e)
+  }
+  for e in files {
+    push(out, e)
+  }
+  return out
+}
+fn sort_by_name(arr) {
+  let n = len(arr)
+  for i in 1..n - 1 {
+    let j = i
+    while j > 0 and arr[j - 1].name > arr[j].name {
+      let t = arr[j - 1]
+      arr[j - 1] = arr[j]
+      arr[j] = t
+      j = j - 1
+    }
+  }
+}
+fn h_delete_file(c) {
+  let r = K_fs_delete(c.args[0])
+  if r.error != null {
+    return {"error": r.error}
+  }
+  return {"ok": true}
+}
+fn h_mkdir(c) {
+  let r = K_fs_mkdir(c.args[0])
+  if r.error != null {
+    return {"error": r.error}
+  }
+  return {"ok": true}
+}
+fn h_exists(c) { return K_fs_exists(c.args[0]) }
+fn h_move_file(c) {
+  let r = K_fs_move(c.args[0], c.args[1])
+  if r.error != null {
+    return {"error": r.error}
+  }
+  return {"ok": true}
+}
+fn h_copy_file(c) {
+  let r = K_fs_copy(c.args[0], c.args[1])
+  if r.error != null {
+    return {"error": r.error}
+  }
+  return {"ok": true}
+}
+fn h_file_size(c) {
+  let v = K_fs_read(c.args[0])
+  if v == null {
+    return {"error": "文件不存在"}
+  }
+  return len(v)
+}
+fn h_submit_window(c) {
+  let winId = c.args[0]
+  let content = c.args[1]
+  let meta = c.args[2]
+  if meta == null {
+    meta = {}
+  }
+  if len(content) > 4000 {
+    return {"error": "单窗口图元过多（" + str(len(content)) + " > 4000），已拒绝"}
+  }
+  K_qpush(wmPid, {"t": "content", "win": winId, "prims": content, "meta": meta})
+  return {"ok": true, "count": len(content)}
+}
+fn h_get_window_content(c) { return null }
+fn h_submit_display(c) {
+  let f = c.args[0]
+  let n = 0
+  if f.wins != null {
+    for w in f.wins {
+      if w.content != null {
+        n = n + len(w.content)
+      }
+    }
+  }
+  K_submit(f)
+  return {"ok": true, "prims": n}
+}
+fn h_submit3d(c) {
+  let viewId = c.args[0]
+  let res = c.args[1]
+  let st = c.args[2]
+  K_submit3d(viewId, res, st)
+  return {"ok": true}
+}
+fn h_get3d(c) { return K_get3d(c.args[0]) }
+fn h_project(c) {
+  let r = K_project({"target": c.args[0], "winId": c.args[1], "kind": c.args[2], "title": c.args[3], "appId": c.pid})
+  return r
+}
+fn h_projection_input(c) { return K_projection_input(c.args[0], c.args[1]) }
+fn h_get_projection(c) { return K_get_projection(c.args[0]) }
+fn h_sensors(c) { return K_flight_get() }
+fn h_controls(c) { return K_ctrl_get() }
+fn h_flight_update(c) { K_flight_set(c.args[0]); return {"ok": true} }
+fn h_write_controls(c) {
+  K_ctrl_set(c.args[0])
+  return {"ok": true}
+}
+fn h_rnd(c) {
+  rndState = (rndState * 1103515245 + 12345) % 2147483647
+  return rndState / 2147483647
+}
+fn h_print(c) {
+  let text = c.args[0]
+  if type(text) != "str" {
+    text = tojson(text)
+  }
+  K_log(text)
+  return null
+}
+fn h_log(c) {
+  let text = c.args[0]
+  if type(text) != "str" {
+    text = tojson(text)
+  }
+  K_log("[程序 " + str(c.pid) + "] " + text)
+  return null
+}
+fn h_connect_data(c) {
+  let wb = c.args[0]
+  let range = c.args[1]
+  let label = c.args[2]
+  let vals = c.args[3]
+  if vals == null {
+    vals = ["D"]
+  }
+  let r = K_send_system(rootId, {"t": "data_subscribe", "from": sysId, "workbook": wb, "range": range, "labelCol": label, "valueCols": vals})
+  return {"ok": true, "pending": 1}
+}
+fn h_disconnect_data(c) {
+  let r = K_send_system(rootId, {"t": "data_unsubscribe", "subId": c.args[0]})
+  return {"ok": true}
+}
+fn h_data_state(c) { return {"connecting": 1} }
+fn h_transfer_file(c) {
+  let r = K_transfer_file(c.args[0], c.args[1], c.args[2])
+  return r
+}
+fn h_receive_file(c) { return null }
+fn h_save_snapshot(c) {
+  let path = c.args[0]
+  let id = c.args[1]
+  let r = K_snapshot_save(id, path)
+  return r
+}
+fn h_load_snapshot(c) { return K_snapshot_load(c.args[0]) }
+fn h_fork_snapshot(c) { return K_snapshot_fork(c.args[0]) }
+fn h_step_child(c) { return K_step_child(c.args[0]) }
+fn h_set_rate(c) {
+  rate = c.args[0]
+  return rate
+}
+fn h_sys_info(c) {
+  return {
+    "id": sysId, "name": sysName, "vtime": vtime, "rate": rate, "paused": ownPaused,
+    "depth": depth, "config": cfg, "procs": K_procs(), "mem": K_mem_used(),
+    "memQuota": cfg.memQuota, "storage": K_storage_used(), "storageQuota": cfg.storageQuota,
+    "stat": stat, "parent": parentId, "kernelPath": "/System/Kernels/" + sysId + ".osprog"
+  }
+}
+
+// ---------------- 入口 ----------------
+boot()

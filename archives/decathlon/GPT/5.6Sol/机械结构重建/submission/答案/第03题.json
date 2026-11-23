@@ -1,0 +1,23 @@
+{
+  "problem":"03",
+  "parts":[
+    {
+      "name":"1","title":"双腔斜顶分流阀壳",
+      "features":[
+        {"type":"extrude","plane":"XY","origin":[0,0,-2],"loops":[{"rect":[-6,-4,68,36]}],"depth":2,"name":"底板"},
+        {"type":"extrude","plane":"XZ","loops":[{"path":[[0,0],[62,0],[62,18],[38,30],[0,30]]}],"depth":-32,"name":"斜顶外壳"},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,4,0],"loops":[{"rect":[4,4,26,26]}],"depth":-24,"name":"左腔"},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,4,0],"loops":[{"rect":[30,4,50,16]}],"depth":-24,"name":"右腔"},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,4,0],"loops":[{"rect":[26,10,30,14]}],"depth":-24,"name":"两腔连通窗"},
+        {"type":"extrude","plane":"XZ","origin":[0,-4,0],"loops":[{"circle":[18,18],"d":34}],"depth":-4,"name":"左前圆台"},
+        {"type":"hole","plane":"XZ","origin":[0,-4,0],"at":[18,18],"d":22,"through":true},
+        {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[42,12],"d":18,"through":true},
+        {"type":"hole","plane":"XY","origin":[0,0,30],"at":[[6,8],[6,24]],"d":5,"through":true},
+        {"type":"hole","plane":{"origin":[46,16,22],"normal":[0.707106781,0,0.707106781],"x_dir":[0,1,0]},"at":[0,0],"d":12,"depth":42,"name":"倾角45度方位0度斜孔"},
+        {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[-2,0],[64,0],[-2,32],[64,32]],"d":7,"through":true,"reverse":true},
+        {"type":"fillet","radius":2,"edges":[[-6,-4,-1]],"name":"底板左前外竖棱R2"},
+        {"type":"chamfer","distance":1,"edges":[[31,-4,-2]],"name":"前下直棱C1"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+// 预置程序：消息发送
+// 向本系统中名为“消息接收”的进程按顺序发送消息
+let count = 12
+let peer = 0
+
+fn main() {
+  print("发送程序启动，pid=" + str(self()))
+  peer = find_peer()
+  if peer == 0 {
+    print("未找到接收进程，请先启动“消息接收”")
+    return
+  }
+  let i = 0
+  while i < count {
+    let r = send(peer, {"from": self(), "seq": i, "text": "消息" + str(i)})
+    print("发送 " + str(i) + " -> " + str(r.ok))
+    i = i + 1
+    sleep(150)
+  }
+  print("发送完成")
+}
+
+fn find_peer() {
+  let ps = procs()
+  for p in ps {
+    if p.name == "消息接收" {
+      return p.pid
+    }
+  }
+  return 0
+}
+
+main()

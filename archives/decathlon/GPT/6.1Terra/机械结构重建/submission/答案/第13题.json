@@ -1,0 +1,11 @@
+﻿{"problem":"13","parts":[{"name":"1","title":"斜耳叉架减速箱体","features":[
+ {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,184,130],"r":6}],"depth":16},
+ {"type":"extrude","plane":"XZ","origin":[0,112,0],"loops":[{"path":[[16,16],[168,16],[160,92],[138,112],[50,112],[24,92]]}],"depth":94},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,28],"loops":[{"rect":[34,30,146,100]}],"depth":72},
+ {"type":"extrude","plane":"XZ","origin":[0,18,0],"loops":[{"circle":[64,62],"d":66}],"depth":10},
+ {"type":"extrude","plane":"XZ","origin":[0,122,0],"loops":[{"circle":[64,62],"d":66}],"depth":10},
+ {"type":"hole","plane":"XZ","origin":[0,8,0],"at":[64,62],"d":30,"through":true,"cbore":{"d":44,"depth":8}},
+ {"type":"hole","plane":"XY","origin":[0,0,16],"at":[[10,10],[10,120],[174,10],[174,120]],"d":9,"through":true,"cbore":{"d":16,"depth":6}},
+ {"type":"chamfer","distance":1.5,"edges":[[64,8,84]]}
+]}]}
+

@@ -1,0 +1,168 @@
+// editor.ns — 文本与程序编辑器：新建、打开、编辑、保存；可编译并启动 .ns 程序，查看程序输出。
+// 也用来打开本系统的飞控程序、编译器，以及直属子系统的内核源文件（在父系统里打开 /System/Kernels/<id>/kernel.ns）。
+include "/System/lib/ui.ns";
+
+let S = {path: "", dirty: false, loaded: "", msg: "", msg_t: 0, pid: 0, run_name: "", out: [], pstate: "", perr: nil, pending: nil, line: 1, col: 1, confirm: nil, last_poll: -9, rev: 0, compiling: false};
+
+fn say(m) { S.msg = m; S.msg_t = time(); }
+fn is_prog(p) { return endsWith(p, ".ns"); }
+fn load_file(path) {
+  let t = sys("fs_read", path);
+  if (typeof(t) != "str") { say("无法打开：" + (t == nil ? "" : t.err)); return false; }
+  S.path = path; S.loaded = t; S.dirty = false; S.rev++;
+  ui_set("editor-text", t); ui_set("editor-filename", path);
+  ui_text_ack("editor-text");
+  say("已打开 " + path + "（" + len(t) + " 字符）");
+  return true;
+}
+fn new_file() {
+  S.path = ""; S.dirty = false; S.loaded = "";
+  ui_set("editor-text", "// 新程序：用 print(...) 输出，用 args() 取启动参数\nprint(\"你好，嵌套系统\");\n");
+  ui_set("editor-filename", ""); ui_text_ack("editor-text"); S.dirty = true;
+  S.out = []; S.pid = 0;
+}
+fn save_file(path) {
+  if (path == nil || path == "") { path = trim(ui_val("editor-filename")); }
+  if (path == "") { say("请先在路径框里填写要保存的文件路径"); return false; }
+  if (substr(path, 0, 1) != "/") { path = "/Documents/" + path; }
+  let text = ui_val("editor-text");
+  let r = sys("fs_write", path, text);
+  if (r != nil && r.err != nil) { say("保存失败：" + r.err); sys("notify", "文件保存失败", r.err); return false; }
+  S.path = path; S.loaded = text; S.dirty = false; ui_set("editor-filename", path);
+  say("已保存 " + path);
+  return true;
+}
+fn do_run() {
+  if (S.path == "" || !S.dirty && !is_prog(S.path)) { }
+  let path = S.path;
+  if (path == "") { path = trim(ui_val("editor-filename")); }
+  if (path == "" ) { say("请先保存程序再运行"); return nil; }
+  if (!is_prog(path)) { say("只能运行 .ns 程序文件"); return nil; }
+  if (!save_file(path)) { return nil; }
+  let a = nil;
+  let at = trim(ui_val("editor-args"));
+  if (at != "") { a = json_parse(at); if (a == nil) { say("启动参数不是有效的 JSON"); return nil; } }
+  S.out = ["▶ 编译并启动 " + path + " …"]; S.perr = nil;
+  S.compiling = true;
+  let p = spawn(path, a, nil);
+  S.compiling = false;
+  if (typeof(p) == "num") { S.pid = p; S.run_name = path; say("已启动，进程号 " + p); }
+  else { S.pid = 0; S.out = ["✗ " + (p == nil ? "启动失败" : p.err)]; say("启动失败"); }
+}
+fn do_compile() {
+  let path = S.path; if (path == "") { say("请先保存"); return nil; }
+  if (!is_prog(path)) { say("只能编译 .ns 文件"); return nil; }
+  if (!save_file(path)) { return nil; }
+  let r = sys("compile", path);
+  if (r != nil && r.err != nil) { S.out = ["✗ 编译失败：" + r.err]; say("编译失败"); }
+  else { S.out = ["✓ 已编译 → " + r.out]; say("编译完成：" + r.out); }
+}
+fn poll_run() {
+  if (S.pid <= 0) { return false; }
+  let lines = sys("proc_out", S.pid);
+  let ps = sys("ps");
+  let info = nil;
+  for (let p of ps) { if (p.pid == S.pid) { info = p; } }
+  let nl = [];
+  for (let l of lines) { push(nl, l); }
+  if (info != nil) {
+    S.pstate = info.state; S.perr = info.err;
+    if (info.raw == "error" && info.err != nil) { push(nl, "✗ 运行错误：" + info.err.msg + "（" + info.err.fn + " 第 " + info.err.line + " 行）"); }
+    else if (info.raw == "done") { push(nl, "■ 程序已结束" + (info.result != nil ? "，返回 " + str(info.result) : "")); }
+  }
+  let changed = len(nl) != len(S.out) || (len(nl) > 0 && nl[len(nl) - 1] != S.out[len(S.out) - 1]);
+  S.out = nl;
+  return changed;
+}
+fn btn(id, x, w, label, icon, st) {
+  let s = {icon: icon, size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3};
+  if (st != nil) { for (let k of keys(st)) { s[k] = st[k]; } }
+  return ui_button(id, x, 7, w, 30, label, s);
+}
+fn ed_frame(U, w, h) {
+  ui_rect(0, 0, w, h, TH.bg1, 0);
+  let modal = S.confirm != nil;
+  ui.enabled = !modal;
+  ui_rect(0, 0, w, 44, TH.bg2, 0);
+  let x = 8;
+  if (btn("editor-new", x, 64, "新建", "plus")) { if (S.dirty) { S.confirm = {kind: "new"}; } else { new_file(); } } x = x + 66;
+  if (btn("editor-save", x, 64, "保存", "save", {fill: S.dirty ? TH.acc : "rgba(0,0,0,0)"})) { save_file(nil); } x = x + 66;
+  if (btn("editor-open", x, 64, "打开", "folder")) { let p = trim(ui_val("editor-filename")); if (p != "") { if (S.dirty) { S.confirm = {kind: "open", path: p}; } else { load_file(p); } } } x = x + 66;
+  ui_rect(x + 2, 12, 1, 20, TH.bg4, 0); x = x + 10;
+  if (btn("editor-run", x, 64, "运行", "play", {color: TH.ok})) { do_run(); } x = x + 66;
+  if (btn("editor-compile", x, 64, "编译", "code")) { do_compile(); } x = x + 66;
+  if (S.pid > 0 && S.pstate != "结束" && S.pstate != "异常") { if (btn("editor-stop", x, 64, "结束", "stop", {color: TH.danger})) { sys("kill", S.pid); } x = x + 66; }
+  ui_input("editor-filename", x + 6, 7, max(100, w - x - 12), 30, {ph: "文件路径，如 /Programs/my.ns（回车打开）", size: 13, pad: 8, r: 15, mono: true});
+  // 文本区
+  let oh = 150;
+  ui_input("editor-text", 0, 44, w, h - 44 - oh - 68, {ml: true, mono: true, size: 13, fill: "#0d0a1d", stroke: nil, r: 0, pad: 12, ph: "在这里编辑…"});
+  // 参数行 + 输出
+  let oy = h - oh - 68 + 44;
+  ui_rect(0, oy, w, 54 + oh, TH.bg1, 0);
+  ui_rect(0, oy, w, 1, TH.border, 0);
+  ui_text(12, oy + 8, "启动参数 (JSON)", 12, TH.muted);
+  ui_input("editor-args", 120, oy + 4, min(360, w - 140), 26, {ph: "{\"n\": 5000}", size: 12, pad: 6, r: 8, mono: true});
+  ui_text(w - 260, oy + 8, S.run_name == "" ? "尚未运行" : "进程 " + S.pid + " · " + (S.pstate == "" ? "…" : S.pstate), 12, S.perr != nil ? TH.danger : TH.muted, {al: "r", w: 248});
+  ui_rect(8, oy + 36, w - 16, oh + 8, "#0b0818", 8);
+  let ly = oy + 42; let maxl = floor((oh - 8) / 17);
+  let start = max(0, len(S.out) - maxl);
+  for (let i = start; i < len(S.out); i++) {
+    let l = S.out[i];
+    ui_textw(18, ly, w - 36, l, 12, substr(l, 0, 1) == "✗" ? TH.danger : (substr(l, 0, 1) == "✓" ? TH.ok : TH.text), {fam: "mono"});
+    ly = ly + 17;
+  }
+  // 状态栏
+  ui_rect(0, h - 24, w, 24, TH.bg2, 0);
+  let c = ui.caret["editor-text"];
+  let pos = c != nil && c.line != nil ? "行 " + c.line + "，列 " + c.col : "";
+  ui_text(12, h - 18, (S.path == "" ? "未命名" : S.path) + (S.dirty ? "  ● 未保存" : "  已保存"), 12, S.dirty ? TH.warn : TH.muted);
+  ui_textr(w - 400, h - 18, 388, S.msg != "" && time() - S.msg_t < 8 ? S.msg : pos, 12, S.msg != "" && time() - S.msg_t < 8 ? TH.acc2 : TH.muted);
+  ui.enabled = true;
+  if (ui_text_changed("editor-text")) { S.dirty = true; ui_text_ack("editor-text"); }
+  if (ui_key_in("Enter", "editor-filename") != nil && !modal) {
+    let p = trim(ui_val("editor-filename"));
+    if (p != "") { if (S.dirty) { S.confirm = {kind: "open", path: p}; } else { load_file(p); } }
+  }
+  for (let k of ui.keys) {
+    if (k.ctrl && k.key == "s") { save_file(nil); }
+    if (k.ctrl && k.key == "Enter") { do_run(); }
+    if (k.key == "F5") { do_run(); }
+  }
+  if (S.confirm != nil) { draw_confirm(w, h); }
+}
+fn draw_confirm(w, h) {
+  let c = S.confirm;
+  ui_rect(0, 0, w, h, "rgba(6,4,16,.6)", 0);
+  let bw = min(480, w - 40); let bh = 180; let bx = (w - bw) / 2; let by = (h - bh) / 2;
+  let box = ui_rect(bx, by, bw, bh, TH.bg2, 14); box.stroke = TH.warn; box.sh = "s4"; box.tid = "dialog"; box.aria = "未保存的修改";
+  ui_icon(bx + 20, by + 20, "warn", 24, TH.warn);
+  ui_text(bx + 54, by + 20, "有未保存的修改", 15, TH.text, {b: true});
+  ui_text(bx + 22, by + 56, "继续之前是否保存对 " + (S.path == "" ? "未命名文件" : S.path) + " 的修改？", 13, TH.muted, {wrap: true, w: bw - 44});
+  let go = fn() { };
+  if (ui_button("editor-confirm-save", bx + 22, by + bh - 52, 96, 32, "保存", {fill: TH.acc})) { if (save_file(nil)) { confirm_go(); } else { S.confirm = nil; } }
+  if (ui_button("editor-confirm-discard", bx + 126, by + bh - 52, 96, 32, "放弃", {color: TH.danger})) { confirm_go(); }
+  if (ui_button("editor-confirm-cancel", bx + bw - 22 - 90, by + bh - 52, 90, 32, "取消", {})) { S.confirm = nil; }
+}
+fn confirm_go() {
+  let c = S.confirm; S.confirm = nil;
+  if (c.kind == "new") { new_file(); } else if (c.kind == "open") { load_file(c.path); }
+}
+fn ed_idle() {
+  if (time() - S.last_poll >= 0.3) { S.last_poll = time(); return poll_run(); }
+  return false;
+}
+fn ed_msg(m) {
+  if (m.t == "open") {
+    let a = m.args;
+    if (a != nil && a.file != nil) { if (S.dirty) { S.confirm = {kind: "open", path: a.file}; } else { load_file(a.file); } }
+  }
+}
+fn ed_enter_open() {
+  for (let k of ui.keys) { if (k.key == "Enter" && k.ed) { return true; } }
+  return false;
+}
+app_init(&ed_frame, &ed_msg, 0);
+APP.on_idle = &ed_idle;
+ui = app_view(0);
+if (APP.args != nil && APP.args.file != nil) { load_file(APP.args.file); } else { new_file(); S.dirty = false; ui_set("editor-text", ""); }
+app_run();

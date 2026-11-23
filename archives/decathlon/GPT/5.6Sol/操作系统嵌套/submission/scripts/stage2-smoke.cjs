@@ -1,0 +1,22 @@
+const CDP=require('chrome-remote-interface');
+const fs=require('fs');const os=require('os');const path=require('path');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+  const target=(await CDP.List({port:19106})).find(x=>x.type==='page'&&x.url.startsWith('file:'));
+  const c=await CDP({target,port:19106});const {Runtime,Page}=c;await Promise.all([Runtime.enable(),Page.enable()]);
+  const errors=[];Runtime.exceptionThrown(({exceptionDetails})=>errors.push(exceptionDetails.exception?.description||exceptionDetails.text));
+  await Runtime.evaluate({expression:'window.bench.reset()',awaitPromise:true});
+  const ids=await Runtime.evaluate({expression:`(()=>{const r=window.nestedRuntime;r.openWindow('outer','spreadsheet');const a=r.createSystem('outer').system.id;const b=r.createSystem(a).system.id;const c=r.createSystem(b).system.id;return {a,b,c}})()`,returnByValue:true});
+  await delay(1600);const deep=ids.result.value.c;
+  await Runtime.evaluate({expression:`window.nestedRuntime.openWindow('${deep}','charts')`});await delay(300);
+  await Runtime.evaluate({expression:`document.querySelector('[data-system-id="${deep}"][data-app-id="charts"] [data-testid="chart-connect"]').click()`});await delay(700);
+  await Runtime.evaluate({expression:`(()=>{const x=document.querySelector('[data-system-id="outer"][data-app-id="spreadsheet"] [data-cell-address="B2"]');x.focus();x.value='30';x.dispatchEvent(new Event('change',{bubbles:true}))})()`});await delay(600);
+  await Runtime.evaluate({expression:`window.nestedRuntime.setPaused('${ids.result.value.b}',true);(()=>{const x=document.querySelector('[data-system-id="outer"][data-app-id="spreadsheet"] [data-cell-address="B3"]');x.focus();x.value='15';x.dispatchEvent(new Event('change',{bubbles:true}))})()`});await delay(300);
+  const queued=await Runtime.evaluate({expression:`window.nestedRuntime.windows.get([...window.nestedRuntime.windows.values()].find(w=>w.systemId==='${deep}'&&w.appId==='charts').id).chartState`,returnByValue:true});
+  await Runtime.evaluate({expression:`window.nestedRuntime.setPaused('${ids.result.value.b}',false)`});await delay(800);
+  await Runtime.evaluate({expression:`window.nestedRuntime.openWindow('outer','browser')`});await delay(7500);
+  const inspected=await Runtime.evaluate({expression:'window.bench.inspect()',awaitPromise:true,returnByValue:true});
+  const chart=await Runtime.evaluate({expression:`(()=>{const w=[...window.nestedRuntime.windows.values()].find(w=>w.systemId==='${deep}'&&w.appId==='charts');return w.chartState})()`,returnByValue:true});
+  const shot=await Page.captureScreenshot({format:'png',captureBeyondViewport:false});const file=path.join(os.tmpdir(),'nested-os-stage2.png');fs.writeFileSync(file,Buffer.from(shot.data,'base64'));
+  console.log(JSON.stringify({ids:ids.result.value,queued:queued.result.value,chart:chart.result.value,inspect:inspected.result.value,errors,screenshot:file},null,2));await c.close();
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -1,0 +1,16 @@
+{
+  "problem": "11",
+  "parts": [
+    {"name": "1", "title": "三腔分层伺服分配箱", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 90, 60]}], "depth": 12},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [0, 0, 90, 60]}], "depth": 53},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [26, 46], "d": 30}], "depth": [-30, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [50, 38], "d": 28}], "depth": [-34, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [72, 28], "d": 26}], "through": true},
+      {"type": "extrude", "op": "cut", "plane": "YZ", "origin": [0, 0, 0], "loops": [{"circle": [30, 50], "d": 22}], "depth": [0, 22]},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 65], "at": [[18, 14], [72, 14], [18, 46], [72, 46]], "d": 9, "depth": 12},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 6]]},
+      {"type": "chamfer", "distance": 1, "edges": [[45, 0, 0]]}
+    ]}
+  ]
+}

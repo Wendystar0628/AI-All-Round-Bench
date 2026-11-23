@@ -1,0 +1,58 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "原文件单独编译退出码为 0，但出现 declaration uses `sorry` 警告；#print axioms 显示主定理依赖 sorryAx。#check 打印的命题与题面一致，证明体仅为 sorry，不满足得分条件。"
+    }
+  ],
+  "metrics": {},
+  "notes": "评分版本：评作答结束时工作目录中的内容，已复制至评分工作目录；不看 git 提交。八题均完成原文件单独编译，以及追加 #print axioms、#check 的副本核验。命题与题面一致，但全部保留 sorry，主定理均依赖 sorryAx；编译及审计日志保存在 work/logs。本次启动的编译进程已全部正常退出。",
+  "anomaly": "八份文件均仅留下题面声明和 sorry，未提交任何证明。"
+}

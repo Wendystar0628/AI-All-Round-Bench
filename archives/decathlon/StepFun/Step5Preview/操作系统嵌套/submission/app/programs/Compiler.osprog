@@ -1,0 +1,41 @@
+// ============================================================
+// 编译器程序（Compiler.osprog）
+// 把程序源文件转换成可执行字节码。内核启动新程序时调用本程序，
+// 因此修改本程序会改变此后所有程序的编译结果。
+// 默认实现一个“改写遍”：把 print(x) 调用改写为 log(x)，
+// 由内核统一记录带标记的输出（便于在控制台中区分来源）。
+// 删除这段改写后，程序输出不再带标记；把 compile_src 改坏时，
+// 新程序无法启动并给出明确错误。
+// ============================================================
+
+fn compile_src(src) {
+  let c = K_parse(src)
+  if c.error != null {
+    return {"error": c.error}
+  }
+  let code = c.code
+  let n = 0
+  for f in code.funcs {
+    n = n + rewrite_fn(f)
+  }
+  return {"ok": true, "code": code, "rewritten": n}
+}
+
+// 就地改写：SYS print -> SYS log（不改变指令数量，跳转目标不受影响）
+// 操作码 39 = SYS
+fn rewrite_fn(f) {
+  let n = 0
+  let i = 0
+  while i < len(f.code) {
+    let ins = f.code[i]
+    if ins[0] == 39 and ins[1] == "print" {
+      f.code[i] = [39, "log", ins[2]]
+      n = n + 1
+    }
+    i = i + 1
+  }
+  return n
+}
+
+// ---------------- 入口 ----------------
+// 编译器由内核调用 compile_src，自身不需要主循环

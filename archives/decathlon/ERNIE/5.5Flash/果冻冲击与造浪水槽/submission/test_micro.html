@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>micro</title>
+<style>html,body{margin:0;background:#111;color:#9cf;font:12px monospace}canvas{width:320px;height:180px}</style>
+</head><body><canvas id="c"></canvas><pre id="log"></pre>
+<script src="js/util.js"></script><script src="js/gpu.js"></script><script src="js/water.js"></script>
+<script>
+(async () => {
+  const c = document.getElementById('c'); c.width=320; c.height=180;
+  await initGPU(c);
+  const water = createWater({ Lx:2.6, Ly:1.1, Lz:1.4, h:0.05, waterLevel:0.58 });
+  const d = GPU.device;
+  const log = s => document.getElementById('log').textContent += s + "\n";
+  water.init(7);
+  await new Promise(r=>setTimeout(r,60));
+  log(`n=${water.nParticles} cells=${water.cells} NF=${water.NF} U=${water.U} V=${water.V} nx=${water.nx} ny=${water.ny} nz=${water.nz}`);
+  d.queue.onSubmittedWorkDone().then(async () => {
+    // 只跑 p2g + grid
+    water.setParams(1/180, []);
+    const cg = n => Math.ceil(n/64);
+    const enc = d.createCommandEncoder();
+    const pass = enc.beginComputePass();
+    pass.setBindGroup(0, water.bg[0]);
+    pass.setBindGroup(1, water.bg[1]);
+    pass.setPipeline(water.pipe.clear); pass.dispatchWorkgroups(cg(water.NF));
+    pass.setPipeline(water.pipe.p2g); pass.dispatchWorkgroups(cg(water.nParticles));
+    pass.end();
+    d.queue.submit([enc.finish()]);
+    await d.queue.onSubmittedWorkDone();
+    const dump = async (buf, bytes, fn) => {
+      const rb = d.createBuffer({size: bytes, usage: GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+      const e = d.createCommandEncoder(); e.copyBufferToBuffer(buf,0,rb,0,bytes); d.queue.submit([e.finish()]);
+      await d.queue.onSubmittedWorkDone(); await rb.mapAsync(GPUMapMode.READ);
+      const a = fn(new Float32Array(rb.getMappedRange().slice(0))); rb.unmap(); rb.destroy(); return a;
+    };
+    const st = await dump(water.pressBuf, water.cells*16, a => {
+      let mmax=0, nz=0; for (let i=2;i<a.length;i+=4){ if(a[i]>mmax)mmax=a[i]; if(a[i]>0)nz++; }
+      return {mmax, nz};
+    });
+    const vv = await dump(water.velBuf, water.NF*16, a => { let mx=0; for(let i=0;i<a.length;i+=4){const v=Math.abs(a[i]); if(v>mx)mx=v;} return mx; });
+    log('after p2g: ' + JSON.stringify(st) + ' velMaxX=' + vv);
+    window.__done = true;
+  });
+})().catch(e => { document.title='ERR'; console.error(e); window.__err = String(e)+'\n'+e.stack; });
+</script></body></html>

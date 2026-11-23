@@ -1,0 +1,16 @@
+{
+  "problem": "09",
+  "parts": [
+    {"name": "1", "title": "跨腔三向斜流道歧管", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-30, -30, 30, 30]}], "depth": 70},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [0, 0], "d": 40, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [0, 0], "d": 34, "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [0, 0], "d": 26, "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [-12, 0], "d": 22, "depth": 35},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [12, 0], "d": 22, "depth": 35},
+      {"type": "hole", "plane": {"origin": [30, 0, 50], "normal": [-0.70710678, 0, -0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 14, "depth": 64},
+      {"type": "hole", "plane": {"origin": [0, 30, 40], "normal": [0, -0.5, -0.866025404], "x_dir": [1, 0, 0]}, "at": [0, 0], "d": 10, "depth": 40},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -30, 0], [0, 30, 0], [-30, 0, 0], [30, 0, 0]]}
+    ]}
+  ]
+}

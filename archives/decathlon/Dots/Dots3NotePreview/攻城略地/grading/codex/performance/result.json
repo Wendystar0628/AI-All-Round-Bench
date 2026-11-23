@@ -1,0 +1,19 @@
+{
+    "task":  "攻城略地",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  0,
+                      "reason":  "作答结束时工作目录只有题面和原始数据，未提交 bot.cpp 或其他可替代源文件。按规定经 CPU 0–15 Job 包装执行官方编译命令，因 bot.cpp 不存在失败（退出码 1）；依据指南“提交编译失败记 0 分”。"
+                  }
+              ],
+    "metrics":  {
+                    "compile_exit_code":  1,
+                    "games_run":  0
+                },
+    "notes":  "评的是作答结束时的工作目录，不看 git 提交；副本位于 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Dots\\Dots3NotePreview\\攻城略地\\codex\\performance\\work\\submission。编译记录见同一 work 下 compile.log、compile_exit_code.txt，文件清单见 submission_inventory.txt。缺少提交程序，未运行 evaluate.py 和 480 局；胜平负、实力值 r、95% 区间、超时回合与判负局数均不适用，不按全负伪造对局数据。自然核查未见作弊。为说明未交付原因，查看了归档 run-acfa049633614605b8e3eb29f2fa53c5/session.log，其中工具调用均为 read/glob，没有写出提交，摘要保存于 work/session_tool_summary.json。编译进程已退出，未启动浏览器、服务器或常驻评测程序。",
+    "anomaly":  "反复读取题面、列目录，始终没有写出 bot.cpp。"
+}

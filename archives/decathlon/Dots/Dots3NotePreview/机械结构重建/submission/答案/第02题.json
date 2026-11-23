@@ -1,0 +1,36 @@
+{
+  "problem": "02",
+  "parts": [
+    {"name": "1", "title": "底座", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-50, -40, 180, 40]}], "depth": 24},
+      {"type": "hole", "plane": "XY", "origin": [35, 25, 24], "at": [0, 0], "d": 18, "depth": 24},
+      {"type": "hole", "plane": "XY", "origin": [145, 85, 24], "at": [0, 0], "d": 18, "depth": 24}
+    ]},
+    {"name": "2", "title": "左导柱座", "placement": {"translate": [35, 25, 24]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-15, -15, 15, 15]}], "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 30], "at": [0, 0], "d": 12, "through": true}
+    ]},
+    {"name": "3", "title": "右导柱座", "placement": {"translate": [145, 85, 24]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-15, -15, 15, 15]}], "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 30], "at": [0, 0], "d": 12, "through": true}
+    ]},
+    {"name": "4", "title": "导柱", "placement": {"translate": [35, 25, 24]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 6}], "depth": 84}
+    ]},
+    {"name": "5", "title": "压脚", "placement": {"translate": [35, 25, 52]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-30, -20, 30, 20]}], "depth": 14},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [0, 0], "d": 12, "through": true}
+    ]},
+    {"name": "6", "title": "横梁", "placement": {"translate": [35, 25, 108]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-30, -20, 110, 20]}], "depth": 14},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [0, 0], "d": 12, "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [110, 0], "d": 12, "through": true}
+    ]},
+    {"name": "7", "title": "斜楔", "placement": {"translate": [80, 25, 80]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"path": [[0, 0], [40, 0], [40, 30], [0, 10]]}], "depth": 20}
+    ]},
+    {"name": "8", "title": "推轴", "placement": {"rotate": [{"axis": "Z", "angle": -90}], "translate": [180, 31, 24]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 5}], "depth": 80}
+    ]}
+  ]
+}

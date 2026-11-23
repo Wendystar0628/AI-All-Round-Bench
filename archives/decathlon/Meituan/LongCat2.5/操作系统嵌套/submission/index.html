@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https: http: ws: wss: file:; img-src 'self' data: blob: https: http: file:; media-src 'self' data: blob: https: http: file:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:;" />
+<title>Nested OS</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+  <div id="boot-screen"><div class="boot-logo">NOS</div><div class="boot-text">正在启动嵌套操作系统…</div></div>
+  <div id="root-desktop"></div>
+  <div id="overlay-layer"></div>
+  <div id="toast-layer"></div>
+  <div id="drag-layer"></div>
+  <div id="ctx-layer"></div>
+</div>
+<script src="js/vendor-loader.js"></script>
+<script src="js/util.js"></script>
+<script src="js/vm.js"></script>
+<script src="js/kernel-sources.js"></script>
+<script src="js/sys.js"></script>
+<script src="js/scene3d.js"></script>
+<script src="js/wallpaper.js"></script>
+<script src="js/desktop.js"></script>
+<script src="js/apps/files.js"></script>
+<script src="js/apps/spreadsheet.js"></script>
+<script src="js/apps/widgets.js"></script>
+<script src="js/apps/editor.js"></script>
+<script src="js/apps/tasks.js"></script>
+<script src="js/apps/settings.js"></script>
+<script src="js/apps/browser.js"></script>
+<script src="js/apps/player.js"></script>
+<script src="js/apps/charts.js"></script>
+<script src="js/projection.js"></script>
+<script src="js/snapshot.js"></script>
+<script src="js/bench.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

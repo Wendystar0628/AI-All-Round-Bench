@@ -1,0 +1,14 @@
+{
+  "problem":"21","parts":[{"name":"1","title":"双回路桥接伺服总壳","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,200,150],"r":6}],"depth":12},
+    {"type":"extrude","plane":"XZ","origin":[0,14,0],"loops":[{"path":[[10,12],[190,12],[190,72],[170,108],[136,126],[62,126],[28,106],[10,70]]}],"depth":-122},
+    {"type":"extrude","plane":"XZ","origin":[0,14,0],"loops":[{"circle":[58,62],"d":68},{"circle":[142,62],"d":68}],"depth":14},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[58,62],"d":34,"through":true,"cbore":{"d":52,"depth":4}},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[142,62],"d":34,"through":true,"cbore":{"d":52,"depth":4}},
+    {"type":"extrude","plane":{"origin":[34,74,100],"normal":[-0.707,0,0.707],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":40},{"circle":[0,0],"d":24}],"depth":40},
+    {"type":"extrude","plane":{"origin":[78,74,122],"normal":[-0.174,0,0.985],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":44},{"circle":[0,0],"d":26}],"depth":42},
+    {"type":"extrude","plane":{"origin":[122,74,122],"normal":[0.174,0,0.985],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":44},{"circle":[0,0],"d":26}],"depth":42},
+    {"type":"extrude","plane":{"origin":[166,74,100],"normal":[0.707,0,0.707],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":40},{"circle":[0,0],"d":24}],"depth":40},
+    {"type":"extrude","plane":{"origin":[100,128,70],"normal":[0,1,0.2],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":38},{"circle":[0,0],"d":22}],"depth":34},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[13,13],[187,13],[13,137],[187,137]],"d":10,"through":true,"reverse":true}
+  ]}]}

@@ -1,0 +1,14 @@
+{
+  "problem": "04",
+  "parts": [
+    {"name": "1", "title": "偏心双级迷宫泵盖", "features": [
+      {"type": "revolve", "plane": "YZ", "origin": [0, 0, 0], "axis": "y", "loops": [{"path": [[0, 0], [72, 0], [72, 6], [45, 6], [45, 33], [0, 33]]}]},
+      {"type": "extrude", "op": "cut", "plane": "XY", "loops": [{"circle": [6, 0], "d": 30}], "depth": [0, 9]},
+      {"type": "extrude", "op": "cut", "plane": "XY", "loops": [{"circle": [6, 0], "d": 50}], "depth": [9, 14]},
+      {"type": "extrude", "op": "cut", "plane": "XY", "loops": [{"circle": [6, 0], "d": 58}], "depth": [14, 19]},
+      {"type": "extrude", "op": "cut", "plane": "XY", "loops": [{"circle": [6, 0], "d": 66}], "depth": [19, 25]},
+      {"type": "extrude", "op": "cut", "plane": "XY", "loops": [{"circle": [6, 0], "d": 74}], "depth": [25, 33]},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[60, 0], [-60, 0], [0, 60], [0, -60]], "d": 9, "depth": 6}
+    ]}
+  ]
+}

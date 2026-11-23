@@ -1,0 +1,14 @@
+{
+  "problem":"17","parts":[{"name":"1","title":"五斜座交汇比例阀体","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,180,140],"r":6}],"depth":12},
+    {"type":"extrude","plane":"XZ","origin":[0,12,0],"loops":[{"path":[[10,12],[170,12],[170,72],[150,108],[118,124],[62,124],[30,108],[10,72]]}],"depth":-116},
+    {"type":"extrude","plane":"XZ","origin":[0,12,0],"loops":[{"circle":[52,60],"d":62},{"circle":[128,60],"d":62}],"depth":12},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[52,60],"d":32,"through":true,"cbore":{"d":48,"depth":4}},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[128,60],"d":32,"through":true,"cbore":{"d":48,"depth":4}},
+    {"type":"extrude","plane":{"origin":[30,70,92],"normal":[-0.707,0,0.707],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":38},{"circle":[0,0],"d":22}],"depth":38},
+    {"type":"extrude","plane":{"origin":[64,70,116],"normal":[-0.259,0,0.966],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":42},{"circle":[0,0],"d":24}],"depth":40},
+    {"type":"extrude","plane":{"origin":[90,70,120],"normal":[0,0,1],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":44},{"circle":[0,0],"d":26}],"depth":40},
+    {"type":"extrude","plane":{"origin":[120,70,116],"normal":[0.342,0,0.94],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":42},{"circle":[0,0],"d":24}],"depth":40},
+    {"type":"extrude","plane":{"origin":[154,70,92],"normal":[0.707,0,0.707],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":38},{"circle":[0,0],"d":22}],"depth":38},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[12,12],[168,12],[12,128],[168,128]],"d":9,"through":true,"reverse":true}
+  ]}]}

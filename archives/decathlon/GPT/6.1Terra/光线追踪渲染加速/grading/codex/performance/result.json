@@ -1,0 +1,55 @@
+{
+    "task":  "光线追踪渲染加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "渲染加速",
+                      "max":  100,
+                      "score":  47.9,
+                      "reason":  "官方正式评测基线最小用时510.6385 ms、提交134.3837 ms，加速3.799854倍，速度分q=47.926436；5次计时画面和12个隐藏输入全部通过，c=h=1，故q×c×h按一位小数为47.9分。源码核查未发现实质性违规。"
+                  }
+              ],
+    "metrics":  {
+                    "baseline_ms":  510.6385,
+                    "submission_ms":  134.3837,
+                    "speedup":  3.7998544466330366,
+                    "q":  47.926436401682395,
+                    "c":  1,
+                    "h":  1,
+                    "unrounded_score":  47.926436401682395,
+                    "timing_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "hidden_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "public_boundary_passed":  3,
+                    "performance_exception_pixels":  799,
+                    "performance_exception_limit":  3232,
+                    "performance_bias":  [
+                                             -1.7433771906097607E-07,
+                                             -2.71270269411466E-07,
+                                             -9.9656799157605636E-08
+                                         ],
+                    "performance_rmse":  3.8664860303433711E-05,
+                    "formal":  true,
+                    "report_path":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GPT\\6.1Terra\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json"
+                },
+    "notes":  "评的是作答结束时的工作目录副本，不看 git 提交。原始提交与副本 solution.cu SHA256 一致：CD186E76E1EF55DF97C89B7B7812DC3BA5100448EFFAAC0C47F4BD7695F84717。仅运行一次官方 evaluate.py；逻辑处理器16–27、高优先级、基线与提交交错各5次取最小值。规则扫描中的主机线程均已join，静态dn仅复用显存且每次render重新上传节点，不构成违规。源码核查证据保存于work/source_audit.txt。 3个公开边界输入亦全部通过；评测进程及报告记录的全部子进程均已退出，收尾记录见work/cleanup.json。"
+}

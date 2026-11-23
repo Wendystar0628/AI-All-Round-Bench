@@ -1,0 +1,10 @@
+import fs from 'fs';
+let s = fs.readFileSync('js/scene.js', 'utf8');
+s = s.replace(`    const N = 420;`, `    const N = 180;`);
+s = s.replace(`      color: 0xc9b18a, size: 1.15, transparent: true, opacity: 0.0,`, `      color: 0xc9b18a, size: 0.5, transparent: true, opacity: 0.0,`);
+s = s.replace(`      const intensity = clamp(rotor, 0, 1) * clamp(1 - agl / 16, 0, 1);`, `      const intensity = clamp(rotor, 0, 1) * clamp(1 - agl / 9, 0, 1);`);
+s = s.replace(`        const rr = 1.4 + ((hash1(i * 3.1) + t * 0.22) % 1) * 11;`, `        const rr = 1.2 + ((hash1(i * 3.1) + t * 0.22) % 1) * 6;`);
+s = s.replace(`        const py = terrainHeight(px, pz, this.terrainDef) + 0.2 + hash1(i * 5.3 + t * 0.3) * 1.5 * intensity;`, `        const py = terrainHeight(px, pz, this.terrainDef) + 0.12 + hash1(i * 5.3 + t * 0.3) * 0.8 * intensity;`);
+s = s.replace(`      this.dust.material.opacity = 0.38 * intensity;`, `      this.dust.material.opacity = 0.24 * intensity;`);
+fs.writeFileSync('js/scene.js', s);
+console.log('done');

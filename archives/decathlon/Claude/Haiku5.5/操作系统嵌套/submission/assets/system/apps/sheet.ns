@@ -1,0 +1,798 @@
+// =====================================================================
+// 电子表格（/System/apps/sheet.ns）
+// 参数：args[0] 窗口号（0 表示无窗口的后台工作簿），args[1] 应用名，args[2] 工作簿路径，args[3] 可选 "hidden"。
+// 公式：四则运算、括号、单元格与区域引用（A1、B2:D4），函数 SUM AVG MIN MAX COUNT。
+// 修改输入后按依赖顺序重算；除零、无效引用、循环依赖显示为 #DIV/0! #REF! #CYCLE!。
+// 工作簿格式：JSON {"format":"sheet","version":1,"cells":{地址: 输入}}。
+// 图表订阅：收到 subscribe 后立即推送选区的完整值，之后每次提交都推送新版本（ver 递增）。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var hidden = false;
+var path = "";
+var title = "未命名";
+var cells = {};
+var vals = {};
+var memo = {};
+var visiting = {};
+var hist = [];
+var redo = [];
+var dirty = false;
+var confirm = false;
+var closing = false;
+var selC = 0;
+var selR = 1;
+var ancC = 0;
+var ancR = 1;
+var editing = false;
+var buf = "";
+var status = "";
+var VW = 900;
+var VH = 560;
+var ver = 0;
+var subs = [];
+var toks = [];
+var tp = 0;
+var fcol = 0;
+var frow = 0;
+var TOOL = 40;
+var FORM = 34;
+var HEAD = 26;
+var RH = 26;
+var RW = 46;
+var CW = 112;
+var NCOL = 8;
+var NROW = 40;
+var top = 1;
+var leftC = 0;
+
+func col_letter(c) {
+    return chr(65 + c);
+}
+
+func addr_of(c, r) {
+    return col_letter(c) + str(r);
+}
+
+// 解析 "B12" -> [col, row]；失败返回 nil
+func parse_addr(s) {
+    if (len(s) < 2) { return nil; }
+    var c = ord(substr(s, 0, 1));
+    if (c < 65 || c > 90) { return nil; }
+    var rest = substr(s, 1, len(s) - 1);
+    if (!looks_int(rest)) { return nil; }
+    return [c - 65, num(rest)];
+}
+
+func looks_int(s) {
+    if (len(s) == 0) { return false; }
+    for (var i = 0; i < len(s); i = i + 1) {
+        var ch = substr(s, i, 1);
+        if (ch < "0" || ch > "9") { return false; }
+    }
+    return true;
+}
+
+func looks_num(s) {
+    if (len(s) == 0) { return false; }
+    var seenDot = false;
+    var digits = 0;
+    for (var i = 0; i < len(s); i = i + 1) {
+        var ch = substr(s, i, 1);
+        if (ch == "-" && i == 0) { continue; }
+        if (ch == "." && !seenDot) { seenDot = true; continue; }
+        if (ch < "0" || ch > "9") { return false; }
+        digits = digits + 1;
+    }
+    return digits > 0;
+}
+
+// ---------------------------- 公式 ----------------------------
+func tokenize_formula(s) {
+    var out = [];
+    var i = 0;
+    var n = len(s);
+    while (i < n) {
+        var ch = substr(s, i, 1);
+        if (ch == " ") { i = i + 1; continue; }
+        if ((ch >= "0" && ch <= "9") || ch == ".") {
+            var j = i;
+            while (j < n && ((substr(s, j, 1) >= "0" && substr(s, j, 1) <= "9") || substr(s, j, 1) == ".")) { j = j + 1; }
+            push(out, {k: "n", v: num(substr(s, i, j - i))});
+            i = j;
+        } else if ((ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z")) {
+            var q = i;
+            while (q < n && ((substr(s, q, 1) >= "A" && substr(s, q, 1) <= "Z") || (substr(s, q, 1) >= "a" && substr(s, q, 1) <= "z") || (substr(s, q, 1) >= "0" && substr(s, q, 1) <= "9"))) { q = q + 1; }
+            push(out, {k: "id", v: upper(substr(s, i, q - i))});
+            i = q;
+        } else if (ch == "+" || ch == "-" || ch == "*" || ch == "/" || ch == "(" || ch == ")" || ch == ":" || ch == ",") {
+            push(out, {k: "op", v: ch});
+            i = i + 1;
+        } else {
+            return nil;
+        }
+    }
+    return out;
+}
+
+func peek_tok() {
+    if (tp < len(toks)) { return toks[tp]; }
+    return {k: "end", v: ""};
+}
+
+func is_op(v) {
+    var t = peek_tok();
+    return t.k == "op" && t.v == v;
+}
+
+// 表达式：返回数字、字符串（错误以 # 开头）
+func f_expr() {
+    var l = f_term();
+    while (is_op("+") || is_op("-")) {
+        var op = toks[tp].v;
+        tp = tp + 1;
+        var r = f_term();
+        l = arith(op, l, r);
+    }
+    return l;
+}
+
+func f_term() {
+    var l = f_factor();
+    while (is_op("*") || is_op("/")) {
+        var op = toks[tp].v;
+        tp = tp + 1;
+        var r = f_factor();
+        l = arith(op, l, r);
+    }
+    return l;
+}
+
+func arith(op, a, b) {
+    if (is_err(a)) { return a; }
+    if (is_err(b)) { return b; }
+    if (!isnum(a) || !isnum(b)) { return "#VALUE!"; }
+    if (op == "+") { return a + b; }
+    if (op == "-") { return a - b; }
+    if (op == "*") { return a * b; }
+    if (b == 0) { return "#DIV/0!"; }
+    return a / b;
+}
+
+func is_err(v) {
+    return type(v) == "string" && starts(v, "#");
+}
+
+func f_factor() {
+    if (is_op("-")) {
+        tp = tp + 1;
+        var v = f_factor();
+        if (is_err(v)) { return v; }
+        if (!isnum(v)) { return "#VALUE!"; }
+        return 0 - v;
+    }
+    return f_primary();
+}
+
+func f_primary() {
+    var t = peek_tok();
+    if (t.k == "n") {
+        tp = tp + 1;
+        return t.v;
+    }
+    if (is_op("(")) {
+        tp = tp + 1;
+        var v = f_expr();
+        if (!is_op(")")) { return "#ERR"; }
+        tp = tp + 1;
+        return v;
+    }
+    if (t.k == "id") {
+        tp = tp + 1;
+        if (is_op("(")) {
+            tp = tp + 1;
+            return f_call(t.v);
+        }
+        var a = parse_addr(t.v);
+        if (a == nil) { return "#NAME?"; }
+        if (is_op(":")) {
+            tp = tp + 1;
+            var t2 = peek_tok();
+            if (t2.k != "id") { return "#ERR"; }
+            tp = tp + 1;
+            var b = parse_addr(t2.v);
+            if (b == nil) { return "#REF!"; }
+            return range_value(a, b);
+        }
+        return cell_value(addr_of(a[0], a[1]));
+    }
+    return "#ERR";
+}
+
+// 函数参数：表达式或区域。返回 {values: [...], err: 错误或nil}
+func f_call(name) {
+    var vals2 = [];
+    var err = nil;
+    if (!is_op(")")) {
+        while (true) {
+            var st = tp;
+            var t = peek_tok();
+            var isRange = false;
+            if (t.k == "id" && tp + 2 < len(toks) && toks[tp + 1].k == "op" && toks[tp + 1].v == ":") { isRange = true; }
+            if (isRange) {
+                var a = parse_addr(t.v);
+                var b = parse_addr(toks[tp + 2].v);
+                tp = tp + 3;
+                if (a == nil || b == nil) {
+                    err = "#REF!";
+                } else {
+                    for (var rr = min(a[1], b[1]); rr <= max(a[1], b[1]); rr = rr + 1) {
+                        for (var cc = min(a[0], b[0]); cc <= max(a[0], b[0]); cc = cc + 1) {
+                            var cv = cell_value(addr_of(cc, rr));
+                            if (is_err(cv)) { err = cv; }
+                            else if (isnum(cv)) { push(vals2, cv); }
+                        }
+                    }
+                }
+            } else {
+                var v = f_expr();
+                if (is_err(v)) { err = v; }
+                else if (isnum(v)) { push(vals2, v); }
+            }
+            if (is_op(",")) { tp = tp + 1; continue; }
+            break;
+        }
+    }
+    if (!is_op(")")) { return "#ERR"; }
+    tp = tp + 1;
+    if (err != nil) { return err; }
+    if (name == "SUM") {
+        var s = 0;
+        for (var x in vals2) { s = s + x; }
+        return s;
+    }
+    if (name == "COUNT") { return len(vals2); }
+    if (name == "AVG") {
+        if (len(vals2) == 0) { return "#DIV/0!"; }
+        var s2 = 0;
+        for (var y in vals2) { s2 = s2 + y; }
+        return s2 / len(vals2);
+    }
+    if (name == "MAX" || name == "MIN") {
+        if (len(vals2) == 0) { return 0; }
+        var best = vals2[0];
+        for (var z in vals2) {
+            if (name == "MAX" && z > best) { best = z; }
+            if (name == "MIN" && z < best) { best = z; }
+        }
+        return best;
+    }
+    return "#NAME?";
+}
+
+func range_value(a, b) {
+    return "#REF!";
+}
+
+// 单元格的计算值（递归，带循环检测与缓存）
+func cell_value(addr) {
+    if (has(memo, addr)) { return memo[addr]; }
+    if (!has(cells, addr)) { return 0; }
+    var raw = cells[addr];
+    var v = "";
+    if (starts(raw, "=")) {
+        if (has(visiting, addr)) { return "#CYCLE!"; }
+        visiting[addr] = true;
+        var saveToks = toks;
+        var saveTp = tp;
+        var parsed = tokenize_formula(substr(raw, 1, len(raw) - 1));
+        if (parsed == nil) {
+            v = "#ERR";
+        } else {
+            toks = parsed;
+            tp = 0;
+            v = f_expr();
+            if (tp < len(toks)) { v = "#ERR"; }
+        }
+        toks = saveToks;
+        tp = saveTp;
+        del(visiting, addr);
+    } else if (looks_num(raw)) {
+        v = num(raw);
+    } else {
+        v = raw;
+    }
+    memo[addr] = v;
+    return v;
+}
+
+func recalc() {
+    memo = {};
+    visiting = {};
+    vals = {};
+    for (var addr in keys(cells)) {
+        var raw = cells[addr];
+        if (starts(raw, "=")) { vals[addr] = cell_value(addr); }
+    }
+    memo = {};
+}
+
+// 显示文本
+func show_text(addr) {
+    if (!has(cells, addr)) { return ""; }
+    var raw = cells[addr];
+    if (starts(raw, "=")) {
+        var v = vals[addr];
+        if (isnum(v)) { return fmt_num(v); }
+        return v;
+    }
+    return raw;
+}
+
+func fmt_num(v) {
+    if (v == floor(v)) { return str(v); }
+    return fmt(v, 2);
+}
+
+// ---------------------------- 撤销与提交 ----------------------------
+func snapshot() {
+    return json(cells);
+}
+
+func push_hist() {
+    push(hist, snapshot());
+    if (len(hist) > 60) { hist = slice(hist, 1, len(hist)); }
+    redo = [];
+}
+
+func commit_cell(addr, text) {
+    push_hist();
+    if (text == "") {
+        if (has(cells, addr)) { del(cells, addr); }
+    } else {
+        cells[addr] = text;
+    }
+    dirty = true;
+    after_change();
+}
+
+func after_change() {
+    recalc();
+    ver = ver + 1;
+    publish();
+    send_title();
+}
+
+func undo() {
+    if (len(hist) == 0) { return; }
+    push(redo, snapshot());
+    cells = parse(pop(hist));
+    dirty = true;
+    after_change();
+}
+
+func redo_do() {
+    if (len(redo) == 0) { return; }
+    push(hist, snapshot());
+    cells = parse(pop(redo));
+    dirty = true;
+    after_change();
+}
+
+// ---------------------------- 文件 ----------------------------
+func load_book(p) {
+    path = p;
+    title = base_name(p);
+    var text = sys_fs_read(p);
+    cells = {};
+    if (text != nil) {
+        var doc = parse(text);
+        if (doc.cells != nil) { cells = doc.cells; }
+    }
+    hist = [];
+    redo = [];
+    dirty = false;
+    recalc();
+    ver = ver + 1;
+    status = "已打开 " + title;
+    if (!hidden) { sys_send("kernel", {type: "book-open", path: p, pid: sys_self()}); }
+}
+
+func save_book() {
+    if (path == "") { path = "/Documents/未命名.sheet"; title = "未命名.sheet"; }
+    var doc = {format: "sheet", version: 1, cells: cells};
+    var r = sys_fs_write(path, json(doc));
+    if (r.ok) {
+        dirty = false;
+        status = "已保存 " + title;
+    } else {
+        status = "保存失败：" + r.error;
+    }
+    send_title();
+}
+
+func base_name(p) {
+    var i = len(p) - 1;
+    while (i >= 0 && substr(p, i, 1) != "/") { i = i - 1; }
+    return substr(p, i + 1, len(p) - i - 1);
+}
+
+func send_title() {
+    if (hidden) { return; }
+    sys_send("wm", {type: "title", win: WID, title: "电子表格 — " + title + pick(dirty, " *", "")});
+}
+
+// ---------------------------- 订阅（图表数据） ----------------------------
+func range_rows(rng) {
+    var parts = split(rng, ":");
+    if (len(parts) != 2) { return nil; }
+    var a = parse_addr(upper(parts[0]));
+    var b = parse_addr(upper(parts[1]));
+    if (a == nil || b == nil) { return nil; }
+    return [min(a[0], b[0]), min(a[1], b[1]), max(a[0], b[0]), max(a[1], b[1])];
+}
+
+func data_for(rng) {
+    var box = range_rows(rng);
+    if (box == nil) { return nil; }
+    var rows = [];
+    for (var r = box[1]; r <= box[3]; r = r + 1) {
+        var row = [];
+        for (var c = box[0]; c <= box[2]; c = c + 1) {
+            var addr = addr_of(c, r);
+            var v = "";
+            if (has(cells, addr)) {
+                if (starts(cells[addr], "=")) { v = vals[addr]; } else if (looks_num(cells[addr])) { v = num(cells[addr]); } else { v = cells[addr]; }
+            }
+            push(row, v);
+        }
+        push(rows, row);
+    }
+    return rows;
+}
+
+func publish() {
+    for (var s in subs) {
+        var rows = data_for(s.range);
+        if (rows == nil) { continue; }
+        sys_xpost(s.sys, {to: s.pid, type: "data", ver: ver, range: s.range, rows: rows, title: title, path: path});
+    }
+}
+
+func subscribe(m) {
+    var rows = data_for(m.range);
+    if (rows == nil) {
+        sys_xpost(m.sys, {to: m.pid, type: "data-error", range: m.range, error: "区域无效"});
+        return;
+    }
+    var dup = false;
+    for (var s in subs) { if (s.pid == m.pid && s.range == m.range) { dup = true; } }
+    if (!dup) { push(subs, {sys: m.sys, pid: m.pid, range: m.range}); }
+    sys_xpost(m.sys, {to: m.pid, type: "data", ver: ver, range: m.range, rows: rows, title: title, path: path});
+}
+
+func unsubscribe(m) {
+    var out = [];
+    for (var s in subs) {
+        if (!(s.pid == m.pid && s.range == m.range)) { push(out, s); }
+    }
+    subs = out;
+}
+
+func announce_closed() {
+    for (var s in subs) {
+        sys_xpost(s.sys, {to: s.pid, type: "data-closed", path: path, title: title});
+    }
+    if (path != "") { sys_send("kernel", {type: "book-close", path: path, pid: sys_self()}); }
+}
+
+// ---------------------------- 布局 ----------------------------
+func grid_top() {
+    return TOOL + FORM + HEAD;
+}
+
+func visible_rows() {
+    return floor((VH - grid_top() - 26) / RH);
+}
+
+func visible_cols() {
+    return floor((VW - RW) / CW);
+}
+
+func ensure_visible() {
+    if (selR < top) { top = selR; }
+    if (selR >= top + visible_rows()) { top = selR - visible_rows() + 1; }
+    if (selC < leftC) { leftC = selC; }
+    if (selC >= leftC + visible_cols()) { leftC = selC - visible_cols() + 1; }
+    if (top < 1) { top = 1; }
+    if (leftC < 0) { leftC = 0; }
+}
+
+func in_sel(c, r) {
+    return c >= min(selC, ancC) && c <= max(selC, ancC) && r >= min(selR, ancR) && r <= max(selR, ancR);
+}
+
+func paint() {
+    var L = [];
+    add_rect(L, 0, 0, VW, VH, "#ffffff");
+    add_rect(L, 0, 0, VW, TOOL, "#f4f5fa");
+    add_rect(L, 0, TOOL - 1, VW, 1, THEME.line);
+    add_btn(L, 10, 6, 64, 28, "保存", "sheet-save", accent_color("violet"), "#ffffff");
+    add_btn(L, 82, 6, 58, 28, "撤销", "sheet-undo", "#f0f1f6", THEME.text);
+    add_btn(L, 146, 6, 58, 28, "重做", "sheet-redo", "#f0f1f6", THEME.text);
+    var fnm = add_text(L, 220, 6, VW - 230, 28, title + pick(dirty, " ●", ""), 13, THEME.text, "l");
+    fnm.tid = "sheet-filename";
+    fnm.lbl = title;
+
+    // 公式栏
+    var shown = pick(editing, buf, cell_raw_or_empty(selC, selR));
+    add_rect(L, 0, TOOL, VW, FORM, "#fbfbfd");
+    add_text(L, 6, TOOL + 4, 40, FORM - 8, addr_of(selC, selR), 12, THEME.sub, "c");
+    var fb = add_frame(L, 52, TOOL + 5, VW - 62, FORM - 10, "#ffffff", pick(editing, accent_color("violet"), THEME.line), 6);
+    fb.tid = "sheet-formula";
+    add_text(L, 62, TOOL + 5, VW - 80, FORM - 10, shown + pick(editing, "▏", ""), 13, THEME.text, "l");
+    add_rect(L, 0, TOOL + FORM - 1, VW, 1, THEME.line);
+
+    // 列头
+    var hy = TOOL + FORM;
+    add_rect(L, 0, hy, VW, HEAD, "#f4f5fa");
+    add_rect(L, 0, hy + HEAD - 1, VW, 1, THEME.line);
+    var gt = grid_top();
+    var vr = visible_rows();
+    var vc = visible_cols();
+    for (var c = leftC; c < leftC + vc && c < NCOL; c = c + 1) {
+        var x = RW + (c - leftC) * CW;
+        add_text(L, x, hy, CW, HEAD, col_letter(c), 12, THEME.sub, "c");
+    }
+    for (var r = top; r < top + vr && r <= NROW; r = r + 1) {
+        var y = gt + (r - top) * RH;
+        add_rect(L, 0, y, RW, RH, "#f4f5fa");
+        add_text(L, 0, y, RW, RH, str(r), 11, THEME.sub, "c");
+        for (var cc = leftC; cc < leftC + vc && cc < NCOL; cc = cc + 1) {
+            var addr = addr_of(cc, r);
+            var x2 = RW + (cc - leftC) * CW;
+            var sel = in_sel(cc, r);
+            var bg = pick(sel, "#eef0ff", "#ffffff");
+            var cell = add_rect(L, x2, y, CW, RH, bg);
+            cell.s = "#eceef5";
+            cell.sw = 1;
+            cell.tid = "sheet-cell";
+            cell.hv = true;
+            cell.cur = "cell";
+            cell.da = {"cell-address": addr};
+            var txt = show_text(addr);
+            if (has(cells, addr) && starts(cells[addr], "=") && is_err(vals[addr])) {
+                var et = add_text(L, x2 + 4, y, CW - 8, RH, vals[addr], 12, THEME.danger, "r");
+            } else if (txt != "") {
+                var tt = add_text(L, x2 + 4, y, CW - 8, RH, txt, 12, THEME.text, pick(looks_num(txt) || (has(cells, addr) && starts(cells[addr], "=") && isnum(vals[addr])), "r", "l"));
+            }
+        }
+    }
+    // 选中框
+    if (selC >= leftC && selC < leftC + vc && selR >= top && selR < top + vr) {
+        var sx = RW + (selC - leftC) * CW;
+        var sy = gt + (selR - top) * RH;
+        var fr = add_frame(L, sx, sy, CW, RH, "#00000000", accent_color("violet"), 0);
+        fr.sw = 2;
+        fr.tid = "sheet-selection";
+        fr.da = {"cell-address": addr_of(selC, selR)};
+        if (editing) { add_text(L, sx + 4, sy, CW - 8, RH, buf, 12, THEME.text, "l"); }
+    }
+    add_rect(L, 0, VH - 26, VW, 26, "#f4f5fa");
+    add_text(L, 8, VH - 26, VW - 16, 26, status + "    选区 " + addr_of(min(selC, ancC), min(selR, ancR)) + pick(selC == ancC && selR == ancR, "", ":" + addr_of(max(selC, ancC), max(selR, ancR))), 11, THEME.sub, "l");
+    if (confirm) {
+        var cfx = VW / 2 - 190;
+        var cfy = VH / 2 - 80;
+        add_rect(L, 0, 0, VW, VH, "#22263355");
+        var card = add_frame(L, cfx, cfy, 380, 170, "#ffffff", THEME.line, 14);
+        card.sh = true;
+        add_bold(L, cfx + 20, cfy + 20, 340, 24, "保存对 " + title + " 的修改？", 14, THEME.text, "l");
+        add_btn(L, cfx + 20, cfy + 110, 110, 36, "保存", "sheet-confirm-save", accent_color("violet"), "#ffffff");
+        add_btn(L, cfx + 140, cfy + 110, 110, 36, "不保存", "sheet-confirm-discard", "#f0f1f6", THEME.text);
+        add_btn(L, cfx + 260, cfy + 110, 110, 36, "取消", "sheet-confirm-cancel", "#f0f1f6", THEME.text);
+    }
+    sys_submit("win-" + str(WID), L);
+}
+
+func cell_raw_or_empty(c, r) {
+    var a = addr_of(c, r);
+    if (has(cells, a)) { return cells[a]; }
+    return "";
+}
+
+// ---------------------------- 输入 ----------------------------
+func start_edit(text) {
+    editing = true;
+    buf = text;
+}
+
+func commit_edit() {
+    if (!editing) { return; }
+    var addr = addr_of(selC, selR);
+    var t = buf;
+    editing = false;
+    if (t != cell_raw_or_empty(selC, selR)) { commit_cell(addr, t); }
+}
+
+func cancel_edit() {
+    editing = false;
+    buf = "";
+}
+
+func move(dc, dr) {
+    commit_edit();
+    selC = clamp(selC + dc, 0, NCOL - 1);
+    selR = clamp(selR + dr, 1, NROW);
+    ancC = selC;
+    ancR = selR;
+    ensure_visible();
+}
+
+func copy_selection() {
+    var lines2 = [];
+    var c1 = min(selC, ancC);
+    var c2 = max(selC, ancC);
+    var r1 = min(selR, ancR);
+    var r2 = max(selR, ancR);
+    for (var r = r1; r <= r2; r = r + 1) {
+        var row = [];
+        for (var c = c1; c <= c2; c = c + 1) { push(row, show_text(addr_of(c, r))); }
+        push(lines2, join(row, "\t"));
+    }
+    var text = join(lines2, "\n");
+    sys_clip_set(text);
+    status = "已复制 " + str(r2 - r1 + 1) + " 行 × " + str(c2 - c1 + 1) + " 列";
+}
+
+func paste_clipboard() {
+    var hist2 = sys_clip_hist();
+    if (len(hist2) == 0) { return; }
+    var text = hist2[len(hist2) - 1];
+    push_hist();
+    var rows2 = split(text, "\n");
+    for (var i = 0; i < len(rows2); i = i + 1) {
+        var cols2 = split(rows2[i], "\t");
+        for (var j = 0; j < len(cols2); j = j + 1) {
+            var c = selC + j;
+            var r = selR + i;
+            if (c < NCOL && r <= NROW) {
+                var a = addr_of(c, r);
+                if (cols2[j] == "") { if (has(cells, a)) { del(cells, a); } } else { cells[a] = cols2[j]; }
+            }
+        }
+    }
+    dirty = true;
+    after_change();
+    status = "已粘贴";
+}
+
+func on_key(m) {
+    if (confirm) {
+        if (m.key == "Escape") { confirm = false; }
+        return;
+    }
+    if (m.ctrl == true) {
+        if (m.key == "s") { save_book(); return; }
+        if (m.key == "z") { undo(); return; }
+        if (m.key == "y") { redo_do(); return; }
+        if (m.key == "c") { copy_selection(); return; }
+        if (m.key == "v") { paste_clipboard(); return; }
+        return;
+    }
+    if (editing) {
+        if (m.key == "Enter") { commit_edit(); move(0, 1); return; }
+        if (m.key == "Tab") { commit_edit(); move(1, 0); return; }
+        if (m.key == "Escape") { cancel_edit(); return; }
+        if (m.key == "Backspace") { if (len(buf) > 0) { buf = substr(buf, 0, len(buf) - 1); } return; }
+        if (m.key == "ArrowLeft" || m.key == "ArrowRight" || m.key == "ArrowUp" || m.key == "ArrowDown") { return; }
+        if (m.text != nil && m.text != "") { buf = buf + m.text; }
+        return;
+    }
+    if (m.key == "ArrowLeft") { move(-1, 0); }
+    else if (m.key == "ArrowRight") { move(1, 0); }
+    else if (m.key == "ArrowUp") { move(0, -1); }
+    else if (m.key == "ArrowDown") { move(0, 1); }
+    else if (m.key == "Enter" || m.key == "F2") { start_edit(cell_raw_or_empty(selC, selR)); }
+    else if (m.key == "Tab") { move(1, 0); }
+    else if (m.key == "Delete") { commit_cell(addr_of(selC, selR), ""); }
+    else if (m.key == "Backspace") { commit_cell(addr_of(selC, selR), ""); }
+    else if (m.text != nil && m.text != "") { start_edit(m.text); }
+    ensure_visible();
+}
+
+func on_pointer(m) {
+    var x = m.x;
+    var y = m.y;
+    if (m.kind == "wheel") {
+        top = clamp(top + floor(m.dy / 40), 1, NROW);
+        return;
+    }
+    if (m.kind != "down") { return; }
+    if (confirm) {
+        var cfx = VW / 2 - 190;
+        var cfy = VH / 2 - 80;
+        if (inside(x, y, cfx + 20, cfy + 110, 110, 36)) { save_book(); confirm = false; closing = true; return; }
+        if (inside(x, y, cfx + 140, cfy + 110, 110, 36)) { dirty = false; confirm = false; closing = true; return; }
+        if (inside(x, y, cfx + 260, cfy + 110, 110, 36)) { confirm = false; return; }
+        return;
+    }
+    if (y < TOOL) {
+        if (inside(x, y, 10, 6, 64, 28)) { save_book(); return; }
+        if (inside(x, y, 82, 6, 58, 28)) { undo(); return; }
+        if (inside(x, y, 146, 6, 58, 28)) { redo_do(); return; }
+        return;
+    }
+    if (y >= TOOL && y < TOOL + FORM) {
+        if (x >= 52) { start_edit(cell_raw_or_empty(selC, selR)); }
+        return;
+    }
+    var gt = grid_top();
+    if (y < gt) { return; }
+    var r = top + floor((y - gt) / RH);
+    var c = leftC + floor((x - RW) / CW);
+    if (x < RW || c < 0 || c >= NCOL || r < 1 || r > NROW) { return; }
+    if (m.shift == true) {
+        commit_edit();
+        selC = c;
+        selR = r;
+        ensure_visible();
+        return;
+    }
+    if (editing) { commit_edit(); }
+    if (m.dbl == true) {
+        selC = c;
+        selR = r;
+        ancC = c;
+        ancR = r;
+        start_edit(cell_raw_or_empty(c, r));
+        return;
+    }
+    selC = c;
+    selR = r;
+    ancC = c;
+    ancR = r;
+    ensure_visible();
+}
+
+func main(args) {
+    WID = args[0];
+    hidden = len(args) > 3 && args[3] == "hidden";
+    if (len(args) > 2 && args[2] != nil) {
+        load_book(args[2]);
+    }
+    if (!hidden) {
+        send_title();
+        paint();
+    }
+    while (true) {
+        var m = sys_recv();
+        if (m.type == "subscribe") {
+            subscribe(m);
+        } else if (m.type == "unsubscribe") {
+            unsubscribe(m);
+        } else if (m.type == "view") {
+            VW = m.w;
+            VH = m.h;
+            ensure_visible();
+            paint();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+            if (closing) { announce_closed(); sys_send("wm", {type: "close", win: WID}); return 0; }
+            paint();
+        } else if (m.type == "key") {
+            on_key(m);
+            paint();
+        } else if (m.type == "close-req") {
+            if (dirty) {
+                confirm = true;
+                paint();
+            } else {
+                announce_closed();
+                sys_send("wm", {type: "close", win: WID});
+                return 0;
+            }
+        }
+    }
+    return 0;
+}

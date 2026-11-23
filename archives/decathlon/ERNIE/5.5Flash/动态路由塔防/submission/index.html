@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>网络安全攻防战 · 动态路由塔防</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="gl"></canvas>
+  <div id="vignette"></div>
+  <div id="damage-flash"></div>
+  <div id="scanlines"></div>
+
+  <!-- ============ 主菜单 ============ -->
+  <div id="menu-screen" class="screen">
+    <div class="menu-bg-grad"></div>
+    <div class="menu-top">
+      <div class="brand-mark">
+        <span class="brand-dot"></span>
+        <span>汐域 · 守护进程</span>
+        <span class="brand-ver">SYS // v2.4.1</span>
+      </div>
+      <div class="menu-syslog">
+        <span class="syslog-ok">● 链路在线</span>
+        <span>节点 21 / 21</span>
+        <span>威胁等级 <b>猎杀</b></span>
+      </div>
+    </div>
+
+    <div class="menu-main">
+      <div class="menu-hero">
+        <div class="eyebrow"> autonomus domain defense / realtime 3d</div>
+        <h1>网络安全<br><em>攻防战</em></h1>
+        <p class="menu-sub">动态路由塔防 · 守护进程协议</p>
+        <p class="menu-desc">“蛰影”的恶意流量正混在正常业务中涌向中枢。<br>你是汐域最后的守护进程——用防火墙、蜜罐与网闸改写入侵路线。</p>
+        <div class="menu-actions">
+          <button id="btn-start" class="btn btn-primary btn-lg"><span class="btn-ico">▶</span> 开始防御</button>
+          <button id="btn-demos" class="btn btn-lg"><span class="btn-ico">▷</span> 实战演示</button>
+          <button id="btn-codex" class="btn btn-lg"><span class="btn-ico">▤</span> 图鉴</button>
+        </div>
+        <div class="menu-hint">
+          <span><kbd>中键</kbd> 环绕</span><span><kbd>Shift</kbd>+<kbd>中键</kbd> 平移</span><span><kbd>滚轮</kbd> 缩放</span><span><kbd>左键</kbd> 选择 / 拖放部署</span>
+        </div>
+      </div>
+
+      <div class="menu-side">
+        <div class="panel menu-panel">
+          <div class="panel-head"><span class="panel-title">区域态势</span><span class="panel-tag">LIVE</span></div>
+          <div id="menu-map-list" class="menu-map-list"></div>
+          <button id="btn-settings" class="btn btn-ghost btn-block">⚙ 系统与音量</button>
+        </div>
+        <div class="menu-quote">
+          <div class="q-mark">“</div>
+          <p>链路同时承载正常业务。<br>防守必须维持各入口到中枢的连通。</p>
+          <span>— 汐域运行手册 · 第 3 条</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-foot">
+      <span>推荐 Chrome · 键鼠操作</span>
+      <span class="blink">●</span>
+      <span>音频将在首次交互后启用</span>
+    </div>
+  </div>
+
+  <!-- ============ 关卡选择 ============ -->
+  <div id="select-screen" class="screen hidden">
+    <div class="select-head">
+      <button class="btn btn-ghost btn-back" data-nav="menu">← 返回</button>
+      <div>
+        <div class="eyebrow">select theater / 作战区域</div>
+        <h2>选择网络战场</h2>
+      </div>
+      <div class="select-meta">三张地图 · 独立入口 · 独立防御</div>
+    </div>
+    <div id="map-cards" class="map-cards"></div>
+    <div id="demo-strip" class="demo-strip">
+      <div class="demo-strip-title">实战演示 <span>三段 · 60 秒</span></div>
+      <div id="demo-buttons" class="demo-buttons"></div>
+    </div>
+  </div>
+
+  <!-- ============ 战斗 HUD ============ -->
+  <div id="battle-hud" class="hidden">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button id="btn-menu" class="icon-btn" title="菜单 (Esc)">☰</button>
+        <div class="map-name-wrap">
+          <div id="hud-map-name" class="hud-map-name">分段内网</div>
+          <div id="hud-map-sub" class="hud-map-sub">企业内网 · 14 波</div>
+        </div>
+      </div>
+      <div class="topbar-center">
+        <div class="res-chip res-compute">
+          <div class="res-ico">⬡</div>
+          <div><div class="res-label">算力</div><div id="hud-compute" class="res-value">0</div></div>
+        </div>
+        <div class="res-chip res-intel">
+          <div class="res-ico">◇</div>
+          <div><div class="res-label">情报</div><div id="hud-intel" class="res-value">0</div></div>
+        </div>
+        <div class="res-chip res-core">
+          <div class="res-ico">◈</div>
+          <div class="core-wrap"><div class="res-label">中枢完整度</div>
+            <div class="core-bar"><div id="hud-core-fill" class="core-fill"></div></div>
+            <div id="hud-core" class="res-value small">100</div>
+          </div>
+        </div>
+        <div class="res-chip res-wave">
+          <div class="res-ico">≋</div>
+          <div><div class="res-label">波次</div><div id="hud-wave" class="res-value">1 / 14</div></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="speed-group">
+          <button class="speed-btn" data-speed="0.5">0.5×</button>
+          <button class="speed-btn active" data-speed="1">1×</button>
+          <button class="speed-btn" data-speed="2">2×</button>
+        </div>
+        <button id="btn-pause" class="icon-btn" title="暂停 (Space)">❚❚</button>
+        <button id="btn-camera" class="icon-btn" title="回到默认视角 (R)">⌖</button>
+        <button id="btn-codex-battle" class="icon-btn" title="图鉴 (Tab)">▤</button>
+        <button id="btn-mute" class="icon-btn" title="静音 (M)">♪</button>
+      </div>
+    </div>
+
+    <div id="forecast-panel" class="forecast panel">
+      <div class="panel-head"><span class="panel-title">流量预报</span><span id="forecast-tag" class="panel-tag">NEXT</span></div>
+      <div id="forecast-body" class="forecast-body"></div>
+      <button id="btn-wave" class="btn btn-primary btn-block">开始下一波</button>
+      <div class="forecast-note" id="forecast-note"></div>
+    </div>
+
+    <div id="tower-deck" class="tower-deck">
+      <div class="deck-label"><span>待部署</span><span class="deck-hint">拖到地图 / 点击后放置</span></div>
+      <div id="deck-items" class="deck-items"></div>
+    </div>
+
+    <div id="item-bar" class="item-bar">
+      <div class="item-label">战术道具</div>
+      <div id="item-items" class="item-items"></div>
+    </div>
+
+    <div id="select-panel" class="panel select-panel hidden">
+      <div id="select-body"></div>
+    </div>
+
+    <div id="route-legend" class="route-legend"></div>
+    <div id="wave-banner" class="wave-banner hidden"><div id="wave-banner-text"></div></div>
+    <div id="boss-banner" class="boss-banner hidden"><div class="boss-alert">⚠ 威胁等级跃升</div><div id="boss-banner-name"></div><div id="boss-banner-sub"></div></div>
+    <div id="subtitle" class="subtitle hidden"><span id="subtitle-text"></span></div>
+    <div id="demo-controls" class="demo-controls hidden">
+      <div class="demo-label">实战演示</div>
+      <div id="demo-progress" class="demo-progress"><div id="demo-progress-fill" class="demo-progress-fill"></div></div>
+      <div id="demo-time" class="demo-time">0:00 / 0:00</div>
+      <button id="btn-demo-exit" class="btn btn-ghost btn-sm">退出演示</button>
+    </div>
+    <div id="toast-layer" class="toast-layer"></div>
+    <div id="hint-bar" class="hint-bar hidden"></div>
+  </div>
+
+  <!-- ============ 暂停 / 菜单 ============ -->
+  <div id="pause-screen" class="modal-layer hidden">
+    <div class="modal">
+      <div class="modal-head"><span class="modal-title">系统暂停</span><span class="modal-sub">SIMULATION SUSPENDED</span></div>
+      <div class="modal-body">
+        <button id="btn-resume" class="btn btn-primary btn-block">继续战斗</button>
+        <button id="btn-pause-codex" class="btn btn-block">设备手册 / 威胁档案</button>
+        <button id="btn-restart" class="btn btn-block">重开本图</button>
+        <button id="btn-quit" class="btn btn-block">返回关卡选择</button>
+        <div class="modal-note">重开后从初始局面开始，已投入资源不保留。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 结算 ============ -->
+  <div id="report-screen" class="screen hidden">
+    <div class="report-wrap">
+      <div class="report-head">
+        <div id="report-status" class="report-status">中枢失守</div>
+        <div class="eyebrow">incident report / 事件报告</div>
+        <h2 id="report-title">分段内网 · 防御终止</h2>
+        <div id="report-time" class="report-time"></div>
+      </div>
+      <div class="report-grid">
+        <div class="report-card"><div class="rc-label">击退威胁</div><div id="rep-kills" class="rc-value">0</div></div>
+        <div class="report-card"><div class="rc-label">部署设备</div><div id="rep-built" class="rc-value">0</div></div>
+        <div class="report-card"><div class="rc-label">设备损毁</div><div id="rep-lost" class="rc-value">0</div></div>
+        <div class="report-card"><div class="rc-label">突破次数</div><div id="rep-leaks" class="rc-value">0</div></div>
+        <div class="report-card"><div class="rc-label">情报获取</div><div id="rep-intel" class="rc-value">0</div></div>
+        <div class="report-card"><div class="rc-label">评级</div><div id="rep-grade" class="rc-value grade">S</div></div>
+      </div>
+      <div class="report-log"><div class="panel-head"><span class="panel-title">事件摘要</span></div><div id="rep-log" class="report-log-body"></div></div>
+      <div class="report-actions">
+        <button id="btn-replay" class="btn btn-primary btn-lg">重开本图</button>
+        <button id="btn-back-select" class="btn btn-lg">返回关卡选择</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 图鉴 ============ -->
+  <div id="codex-screen" class="screen hidden">
+    <div class="codex-head">
+      <button id="btn-codex-back" class="btn btn-ghost btn-back">← 返回</button>
+      <div><div class="eyebrow">archive / 防御知识库</div><h2>汐域图鉴</h2></div>
+      <div class="codex-tabs">
+        <button class="tab active" data-tab="towers">设备手册</button>
+        <button class="tab" data-tab="enemies">威胁档案</button>
+        <button class="tab" data-tab="systems">系统与状态</button>
+      </div>
+    </div>
+    <div id="codex-content" class="codex-content"></div>
+  </div>
+
+  <!-- ============ 设置 ============ -->
+  <div id="settings-screen" class="screen hidden">
+    <div class="settings-wrap">
+      <div class="settings-head"><button id="btn-settings-back" class="btn btn-ghost btn-back">← 返回</button><div><div class="eyebrow">system preferences</div><h2>系统与音量</h2></div></div>
+      <div class="settings-body">
+        <div class="setting-row"><label>环境音</label><input id="vol-ambient" type="range" min="0" max="100" value="45"><span id="vol-ambient-val">45%</span></div>
+        <div class="setting-row"><label>音乐</label><input id="vol-music" type="range" min="0" max="100" value="35"><span id="vol-music-val">35%</span></div>
+        <div class="setting-row"><label>音效</label><input id="vol-sfx" type="range" min="0" max="100" value="70"><span id="vol-sfx-val">70%</span></div>
+        <div class="setting-row"><label>全局静音</label><button id="btn-mute2" class="btn btn-sm">开启静音</button></div>
+        <div class="setting-row"><label>画面质量</label><div class="seg"><button class="active" data-quality="high">高</button><button data-quality="low">流畅</button></div></div>
+        <div class="settings-note">声音将在首次点击或按键后启用。所有音效与音乐由实时合成生成。</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tooltip" class="tooltip hidden"></div>
+  <div id="drag-ghost" class="drag-ghost hidden"></div>
+  <div id="confirm-bar" class="confirm-bar hidden"><span id="confirm-text"></span><span class="confirm-keys"><kbd>左键</kbd> 确认 <kbd>右键 / Esc</kbd> 取消 <kbd>Q/E</kbd> 转向</span></div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

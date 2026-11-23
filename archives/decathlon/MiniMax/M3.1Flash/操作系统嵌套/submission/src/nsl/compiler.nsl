@@ -1,0 +1,725 @@
+/*
+ * NSL 编译器 —— 用 NSL 自己写的编译器。
+ * 它把 NSL 源程序编译成 NSL 字节码（与宿主虚拟机执行的是同一种格式）。
+ * 本程序存放在每个系统的 /System/compiler.nsl，可在编辑器中修改；
+ * 修改后由它自己（或引导器）重新编译，并用于此后启动的程序。
+ *
+ * 对外接口：compileProgram(source) -> JSON 字符串
+ *   {"consts":[...],"names":[...],"funcs":[{"name","code","nlocals","params"}],
+ *    "main":{"name","code","nlocals","params"}}
+ *   出错时返回 {"error":"..."}
+ */
+
+/* ---------- 操作码（必须与宿主虚拟机一致） ---------- */
+var OP_CONST = 0; var OP_NIL = 1; var OP_POP = 2; var OP_DUP = 3; var OP_DUP2 = 33;
+var OP_GETG = 4; var OP_SETG = 5; var OP_GETL = 6; var OP_SETL = 7;
+var OP_NEWARR = 8; var OP_AGET = 9; var OP_ASET = 10;
+var OP_ADD = 11; var OP_SUB = 12; var OP_MUL = 13; var OP_DIV = 14; var OP_MOD = 15;
+var OP_NEG = 16; var OP_NOT = 17;
+var OP_EQ = 18; var OP_NE = 19; var OP_LT = 20; var OP_LE = 21; var OP_GT = 22; var OP_GE = 23;
+var OP_AND = 24; var OP_OR = 25;
+var OP_JMP = 26; var OP_JF = 27; var OP_JT = 28;
+var OP_CALL = 29; var OP_RET = 30; var OP_BUILTIN = 31; var OP_HALT = 32; var OP_NEWOBJ = 34;
+
+/* ---------- 记号法 ---------- */
+var T_NUM = 0; var T_STR = 1; var T_ID = 2; var T_OP = 3; var T_EOF = 4;
+
+/* ---------- 抽象语法树节点标签 ---------- */
+var A_NUM = 1; var A_STR = 2; var A_BOOL = 3; var A_NULL = 4; var A_IDENT = 5;
+var A_CALL = 6; var A_INDEX = 7; var A_ARR = 8; var A_BIN = 9; var A_UN = 10;
+var A_ASSIGN = 11; var A_LOGICAL = 12; var A_IF = 13; var A_WHILE = 14; var A_FOR = 15;
+var A_BLOCK = 16; var A_RET = 17; var A_BREAK = 18; var A_CONT = 19; var A_VAR = 20;
+var A_EXPR = 21; var A_FUNC = 22; var A_TERN = 23; var A_OBJ = 24;
+
+/* ---------- 全局状态 ---------- */
+var G_error = null;
+var G_tokens = [];
+var G_pos = 0;
+var G_consts = [];
+var G_names = [];
+var G_code = [];
+var G_slots = [];
+var G_nlocals = 0;
+var G_loops = [];
+var G_funcNames = [];
+var G_funcIndex = [];
+var G_mainBody = [];
+var G_funcBodies = [];
+
+function fail(msg) {
+  if (G_error == null) { G_error = msg; }
+}
+
+/* ---------- 工具 ---------- */
+function isSpace(c) { return c == " " || c == "\t" || c == "\n" || c == "\r"; }
+function isDigit(c) { return c >= "0" && c <= "9"; }
+function isAlpha(c) { return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z") || c == "_"; }
+function isAlnum(c) { return isAlpha(c) || isDigit(c); }
+
+function tokKind() { return arr.get(G_tokens, G_pos)[0]; }
+function tokVal() { return arr.get(G_tokens, G_pos)[1]; }
+function tokLine() { return arr.get(G_tokens, G_pos)[2]; }
+function isOp(v) { return tokKind() == T_OP && tokVal() == v; }
+function isId(v) { return tokKind() == T_ID && tokVal() == v; }
+function isEof() { return tokKind() == T_EOF; }
+
+function expectOp(v) {
+  if (!isOp(v)) { fail("期望 \"" + v + "\"，实际 \"" + strOf(tokVal()) + "\"（第 " + tokLine() + " 行）"); }
+  else { G_pos = G_pos + 1; }
+}
+function expectId() {
+  if (tokKind() != T_ID) { fail("期望标识符（第 " + tokLine() + " 行）"); return ""; }
+  var v = tokVal(); G_pos = G_pos + 1; return v;
+}
+function strOf(v) {
+  if (v == null) { return "null"; }
+  if (sys.typeOf(v) == "number") { return num.toStr(v); }
+  if (sys.typeOf(v) == "boolean") { return v ? "true" : "false"; }
+  return num.toStr(v) + "";
+}
+
+/* ---------- 词法分析 ---------- */
+function tokenize(src) {
+  G_tokens = [];
+  var i = 0; var n = str.len(src); var line = 1;
+  while (i < n) {
+    var c = str.at(src, i);
+    if (c == "\n") { line = line + 1; i = i + 1; continue; }
+    if (isSpace(c)) { i = i + 1; continue; }
+    if (c == "/" && str.at(src, i + 1) == "/") {
+      while (i < n && str.at(src, i) != "\n") { i = i + 1; }
+      continue;
+    }
+    if (c == "/" && str.at(src, i + 1) == "*") {
+      i = i + 2;
+      while (i < n && !(str.at(src, i) == "*" && str.at(src, i + 1) == "/")) {
+        if (str.at(src, i) == "\n") { line = line + 1; }
+        i = i + 1;
+      }
+      i = i + 2; continue;
+    }
+    if (isDigit(c) || (c == "." && isDigit(str.at(src, i + 1)))) {
+      var txt = "";
+      while (i < n && isDigit(str.at(src, i))) { txt = txt + str.at(src, i); i = i + 1; }
+      if (i < n && str.at(src, i) == ".") {
+        txt = txt + "."; i = i + 1;
+        while (i < n && isDigit(str.at(src, i))) { txt = txt + str.at(src, i); i = i + 1; }
+      }
+      if (i < n && (str.at(src, i) == "e" || str.at(src, i) == "E")) {
+        var save = i; var exp = str.at(src, i); i = i + 1;
+        if (i < n && (str.at(src, i) == "+" || str.at(src, i) == "-")) { exp = exp + str.at(src, i); i = i + 1; }
+        var digs = "";
+        while (i < n && isDigit(str.at(src, i))) { digs = digs + str.at(src, i); i = i + 1; }
+        if (str.len(digs) > 0) { txt = txt + exp + digs; } else { i = save; }
+      }
+      arr.push(G_tokens, [T_NUM, str.toNum(txt), line]);
+      continue;
+    }
+    if (c == "\"" || c == "'") {
+      var q = c; var s = ""; var j = i + 1;
+      while (j < n && str.at(src, j) != q) {
+        var ch = str.at(src, j);
+        if (ch == "\\") {
+          var e2 = str.at(src, j + 1);
+          if (e2 == "n") { s = s + "\n"; }
+          else if (e2 == "t") { s = s + "\t"; }
+          else if (e2 == "r") { s = s + "\r"; }
+          else { s = s + e2; }
+          j = j + 2;
+        } else { s = s + ch; j = j + 1; }
+      }
+      arr.push(G_tokens, [T_STR, s, line]);
+      i = j + 1; continue;
+    }
+    if (isAlpha(c)) {
+      var j2 = i;
+      while (j2 < n && isAlnum(str.at(src, j2))) { j2 = j2 + 1; }
+      while (j2 < n && str.at(src, j2) == "." && isAlpha(str.at(src, j2 + 1))) {
+        j2 = j2 + 1;
+        while (j2 < n && isAlnum(str.at(src, j2))) { j2 = j2 + 1; }
+      }
+      arr.push(G_tokens, [T_ID, str.sub(src, i, j2), line]);
+      i = j2; continue;
+    }
+    var two = str.sub(src, i, i + 2);
+    if (two == "==" || two == "!=" || two == "<=" || two == ">=" || two == "&&" || two == "||"
+        || two == "+=" || two == "-=" || two == "*=" || two == "/=") {
+      arr.push(G_tokens, [T_OP, two, line]); i = i + 2; continue;
+    }
+    if (c == "+" || c == "-" || c == "*" || c == "/" || c == "%" || c == "(" || c == ")"
+        || c == "[" || c == "]" || c == "{" || c == "}" || c == ";" || c == "," || c == ":"
+        || c == "<" || c == ">" || c == "=" || c == "!" || c == "?") {
+      arr.push(G_tokens, [T_OP, c, line]); i = i + 1; continue;
+    }
+    fail("无法识别的字符 \"" + c + "\"（第 " + line + " 行）");
+    i = i + 1;
+  }
+  arr.push(G_tokens, [T_EOF, null, line]);
+}
+
+/* ---------- 语法分析 ---------- */
+function parsePostfix(base) {
+  while (isOp("[")) {
+    G_pos = G_pos + 1;
+    var idx = parseExpr();
+    expectOp("]");
+    base = [A_INDEX, base, idx];
+  }
+  return base;
+}
+function parsePrimary() {
+  var k = tokKind();
+  if (k == T_NUM) { var v = tokVal(); G_pos = G_pos + 1; return parsePostfix([A_NUM, v]); }
+  if (k == T_STR) { var v2 = tokVal(); G_pos = G_pos + 1; return parsePostfix([A_STR, v2]); }
+  if (isId("true")) { G_pos = G_pos + 1; return [A_BOOL, true]; }
+  if (isId("false")) { G_pos = G_pos + 1; return [A_BOOL, false]; }
+  if (isId("null")) { G_pos = G_pos + 1; return [A_NULL]; }
+  if (isOp("(")) {
+    G_pos = G_pos + 1; var e = parseExpr(); expectOp(")"); return parsePostfix(e);
+  }
+  if (isOp("[")) {
+    G_pos = G_pos + 1; var items = [];
+    if (!isOp("]")) {
+      arr.push(items, parseExpr());
+      while (isOp(",")) { G_pos = G_pos + 1; arr.push(items, parseExpr()); }
+    }
+    expectOp("]"); return [A_ARR, items];
+  }
+  if (isOp("{")) {
+    G_pos = G_pos + 1; var props = [];
+    if (!isOp("}")) {
+      while (true) {
+        var key = "";
+        if (tokKind() == T_ID) { key = tokVal(); G_pos = G_pos + 1; }
+        else if (tokKind() == T_STR) { key = tokVal(); G_pos = G_pos + 1; }
+        else { fail("对象键必须是标识符或字符串（第 " + tokLine() + " 行）"); break; }
+        expectOp(":");
+        arr.push(props, [key, parseExpr()]);
+        if (isOp(",")) { G_pos = G_pos + 1; continue; }
+        break;
+      }
+    }
+    expectOp("}"); return [A_OBJ, props];
+  }
+  if (k == T_ID) {
+    var name = tokVal(); G_pos = G_pos + 1;
+    if (isOp("(")) {
+      G_pos = G_pos + 1; var args = [];
+      if (!isOp(")")) {
+        arr.push(args, parseExpr());
+        while (isOp(",")) { G_pos = G_pos + 1; arr.push(args, parseExpr()); }
+      }
+      expectOp(")");
+      return parsePostfix([A_CALL, name, args]);
+    }
+    return parsePostfix([A_IDENT, name]);
+  }
+  fail("无法解析的表达式（第 " + tokLine() + " 行）");
+  return [A_NULL];
+}
+
+function parseAssign() {
+  var left = parseTernary();
+  if (isOp("=") || isOp("+=") || isOp("-=") || isOp("*=") || isOp("/=")) {
+    var op = tokVal(); G_pos = G_pos + 1;
+    var value = parseAssign();
+    if (arr.get(left, 0) != A_IDENT && arr.get(left, 0) != A_INDEX) { fail("赋值目标无效（第 " + tokLine() + " 行）"); }
+    return [A_ASSIGN, op, left, value];
+  }
+  return left;
+}
+function parseTernary() {
+  var cond = parseOr();
+  if (isOp("?")) {
+    G_pos = G_pos + 1;
+    var a = parseTernary();
+    expectOp(":");
+    var b = parseTernary();
+    return [A_TERN, cond, a, b];
+  }
+  return cond;
+}
+function parseOr() {
+  var l = parseAnd();
+  while (isOp("||")) { G_pos = G_pos + 1; l = [A_LOGICAL, "||", l, parseAnd()]; }
+  return l;
+}
+function parseAnd() {
+  var l = parseEquality();
+  while (isOp("&&")) { G_pos = G_pos + 1; l = [A_LOGICAL, "&&", l, parseEquality()]; }
+  return l;
+}
+function parseEquality() {
+  var l = parseRelational();
+  while (isOp("==") || isOp("!=")) { var op = tokVal(); G_pos = G_pos + 1; l = [A_BIN, op, l, parseRelational()]; }
+  return l;
+}
+function parseRelational() {
+  var l = parseAdditive();
+  while (isOp("<") || isOp("<=") || isOp(">") || isOp(">=")) { var op = tokVal(); G_pos = G_pos + 1; l = [A_BIN, op, l, parseAdditive()]; }
+  return l;
+}
+function parseAdditive() {
+  var l = parseMultiplicative();
+  while (isOp("+") || isOp("-")) { var op = tokVal(); G_pos = G_pos + 1; l = [A_BIN, op, l, parseMultiplicative()]; }
+  return l;
+}
+function parseMultiplicative() {
+  var l = parseUnary();
+  while (isOp("*") || isOp("/") || isOp("%")) { var op = tokVal(); G_pos = G_pos + 1; l = [A_BIN, op, l, parseUnary()]; }
+  return l;
+}
+function parseUnary() {
+  if (isOp("!")) { G_pos = G_pos + 1; return [A_UN, "!", parseUnary()]; }
+  if (isOp("-")) { G_pos = G_pos + 1; return [A_UN, "-", parseUnary()]; }
+  return parsePrimary();
+}
+function parseExpr() { return parseAssign(); }
+
+function parseBlock() {
+  expectOp("{");
+  var body = [];
+  while (!isOp("}") && !isEof() && G_error == null) {
+    arr.push(body, parseStatement());
+  }
+  expectOp("}");
+  return [A_BLOCK, body];
+}
+
+function parseStatement() {
+  if (isOp("{")) { return parseBlock(); }
+  if (isOp(";")) { G_pos = G_pos + 1; return [A_BLOCK, []]; }
+  if (isId("var")) {
+    G_pos = G_pos + 1;
+    var name = expectId();
+    var value = null;
+    if (isOp("=")) { G_pos = G_pos + 1; value = parseExpr(); }
+    expectOp(";");
+    return [A_VAR, name, value];
+  }
+  if (isId("if")) {
+    G_pos = G_pos + 1; expectOp("("); var cond = parseExpr(); expectOp(")");
+    var thenS = parseStatement();
+    var altS = null;
+    if (isId("else")) { G_pos = G_pos + 1; altS = parseStatement(); }
+    return [A_IF, cond, thenS, altS];
+  }
+  if (isId("while")) {
+    G_pos = G_pos + 1; expectOp("("); var c2 = parseExpr(); expectOp(")");
+    return [A_WHILE, c2, parseStatement()];
+  }
+  if (isId("for")) {
+    G_pos = G_pos + 1; expectOp("(");
+    var init = null; var cond = null; var step = null;
+    if (!isOp(";")) {
+      if (isId("var")) { init = parseStatement(); }
+      else { init = [A_EXPR, parseExpr()]; expectOp(";"); }
+    } else { G_pos = G_pos + 1; }
+    if (!isOp(";")) { cond = parseExpr(); }
+    expectOp(";");
+    if (!isOp(")")) { step = [A_EXPR, parseExpr()]; }
+    expectOp(")");
+    return [A_FOR, init, cond, step, parseStatement()];
+  }
+  if (isId("return")) {
+    G_pos = G_pos + 1;
+    var value = null;
+    if (!isOp(";")) { value = parseExpr(); }
+    expectOp(";");
+    return [A_RET, value];
+  }
+  if (isId("break")) { G_pos = G_pos + 1; expectOp(";"); return [A_BREAK]; }
+  if (isId("continue")) { G_pos = G_pos + 1; expectOp(";"); return [A_CONT]; }
+  if (isId("function")) {
+    G_pos = G_pos + 1;
+    var fname = expectId();
+    expectOp("(");
+    var params = [];
+    if (!isOp(")")) {
+      arr.push(params, expectId());
+      while (isOp(",")) { G_pos = G_pos + 1; arr.push(params, expectId()); }
+    }
+    expectOp(")");
+    var body = parseBlock();
+    return [A_FUNC, fname, params, body];
+  }
+  var e = parseExpr();
+  expectOp(";");
+  return [A_EXPR, e];
+}
+
+function parseProgram() {
+  G_mainBody = []; G_funcBodies = []; G_funcNames = []; G_funcIndex = [];
+  while (!isEof() && G_error == null) {
+    var st = parseStatement();
+    if (arr.get(st, 0) == A_FUNC) {
+      arr.push(G_funcNames, arr.get(st, 1));
+      arr.push(G_funcIndex, arr.len(G_funcBodies));
+      arr.push(G_funcBodies, st);
+    } else {
+      arr.push(G_mainBody, st);
+    }
+  }
+}
+
+/* ---------- 作用域：收集局部变量 ---------- */
+function addLocal(out, name) {
+  for (var i = 0; i < arr.len(out); i = i + 1) {
+    if (arr.get(out, i) == name) { return; }
+  }
+  arr.push(out, name);
+}
+function collectLocals(node, out) {
+  if (node == null) { return; }
+  var t = arr.get(node, 0);
+  if (t == A_BLOCK) {
+    var stmts = arr.get(node, 1);
+    for (var i = 0; i < arr.len(stmts); i = i + 1) { collectLocals(arr.get(stmts, i), out); }
+    return;
+  }
+  if (t == A_VAR) { addLocal(out, arr.get(node, 1)); return; }
+  if (t == A_IF) {
+    collectLocals(arr.get(node, 2), out); collectLocals(arr.get(node, 3), out); return;
+  }
+  if (t == A_WHILE) { collectLocals(arr.get(node, 2), out); return; }
+  if (t == A_FOR) {
+    collectLocals(arr.get(node, 1), out); collectLocals(arr.get(node, 4), out); return;
+  }
+}
+
+/* ---------- 常量池 / 名字池 ---------- */
+function sameConst(a, b) {
+  var ta = sys.typeOf(a); var tb = sys.typeOf(b);
+  if (ta != tb) { return false; }
+  if (ta == "number" || ta == "string" || ta == "boolean") { return a == b; }
+  return false;
+}
+function kc(v) {
+  for (var i = 0; i < arr.len(G_consts); i = i + 1) {
+    if (sameConst(arr.get(G_consts, i), v)) { return i; }
+  }
+  arr.push(G_consts, v);
+  return arr.len(G_consts) - 1;
+}
+function kn(name) {
+  for (var i = 0; i < arr.len(G_names); i = i + 1) {
+    if (arr.get(G_names, i) == name) { return i; }
+  }
+  arr.push(G_names, name);
+  return arr.len(G_names) - 1;
+}
+function slotOf(name) {
+  for (var i = 0; i < arr.len(G_slots); i = i + 1) {
+    if (arr.get(arr.get(G_slots, i), 0) == name) { return arr.get(arr.get(G_slots, i), 1); }
+  }
+  return -1;
+}
+function funcIndexOf(name) {
+  for (var i = 0; i < arr.len(G_funcNames); i = i + 1) {
+    if (arr.get(G_funcNames, i) == name) { return arr.get(G_funcIndex, i); }
+  }
+  return -1;
+}
+
+/* ---------- 代码生成 ---------- */
+function emit(instr) { arr.push(G_code, instr); }
+function binOp(op) {
+  if (op == "+") { return OP_ADD; }
+  if (op == "-") { return OP_SUB; }
+  if (op == "*") { return OP_MUL; }
+  if (op == "/") { return OP_DIV; }
+  if (op == "%") { return OP_MOD; }
+  if (op == "==") { return OP_EQ; }
+  if (op == "!=") { return OP_NE; }
+  if (op == "<") { return OP_LT; }
+  if (op == "<=") { return OP_LE; }
+  if (op == ">") { return OP_GT; }
+  if (op == ">=") { return OP_GE; }
+  return -1;
+}
+
+function emitExpr(e) {
+  if (e == null) { emit([OP_NIL]); return; }
+  var t = arr.get(e, 0);
+  if (t == A_NUM || t == A_STR || t == A_BOOL) { emit([OP_CONST, kc(arr.get(e, 1))]); return; }
+  if (t == A_NULL) { emit([OP_NIL]); return; }
+  if (t == A_IDENT) {
+    var nm = arr.get(e, 1);
+    var sl = slotOf(nm);
+    if (sl >= 0) { emit([OP_GETL, sl]); } else { emit([OP_GETG, kn(nm)]); }
+    return;
+  }
+  if (t == A_CALL) {
+    var args = arr.get(e, 2);
+    for (var i = 0; i < arr.len(args); i = i + 1) { emitExpr(arr.get(args, i)); }
+    var fname = arr.get(e, 1);
+    var fi = funcIndexOf(fname);
+    if (fi >= 0) { emit([OP_CALL, fi, arr.len(args)]); }
+    else { emit([OP_BUILTIN, kn(fname), arr.len(args)]); }
+    return;
+  }
+  if (t == A_INDEX) {
+    emitExpr(arr.get(e, 1)); emitExpr(arr.get(e, 2)); emit([OP_AGET]); return;
+  }
+  if (t == A_ARR) {
+    var items = arr.get(e, 1);
+    for (var j = 0; j < arr.len(items); j = j + 1) { emitExpr(arr.get(items, j)); }
+    emit([OP_NEWARR, arr.len(items)]);
+    return;
+  }
+  if (t == A_OBJ) {
+    var props = arr.get(e, 1);
+    var keys = [];
+    for (var q = 0; q < arr.len(props); q = q + 1) {
+      arr.push(keys, kc(arr.get(arr.get(props, q), 0)));
+      emitExpr(arr.get(arr.get(props, q), 1));
+    }
+    emit([OP_NEWOBJ, keys, arr.len(props)]);
+    return;
+  }
+  if (t == A_UN) {
+    emitExpr(arr.get(e, 2));
+    if (arr.get(e, 1) == "-") { emit([OP_NEG]); } else { emit([OP_NOT]); }
+    return;
+  }
+  if (t == A_BIN) {
+    emitExpr(arr.get(e, 2)); emitExpr(arr.get(e, 3)); emit([binOp(arr.get(e, 1))]); return;
+  }
+  if (t == A_LOGICAL) {
+    emitExpr(arr.get(e, 2));
+    emit([OP_DUP]);
+    var jf = arr.len(G_code);
+    emit([arr.get(e, 1) == "&&" ? OP_JF : OP_JT, 0]);
+    emit([OP_POP]);
+    emitExpr(arr.get(e, 3));
+    arr.get(G_code, jf)[1] = arr.len(G_code);
+    return;
+  }
+  if (t == A_ASSIGN) {
+    var op = arr.get(e, 1);
+    var target = arr.get(e, 2);
+    var value = arr.get(e, 3);
+    var tt = arr.get(target, 0);
+    if (op == "=") {
+      if (tt == A_IDENT) {
+        emitExpr(value);
+        emit([OP_DUP]);
+        var sl2 = slotOf(arr.get(target, 1));
+        if (sl2 >= 0) { emit([OP_SETL, sl2]); } else { emit([OP_SETG, kn(arr.get(target, 1))]); }
+      } else {
+        emitExpr(arr.get(target, 1)); emitExpr(arr.get(target, 2)); emitExpr(value);
+        emit([OP_ASET]);
+      }
+      return;
+    }
+    var bop = str.sub(op, 0, 1);
+    if (tt == A_IDENT) {
+      var sl3 = slotOf(arr.get(target, 1));
+      if (sl3 >= 0) { emit([OP_GETL, sl3]); } else { emit([OP_GETG, kn(arr.get(target, 1))]); }
+      emitExpr(value);
+      emit([binOp(bop)]);
+      emit([OP_DUP]);
+      if (sl3 >= 0) { emit([OP_SETL, sl3]); } else { emit([OP_SETG, kn(arr.get(target, 1))]); }
+    } else {
+      emitExpr(arr.get(target, 1)); emitExpr(arr.get(target, 2));
+      emit([OP_DUP2]);
+      emit([OP_AGET]);
+      emitExpr(value);
+      emit([binOp(bop)]);
+      emit([OP_ASET]);
+    }
+    return;
+  }
+  if (t == A_TERN) {
+    emitExpr(arr.get(e, 1));
+    var jf = arr.len(G_code); emit([OP_JF, 0]);
+    emitExpr(arr.get(e, 2));
+    var jend = arr.len(G_code); emit([OP_JMP, 0]);
+    arr.get(G_code, jf)[1] = arr.len(G_code);
+    emitExpr(arr.get(e, 3));
+    arr.get(G_code, jend)[1] = arr.len(G_code);
+    return;
+  }
+  fail("无法生成的表达式");
+}
+
+function emitStmt(s) {
+  if (s == null) { return; }
+  var t = arr.get(s, 0);
+  if (t == A_BLOCK) {
+    var stmts = arr.get(s, 1);
+    for (var i = 0; i < arr.len(stmts); i = i + 1) { emitStmt(arr.get(stmts, i)); }
+    return;
+  }
+  if (t == A_VAR) {
+    var val = arr.get(s, 2);
+    if (val == null) { emit([OP_NIL]); } else { emitExpr(val); }
+    var sl = slotOf(arr.get(s, 1));
+    if (sl >= 0) { emit([OP_SETL, sl]); } else { emit([OP_SETG, kn(arr.get(s, 1))]); }
+    return;
+  }
+  if (t == A_EXPR) { emitExpr(arr.get(s, 1)); emit([OP_POP]); return; }
+  if (t == A_IF) {
+    emitExpr(arr.get(s, 1));
+    var jf = arr.len(G_code); emit([OP_JF, 0]);
+    emitStmt(arr.get(s, 2));
+    var jend = arr.len(G_code); emit([OP_JMP, 0]);
+    arr.get(G_code, jf)[1] = arr.len(G_code);
+    if (arr.get(s, 3) != null) { emitStmt(arr.get(s, 3)); }
+    arr.get(G_code, jend)[1] = arr.len(G_code);
+    return;
+  }
+  if (t == A_WHILE) {
+    var start = arr.len(G_code);
+    emitExpr(arr.get(s, 1));
+    var jf2 = arr.len(G_code); emit([OP_JF, 0]);
+    arr.push(G_loops, [[], []]);
+    emitStmt(arr.get(s, 2));
+    var lp = arr.get(G_loops, arr.len(G_loops) - 1);
+    arr.removeAt(G_loops, arr.len(G_loops) - 1);
+    emit([OP_JMP, start]);
+    arr.get(G_code, jf2)[1] = arr.len(G_code);
+    var brs = arr.get(lp, 0); var cts = arr.get(lp, 1);
+    for (var b = 0; b < arr.len(brs); b = b + 1) { arr.get(G_code, arr.get(brs, b))[1] = arr.len(G_code); }
+    for (var c = 0; c < arr.len(cts); c = c + 1) { arr.get(G_code, arr.get(cts, c))[1] = start; }
+    return;
+  }
+  if (t == A_FOR) {
+    if (arr.get(s, 1) != null) { emitStmt(arr.get(s, 1)); }
+    var start2 = arr.len(G_code);
+    var condJf = -1;
+    if (arr.get(s, 2) != null) {
+      emitExpr(arr.get(s, 2));
+      condJf = arr.len(G_code); emit([OP_JF, 0]);
+    }
+    arr.push(G_loops, [[], []]);
+    emitStmt(arr.get(s, 4));
+    var lp2 = arr.get(G_loops, arr.len(G_loops) - 1);
+    arr.removeAt(G_loops, arr.len(G_loops) - 1);
+    var stepPos = arr.len(G_code);
+    if (arr.get(s, 3) != null) { emitStmt(arr.get(s, 3)); }
+    emit([OP_JMP, start2]);
+    if (condJf >= 0) { arr.get(G_code, condJf)[1] = arr.len(G_code); }
+    var brs2 = arr.get(lp2, 0); var cts2 = arr.get(lp2, 1);
+    for (var b2 = 0; b2 < arr.len(brs2); b2 = b2 + 1) { arr.get(G_code, arr.get(brs2, b2))[1] = arr.len(G_code); }
+    for (var c2 = 0; c2 < arr.len(cts2); c2 = c2 + 1) { arr.get(G_code, arr.get(cts2, c2))[1] = stepPos; }
+    return;
+  }
+  if (t == A_RET) {
+    if (arr.get(s, 1) == null) { emit([OP_NIL]); } else { emitExpr(arr.get(s, 1)); }
+    emit([OP_RET]);
+    return;
+  }
+  if (t == A_BREAK) {
+    var jb = arr.len(G_code); emit([OP_JMP, 0]);
+    if (arr.len(G_loops) > 0) {
+      var top = arr.get(G_loops, arr.len(G_loops) - 1);
+      arr.push(arr.get(top, 0), jb);
+    } else { arr.get(G_code, jb)[1] = arr.len(G_code); }
+    return;
+  }
+  if (t == A_CONT) {
+    var jc = arr.len(G_code); emit([OP_JMP, 0]);
+    if (arr.len(G_loops) > 0) {
+      var top2 = arr.get(G_loops, arr.len(G_loops) - 1);
+      arr.push(arr.get(top2, 1), jc);
+    } else { arr.get(G_code, jc)[1] = arr.len(G_code); }
+    return;
+  }
+  fail("无法生成的语句");
+}
+
+function compileFunc(name, params, bodyBlock, isMain) {
+  G_slots = []; G_code = []; G_nlocals = 0;
+  var names = [];
+  for (var i = 0; i < arr.len(params); i = i + 1) { arr.push(names, arr.get(params, i)); }
+  if (!isMain) { collectLocals(bodyBlock, names); }
+  for (var j = 0; j < arr.len(names); j = j + 1) {
+    var nm = arr.get(names, j);
+    if (slotOf(nm) < 0) {
+      arr.push(G_slots, [nm, G_nlocals]);
+      G_nlocals = G_nlocals + 1;
+    }
+  }
+  var stmts = arr.get(bodyBlock, 1);
+  for (var k = 0; k < arr.len(stmts); k = k + 1) { emitStmt(arr.get(stmts, k)); }
+  emit([OP_NIL]); emit([OP_RET]);
+  var res = [["name", name], ["code", G_code], ["nlocals", G_nlocals], ["params", arr.len(params)]];
+  return res;
+}
+
+/* ---------- JSON 序列化 ---------- */
+function esc(s) {
+  var out = "";
+  for (var i = 0; i < str.len(s); i = i + 1) {
+    var c = str.at(s, i);
+    if (c == "\"") { out = out + "\\\""; }
+    else if (c == "\\") { out = out + "\\\\"; }
+    else if (c == "\n") { out = out + "\\n"; }
+    else if (c == "\t") { out = out + "\\t"; }
+    else if (c == "\r") { out = out + "\\r"; }
+    else { out = out + c; }
+  }
+  return out;
+}
+function isPair(x) {
+  if (sys.typeOf(x) != "array") { return false; }
+  if (arr.len(x) != 2) { return false; }
+  if (sys.typeOf(arr.get(x, 0)) != "string") { return false; }
+  return true;
+}
+function toJson(v) {
+  var t = sys.typeOf(v);
+  if (t == "null") { return "null"; }
+  if (t == "boolean") { return v ? "true" : "false"; }
+  if (t == "number") {
+    if (v != v) { return "0"; }
+    return num.toStr(v);
+  }
+  if (t == "string") { return "\"" + esc(v) + "\""; }
+  if (t == "array") {
+    var n = arr.len(v);
+    if (n > 0) {
+      var allPairs = true;
+      for (var i = 0; i < n; i = i + 1) {
+        if (!isPair(arr.get(v, i))) { allPairs = false; break; }
+      }
+      if (allPairs) {
+        var parts = [];
+        for (var j = 0; j < n; j = j + 1) {
+          var p = arr.get(v, j);
+          arr.push(parts, "\"" + esc(arr.get(p, 0)) + "\":" + toJson(arr.get(p, 1)));
+        }
+        return "{" + arr.join(parts, ",") + "}";
+      }
+    }
+    var items = [];
+    for (var k = 0; k < n; k = k + 1) { arr.push(items, toJson(arr.get(v, k))); }
+    return "[" + arr.join(items, ",") + "]";
+  }
+  return "null";
+}
+
+/* ---------- 对外入口 ---------- */
+function compileProgram(source) {
+  G_error = null;
+  G_tokens = []; G_pos = 0; G_consts = []; G_names = [];
+  G_mainBody = []; G_funcBodies = []; G_funcNames = []; G_funcIndex = [];
+  tokenize(source);
+  if (G_error != null) { return "{\"error\":\"" + esc(G_error) + "\"}"; }
+  parseProgram();
+  if (G_error != null) { return "{\"error\":\"" + esc(G_error) + "\"}"; }
+
+  var funcs = [];
+  for (var i = 0; i < arr.len(G_funcBodies); i = i + 1) {
+    var fd = arr.get(G_funcBodies, i);
+    arr.push(funcs, compileFunc(arr.get(fd, 1), arr.get(fd, 2), arr.get(fd, 3)));
+    if (G_error != null) { return "{\"error\":\"" + esc(G_error) + "\"}"; }
+  }
+  var mainBody = [A_BLOCK, G_mainBody];
+  var mainFunc = compileFunc("main", [], mainBody, true);
+  if (G_error != null) { return "{\"error\":\"" + esc(G_error) + "\"}"; }
+
+  var out = [["consts", G_consts], ["names", G_names], ["funcs", funcs], ["main", mainFunc]];
+  return toJson(out);
+}

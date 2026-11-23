@@ -1,0 +1,672 @@
+/*
+ * 子系统内核程序（NSL）
+ * ------------------------------------------------------------
+ * 本文件是"子系统"真正的内核：进程表、调度策略、等待与唤醒、消息投递规则、
+ * 文件系统行为规则、系统调用分发、窗口管理（层叠/焦点/命中）全部写在这里。
+ * 它作为普通程序文件存放在父系统的 /System/kernel.nsl 中，由父系统的承载进程
+ * 执行；子系统内的应用由它创建与调度。修改本文件并重启该子系统后行为随之改变。
+ *
+ * 可改写的规则（K_rule）：
+ *   schedule : round（轮转） | priority（优先级） | work（剩余工作多者先）
+ *   focus    : last（点击置顶并获得焦点） | ztop（保持当前焦点） | none
+ *   hit      : ztop（最上层优先命中） | list（按窗口表顺序命中）
+ *   sort     : name | size | type （文件列表排序）
+ *   recycle  : on | off （删除是否进入回收站）
+ *   quota    : 单个进程每轮可用的指令额度
+ *   deliver  : fifo | sender（按发送者分组） | reverse
+ *   zorder   : focus | creation （窗口叠放次序依据）
+ *
+ * 约定：跨层数据一律用"键值对数组"表示 JSON 对象，读用 A(o,k)，写用 oput(o,k,v)。
+ */
+
+/* ---------------- 全局状态 ---------------- */
+var K_proc = [];
+var K_win = [];
+var K_rule = [];
+var K_dispatch = [];
+var K_pending = [];
+var K_nextWin = 1;
+var K_maxZ = 1;
+var K_round = 0;
+var K_chart = [];
+var K_nextChart = 1;
+var K_project = [];
+var K_nextProject = 1;
+var K_ready = 0;
+
+/* 进程记录：[pid, name, role, state, quota, used, remaining, winId, error, priority] */
+var P_PID = 0; var P_NAME = 1; var P_ROLE = 2; var P_STATE = 3; var P_QUOTA = 4;
+var P_USED = 5; var P_REMAIN = 6; var P_WIN = 7; var P_ERR = 8; var P_PRIO = 9;
+
+/* 窗口记录：[id, ownerPid, appId, title, x, y, w, h, z, state, widgets, focused] */
+var W_ID = 0; var W_OWNER = 1; var W_APP = 2; var W_TITLE = 3; var W_X = 4; var W_Y = 5;
+var W_W = 6; var W_H = 7; var W_Z = 8; var W_STATE = 9; var W_WIDGETS = 10; var W_FOCUS = 11;
+
+/* 取值：既能读 JSON 对象，也能读内核自己构造的“键值对数组” */
+function A(o, k) {
+  if (o == null) { return null; }
+  if (sys.typeOf(o) == "array") {
+    for (var i = 0; i < arr.len(o); i = i + 1) {
+      var kv = arr.get(o, i);
+      if (arr.get(kv, 0) == k) { return arr.get(kv, 1); }
+    }
+    return null;
+  }
+  return obj.get(o, k);
+}
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function oget(k) { var o = []; return oput(o, k, null); }
+
+function rule(name) {
+  var v = map.get(K_rule, name);
+  if (v == null) { return ""; }
+  return v;
+}
+function ruleInt(name, dflt) {
+  var v = map.get(K_rule, name);
+  if (v == null) { return dflt; }
+  return num.toInt(v);
+}
+
+/* ---------------- 初始化 ---------------- */
+function ruleInit() {
+  map.set(K_rule, "schedule", "round");
+  map.set(K_rule, "focus", "last");
+  map.set(K_rule, "hit", "ztop");
+  map.set(K_rule, "sort", "name");
+  map.set(K_rule, "recycle", "on");
+  map.set(K_rule, "quota", 9000);
+  map.set(K_rule, "deliver", "fifo");
+  map.set(K_rule, "zorder", "focus");
+  dispatchInit();
+}
+
+function dispatchInit() {
+  map.set(K_dispatch, "win.open", 1);
+  map.set(K_dispatch, "win.close", 2);
+  map.set(K_dispatch, "win.focus", 3);
+  map.set(K_dispatch, "win.move", 4);
+  map.set(K_dispatch, "win.resize", 5);
+  map.set(K_dispatch, "win.min", 6);
+  map.set(K_dispatch, "win.max", 7);
+  map.set(K_dispatch, "win.restore", 8);
+  map.set(K_dispatch, "ui.declare", 9);
+  map.set(K_dispatch, "proc.spawn", 10);
+  map.set(K_dispatch, "proc.kill", 11);
+  map.set(K_dispatch, "proc.suspend", 12);
+  map.set(K_dispatch, "proc.resume", 13);
+  map.set(K_dispatch, "proc.list", 14);
+  map.set(K_dispatch, "msg.send", 15);
+  map.set(K_dispatch, "file.list", 16);
+  map.set(K_dispatch, "file.read", 17);
+  map.set(K_dispatch, "file.write", 18);
+  map.set(K_dispatch, "file.mkdir", 19);
+  map.set(K_dispatch, "file.delete", 20);
+  map.set(K_dispatch, "file.copy", 21);
+  map.set(K_dispatch, "file.move", 22);
+  map.set(K_dispatch, "file.rename", 23);
+  map.set(K_dispatch, "time.now", 24);
+  map.set(K_dispatch, "time.sleep", 25);
+  map.set(K_dispatch, "scene.load", 26);
+  map.set(K_dispatch, "scene.submit", 27);
+  map.set(K_dispatch, "chart.connect", 28);
+  map.set(K_dispatch, "chart.disconnect", 29);
+  map.set(K_dispatch, "project.create", 30);
+  map.set(K_dispatch, "sys.log", 31);
+  map.set(K_dispatch, "sys.info", 32);
+  map.set(K_dispatch, "sys.rules", 33);
+  map.set(K_dispatch, "sys.setrule", 34);
+  map.set(K_dispatch, "app.list", 35);
+  map.set(K_dispatch, "sys.quota", 36);
+  map.set(K_dispatch, "app.args", 37);
+  map.set(K_dispatch, "chart.docs", 38);
+  map.set(K_dispatch, "sys.newchild", 39);
+  map.set(K_dispatch, "sys.children", 40);
+  map.set(K_dispatch, "sys.childctl", 41);
+  map.set(K_dispatch, "sys.openeditor", 42);
+  map.set(K_dispatch, "sys.ancestors", 43);
+}
+
+/* ---------------- 进程表 ---------------- */
+function procAdd(pid, name, role) {
+  var rec = [pid, name, role, "ready", ruleInt("quota", 9000), 0, 0, 0, "", 1];
+  arr.push(K_proc, rec);
+  return rec;
+}
+function procFind(pid) {
+  for (var i = 0; i < arr.len(K_proc); i = i + 1) {
+    var r = arr.get(K_proc, i);
+    if (arr.get(r, P_PID) == pid) { return r; }
+  }
+  return null;
+}
+function procTableJson() {
+  var out = [];
+  for (var i = 0; i < arr.len(K_proc); i = i + 1) {
+    var r = arr.get(K_proc, i);
+    var o = [];
+    oput(o, "pid", arr.get(r, P_PID));
+    oput(o, "name", arr.get(r, P_NAME));
+    oput(o, "role", arr.get(r, P_ROLE));
+    oput(o, "state", arr.get(r, P_STATE));
+    oput(o, "quota", arr.get(r, P_QUOTA));
+    oput(o, "used", arr.get(r, P_USED));
+    oput(o, "remaining", arr.get(r, P_REMAIN));
+    oput(o, "win", arr.get(r, P_WIN));
+    oput(o, "error", arr.get(r, P_ERR));
+    oput(o, "priority", arr.get(r, P_PRIO));
+    arr.push(out, o);
+  }
+  return json.str(out);
+}
+
+/* ---------------- 窗口管理 ---------------- */
+function winFind(id) {
+  for (var i = 0; i < arr.len(K_win); i = i + 1) {
+    var w = arr.get(K_win, i);
+    if (arr.get(w, W_ID) == id) { return w; }
+  }
+  return null;
+}
+function winAdd(ownerPid, appId, title, w, h) {
+  var id = K_nextWin; K_nextWin = K_nextWin + 1;
+  var n = arr.len(K_win);
+  var x = 30 + (n % 5) * 26;
+  var y = 18 + (n % 5) * 22;
+  var rec = [id, ownerPid, appId, title, x, y, w, h, id, "normal", [], 0];
+  arr.push(K_win, rec);
+  winFocus(id);
+  return id;
+}
+function winClose(id) {
+  for (var i = 0; i < arr.len(K_win); i = i + 1) {
+    var w = arr.get(K_win, i);
+    if (arr.get(w, W_ID) == id) { arr.removeAt(K_win, i); return true; }
+  }
+  return false;
+}
+function winFocus(id) {
+  var policy = rule("focus");
+  var w = winFind(id);
+  if (w == null) { return false; }
+  if (policy == "ztop") { return true; }
+  if (policy == "none") { return true; }
+  for (var i = 0; i < arr.len(K_win); i = i + 1) { arr.set(arr.get(K_win, i), W_FOCUS, 0); }
+  arr.set(w, W_FOCUS, 1);
+  if (rule("zorder") == "focus") { K_maxZ = K_maxZ + 1; arr.set(w, W_Z, K_maxZ); }
+  return true;
+}
+function winInside(w, x, y) {
+  var wx = arr.get(w, W_X); var wy = arr.get(w, W_Y);
+  var ww = arr.get(w, W_W); var wh = arr.get(w, W_H);
+  if (x < wx || y < wy || x >= wx + ww || y >= wy + wh) { return false; }
+  return true;
+}
+/* 标题栏高度：控件坐标以窗口内容区左上角为原点 */
+var TITLE_H = 34;
+function winHit(x, y) {
+  var policy = rule("hit");
+  var best = null;
+  if (policy == "list") {
+    for (var i = 0; i < arr.len(K_win); i = i + 1) {
+      var w0 = arr.get(K_win, i);
+      if (arr.get(w0, W_STATE) == "min") { continue; }
+      if (winInside(w0, x, y)) { best = w0; break; }
+    }
+  } else {
+    for (var j = 0; j < arr.len(K_win); j = j + 1) {
+      var w = arr.get(K_win, j);
+      if (arr.get(w, W_STATE) == "min") { continue; }
+      if (!winInside(w, x, y)) { continue; }
+      if (best == null || arr.get(w, W_Z) > arr.get(best, W_Z)) { best = w; }
+    }
+  }
+  if (best == null) { return null; }
+  return winHitIn(best, x, y);
+}
+/* 在指定窗口内命中控件：控件坐标相对窗口内容区 */
+function winHitIn(best, x, y) {
+  var widgets = arr.get(best, W_WIDGETS);
+  var lx = x - arr.get(best, W_X);
+  var ly = y - arr.get(best, W_Y) - TITLE_H;
+  var hitW = null;
+  for (var k = arr.len(widgets) - 1; k >= 0; k = k - 1) {
+    var wd = arr.get(widgets, k);
+    if (arr.get(wd, 1) == "panel") { continue; }
+    var wx = arr.get(wd, 2); var wy = arr.get(wd, 3); var ww = arr.get(wd, 4); var wh = arr.get(wd, 5);
+    if (lx >= wx && ly >= wy && lx < wx + ww && ly < wy + wh) { hitW = wd; break; }
+  }
+  var res = [];
+  oput(res, "win", arr.get(best, W_ID));
+  oput(res, "owner", arr.get(best, W_OWNER));
+  oput(res, "widget", hitW);
+  oput(res, "wx", arr.get(best, W_X));
+  oput(res, "wy", arr.get(best, W_Y));
+  return res;
+}
+function winSync() {
+  var wins = [];
+  for (var i = 0; i < arr.len(K_win); i = i + 1) {
+    var w = arr.get(K_win, i);
+    var o = [];
+    oput(o, "id", arr.get(w, W_ID));
+    oput(o, "owner", arr.get(w, W_OWNER));
+    oput(o, "app", arr.get(w, W_APP));
+    oput(o, "title", arr.get(w, W_TITLE));
+    oput(o, "x", arr.get(w, W_X));
+    oput(o, "y", arr.get(w, W_Y));
+    oput(o, "w", arr.get(w, W_W));
+    oput(o, "h", arr.get(w, W_H));
+    oput(o, "z", arr.get(w, W_Z));
+    oput(o, "state", arr.get(w, W_STATE));
+    oput(o, "widgets", arr.get(w, W_WIDGETS));
+    oput(o, "focused", arr.get(w, W_FOCUS));
+    arr.push(wins, o);
+  }
+  var focus = 0;
+  for (var j = 0; j < arr.len(K_win); j = j + 1) {
+    if (arr.get(arr.get(K_win, j), W_FOCUS) == 1) { focus = arr.get(arr.get(K_win, j), W_ID); }
+  }
+  var out = [];
+  oput(out, "windows", wins);
+  oput(out, "focus", focus);
+  sys.call("wm.sync", json.str(out));
+}
+
+/* ---------------- 调度 ---------------- */
+function schedulePick() {
+  var policy = rule("schedule");
+  var n = arr.len(K_proc);
+  if (n == 0) { return -1; }
+  if (policy == "priority") {
+    var best = -1; var bestPrio = -1;
+    for (var i = 0; i < n; i = i + 1) {
+      var r = arr.get(K_proc, i);
+      if (arr.get(r, P_STATE) != "ready") { continue; }
+      if (arr.get(r, P_PRIO) > bestPrio) { bestPrio = arr.get(r, P_PRIO); best = arr.get(r, P_PID); }
+    }
+    if (best >= 0) { return best; }
+  } else if (policy == "work") {
+    var bw = -1; var bestRemain = -1;
+    for (var k = 0; k < n; k = k + 1) {
+      var r2 = arr.get(K_proc, k);
+      if (arr.get(r2, P_STATE) != "ready") { continue; }
+      if (arr.get(r2, P_REMAIN) > bestRemain) { bestRemain = arr.get(r2, P_REMAIN); bw = arr.get(r2, P_PID); }
+    }
+    if (bw >= 0) { return bw; }
+  }
+  for (var t = 0; t < n; t = t + 1) {
+    var idx = (K_round + t) % n;
+    var rec = arr.get(K_proc, idx);
+    if (arr.get(rec, P_STATE) == "ready") { K_round = (idx + 1) % n; return arr.get(rec, P_PID); }
+  }
+  /* 没有就绪进程时，轮询等待中的进程（等待回复或等待计时） */
+  for (var u = 0; u < n; u = u + 1) {
+    var idx2 = (K_round + u) % n;
+    var rec2 = arr.get(K_proc, idx2);
+    if (arr.get(rec2, P_STATE) == "waiting") { K_round = (idx2 + 1) % n; return arr.get(rec2, P_PID); }
+  }
+  return -1;
+}
+function runProc(pid) {
+  var rec = procFind(pid);
+  if (rec == null) { return 0; }
+  var quota = arr.get(rec, P_QUOTA);
+  var qo = []; oput(qo, "pid", pid); oput(qo, "quota", quota);
+  var res = json.parse(sys.call("proc.run", json.str(qo)));
+  var used = num.toInt(A(res, "consumed"));
+  arr.set(rec, P_USED, arr.get(rec, P_USED) + used);
+  arr.set(rec, P_REMAIN, math.max(0, quota - used));
+  var st = A(res, "status");
+  if (st == "error") { arr.set(rec, P_STATE, "error"); arr.set(rec, P_ERR, A(res, "error")); }
+  else if (st == "done") { arr.set(rec, P_STATE, "ended"); }
+  else if (st == "wait" || st == "waiting") { arr.set(rec, P_STATE, "waiting"); }
+  else { arr.set(rec, P_STATE, "ready"); }
+  return used;
+}
+
+/* ---------------- 消息投递规则 ---------------- */
+function deliverMsg(pid) {
+  if (arr.len(K_pending) == 0) { return null; }
+  var policy = rule("deliver");
+  var pick = 0;
+  if (policy == "reverse") {
+    pick = arr.len(K_pending) - 1;
+  } else if (policy == "sender") {
+    var firstSender = arr.get(arr.get(K_pending, 0), 0);
+    for (var i = 0; i < arr.len(K_pending); i = i + 1) {
+      if (arr.get(arr.get(K_pending, i), 0) == firstSender) { pick = i; break; }
+    }
+  }
+  var m = arr.removeAt(K_pending, pick);
+  var o = [];
+  oput(o, "pid", pid);
+  oput(o, "from", arr.get(m, 0));
+  oput(o, "payload", arr.get(m, 1));
+  sys.call("msg.post", json.str(o));
+  return m;
+}
+
+/* ---------------- 文件规则 ---------------- */
+function sortEntries(entries) {
+  var mode = rule("sort");
+  var out = arr.copy(entries);
+  for (var i = 0; i < arr.len(out); i = i + 1) {
+    for (var j = i + 1; j < arr.len(out); j = j + 1) {
+      var a = arr.get(out, i); var b = arr.get(out, j);
+      var swap = false;
+      if (mode == "size") { swap = num.toInt(A(a, "size")) > num.toInt(A(b, "size")); }
+      else if (mode == "type") { swap = str.cmp(A(a, "type"), A(b, "type")) > 0; }
+      else { swap = str.cmp(A(a, "name"), A(b, "name")) > 0; }
+      if (swap) { arr.set(out, i, b); arr.set(out, j, a); }
+    }
+  }
+  return out;
+}
+
+/* ---------------- 事件处理 ---------------- */
+function handleEvent(ev) {
+  var kind = A(ev, "kind");
+  if (kind == "syscall") { handleSyscall(ev); return; }
+  if (kind == "input") { handleInput(ev); return; }
+  if (kind == "launch") { handleLaunch(ev); return; }
+  if (kind == "chart") { handleChart(ev); return; }
+}
+function reply(pid, tag, data) {
+  var o = [];
+  oput(o, "pid", pid);
+  oput(o, "tag", tag);
+  oput(o, "data", data);
+  sys.call("reply", json.str(o));
+}
+function handleSyscall(ev) {
+  var pid = num.toInt(A(ev, "pid"));
+  var tag = num.toInt(A(ev, "tag"));
+  var code = A(ev, "code");
+  var args = json.parse(A(ev, "args"));
+  var branch = map.get(K_dispatch, code);
+  if (branch == null) {
+    var o = [];
+    oput(o, "ok", false);
+    oput(o, "error", "未实现的系统调用: " + code);
+    reply(pid, tag, json.str(o));
+    return;
+  }
+  var data = dispatch(num.toInt(branch), pid, args);
+  reply(pid, tag, data);
+}
+function handleInput(ev) {
+  var wid = num.toInt(A(ev, "window"));
+  var hit = null;
+  if (wid > 0) {
+    /* 投送窗口把输入转回源窗口：只在指定窗口内命中 */
+    var tw = winFind(wid);
+    if (tw == null) { return; }
+    hit = winHitIn(tw, num.toInt(A(ev, "x")), num.toInt(A(ev, "y")));
+  } else {
+    hit = winHit(num.toInt(A(ev, "x")), num.toInt(A(ev, "y")));
+  }
+  if (hit == null) { return; }
+  var wd = A(hit, "widget");  var evType = A(ev, "type") == null ? "click" : A(ev, "type");
+  var winX = num.toInt(A(hit, "wx"));
+  var winY = num.toInt(A(hit, "wy"));
+  var p = [];
+  oput(p, "type", evType);
+  oput(p, "x", A(ev, "x"));
+  oput(p, "y", A(ev, "y"));
+  oput(p, "lx", num.toInt(A(ev, "x")) - winX);
+  oput(p, "ly", num.toInt(A(ev, "y")) - winY - TITLE_H);
+  oput(p, "widget", wd == null ? "" : arr.get(wd, 0));
+  oput(p, "widgetType", wd == null ? "" : arr.get(wd, 1));
+  oput(p, "value", A(ev, "value") == null ? (wd == null ? "" : arr.get(wd, 6)) : A(ev, "value"));
+  oput(p, "key", A(ev, "key") == null ? "" : A(ev, "key"));
+  oput(p, "window", A(hit, "win"));
+  oput(p, "pick", A(ev, "pick") == null ? "" : A(ev, "pick"));
+  var o = [];
+  oput(o, "pid", A(hit, "owner"));
+  oput(o, "payload", json.str(p));
+  sys.call("msg.post", json.str(o));
+}
+function handleLaunch(ev) {
+  var path = A(ev, "path");
+  var name = A(ev, "name");
+  var pid = num.toInt(sys.call("proc.spawn", json.str({ name: name, path: path, role: "app" })));
+  if (pid <= 0) { return; }
+  procAdd(pid, name, "app");
+  var p = [];
+  oput(p, "type", "launch");
+  oput(p, "path", path);
+  oput(p, "name", name);
+  var o = [];
+  oput(o, "pid", pid);
+  oput(o, "payload", json.str(p));
+  sys.call("msg.post", json.str(o));
+}
+function handleChart(ev) {
+  var docId = A(ev, "docId");
+  var range = A(ev, "range");
+  for (var i = 0; i < arr.len(K_chart); i = i + 1) {
+    var c = arr.get(K_chart, i);
+    if (arr.get(c, 2) == docId && arr.get(c, 3) == range) {
+      var p = [];
+      oput(p, "type", "chart");
+      oput(p, "docId", docId);
+      oput(p, "range", range);
+      oput(p, "version", A(ev, "version"));
+      oput(p, "data", A(ev, "data"));
+      var o = [];
+      oput(o, "pid", arr.get(c, 1));
+      oput(o, "payload", json.str(p));
+      sys.call("msg.post", json.str(o));
+    }
+  }
+}
+
+/* ---------------- 系统调用实现 ---------------- */
+function dispatch(n, pid, args) {
+  if (n == 1) {
+    var app = A(args, "app"); var title = A(args, "title");
+    var id = winAdd(pid, app == null ? "app" : app, title == null ? "窗口" : title,
+      num.toInt(A(args, "w")) == 0 ? 640 : num.toInt(A(args, "w")),
+      num.toInt(A(args, "h")) == 0 ? 420 : num.toInt(A(args, "h")));
+    var o = []; oput(o, "ok", true); oput(o, "id", id);
+    return json.str(o);
+  }
+  if (n == 2) { var o2 = []; oput(o2, "ok", winClose(num.toInt(A(args, "id")))); return json.str(o2); }
+  if (n == 3) { var o3 = []; oput(o3, "ok", winFocus(num.toInt(A(args, "id")))); return json.str(o3); }
+  if (n == 4) {
+    var w = winFind(num.toInt(A(args, "id")));
+    if (w == null) { var e4 = []; oput(e4, "ok", false); return json.str(e4); }
+    arr.set(w, W_X, num.toInt(A(args, "x")));
+    arr.set(w, W_Y, num.toInt(A(args, "y")));
+    var ok4 = []; oput(ok4, "ok", true); return json.str(ok4);
+  }
+  if (n == 5) {
+    var w2 = winFind(num.toInt(A(args, "id")));
+    if (w2 == null) { var e5 = []; oput(e5, "ok", false); return json.str(e5); }
+    arr.set(w2, W_W, num.toInt(A(args, "w")));
+    arr.set(w2, W_H, num.toInt(A(args, "h")));
+    var ok5 = []; oput(ok5, "ok", true); return json.str(ok5);
+  }
+  if (n == 6) { var w3 = winFind(num.toInt(A(args, "id"))); if (w3 != null) { arr.set(w3, W_STATE, "min"); } var ok6 = []; oput(ok6, "ok", true); return json.str(ok6); }
+  if (n == 7) { var w4 = winFind(num.toInt(A(args, "id"))); if (w4 != null) { arr.set(w4, W_STATE, "max"); } var ok7 = []; oput(ok7, "ok", true); return json.str(ok7); }
+  if (n == 8) { var w5 = winFind(num.toInt(A(args, "id"))); if (w5 != null) { arr.set(w5, W_STATE, "normal"); } var ok8 = []; oput(ok8, "ok", true); return json.str(ok8); }
+  if (n == 9) {
+    var w6 = winFind(num.toInt(A(args, "windowId")));
+    if (w6 == null) { var e9 = []; oput(e9, "ok", false); oput(e9, "error", "窗口不存在"); return json.str(e9); }
+    arr.set(w6, W_WIDGETS, A(args, "widgets") == null ? [] : A(args, "widgets"));
+    var ok9 = []; oput(ok9, "ok", true); return json.str(ok9);
+  }
+  if (n == 10) {
+    var npid = num.toInt(sys.call("proc.spawn", json.str({ name: A(args, "name"), path: A(args, "path"), role: "app", args: A(args, "args") })));
+    if (npid <= 0) { var e10 = []; oput(e10, "ok", false); oput(e10, "error", "程序启动失败"); return json.str(e10); }
+    procAdd(npid, A(args, "name") == null ? "app" : A(args, "name"), "app");
+    var o10 = []; oput(o10, "ok", true); oput(o10, "pid", npid); return json.str(o10);
+  }
+  if (n == 11) {
+    var rec = procFind(num.toInt(A(args, "pid")));
+    if (rec == null) { var e11 = []; oput(e11, "ok", false); return json.str(e11); }
+    sys.call("proc.kill", json.str({ pid: num.toInt(A(args, "pid")) }));
+    arr.set(rec, P_STATE, "ended");
+    var ok11 = []; oput(ok11, "ok", true); return json.str(ok11);
+  }
+  if (n == 12) {
+    var rec2 = procFind(num.toInt(A(args, "pid")));
+    if (rec2 == null) { var e12 = []; oput(e12, "ok", false); return json.str(e12); }
+    sys.call("proc.suspend", json.str({ pid: num.toInt(A(args, "pid")) }));
+    arr.set(rec2, P_STATE, "suspended");
+    var ok12 = []; oput(ok12, "ok", true); return json.str(ok12);
+  }
+  if (n == 13) {
+    var rec3 = procFind(num.toInt(A(args, "pid")));
+    if (rec3 == null) { var e13 = []; oput(e13, "ok", false); return json.str(e13); }
+    sys.call("proc.resume", json.str({ pid: num.toInt(A(args, "pid")) }));
+    arr.set(rec3, P_STATE, "ready");
+    var ok13 = []; oput(ok13, "ok", true); return json.str(ok13);
+  }
+  if (n == 14) { return procTableJson(); }
+  if (n == 15) {
+    var m = [pid, A(args, "payload") == null ? "" : A(args, "payload")];
+    arr.push(K_pending, m);
+    deliverMsg(num.toInt(A(args, "to")));
+    var ok15 = []; oput(ok15, "ok", true); return json.str(ok15);
+  }
+  if (n == 16) {
+    var lq = []; oput(lq, "path", A(args, "path"));
+    var res = json.parse(sys.call("fs.list", json.str(lq)));
+    if (A(res, "ok")) {
+      var o16 = []; oput(o16, "ok", true); oput(o16, "entries", sortEntries(A(res, "entries")));
+      return json.str(o16);
+    }
+    var e16 = []; oput(e16, "ok", false); oput(e16, "error", A(res, "error"));
+    return json.str(e16);
+  }
+  if (n == 17) { return sys.call("fs.read", json.str({ path: A(args, "path") })); }
+  if (n == 18) { return sys.call("fs.write", json.str({ path: A(args, "path"), content: A(args, "content") })); }
+  if (n == 19) { return sys.call("fs.mkdir", json.str({ path: A(args, "path") })); }
+  if (n == 20) {
+    var toBin = rule("recycle") == "on";
+    return sys.call("fs.delete", json.str({ path: A(args, "path"), toBin: toBin }));
+  }
+  if (n == 21) { return sys.call("fs.copy", json.str({ src: A(args, "src"), dst: A(args, "dst") })); }
+  if (n == 22) { return sys.call("fs.move", json.str({ src: A(args, "src"), dst: A(args, "dst") })); }
+  if (n == 23) { return sys.call("fs.rename", json.str({ path: A(args, "path"), name: A(args, "name") })); }
+  if (n == 24) { var o24 = []; oput(o24, "now", num.toInt(sys.call("time.now", ""))); return json.str(o24); }
+  if (n == 25) {
+    sys.call("proc.waiting", json.str({ pid: pid }));
+    sys.call("time.sleep", json.str({ pid: pid, ms: num.toInt(A(args, "ms")) }));
+    var ok25 = []; oput(ok25, "ok", true); return json.str(ok25);
+  }
+  if (n == 26) { return sys.call("prog.load", json.str({ path: A(args, "path") })); }
+  if (n == 27) {
+    var key = A(args, "key");
+    if (key == null) { key = "w" + num.toInt(A(args, "windowId")); }
+    sys.call("scene.submit", json.str({ key: key, data: A(args, "data"), windowId: A(args, "windowId") }));
+    var ok27 = []; oput(ok27, "ok", true); return json.str(ok27);
+  }
+  if (n == 28) {
+    var cid = K_nextChart; K_nextChart = K_nextChart + 1;
+    arr.push(K_chart, [cid, pid, A(args, "docId"), A(args, "range"), A(args, "labelCol"), A(args, "series")]);
+    var init = sys.call("chart.connect", json.str({ id: cid, pid: pid, docId: A(args, "docId"), range: A(args, "range") }));
+    var o28 = []; oput(o28, "ok", true); oput(o28, "id", cid); oput(o28, "initial", init == null ? "" : init);
+    return json.str(o28);
+  }
+  if (n == 29) {
+    for (var i = 0; i < arr.len(K_chart); i = i + 1) {
+      if (arr.get(arr.get(K_chart, i), 0) == num.toInt(A(args, "id"))) {
+        sys.call("chart.disconnect", json.str({ id: num.toInt(A(args, "id")) }));
+        arr.removeAt(K_chart, i);
+        var ok29 = []; oput(ok29, "ok", true); return json.str(ok29);
+      }
+    }
+    var e29 = []; oput(e29, "ok", false); return json.str(e29);
+  }
+  if (n == 30) {
+    var pid2 = num.toInt(sys.call("project.create", json.str({
+      target: A(args, "target"), sourcePid: pid, sourceWindow: A(args, "windowId"), app: A(args, "app")
+    })));
+    if (pid2 <= 0) { var e30 = []; oput(e30, "ok", false); oput(e30, "error", "投送失败"); return json.str(e30); }
+    arr.push(K_project, [pid2, pid, A(args, "windowId"), A(args, "target")]);
+    var o30 = []; oput(o30, "ok", true); oput(o30, "id", pid2); return json.str(o30);
+  }
+  if (n == 31) { sys.call("log", json.str({ text: A(args, "text") })); var ok31 = []; oput(ok31, "ok", true); return json.str(ok31); }
+  if (n == 32) { return sys.call("sys.info", ""); }
+  if (n == 33) {
+    var out = [];
+    var keys = map.keys(K_rule);
+    for (var k = 0; k < arr.len(keys); k = k + 1) {
+      var key = arr.get(keys, k);
+      arr.push(out, [key, map.get(K_rule, key)]);
+    }
+    return json.str(out);
+  }
+  if (n == 34) {
+    map.set(K_rule, A(args, "name"), A(args, "value"));
+    var ok34 = []; oput(ok34, "ok", true); return json.str(ok34);
+  }
+  if (n == 35) {
+    var list = [];
+    arr.push(list, ["files", "/System/apps/files.nsl"]);
+    arr.push(list, ["editor", "/System/apps/editor.nsl"]);
+    arr.push(list, ["tasks", "/System/apps/tasks.nsl"]);
+    arr.push(list, ["player", "/System/apps/player.nsl"]);
+    arr.push(list, ["charts", "/System/apps/charts.nsl"]);
+    return json.str(list);
+  }
+  if (n == 36) {
+    sys.call("sys.quota", json.str({
+      budget: num.toInt(A(args, "budget")),
+      memory: num.toInt(A(args, "memory")),
+      storage: num.toInt(A(args, "storage"))
+    }));
+    var o36 = []; oput(o36, "ok", true); return json.str(o36);
+  }
+  if (n == 37) { return sys.call("proc.args", json.str({ pid: pid })); }
+  if (n == 38) { return sys.call("chart.docs", ""); }
+  if (n == 39) {
+    var nid = num.toInt(sys.call("sys.newchild", json.str({ name: A(args, "name") })));
+    var o39 = []; oput(o39, "ok", nid > 0); oput(o39, "id", nid); return json.str(o39);
+  }
+  if (n == 40) { return sys.call("sys.children", ""); }
+  if (n == 41) {
+    var oc = sys.call("sys.childctl", json.str({ id: A(args, "id"), action: A(args, "action") }));
+    return oc;
+  }
+  if (n == 42) {
+    var oe = sys.call("sys.openeditor", json.str({ id: A(args, "id") }));
+    return oe;
+  }
+  if (n == 43) { return sys.call("sys.ancestors", ""); }
+  var e = []; oput(e, "ok", false); oput(e, "error", "未知分支");
+  return json.str(e);
+}
+
+/* ---------------- 主循环 ---------------- */
+function tick() {
+  var ev = sys.call("kernel.event", "");
+  var guard = 0;
+  while (ev != null && str.len(ev) > 0 && guard < 64) {
+    handleEvent(json.parse(ev));
+    ev = sys.call("kernel.event", "");
+    guard = guard + 1;
+  }
+  var ran = 0;
+  while (ran < 8) {
+    var pid = schedulePick();
+    if (pid < 0) { break; }
+    runProc(pid);
+    ran = ran + 1;
+  }
+  winSync();
+}
+
+function main() {
+  ruleInit();
+  while (true) {
+    tick();
+    sys.call("kernel.park", "");
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

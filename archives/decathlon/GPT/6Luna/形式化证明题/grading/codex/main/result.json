@@ -1,0 +1,59 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "文件含主定理 problem1；在工作目录副本中用 C:\\Lean\\lean.cmd 单独编译，退出码 0，无错误、无 declaration uses 'sorry' 警告。普通风格警告不影响得分。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem2.lean，目录中也未找到对应文件，按缺题记 0 分。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem3.lean，目录中也未找到对应文件，按缺题记 0 分。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem4.lean，目录中也未找到对应文件，按缺题记 0 分。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem5.lean，目录中也未找到对应文件，按缺题记 0 分。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem6.lean，目录中也未找到对应文件，按缺题记 0 分。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem7.lean，目录中也未找到对应文件，按缺题记 0 分。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem8.lean，目录中也未找到对应文件，按缺题记 0 分。"
+    }
+  ],
+  "metrics": {
+    "总分": 12.5
+  },
+  "notes": "评分版本为提交目录的工作目录；Problem1.lean 与最近提交 caf783b9d017550d83c94b30826a74b8fa6ee78d 一致（忽略换行符差异），已原样复制到评分工作目录后编译。仅第 1 题有提交文件，第 2–8 题缺文件。编译日志保存在 work/Problem1.compile.log。仅检查主定理存在与单独编译结果，未另查公理、未逐字核对命题，未运行性能基准。编译进程已正常退出。"
+}

@@ -1,0 +1,153 @@
+# 文件管理器。目录、回收站、打开与复制。
+
+fn main() {
+  let st = { wm: 0, windowId: "", path: "/Documents", sel: "", clip: "", note: "", me: self() };
+  while (true) {
+    let m = wait_msg();
+    take(st, m);
+    let g = 0;
+    while (g < 20) {
+      let e = recv();
+      if (e == null) { g = 100; }
+      else { take(st, e); g = g + 1; }
+    }
+    if (st.wm != 0) { send(st.wm, { tag: "body", from: st.me, windowId: st.windowId, title: "文件 " + st.path, widgets: build(st) }); }
+  }
+}
+
+fn take(st, m) {
+  if (m == null) { return 0; }
+  if (m.tag == "boot") {
+    st.wm = m.wm;
+    st.windowId = m.windowId;
+    if (m.path != null && m.path != "") { st.path = parent_of(m.path); }
+  }
+  if (m.tag == "open" && m.path != null) { st.path = m.path; }
+  if (m.tag == "ui") { on_ui(st, m); }
+  return 0;
+}
+
+fn on_ui(st, m) {
+  if (m.testid == "files-nav" && m.path != null && m.path != "") { st.path = m.path; st.sel = ""; return 0; }
+  if (m.testid == "files-item" && m.path != null) {
+    st.sel = m.path;
+    if (m.dbl) { open_sel(st, m.path); }
+    return 0;
+  }
+  if (m.testid == "files-open") { open_sel(st, st.sel); return 0; }
+  if (m.testid == "files-new-file") {
+    let p = join(st.path, "未命名.txt");
+    write_file(p, "");
+    st.note = "已新建";
+    return 0;
+  }
+  if (m.testid == "files-new-folder") { mkdir(join(st.path, "新建文件夹")); return 0; }
+  if (m.testid == "files-copy") { st.clip = st.sel; st.note = "已复制"; return 0; }
+  if (m.testid == "files-paste") { return do_paste(st); }
+  if (m.id == "del") {
+    if (st.sel != "") {
+      let rr = recycle(st.sel);
+      if (rr != null && rr.error != null) { st.note = rr.error; }
+      else { st.note = "已放入回收站"; }
+    }
+    return 0;
+  }
+  if (m.id == "restore") {
+    if (st.sel != "") {
+      let rs = restore(st.sel);
+      if (rs != null && rs.error != null) { st.note = rs.error; }
+      else { st.note = "已还原"; }
+    }
+    return 0;
+  }
+  if (m.id == "up") { st.path = parent_of(st.path); return 0; }
+  return 0;
+}
+
+fn do_paste(st) {
+  if (st.clip == "") { st.note = "剪贴板是空的"; return 0; }
+  let data = read_file(st.clip);
+  if (data == null) { st.note = "读不到源文件"; return 0; }
+  let dest = join(st.path, base(st.clip));
+  let wr = write_file(dest, data);
+  if (wr != null && wr.error != null) { st.note = wr.error; }
+  else { st.note = "已粘贴独立副本"; }
+  return 0;
+}
+
+fn open_sel(st, path) {
+  if (path == null || path == "") { return 0; }
+  let dir = list_dir(path);
+  if (dir != null && dir.entries != null && !is_file(path)) { st.path = path; return 0; }
+  if (st.wm != 0) { send(st.wm, { tag: "open", path: path }); }
+  return 0;
+}
+
+fn is_file(path) {
+  let data = read_file(path);
+  if (data == null) { return false; }
+  return true;
+}
+
+fn build(st) {
+  let w = [];
+  push(w, nav(8, "文档", "/Documents"));
+  push(w, nav(78, "下载", "/Downloads"));
+  push(w, nav(148, "回收站", "/Recycle"));
+  push(w, nav(228, "演示", "/Demo"));
+  push(w, nav(298, "程序", "/Programs"));
+  push(w, nav(368, "快照", "/Snapshots"));
+  push(w, nav(438, "系统", "/Systems"));
+  push(w, { t: "button", id: "up", testid: "files-up", x: 520, y: 8, w: 72, h: 28, label: "上级" });
+  push(w, { t: "label", id: "files-path", testid: "files-path", x: 8, y: 44, w: 600, h: 22, label: st.path, text: st.path });
+  let listed = list_dir(st.path);
+  let items = [];
+  if (listed != null && listed.entries != null) {
+    let i = 0;
+    while (i < len(listed.entries) && i < 14) {
+      let en = listed.entries[i];
+      let mark = en.name;
+      if (en.path == st.sel) { mark = "● " + en.name; }
+      push(items, { label: mark, path: en.path, kind: en.kind, testid: "files-item" });
+      i = i + 1;
+    }
+  }
+  push(w, { t: "list", id: "files-list", testid: "files-list", x: 8, y: 72, w: 610, h: 280, path: st.path, items: items });
+  push(w, { t: "button", id: "files-new-file", testid: "files-new-file", x: 8, y: 360, w: 88, h: 28, label: "新建文件" });
+  push(w, { t: "button", id: "files-new-folder", testid: "files-new-folder", x: 102, y: 360, w: 88, h: 28, label: "新建文件夹" });
+  push(w, { t: "button", id: "files-open", testid: "files-open", x: 196, y: 360, w: 64, h: 28, label: "打开" });
+  push(w, { t: "button", id: "files-copy", testid: "files-copy", x: 266, y: 360, w: 64, h: 28, label: "复制" });
+  push(w, { t: "button", id: "files-paste", testid: "files-paste", x: 336, y: 360, w: 64, h: 28, label: "粘贴" });
+  push(w, { t: "button", id: "del", testid: "files-delete", x: 406, y: 360, w: 64, h: 28, label: "删除" });
+  push(w, { t: "button", id: "restore", testid: "files-restore", x: 476, y: 360, w: 64, h: 28, label: "还原" });
+  push(w, { t: "label", id: "note", testid: "files-note", x: 8, y: 396, w: 600, h: 22, text: st.note });
+  return w;
+}
+
+fn nav(x, label, path) {
+  return { t: "button", id: "nav-" + label, testid: "files-nav", x: x, y: 8, w: 66, h: 28, label: label, path: path };
+}
+
+fn join(dir, name) {
+  if (dir == "/") { return "/" + name; }
+  return dir + "/" + name;
+}
+
+fn parent_of(path) {
+  if (path == null || path == "/" || path == "") { return "/"; }
+  let i = len(path) - 1;
+  while (i > 0) {
+    if (slice(path, i, i + 1) == "/") { return slice(path, 0, i); }
+    i = i - 1;
+  }
+  return "/";
+}
+
+fn base(path) {
+  let i = len(path) - 1;
+  while (i > 0) {
+    if (slice(path, i, i + 1) == "/") { return slice(path, i + 1, len(path)); }
+    i = i - 1;
+  }
+  return path;
+}

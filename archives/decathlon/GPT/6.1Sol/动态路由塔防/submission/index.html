@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>汐域 · 网络安全攻防战</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="polish.css">
+</head>
+<body class="home">
+  <div id="viewport" aria-label="实时三维网络战场"></div>
+  <div class="screen-grain"></div>
+  <header id="topbar">
+    <button class="brand" onclick="UI.menu()"><span class="brand-symbol">汐</span><span>汐域 <small>AEGIS / 守护进程</small></span></button>
+    <div id="resources" class="resources"><div><span class="res-icon">⌁</span><span><small>可用算力</small><b id="compute">420</b></span></div><div><span class="res-icon amber">◈</span><span><small>威胁情报</small><b id="intel">90</b></span></div><div class="integrity"><span class="res-icon">◇</span><span><small>中枢完整度</small><b id="health">100<em>%</em></b></span><i><i id="healthBar"></i></i></div><div><span><small>防御波次</small><b id="wave">00 <em>/ 14</em></b></span></div></div>
+    <nav class="top-actions"><button id="pauseBtn" class="icon-button" title="暂停 / 继续 [空格]" onclick="UI.pause()">Ⅱ</button><button id="speedBtn" onclick="UI.speed()">1×</button><button class="icon-button" id="soundBtn" title="声音设置" onclick="UI.settings()">♫</button><button class="icon-button" title="设备手册 [H]" onclick="UI.codex()">?</button><button id="menuBtn" class="icon-button" title="系统菜单 [Esc]" onclick="UI.menu()">☰</button></nav>
+  </header>
+  <main id="homePanel">
+    <div class="eyebrow"><i class="status-dot"></i> 自治域 / XIYU NETWORK</div>
+    <h1>守护每一条<br><span>数据的归途。</span></h1>
+    <p class="intro">蛰影正在渗透。接管交换节点，重构入侵路径，<br>在开放与隔离之间，守住最后的中枢。</p>
+    <div class="section-title"><span>选择防御域</span><small>03 DOMAINS AVAILABLE</small></div>
+    <div id="mapCards"></div>
+    <button id="enterBtn" class="primary large" onclick="UI.start()">接管此域 <span>↗</span></button>
+    <div class="home-links"><button onclick="UI.demos()">▷ 实战演示</button><button onclick="UI.codex()">▤ 设备与威胁手册</button></div>
+    <footer>本地守护协议已就绪 <span>● SYSTEM ONLINE</span></footer>
+  </main>
+  <div id="homeMapLabel"><span>01 / ENTERPRISE INTRANET</span><h2>分段内网</h2><p>门户 · DMZ · 核心数据库</p><div class="mini-tag">实时网络拓扑 <i class="status-dot"></i></div></div>
+  <section id="battleUI">
+    <div id="missionTitle"><div class="eyebrow" id="missionCode">DOMAIN 01 / ENTERPRISE</div><h2 id="missionName">分段内网</h2><span id="missionSub">所有入口保持连通 · 守护进程已接管</span></div>
+    <div class="map-toolbar"><button id="routeBtn" class="active" onclick="UI.toggleRoutes()">⌁ 路由</button><button onclick="View.resetCamera()">⌖ 复位视角</button><button onclick="UI.tactics()">布防参考</button><button onclick="UI.controls()">鼠标操作 ⓘ</button></div>
+    <div id="legend"><span><i style="--c:#5be5cb"></i>A 路由</span><span><i style="--c:#efb16b"></i>B 路由</span><span id="legendC"><i style="--c:#b59aff"></i>C 路由</span><span><i class="dash"></i>预览路径</span></div>
+    <div id="routePreview" class="route-preview"></div>
+    <div id="bossBanner"><div><span id="bossName"></span><small id="bossPhase"></small></div><i><i id="bossHealth"></i></i></div>
+    <aside id="sidebar">
+      <section class="panel forecast"><div class="panel-heading"><span>流量预报</span><small id="forecastWave">NEXT / 01</small></div><div id="forecast"></div><div class="wave-progress"><i id="waveProgress"></i></div><p id="waveStatus">部署设备后，手动放行首批流量</p><button id="waveBtn" class="primary" onclick="Game.nextWave()">放行第 1 波 <span>▷</span></button></section>
+      <section class="panel inspection"><div class="panel-heading"><span id="inspectHeading">链路巡检</span><small id="inspectTag">OVERVIEW</small></div><div id="inspect"></div></section>
+      <section class="panel event-panel"><div class="panel-heading"><span>事件日志</span><small>LIVE</small></div><div id="eventLog"></div></section>
+    </aside>
+    <div id="bottomDock"><div class="dock-header"><span>部署设备 <small>拖入战场，或选择后点击位置</small></span><span id="buildHint">平台部署远程设备 · 链路部署阻挡设备</span></div><div id="towerDeck"></div><div id="items" aria-label="应急道具卡片"></div><div class="dock-foot"><span>应急道具：Q / W / E 选择，点击目标投放 · 也可拖入战场</span><span>中键 环绕 <b>·</b> Shift + 中键 平移 <b>·</b> 滚轮 缩放 <b>·</b> 空格 暂停</span></div></div>
+    <div id="pending"><div><span class="eyebrow">DEPLOYMENT PREVIEW</span><h3 id="pendingName">确认部署</h3><p id="pendingDesc"></p><div id="directionButtons"></div></div><button class="secondary" onclick="UI.cancelBuild()">取消 <small>Esc</small></button><button id="confirmBtn" class="primary" onclick="UI.confirmBuild()">确认部署 <span>↵</span></button></div>
+    <div id="pauseBadge">Ⅱ 已暂停 <small>布防操作仍可用 · 空格继续</small></div>
+  </section>
+  <div id="toast" role="status"></div>
+  <div id="demoOverlay"><div><span class="eyebrow">LIVE SIMULATION / 实战演示</span><b id="demoTitle"></b></div><button class="secondary" onclick="UI.exitDemo()">退出演示 ×</button><div class="demo-caption"><span id="demoStep">01</span><p id="demoCaption"></p></div><div id="demoCursor">↖<span></span><b class="drag-device"></b><i class="click-ring"></i></div></div>
+  <div id="modal" class="modal"><div class="modal-card"><button class="modal-close" onclick="UI.closeModal()">×</button><div id="modalContent"></div></div></div>
+  <script src="vendor/three.min.js"></script>
+  <script src="data.js"></script><script src="routing.js"></script><script src="scene.js"></script><script src="visuals.js"></script><script src="catalog.js"></script><script src="inspector.js"></script><script src="demo-motion.js"></script><script src="demo-camera.js"></script><script src="game.js"></script><script src="ui.js"></script>
+</body>
+</html>

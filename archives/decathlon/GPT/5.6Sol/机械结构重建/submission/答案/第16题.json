@@ -1,0 +1,12 @@
+{
+  "problem":"16","parts":[{"name":"1","title":"双蜗室异面三通泵壳","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,220,150],"r":6}],"depth":12},
+    {"type":"extrude","plane":"XZ","origin":[0,15,0],"loops":[{"path":[[10,12],[210,12],[210,82],[194,112],[158,132],[62,132],[24,108],[10,76]]}],"depth":-120},
+    {"type":"extrude","plane":"XZ","origin":[0,15,0],"loops":[{"circle":[66,72],"d":132},{"circle":[158,72],"d":112}],"depth":15},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[66,72],"d":76,"through":true,"cbore":{"d":104,"depth":5}},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[158,72],"d":62,"through":true,"cbore":{"d":88,"depth":5}},
+    {"type":"extrude","plane":{"origin":[48,70,108],"normal":[-0.342,0,0.94],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":52},{"circle":[0,0],"d":34}],"depth":50},
+    {"type":"extrude","plane":{"origin":[126,78,124],"normal":[0.174,0,0.985],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":48},{"circle":[0,0],"d":30}],"depth":46},
+    {"type":"extrude","plane":{"origin":[197,76,88],"normal":[0.819,0,0.574],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":42},{"circle":[0,0],"d":26}],"depth":42},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[14,14],[206,14],[14,136],[206,136]],"d":10,"through":true,"reverse":true,"cbore":{"d":18,"depth":3}}
+  ]}]}

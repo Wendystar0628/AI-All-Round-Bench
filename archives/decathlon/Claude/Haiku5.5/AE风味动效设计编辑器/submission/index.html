@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AE 风味动效设计编辑器</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand"><span class="logo"></span><span class="brand-name">锻 · 动效编辑器</span></div>
+      <nav class="menus" id="menus"></nav>
+      <div class="tools" id="tools"></div>
+      <div class="topbar-right" id="topRight"></div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel left" id="leftPanel">
+        <div class="panel-tabs" id="leftTabs"></div>
+        <div class="panel-body" id="leftBody"></div>
+      </aside>
+
+      <section class="center">
+        <div class="viewer-wrap" id="viewerWrap">
+          <div class="viewer" id="viewer">
+            <canvas id="glCanvas"></canvas>
+            <canvas id="overlay"></canvas>
+            <div class="viewer-empty" id="viewerEmpty">空工程：在左侧或菜单中新建图层</div>
+          </div>
+          <div class="viewer-bar" id="viewerBar"></div>
+        </div>
+        <div class="bottom" id="bottom">
+          <div class="panel-tabs bottom-tabs" id="bottomTabs"></div>
+          <div class="bottom-body" id="bottomBody"></div>
+        </div>
+      </section>
+
+      <aside class="panel right" id="rightPanel">
+        <div class="panel-tabs" id="rightTabs"></div>
+        <div class="panel-body" id="rightBody"></div>
+      </aside>
+    </main>
+
+    <footer class="statusbar" id="statusbar">
+      <span id="statusText">就绪</span>
+      <span class="grow"></span>
+      <span id="statusRender"></span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="modal" id="modal" hidden></div>
+
+  <!-- 第三方库（随项目提供，无需网络） -->
+  <script src="js/lib/opentype.min.js"></script>
+  <script src="js/lib/earcut.min.js"></script>
+  <script src="js/lib/polybool.min.js"></script>
+  <!-- 内置字体（Noto Sans Hans 子集，base64） -->
+  <script src="js/fonts/hans-regular.js"></script>
+  <script src="js/fonts/hans-bold.js"></script>
+
+  <!-- 核心 -->
+  <script src="js/core/util.js"></script>
+  <script src="js/core/model.js"></script>
+  <script src="js/core/anim.js"></script>
+  <script src="js/core/expr.js"></script>
+  <!-- 几何 -->
+  <script src="js/geom/path.js"></script>
+  <script src="js/geom/text.js"></script>
+  <script src="js/geom/shapes.js"></script>
+  <script src="js/geom/mesh.js"></script>
+  <!-- 渲染 -->
+  <script src="js/render/gl.js"></script>
+  <script src="js/render/shaders.js"></script>
+  <script src="js/render/renderer.js"></script>
+  <!-- 模拟与节点 -->
+  <script src="js/nodes/graph.js"></script>
+  <script src="js/sim/particles.js"></script>
+  <!-- 声音 -->
+  <script src="js/audio/synth.js"></script>
+  <!-- 应用状态（界面模块在加载时读取 AE.App，因此先加载） -->
+  <script src="js/app.js"></script>
+  <!-- 界面 -->
+  <script src="js/ui/common.js"></script>
+  <script src="js/ui/widgets.js"></script>
+  <script src="js/ui/props.js"></script>
+  <script src="js/ui/timeline.js"></script>
+  <script src="js/ui/graph.js"></script>
+  <script src="js/ui/viewer.js"></script>
+  <script src="js/ui/nodes.js"></script>
+  <script src="js/ui/menus.js"></script>
+  <!-- 示例与入口 -->
+  <script src="js/demo/forge.js"></script>
+</body>
+</html>

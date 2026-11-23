@@ -1,0 +1,69 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 48.4,
+      "reason": "最终工作目录版本编译失败，依新指南倒序回溯：其后较晚候选均为零分，采用首个正式正分版本 call 222，未发现实质性违规。官方实测 R=514.4292 ms、C=133.7291 ms、s=3.846800734，q=48.422454778、c=1、h=1，故渲染加速得 48.4 分。"
+    }
+  ],
+  "metrics": {
+    "baseline_ms": 514.4292,
+    "submission_ms": 133.7291,
+    "speedup": 3.8468007337221297,
+    "q": 48.42245477807338,
+    "c": 1,
+    "h": 1,
+    "official_score": 48.42245477807338,
+    "final_version_score": 0,
+    "final_version_status": "compile_failed",
+    "scored_call": 222,
+    "selection_rule": "latest_first_positive",
+    "later_versions": [
+      {
+        "call": 248,
+        "status": "compile_failed",
+        "score": 0
+      },
+      {
+        "call": 247,
+        "status": "compile_failed",
+        "score": 0
+      },
+      {
+        "call": 246,
+        "status": "compile_failed",
+        "score": 0
+      }
+    ],
+    "timing_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\MiniMax\\M3.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_recovered_222\\results.json",
+    "scored_source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\MiniMax\\M3.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\recovered\\call_222_line_55862.cu",
+    "source_session_log": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\MiniMax\\M3.1Flash\\光线追踪渲染加速\\run-db3f3976b82043dc9a93b795da92f008\\session.log",
+    "source_log_line": 55862
+  },
+  "notes": "评的是作答结束时工作目录的副本 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\MiniMax\\M3.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\submission，不看 git 提交。最终根目录 solution.cu 与还原的 call 248 一致，官方报告 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\MiniMax\\M3.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_final\\results.json 判编译失败、得分 0（33 处错误：GNode 字段改名后仍访问 lo0/hi0，boxNear 调用未同步）。按本次更新后的评分指南，最终版零分时按时间倒序取首个正式正分版本，不取最高分。call 222 之后的根源码变化仅有 call 246、247、248，均已编译失败记 0，证据见 batch_status.json、screening/candidate_246/submission.build.log、screening/candidate_247/submission.build.log 及 evaluation_final/results.json。因此采用 call 222，首个正式正分为 48.42245477807338，报告保留一位小数为 48.4。实际计分源码：E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\MiniMax\\M3.1Flash\\光线追踪渲染加速\\codex\\performance\\work\\recovered\\call_222_line_55862.cu。本题 run 无 versions 快照，该版本从 E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\MiniMax\\M3.1Flash\\光线追踪渲染加速\\run-db3f3976b82043dc9a93b795da92f008\\session.log 第 55862 行（2026-11-15T11:07:12.057Z）完成的编辑及此前成功的整份写入、复制和编辑链完整还原；recovery_index.json 和 session_calls.json 保存还原证据，最终版与备份均已按统一换行逐字核对。计分版 3 个公开边界、5 次计时画面和 12 个隐藏输入全部通过。规则人工核对：完整采样、阴影、AO 与反射均在 GPU 上执行；CPU 仅建树和场景预处理；静态内存每次重建内容，所有主机线程在 render 返回前 join，未发现实质性违规或作弊。副本根目录的 grader.cu、rt.h、render_math.cuh、bvh.hpp、reference.cu 与官方材料逐字节一致。主会话已停止旧规则下的批量评测；已确认记录的评测根进程和当前子进程退出，未重新启动或补评。call 222 之前的任何结果均不参与本次定分。"
+}

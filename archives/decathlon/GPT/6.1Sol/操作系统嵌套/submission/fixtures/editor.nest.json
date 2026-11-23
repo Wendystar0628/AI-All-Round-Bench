@@ -1,0 +1,25 @@
+{
+  "name": "editor 应用服务",
+  "format": "nest-1",
+  "policy": {
+    "tabSize": 2
+  },
+  "code": [
+    [
+      "call",
+      "app.events"
+    ],
+    [
+      "call",
+      "app.editor"
+    ],
+    [
+      "wait",
+      0.05
+    ],
+    [
+      "jump",
+      0
+    ]
+  ]
+}

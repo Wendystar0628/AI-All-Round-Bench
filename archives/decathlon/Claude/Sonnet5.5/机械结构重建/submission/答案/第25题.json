@@ -1,0 +1,10 @@
+{
+  "problem": "25",
+  "parts": [
+    {"name": "1", "title": "壳体(粗略)", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [0, 0, 300, 200], "r": 6}], "depth": 18},
+      {"type": "extrude", "name": "本体", "plane": "XZ", "loops": [{"path": [[18, 0], [283, 0], [283, 106], [250, 150], [150, 124], [50, 150], [18, 106]]}], "depth": [-183, -18]},
+      {"type": "hole", "name": "底板孔", "plane": "XY", "origin": [0, 0, 18], "at": [[12, 12], [288, 12], [12, 188], [288, 188]], "d": 10, "through": true}
+    ]}
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "problem": "03",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双腔斜顶分流阀壳",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-6,-12,62,24]}],"depth":6},
+        {"type":"hole","plane":"XY","origin":[0,0,6],"at":[[0,-8],[56,-8],[0,20],[56,20]],"d":7,"through":true},
+        {"type":"extrude","plane":"XZ","origin":[0,15,0],"loops":[{"path":[[0,6],[56,6],[56,18],[40,34],[0,34]]}],"depth":30},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,15,0],"loops":[{"rect":[10,10,28,30]}],"depth":24},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,15,0],"loops":[{"rect":[32,10,50,24]}],"depth":24},
+        {"type":"hole","plane":"XZ","origin":[0,15,0],"at":[[16,20]],"d":22,"depth":30,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,15,0],"at":[[42,16]],"d":18,"depth":30,"reverse":true}
+      ]
+    }
+  ]
+}

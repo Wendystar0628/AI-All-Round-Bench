@@ -1,0 +1,461 @@
+# 时序进程。播放记录、驱动排演，并用消息推动机身与环境。
+# 帧率 20（一帧 50 毫秒）。播放速率再乘所属系统的时间速率。
+
+fn main() {
+  let st = {
+    wm: 0, windowId: "", me: self(), stage: 0, fx: 0, physics: 0, flight: 0,
+    path: "/Demo/helicopter-24.scene", mode: "film", playing: 0, loop: 0, rate: 1,
+    t: 0, duration: 15, samples: [], stride: 23, sent: 0, last: clock(),
+    camMode: "演出", oy: 0.8, op: 0.35, odist: 18,
+    px: 0, py: 1.1, pz: 0, roll: 0, pitch: 0, yaw: 0, rpm: 1, damage: 0,
+    tx: 34, ty: 8, tz: -16, heading: 0.6, wind: 0, fault: 0,
+    note: "20 帧/秒，一帧 50 毫秒", pickText: "未选中部件",
+    heights: null, nx: 0, nz: 0, ox: 0, oz: 0, step: 3, pads: null, blocks: null,
+    recording: 0, rec: [], controls: [], frameTime: 0
+  };
+  while (true) {
+    let m = wait_msg();
+    take(st, m);
+    let guard = 0;
+    while (guard < 12) {
+      let extra = recv();
+      if (extra == null) { guard = 100; }
+      else { take(st, extra); guard = guard + 1; }
+    }
+    step_time(st);
+    if (st.wm != 0) {
+      send(st.wm, { tag: "body", from: st.me, windowId: st.windowId, title: "场景播放器", widgets: build(st) });
+    }
+    publish("player", {
+      windowId: st.windowId, state: state_name(st), position: st.t, duration: st.duration,
+      rate: st.rate, scene: st.path, frameTime: st.frameTime
+    });
+  }
+}
+
+fn state_name(st) {
+  if (st.playing == 1) { return "playing"; }
+  if (st.t <= 0.001) { return "stopped"; }
+  return "paused";
+}
+
+fn take(st, m) {
+  if (m == null) { return 0; }
+  if (m.tag == "boot") {
+    st.wm = m.wm;
+    st.windowId = m.windowId;
+    st.stage = m.stage;
+    st.fx = m.fx;
+    if (m.path != null && m.path != "") { st.path = m.path; }
+    load_scene(st, st.path);
+  }
+  if (m.tag == "open" && m.path != null) { load_scene(st, m.path); }
+  if (m.tag == "ui") { on_ui(st, m); }
+  if (m.tag == "value") { on_value(st, m); }
+  if (m.tag == "pose" && st.mode == "live") { apply_pose(st, m); }
+  if (m.tag == "cmd" && st.recording == 1) { push(st.controls, m); }
+  return 0;
+}
+
+fn on_value(st, m) {
+  if (m.id == "player-seek") {
+    st.t = num_or(m.value, st.t);
+    if (st.t < 0) { st.t = 0; }
+    if (st.t > st.duration) { st.t = st.duration; }
+    if (st.mode != "live") { emit_film(st); }
+    st.note = "已跳转";
+  }
+  if (m.id == "player-rate") {
+    st.rate = num_or(m.value, st.rate);
+    if (st.rate < 0.1) { st.rate = 0.1; }
+    if (st.rate > 8) { st.rate = 8; }
+  }
+  if (m.id == "rehearsal-wind") { st.wind = num_or(m.value, st.wind); }
+  if (m.id == "rehearsal-heading") { st.heading = num_or(m.value, st.heading); }
+  if (m.id == "rehearsal-fault") { st.fault = num_or(m.value, st.fault); }
+  if (m.id == "player-path") { st.path = str(m.value); }
+  return 0;
+}
+
+fn on_ui(st, m) {
+  if (m.testid == "player-play") {
+    if (st.mode != "live" && st.t >= st.duration - 0.02) { st.t = 0; }
+    st.playing = 1;
+    st.note = "播放中";
+    return 0;
+  }
+  if (m.testid == "player-pause") {
+    st.playing = 0;
+    if (st.mode == "live") { send_goal(st); }
+    st.note = "已暂停";
+    return 0;
+  }
+  if (m.testid == "player-stop") {
+    st.playing = 0;
+    st.t = 0;
+    if (st.mode == "live") { st.mode = "film"; send_goal(st); }
+    emit_film(st);
+    st.note = "已回到开头";
+    return 0;
+  }
+  if (m.testid == "player-step") {
+    st.playing = 0;
+    if (st.mode == "live" && st.physics != 0) {
+      send(st.physics, { tag: "nudge" });
+      st.note = "排演步进 50 毫秒";
+      return 0;
+    }
+    st.t = st.t + 0.05;
+    if (st.t > st.duration) { st.t = st.duration; }
+    emit_film(st);
+    return 0;
+  }
+  if (m.testid == "player-loop") {
+    if (st.loop == 1) { st.loop = 0; st.note = "循环关"; }
+    else { st.loop = 1; st.note = "循环开"; }
+    return 0;
+  }
+  if (m.testid == "player-camera") {
+    if (st.camMode == "演出") { st.camMode = "跟随"; }
+    else if (st.camMode == "跟随") { st.camMode = "环绕"; }
+    else { st.camMode = "演出"; }
+    if (st.mode != "live") { emit_film(st); }
+    return 0;
+  }
+  if (m.testid == "player-open") { load_scene(st, st.path); return 0; }
+  if (m.testid == "rehearsal-start") { arm_rehearsal(st); st.playing = 1; return 0; }
+  if (m.testid == "rehearsal-save") { save_record(st); return 0; }
+  if (m.testid == "rehearsal-controller") {
+    if (st.wm != 0) { send(st.wm, { tag: "open", path: "/Programs/flight.npl" }); }
+    return 0;
+  }
+  if (m.testid == "window-project") { st.note = "点选下面的目标桌面"; return 0; }
+  if (m.testid == "project-target" && m.target != null && m.target != "") {
+    project(m.target, st.windowId, "player", "场景播放器");
+    st.note = "已投送到 " + str(m.target);
+    return 0;
+  }
+  if (m.pick != null && m.pick.ground == 1 && st.mode == "live") {
+    st.heading = atan2(-(m.pick.x - st.px), -(m.pick.z - st.pz));
+    st.note = "航向已指向落点";
+  }
+  if (m.pick != null && m.pick.name != null && m.pick.name != "") {
+    st.pickText = str(m.pick.name) + "  损坏 " + str(m.pick.damage);
+  }
+  if (m.act == "move" && st.camMode == "环绕") {
+    st.oy = st.oy - m.dx * 0.008;
+    st.op = st.op + m.dy * 0.008;
+    if (st.op > 1.2) { st.op = 1.2; }
+    if (st.op < -0.2) { st.op = -0.2; }
+  }
+  if (m.act == "wheel") {
+    st.odist = st.odist + m.dy * 0.015;
+    if (st.odist < 5) { st.odist = 5; }
+    if (st.odist > 70) { st.odist = 70; }
+  }
+  return 0;
+}
+
+fn num_or(v, d) {
+  let n = num(v);
+  if (n == null) { return d; }
+  return n;
+}
+
+fn load_scene(st, path) {
+  let raw = read_file(path);
+  if (raw == null) { st.note = "读不到 " + str(path); return 0; }
+  let obj = json_parse(raw);
+  if (obj == null || obj.format == null) { st.note = "场景数据无法解析"; return 0; }
+  if (obj.format == "nest-flight-1") { return load_record(st, obj, path); }
+  st.path = path;
+  st.duration = 15;
+  if (obj.duration != null) { st.duration = obj.duration; }
+  st.samples = [];
+  st.stride = 23;
+  if (obj.film != null && obj.film.samples != null) {
+    st.samples = obj.film.samples;
+    if (obj.film.stride != null) { st.stride = obj.film.stride; }
+  }
+  take_terrain(st, obj);
+  st.t = 0;
+  st.playing = 0;
+  st.mode = "film";
+  st.frameTime = 0;
+  if (obj.resources != null) { present3d("resources", obj.resources); st.sent = 1; }
+  emit_film(st);
+  st.note = "已打开 " + path;
+  return 1;
+}
+
+fn load_record(st, obj, path) {
+  let scenePath = "/Demo/helicopter-24.scene";
+  if (obj.scene != null && obj.scene != "") { scenePath = obj.scene; }
+  load_scene(st, scenePath);
+  if (obj.samples != null) { st.samples = obj.samples; }
+  if (obj.stride != null) { st.stride = obj.stride; }
+  if (obj.duration != null) { st.duration = obj.duration; }
+  st.t = 0;
+  st.playing = 0;
+  st.mode = "film";
+  st.recording = 0;
+  emit_film(st);
+  st.note = "记录 " + path + "（回放不随预算变化）";
+  return 1;
+}
+
+fn take_terrain(st, obj) {
+  if (obj.terrain != null) {
+    st.heights = obj.terrain.heights;
+    st.nx = obj.terrain.nx;
+    st.nz = obj.terrain.nz;
+    st.ox = obj.terrain.ox;
+    st.oz = obj.terrain.oz;
+    st.step = obj.terrain.step;
+  }
+  if (obj.pads != null) { st.pads = obj.pads; }
+  if (obj.blocks != null) { st.blocks = obj.blocks; }
+  return 0;
+}
+
+fn step_time(st) {
+  let now = clock();
+  let dt = now - st.last;
+  if (dt < 0) { dt = 0; }
+  if (dt > 500) { dt = 50; }
+  st.last = now;
+  if (st.playing != 1) {
+    if (st.mode == "live") { send_goal(st); }
+    return 0;
+  }
+  if (st.mode == "live") { send_goal(st); return 0; }
+  st.t = st.t + dt / 1000 * st.rate;
+  if (st.t >= st.duration) {
+    if (st.loop == 1) { st.t = 0; }
+    else { st.t = st.duration; st.playing = 0; st.note = "停在末帧"; }
+  }
+  emit_film(st);
+  return 0;
+}
+
+fn frames(st) {
+  if (st.samples == null || st.stride < 1) { return 1; }
+  let n = floor(len(st.samples) / st.stride);
+  if (n < 1) { return 1; }
+  return n;
+}
+
+fn frame_index(st) {
+  let n = frames(st);
+  let i = floor(st.t * 20);
+  if (i < 0) { i = 0; }
+  if (i >= n) { i = n - 1; }
+  return i;
+}
+
+fn sf(st, field) {
+  let i = frame_index(st) * st.stride + field;
+  if (st.samples == null || i < 0 || i >= len(st.samples)) { return 0; }
+  return st.samples[i];
+}
+
+fn emit_film(st) {
+  let x = sf(st, 1);
+  let y = sf(st, 2);
+  let z = sf(st, 3);
+  let roll = sf(st, 4);
+  let pitch = sf(st, 5);
+  let yaw = sf(st, 6);
+  let rpm = sf(st, 7);
+  let rotor = sf(st, 8);
+  let damage = sf(st, 9);
+  let dust = sf(st, 10);
+  let smoke = sf(st, 11);
+  let fire = sf(st, 12);
+  let age = sf(st, 13);
+  let cam = cam_pack(st, x, y, z, yaw, pitch, sf(st, 17), sf(st, 18), sf(st, 19), sf(st, 20), sf(st, 21), sf(st, 22));
+  if (st.stage != 0) {
+    send(st.stage, {
+      tag: "pose", t: st.t, x: x, y: y, z: z, roll: roll, pitch: pitch, yaw: yaw,
+      rpm: rpm, rotor: rotor, damage: damage, cam: cam.cam, look: cam.look, mode: "film"
+    });
+  }
+  if (st.fx != 0) {
+    send(st.fx, {
+      tag: "fx", t: st.t, x: x, y: y, z: z, rpm: rpm, damage: damage,
+      crashAge: age, dust: dust, smoke: smoke, fire: fire, crashT: 0
+    });
+  }
+  st.px = x; st.py = y; st.pz = z; st.roll = roll; st.pitch = pitch; st.yaw = yaw;
+  st.rpm = rpm; st.damage = damage; st.frameTime = st.t;
+  return 0;
+}
+
+fn cam_pack(st, x, y, z, yaw, pitch, cx, cy, cz, lx, ly, lz) {
+  let nx = 0;
+  let nz = 0;
+  let ox = 0;
+  let oy = 0;
+  let oz = 0;
+  if (st.camMode == "跟随") {
+    nx = -cos(pitch) * sin(yaw);
+    nz = -cos(pitch) * cos(yaw);
+    return { cam: [x - nx * 16, y + 5.5, z - nz * 16], look: [x, y + 1, z] };
+  }
+  if (st.camMode == "环绕") {
+    ox = x + cos(st.oy) * cos(st.op) * st.odist;
+    oy = y + 1.5 + sin(st.op) * st.odist;
+    oz = z + sin(st.oy) * cos(st.op) * st.odist;
+    return { cam: [ox, oy, oz], look: [x, y + 0.6, z] };
+  }
+  return { cam: [cx, cy, cz], look: [lx, ly, lz] };
+}
+
+fn send_goal(st) {
+  if (st.physics == 0) { return 0; }
+  let allow = 0;
+  if (st.playing == 1 && st.mode == "live") { allow = 1; }
+  send(st.physics, {
+    tag: "goal", tx: st.tx, ty: st.ty, tz: st.tz,
+    heading: st.heading, wind: st.wind, fault: st.fault, allow: allow
+  });
+  let cam = cam_pack(st, st.px, st.py, st.pz, st.yaw, st.pitch, 12, 8, 16, st.px, st.py, st.pz);
+  send(st.physics, { tag: "cam", cx: cam.cam[0], cy: cam.cam[1], cz: cam.cam[2], lx: cam.look[0], ly: cam.look[1], lz: cam.look[2] });
+  return 0;
+}
+
+fn arm_rehearsal(st) {
+  let vx = 0;
+  let vy = 0;
+  let vz = 0;
+  if (st.physics == 0) {
+    st.physics = spawn("/Programs/physics.npl", "物理");
+    st.flight = spawn("/Programs/flight.npl", "飞控");
+    if (st.wm != 0) {
+      send(st.wm, { tag: "team", windowId: st.windowId, pid: st.physics });
+      send(st.wm, { tag: "team", windowId: st.windowId, pid: st.flight });
+    }
+  }
+  if (st.mode != "live") {
+    vx = sf(st, 14);
+    vy = sf(st, 15);
+    vz = sf(st, 16);
+  }
+  send(st.physics, {
+    tag: "init", stage: st.stage, fx: st.fx, flight: st.flight, timeline: st.me,
+    x: st.px, y: st.py, z: st.pz, roll: st.roll, pitch: st.pitch, yaw: st.yaw,
+    vx: vx, vy: vy, vz: vz, rpm: st.rpm, sim: st.t, damage: st.damage, crashed: st.damage,
+    tx: st.tx, ty: st.ty, tz: st.tz,
+    heights: st.heights, nx: st.nx, nz: st.nz, ox: st.ox, oz: st.oz, step: st.step,
+    pads: st.pads, blocks: st.blocks
+  });
+  send(st.flight, { tag: "boot", physics: st.physics, timeline: st.me });
+  st.mode = "live";
+  st.recording = 1;
+  st.rec = [];
+  st.controls = [];
+  st.note = "排演从当前画面继续。没有飞控输入时姿态会散。";
+  send_goal(st);
+  return 0;
+}
+
+fn apply_pose(st, m) {
+  if (m.x != null) { st.px = m.x; st.py = m.y; st.pz = m.z; }
+  if (m.roll != null) { st.roll = m.roll; st.pitch = m.pitch; st.yaw = m.yaw; }
+  if (m.rpm != null) { st.rpm = m.rpm; }
+  if (m.damage != null) { st.damage = m.damage; }
+  if (m.t != null) { st.frameTime = m.t; st.t = m.t; }
+  if (st.recording == 1) { remember(st, m); }
+  return 0;
+}
+
+fn remember(st, m) {
+  let rotor = 0;
+  let dust = 0;
+  let smoke = 0;
+  let fire = 0;
+  let age = -1;
+  let vx = 0;
+  let vy = 0;
+  let vz = 0;
+  let cx = st.px;
+  let cy = st.py + 6;
+  let cz = st.pz + 14;
+  let lx = st.px;
+  let ly = st.py;
+  let lz = st.pz;
+  if (m.rotor != null) { rotor = m.rotor; }
+  if (m.dust != null) { dust = m.dust; }
+  if (m.smoke != null) { smoke = m.smoke; }
+  if (m.fire != null) { fire = m.fire; }
+  if (m.crashAge != null) { age = m.crashAge; }
+  if (m.vx != null) { vx = m.vx; vy = m.vy; vz = m.vz; }
+  if (m.cam != null) { cx = m.cam[0]; cy = m.cam[1]; cz = m.cam[2]; }
+  if (m.look != null) { lx = m.look[0]; ly = m.look[1]; lz = m.look[2]; }
+  push(st.rec, m.t);
+  push(st.rec, m.x); push(st.rec, m.y); push(st.rec, m.z);
+  push(st.rec, m.roll); push(st.rec, m.pitch); push(st.rec, m.yaw);
+  push(st.rec, m.rpm); push(st.rec, rotor); push(st.rec, m.damage);
+  push(st.rec, dust); push(st.rec, smoke); push(st.rec, fire); push(st.rec, age);
+  push(st.rec, vx); push(st.rec, vy); push(st.rec, vz);
+  push(st.rec, cx); push(st.rec, cy); push(st.rec, cz);
+  push(st.rec, lx); push(st.rec, ly); push(st.rec, lz);
+  return 0;
+}
+
+fn save_record(st) {
+  let obj = {
+    format: "nest-flight-1", scene: st.path, duration: st.t, fps: 20, stride: 23,
+    initial: { x: st.px, y: st.py, z: st.pz, roll: st.roll, pitch: st.pitch, yaw: st.yaw },
+    inputs: [{ t: 0, wind: st.wind, heading: st.heading, fault: st.fault, tx: st.tx, ty: st.ty, tz: st.tz }],
+    controls: st.controls, samples: st.rec
+  };
+  let text = json_stringify(obj);
+  let path = "/Demo/flight-" + str(floor(clock())) + ".record";
+  let wr = write_file(path, text);
+  if (wr != null && wr.error != null) { st.note = wr.error; return 0; }
+  st.note = "已保存 " + path + "，原记录未改";
+  return 0;
+}
+
+fn build(st) {
+  let w = [];
+  let loopLabel = "循环关";
+  if (st.loop == 1) { loopLabel = "循环开"; }
+  push(w, { t: "button", id: "player-play", testid: "player-play", x: 8, y: 4, w: 52, h: 26, label: "播放" });
+  push(w, { t: "button", id: "player-pause", testid: "player-pause", x: 64, y: 4, w: 52, h: 26, label: "暂停" });
+  push(w, { t: "button", id: "player-stop", testid: "player-stop", x: 120, y: 4, w: 52, h: 26, label: "停止" });
+  push(w, { t: "button", id: "player-step", testid: "player-step", x: 176, y: 4, w: 52, h: 26, label: "逐帧" });
+  push(w, { t: "button", id: "player-loop", testid: "player-loop", x: 232, y: 4, w: 64, h: 26, label: loopLabel });
+  push(w, { t: "button", id: "player-camera", testid: "player-camera", x: 300, y: 4, w: 64, h: 26, label: st.camMode });
+  push(w, { t: "input", id: "player-seek", testid: "player-seek", x: 370, y: 4, w: 72, h: 26, value: str(round(st.t * 10) / 10) });
+  push(w, { t: "input", id: "player-rate", testid: "player-rate", x: 448, y: 4, w: 48, h: 26, value: str(st.rate) });
+  push(w, { t: "button", id: "player-open", testid: "player-open", x: 502, y: 4, w: 52, h: 26, label: "打开" });
+  push(w, { t: "input", id: "player-path", testid: "player-path", x: 558, y: 4, w: 220, h: 26, value: st.path });
+  push(w, { t: "button", id: "rehearsal-start", testid: "rehearsal-start", x: 8, y: 36, w: 72, h: 26, label: "排演" });
+  push(w, { t: "input", id: "rehearsal-wind", testid: "rehearsal-wind", x: 86, y: 36, w: 64, h: 26, value: str(st.wind) });
+  push(w, { t: "input", id: "rehearsal-heading", testid: "rehearsal-heading", x: 156, y: 36, w: 64, h: 26, value: str(st.heading) });
+  push(w, { t: "input", id: "rehearsal-fault", testid: "rehearsal-fault", x: 226, y: 36, w: 64, h: 26, value: str(st.fault) });
+  push(w, { t: "button", id: "rehearsal-controller", testid: "rehearsal-controller", x: 296, y: 36, w: 72, h: 26, label: "飞控" });
+  push(w, { t: "button", id: "rehearsal-save", testid: "rehearsal-save", x: 374, y: 36, w: 72, h: 26, label: "存记录" });
+  push(w, { t: "button", id: "window-project", testid: "window-project", x: 452, y: 36, w: 64, h: 26, label: "投送" });
+  let ids = ancestors();
+  let ax = 522;
+  let j = 0;
+  if (ids != null) {
+    while (j < len(ids)) {
+      push(w, { t: "button", id: "pt" + ids[j], testid: "project-target", x: ax, y: 36, w: 78, h: 26, label: ids[j], target: ids[j], sys: ids[j] });
+      ax = ax + 82;
+      j = j + 1;
+    }
+  }
+  push(w, { t: "label", id: "player-time", testid: "player-time", x: 8, y: 66, w: 520, h: 18, text: time_text(st) });
+  push(w, { t: "label", id: "player-selection", testid: "player-selection", x: 530, y: 66, w: 250, h: 18, text: st.pickText });
+  push(w, { t: "view3d", id: "player-view", testid: "player-view", x: 8, y: 88, w: 780, h: 400 });
+  push(w, { t: "label", id: "player-note", testid: "player-note", x: 8, y: 492, w: 780, h: 18, text: st.note });
+  return w;
+}
+
+fn time_text(st) {
+  return state_name(st) + "  " + str(round(st.t * 10) / 10) + " / " + str(round(st.duration * 10) / 10) + " 秒  速率 " + str(st.rate) + "  " + st.mode + "  " + st.camMode;
+}

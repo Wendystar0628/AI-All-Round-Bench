@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": [
+      "start",
+      "--",
+      "--data-dir",
+      "{dataDir}",
+      "--width",
+      "{width}",
+      "--height",
+      "{height}",
+      "--remote-debugging-port={port}"
+    ],
+    "cwd": "."
+  },
+  "mainWindow": {
+    "title": "栖境 NEST · Nested OS",
+    "connection": "CDP http://127.0.0.1:19106 · 主桌面 file:// 页面"
+  },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernel": "/System/kernel.nest",
+      "compiler": "/System/compiler.nest",
+      "flightController": "/Programs/flight.nest"
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "minimalScene": "/Demo/minimal.scene",
+      "documents": "/Documents",
+      "kernel": "父系统 /System/{systemId}.kernel.nest",
+      "compiler": "/System/compiler.nest",
+      "windowManager": "/System/wm.nest",
+      "flightController": "/Programs/flight.nest",
+      "physics": "/Programs/physics.nest",
+      "interactiveProgram": "/Programs/counter.nest"
+    }
+  },
+  "browser": {
+    "context": "Electron webview，在 CDP 中为独立网页 target；自制导航控件在主桌面上下文"
+  },
+  "interface": "主桌面 window.bench: version, ready(), reset(), inspect()",
+  "screenshots": {
+    "method": "Page.captureScreenshot",
+    "params": {
+      "captureBeyondViewport": false,
+      "fromSurface": true
+    },
+    "note": "整桌面原生录制不需要额外设置；CDP 截图不要临时扩展网页视口"
+  }
+}

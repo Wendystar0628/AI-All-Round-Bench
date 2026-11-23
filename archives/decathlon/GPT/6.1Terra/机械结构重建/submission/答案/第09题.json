@@ -1,0 +1,15 @@
+﻿{"problem":"09","parts":[{"name":"1","title":"跨腔三向斜流道歧管","features":[
+ {"type":"extrude","plane":"XY","loops":[{"rect":[-10,-10,184,126]}],"depth":12},
+ {"type":"extrude","plane":"XZ","origin":[0,116,0],"loops":[{"path":[[0,12],[174,12],[174,44],[132,86],[0,86]]}],"depth":116},
+ {"type":"extrude","plane":"YZ","origin":[174,0,0],"loops":[{"rect":[30,20,86,66]}],"depth":8},
+ {"type":"hole","plane":"ZY","origin":[182,0,0],"at":[44,58],"d":18,"depth":174,"reverse":true},
+ {"type":"hole","plane":"YZ","origin":[182,0,0],"at":[58,44],"d":28,"depth":4},
+ {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[44,62],"d":22,"through":true,"cbore":{"d":34,"depth":12}},
+ {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[118,26],"d":26,"through":true,"cbore":{"d":40,"depth":10}},
+ {"type":"hole","plane":"XY","origin":[0,0,86],"at":[80,58],"d":16,"depth":50,"cbore":{"d":30,"depth":10}},
+ {"type":"hole","plane":{"origin":[153,58,65],"normal":[0.70710678,0,0.70710678],"x_dir":[0,1,0]},"at":[0,0],"d":14,"depth":64},
+ {"type":"hole","plane":"XY","origin":[0,0,12],"at":[[-5,-5],[-5,121],[179,-5],[179,121]],"d":8,"through":true},
+ {"type":"fillet","radius":2,"edges":[[-10,-10,6]]},
+ {"type":"chamfer","distance":1,"edges":[[80,-10,0]]}
+]}]}
+

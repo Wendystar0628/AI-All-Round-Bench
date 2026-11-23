@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>果冻冲击与造浪水槽</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="view"></canvas>
+
+  <!-- 顶部栏 -->
+  <header id="topbar" class="ui">
+    <div class="brand">
+      <div class="logo">果冻<span>·</span>水槽</div>
+      <div class="subtitle">软体 · 刚体 · 液体 双向作用模拟</div>
+    </div>
+    <nav class="scene-tabs">
+      <button class="tab active" id="tab-jelly" data-scene="jelly">场景一 · 重球冲击果冻</button>
+      <button class="tab" id="tab-tank" data-scene="tank">场景二 · 多密度球造浪水槽</button>
+    </nav>
+    <div class="top-right">
+      <button class="tbtn" id="btn-sound" title="音效开关">音效 开</button>
+      <button class="tbtn" id="btn-help" title="操作说明">?</button>
+    </div>
+  </header>
+
+  <!-- 演示条 -->
+  <section id="demobar" class="ui">
+    <div class="demobar-title">预设演示</div>
+    <div class="demo-btns">
+      <button class="dbtn" data-demo="jelly-center"><b>正中单击</b><i>jelly-center</i></button>
+      <button class="dbtn" data-demo="jelly-multi"><b>连击</b><i>jelly-multi</i></button>
+      <button class="dbtn" data-demo="jelly-offset"><b>偏击</b><i>jelly-offset</i></button>
+      <button class="dbtn" data-demo="tank-full"><b>风浪</b><i>tank-full</i></button>
+    </div>
+    <div class="playback">
+      <button class="pbtn" id="btn-play" title="暂停 / 继续">暂停</button>
+      <button class="pbtn" id="btn-slow" title="慢放开关">慢放 1x</button>
+      <button class="pbtn" id="btn-reset" title="重置当前场景">重置</button>
+    </div>
+  </section>
+
+  <!-- 参数面板 -->
+  <aside id="panel" class="ui">
+    <div class="panel-head">
+      <span id="panel-title">参数</span>
+      <button id="panel-collapse" title="折叠">—</button>
+    </div>
+    <div class="panel-body" id="panel-body"></div>
+  </aside>
+
+  <!-- 触发按钮 -->
+  <div id="actions" class="ui"></div>
+
+  <!-- 提示 -->
+  <div id="hint" class="ui">左键旋转 · 滚轮缩放 · 右键平移</div>
+
+  <!-- 帮助 -->
+  <div id="help" class="ui hidden">
+    <div class="help-card">
+      <h2>操作说明</h2>
+      <ul>
+        <li><b>左键拖拽</b> 旋转视角；<b>滚轮</b> 缩放；<b>右键拖拽</b> 平移。</li>
+        <li><b>空格</b> 暂停 / 继续；<b>R</b> 重置；<b>S</b> 慢放；<b>1/2</b> 切换场景。</li>
+        <li>场景一：选择冲击方式后点击「释放重球」，可连续触发多次。</li>
+        <li>场景二：点击「释放小球」投放入球；「开始造浪 / 停止造浪」控制波浪装置。</li>
+        <li>修改右侧参数后，现象会按题面方向实时变化。</li>
+      </ul>
+      <button id="help-close">关闭</button>
+    </div>
+  </div>
+
+  <div id="loading" class="ui">
+    <div class="load-card">
+      <div class="spinner"></div>
+      <div id="load-text">正在初始化 WebGPU…</div>
+    </div>
+  </div>
+
+  <div id="fatal" class="ui hidden">
+    <div class="help-card">
+      <h2>无法启动</h2>
+      <p id="fatal-text"></p>
+    </div>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/rigid.js"></script>
+<script src="js/jelly.js"></script>
+<script src="js/water.js"></script>
+<script src="js/scene_jelly.js"></script>
+<script src="js/scene_tank.js"></script>
+<script src="js/demos.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

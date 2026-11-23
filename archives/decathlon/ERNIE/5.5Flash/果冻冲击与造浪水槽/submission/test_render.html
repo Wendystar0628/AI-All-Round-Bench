@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>render test</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block;width:100vw;height:100vh}</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="js/util.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/debug.js"></script>
+<script>
+(async () => {
+  const canvas = document.getElementById('c');
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(innerWidth * dpr);
+    canvas.height = Math.floor(innerHeight * dpr);
+  }
+  resize();
+  await initGPU(canvas);
+  await initRenderer(canvas);
+  // 空白水体视图（测试用）
+  const d = GPU.device;
+  R.waterDepthView = d.createTexture({size:[canvas.width,canvas.height],format:'r32float',usage:GPUTextureUsage.TEXTURE_BINDING|GPUTextureUsage.RENDER_ATTACHMENT}).createView();
+  R.waterThickView = d.createTexture({size:[canvas.width,canvas.height],format:'rgba16float',usage:GPUTextureUsage.TEXTURE_BINDING|GPUTextureUsage.RENDER_ATTACHMENT}).createView();
+  setWaterViews(R.waterDepthView, R.waterThickView);
+
+  const proj = M4.perspective(0.7, canvas.width/canvas.height, 0.1, 100);
+  const view = M4.lookAt([0, 1.6, 4.2], [0, 0.7, 0], [0,1,0]);
+  const vp = M4.mul(proj, view);
+  let t0 = performance.now();
+  function frame() {
+    const t = (performance.now() - t0) / 1000;
+    beginFrame();
+    setFrameUniforms({ viewProj: vp, camPos: [0, 1.6, 4.2], time: t });
+    shadowPass();
+    const m1 = M4.fromTRS([0,0.5,0], [0, Math.sin(t)*0.3, 0, Math.cos(t)*0.3], [0.9,0.9,0.9]);
+    pushShadow(R.meshes.sphere, m1);
+    endShadow();
+    beginScene();
+    drawMesh(R.meshes.disc, M4.fromTRS([0,0,0],[0,0,0,1],[6,1,6]), [0.18,0.19,0.22,1], [0.55,0]);
+    drawMesh(R.meshes.sphere, m1, [0.9,0.3,0.25,1], [0.18,1.0]);
+    drawMesh(R.meshes.sphere, M4.fromTRS([-1.4,0.5,0],[0,0,0,1],[0.6,0.6,0.6]), [0.3,0.7,0.9,1], [0.25,0.4]);
+    endScene();
+    composite();
+    requestAnimationFrame(frame);
+  }
+  frame();
+  window.__ready = true;
+})().catch(e => { document.title = 'ERR'; console.error(e); window.__err = String(e) + '\n' + e.stack; });
+</script>
+</body></html>

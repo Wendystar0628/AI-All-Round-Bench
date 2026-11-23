@@ -1,0 +1,2 @@
+﻿import assert from 'node:assert/strict';import {DEFAULT_COMPILER,compileProgram} from './compiler.mjs';
+let p=JSON.parse(compileProgram('SET n 2\nPLUS n 3\nLOG $n\nEND'));assert.deepEqual(p.code.map(x=>x.op),['set','add','log','end']);let altered=JSON.parse(DEFAULT_COMPILER);altered.aliases.plus='mul';assert.equal(JSON.parse(compileProgram('SET n 2\nPLUS n 3\nEND',JSON.stringify(altered))).code[1].op,'mul');assert.equal(JSON.parse(compileProgram(DEFAULT_COMPILER)).name,'系统编译器');assert.throws(()=>compileProgram('UNKNOWN x'));console.log('compiler checks passed');

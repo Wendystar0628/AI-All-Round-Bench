@@ -1,0 +1,25 @@
+{
+  "name": "tasks 应用服务",
+  "format": "nest-1",
+  "policy": {
+    "sort": "pid"
+  },
+  "code": [
+    [
+      "call",
+      "app.events"
+    ],
+    [
+      "call",
+      "app.tasks"
+    ],
+    [
+      "wait",
+      0.05
+    ],
+    [
+      "jump",
+      0
+    ]
+  ]
+}

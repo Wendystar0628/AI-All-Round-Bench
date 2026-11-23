@@ -1,0 +1,225 @@
+{
+  "format": "nscene-1",
+  "name": "24 号直升机 · 暮色山谷",
+  "note": "场景资源：几何、部件层级、材质、灯光、镜头与关键帧时序。纯数据，不含任何代码。",
+  "fps": 30,
+  "duration": 15.0,
+  "sky": {
+    "top": "#1a2150",
+    "mid": "#6b4f8c",
+    "bottom": "#f2a95e",
+    "fog": "#7d6296",
+    "fogNear": 110,
+    "fogFar": 380
+  },
+  "terrain": {
+    "size": 480,
+    "segments": 128,
+    "seed": 20241124
+  },
+  "ground": { "color": "#4c6b3a" },
+  "helipads": [
+    { "x": 0, "z": 0, "r": 10 },
+    { "x": 86, "z": -58, "r": 9 }
+  ],
+  "props": [
+    { "type": "building", "x": -42, "z": 30, "w": 16, "h": 20, "d": 13, "color": "#6a6f88" },
+    { "type": "building", "x": -26, "z": 46, "w": 11, "h": 13, "d": 10, "color": "#7b6d8f" },
+    { "type": "building", "x": -56, "z": 12, "w": 9, "h": 9, "d": 9, "color": "#5f6580" },
+    { "type": "building", "x": 120, "z": -40, "w": 13, "h": 11, "d": 12, "color": "#6d6480" },
+    { "type": "rock", "x": 26, "z": 18, "r": 2.2 },
+    { "type": "rock", "x": 33, "z": 26, "r": 1.5 },
+    { "type": "rock", "x": -14, "z": -18, "r": 1.9 },
+    { "type": "rock", "x": 58, "z": -30, "r": 2.6 },
+    { "type": "rock", "x": 74, "z": -46, "r": 1.7 },
+    { "type": "tree", "x": 18, "z": 32, "s": 1.1 },
+    { "type": "tree", "x": 30, "z": 40, "s": 0.85 },
+    { "type": "tree", "x": -20, "z": 24, "s": 1.25 },
+    { "type": "tree", "x": -34, "z": 8, "s": 0.95 },
+    { "type": "tree", "x": 44, "z": 22, "s": 1.05 },
+    { "type": "tree", "x": -46, "z": -12, "s": 1.15 },
+    { "type": "tree", "x": 96, "z": -30, "s": 0.9 },
+    { "type": "tree", "x": 108, "z": -62, "s": 1.2 },
+    { "type": "tree", "x": 64, "z": -70, "s": 1.0 },
+    { "type": "tree", "x": 12, "z": -44, "s": 0.8 },
+    { "type": "tree", "x": -8, "z": -34, "s": 1.1 }
+  ],
+  "lights": [
+    { "type": "directional", "color": "#ffd6a3", "intensity": 2.5, "pos": [130, 170, 70] },
+    { "type": "hemisphere", "sky": "#93a9ff", "ground": "#3d4a2c", "intensity": 0.8 }
+  ],
+  "parts": [
+    {
+      "id": "body",
+      "shape": { "type": "cylinder", "rt": 1.35, "rb": 1.35, "h": 4.4, "seg": 26 },
+      "material": { "texture": "livery", "base": "#6b2fb5", "accent": "#f5c518", "number": "24", "roughness": 0.42, "metalness": 0.12 },
+      "transform": { "pos": [0, 1.85, 0], "rot": [1.5707963267948966, 0, 0] }
+    },
+    {
+      "id": "glass",
+      "parent": "body",
+      "shape": { "type": "sphere", "r": 1.18, "seg": 22, "seg2": 16 },
+      "material": { "texture": "glass", "color": "#1b2440", "roughness": 0.08, "metalness": 0.7 },
+      "transform": { "pos": [0, 0.18, 1.55], "scale": [1, 0.92, 1.15] }
+    },
+    {
+      "id": "engine",
+      "parent": "body",
+      "shape": { "type": "box", "w": 1.0, "h": 0.62, "d": 1.3 },
+      "material": { "color": "#4a4a58", "roughness": 0.5, "metalness": 0.45 },
+      "transform": { "pos": [0, 1.35, -0.3] }
+    },
+    {
+      "id": "boom",
+      "parent": "body",
+      "shape": { "type": "cylinder", "rt": 0.46, "rb": 0.24, "h": 4.8, "seg": 14 },
+      "material": { "color": "#5a2796", "roughness": 0.5, "metalness": 0.1 },
+      "transform": { "pos": [0, 0.28, -3.5], "rot": [1.5707963267948966, 0, 0] }
+    },
+    {
+      "id": "fin",
+      "parent": "boom",
+      "shape": { "type": "box", "w": 0.16, "h": 1.7, "d": 1.25 },
+      "material": { "color": "#f5c518", "roughness": 0.45, "metalness": 0.08 },
+      "transform": { "pos": [0, 0.95, -2.1] }
+    },
+    {
+      "id": "tailplate",
+      "parent": "boom",
+      "shape": { "type": "box", "w": 1.5, "h": 0.12, "d": 0.8 },
+      "material": { "color": "#f5c518", "roughness": 0.45 },
+      "transform": { "pos": [0, 0.2, -2.2] }
+    },
+    {
+      "id": "tailrotor",
+      "parent": "fin",
+      "shape": { "type": "box", "w": 0.12, "h": 2.3, "d": 0.36 },
+      "material": { "color": "#2f2f38", "roughness": 0.6 },
+      "transform": { "pos": [0.28, 0.1, 0] }
+    },
+    {
+      "id": "hub",
+      "parent": "body",
+      "shape": { "type": "cylinder", "rt": 0.34, "rb": 0.42, "h": 0.62, "seg": 12 },
+      "material": { "color": "#d6d6e0", "roughness": 0.35, "metalness": 0.55 },
+      "transform": { "pos": [0, 1.62, -0.15] }
+    },
+    {
+      "id": "mast",
+      "parent": "body",
+      "shape": { "type": "cylinder", "r": 0.16, "h": 0.7, "seg": 10 },
+      "material": { "color": "#c9c9d4", "roughness": 0.3, "metalness": 0.6 },
+      "transform": { "pos": [0, 2.05, -0.15] }
+    },
+    {
+      "id": "blades",
+      "parent": "body",
+      "shape": { "type": "box", "w": 13.2, "h": 0.1, "d": 0.52 },
+      "material": { "color": "#2a2a32", "roughness": 0.55 },
+      "transform": { "pos": [0, 2.4, -0.15] }
+    },
+    {
+      "id": "disc",
+      "parent": "body",
+      "shape": { "type": "disc", "r": 6.6 },
+      "material": { "color": "#cfd6e6" },
+      "transform": { "pos": [0, 2.4, -0.15] }
+    },
+    {
+      "id": "strutL",
+      "parent": "body",
+      "shape": { "type": "box", "w": 0.14, "h": 1.0, "d": 0.4 },
+      "material": { "color": "#4c3a70", "roughness": 0.6 },
+      "transform": { "pos": [-1.15, -1.2, 0.2], "rot": [0, 0, 0.35] }
+    },
+    {
+      "id": "strutR",
+      "parent": "body",
+      "shape": { "type": "box", "w": 0.14, "h": 1.0, "d": 0.4 },
+      "material": { "color": "#4c3a70", "roughness": 0.6 },
+      "transform": { "pos": [1.15, -1.2, 0.2], "rot": [0, 0, -0.35] }
+    },
+    {
+      "id": "skidL",
+      "parent": "body",
+      "shape": { "type": "box", "w": 0.16, "h": 0.16, "d": 4.8 },
+      "material": { "color": "#cfcfe0", "roughness": 0.4, "metalness": 0.5 },
+      "transform": { "pos": [-1.35, -1.62, 0.15] }
+    },
+    {
+      "id": "skidR",
+      "parent": "body",
+      "shape": { "type": "box", "w": 0.16, "h": 0.16, "d": 4.8 },
+      "material": { "color": "#cfcfe0", "roughness": 0.4, "metalness": 0.5 },
+      "transform": { "pos": [1.35, -1.62, 0.15] }
+    },
+    {
+      "id": "nose24",
+      "parent": "body",
+      "shape": { "type": "box", "w": 1.0, "h": 0.5, "d": 0.12 },
+      "material": { "texture": "livery", "base": "#f5c518", "accent": "#3a1a66", "number": "24" },
+      "transform": { "pos": [0, 0.35, 2.12] }
+    }
+  ],
+  "timeline": {
+    "name": "默认演出 · 暮色山谷坠毁",
+    "duration": 15.0,
+    "keys": [
+      { "t": 0.0, "pos": [0, 1.62, 0], "rot": [0, 0, 0], "rotor": 0.0, "dust": 0.0, "damage": {} },
+      { "t": 0.9, "pos": [0, 1.62, 0], "rot": [0, 0, 0], "rotor": 14.0, "dust": 0.15, "damage": {} },
+      { "t": 1.8, "pos": [0, 1.66, 0], "rot": [0, 0, -0.03], "rotor": 24.0, "dust": 0.5, "damage": {} },
+      { "t": 2.7, "pos": [0.4, 3.6, -0.6], "rot": [0.02, 0.05, -0.1], "rotor": 29.0, "dust": 1.0, "damage": {} },
+      { "t": 4.2, "pos": [7.5, 7.4, -7.0], "rot": [0.04, 0.38, -0.16], "rotor": 30.0, "dust": 0.55, "damage": {} },
+      { "t": 6.0, "pos": [21.0, 10.6, -19.0], "rot": [0.06, 0.72, -0.14], "rotor": 30.0, "dust": 0.3, "damage": {} },
+      { "t": 7.8, "pos": [34.0, 13.4, -32.0], "rot": [0.08, 1.0, -0.1], "rotor": 30.0, "dust": 0.22, "damage": {} },
+      { "t": 9.0, "pos": [43.0, 14.2, -41.0], "rot": [0.1, 1.18, -0.06], "rotor": 30.0, "dust": 0.18, "damage": {} },
+      { "t": 9.7, "pos": [48.5, 13.6, -46.0], "rot": [0.14, 1.3, 0.06], "rotor": 27.0, "dust": 0.14, "damage": { "engine": 0.25 } },
+      { "t": 10.5, "pos": [54.0, 12.0, -51.0], "rot": [0.26, 1.42, 0.4], "rotor": 18.0, "dust": 0.1, "damage": { "engine": 0.55 } },
+      { "t": 11.3, "pos": [58.5, 9.0, -55.0], "rot": [0.45, 1.55, 0.82], "rotor": 8.0, "dust": 0.06, "damage": { "engine": 0.8, "blades": 0.3 } },
+      { "t": 12.0, "pos": [62.0, 5.4, -58.5], "rot": [0.75, 1.7, 1.35], "rotor": 2.0, "dust": 0.02, "damage": { "engine": 1.0, "blades": 0.6 } },
+      { "t": 12.5, "pos": [64.2, 2.2, -60.8], "rot": [1.15, 1.85, 1.95], "rotor": 0.0, "dust": 0.0, "damage": { "engine": 1.0, "blades": 0.8, "hub": 0.5 } },
+      { "t": 12.9, "pos": [65.0, 1.05, -61.6], "rot": [1.45, 1.95, 2.35], "rotor": 0.0, "dust": 0.0, "damage": { "engine": 1.0, "blades": 1.0, "hub": 0.9, "skidL": 0.7, "skidR": 0.5, "strutL": 0.6 } },
+      { "t": 13.6, "pos": [65.6, 0.92, -62.1], "rot": [1.52, 2.0, 2.42], "rotor": 0.0, "dust": 0.0, "damage": { "engine": 1.0, "blades": 1.0, "hub": 1.0, "skidL": 1.0, "skidR": 1.0, "strutL": 1.0, "strutR": 0.8, "glass": 0.6, "body": 0.35 } },
+      { "t": 15.0, "pos": [65.9, 0.88, -62.4], "rot": [1.54, 2.02, 2.44], "rotor": 0.0, "dust": 0.0, "damage": { "engine": 1.0, "blades": 1.0, "hub": 1.0, "skidL": 1.0, "skidR": 1.0, "strutL": 1.0, "strutR": 1.0, "glass": 1.0, "body": 0.5, "boom": 0.35 } }
+    ],
+    "cameraKeys": [
+      { "t": 0.0, "off": [13.5, 4.2, 15.0], "look": [0, 0.2, 0] },
+      { "t": 2.7, "off": [12.0, 3.0, 12.5], "look": [0, 0.4, -0.4] },
+      { "t": 5.0, "off": [15.5, 4.0, 11.0], "look": [0, 0.2, -3.0] },
+      { "t": 8.0, "off": [16.5, 3.2, 6.5], "look": [0, 0.6, -6.0] },
+      { "t": 9.7, "off": [14.0, 3.0, 7.0], "look": [0, 0.4, -3.0] },
+      { "t": 11.3, "off": [13.0, 2.6, 8.5], "look": [0, 0.4, -2.0] },
+      { "t": 12.5, "off": [11.0, 2.2, 10.0], "look": [0, 0.8, -1.0] },
+      { "t": 13.2, "off": [9.5, 2.0, 9.0], "look": [0, 1.0, -1.0] },
+      { "t": 15.0, "off": [9.0, 1.9, 8.6], "look": [0, 1.0, -1.0] }
+    ],
+    "events": [
+      { "t": 0.9, "kind": "rotor-start", "text": "旋翼启动" },
+      { "t": 2.7, "kind": "liftoff", "text": "离地" },
+      { "t": 9.0, "kind": "fault-warning", "text": "发动机转速异常" },
+      { "t": 10.5, "kind": "rotor-failure", "text": "旋翼失去动力" },
+      { "t": 12.9, "kind": "impact", "text": "撞击地面" },
+      { "t": 13.4, "kind": "debris", "text": "碎片散落" },
+      { "t": 14.2, "kind": "settle", "text": "烟尘落定" }
+    ],
+    "smoke": [
+      { "t": 12.9, "pos": [65.0, 1.4, -61.6], "size": 3.4, "color": "#3a3a42" },
+      { "t": 13.1, "pos": [64.2, 2.0, -61.0], "size": 2.6, "color": "#4a4a52" },
+      { "t": 13.4, "pos": [63.0, 2.6, -60.2], "size": 2.0, "color": "#5a5a62" },
+      { "t": 13.8, "pos": [61.6, 3.4, -59.4], "size": 1.5, "color": "#6a6a72" },
+      { "t": 14.3, "pos": [60.0, 4.2, -58.4], "size": 1.1, "color": "#7a7a82" },
+      { "t": 14.8, "pos": [58.4, 4.8, -57.4], "size": 0.8, "color": "#8a8a92" }
+    ],
+    "fire": [
+      { "t": 12.9, "pos": [65.2, 1.2, -61.4], "size": 1.8, "color": "#ff9a3c" },
+      { "t": 13.3, "pos": [65.0, 1.3, -61.6], "size": 1.3, "color": "#ffcf5a" },
+      { "t": 13.9, "pos": [64.9, 1.2, -61.5], "size": 0.8, "color": "#ff7a2c" }
+    ],
+    "debris": [
+      { "t": 12.9, "pos": [64.6, 1.2, -61.2], "vel": [-2.4, 3.2, 1.8], "size": 1.0 },
+      { "t": 12.9, "pos": [65.4, 1.3, -61.9], "vel": [2.8, 2.6, -2.2], "size": 0.8 },
+      { "t": 12.9, "pos": [64.9, 1.5, -61.6], "vel": [0.6, 3.8, 2.6], "size": 0.9 },
+      { "t": 12.9, "pos": [65.2, 1.1, -61.4], "vel": [-1.6, 2.4, -2.8], "size": 0.7 }
+    ]
+  }
+}

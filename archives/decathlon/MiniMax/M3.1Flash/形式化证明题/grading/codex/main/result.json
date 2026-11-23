@@ -1,0 +1,61 @@
+{
+    "task":  "形式化证明题",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "第 1 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem1.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem1；按指南本题记 0 分。"
+                  },
+                  {
+                      "name":  "第 2 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem2.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem2；按指南本题记 0 分。"
+                  },
+                  {
+                      "name":  "第 3 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem3.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem3；按指南本题记 0 分。"
+                  },
+                  {
+                      "name":  "第 4 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem4.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem4；按指南本题记 0 分。"
+                  },
+                  {
+                      "name":  "第 5 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem5.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem5；按指南本题记 0 分。"
+                  },
+                  {
+                      "name":  "第 6 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem6.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem6；按指南本题记 0 分。"
+                  },
+                  {
+                      "name":  "第 7 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem7.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem7；按指南本题记 0 分。"
+                  },
+                  {
+                      "name":  "第 8 题",
+                      "max":  12.5,
+                      "score":  0,
+                      "reason":  "作答结束时的工作目录中缺少 Problem8.lean，唯一 Lean 文件 Scratch.lean 也未声明主定理 problem8；按指南本题记 0 分。"
+                  }
+              ],
+    "metrics":  {
+                    "total":  0,
+                    "submitted_main_theorems":  0
+                },
+    "notes":  "评的是作答结束时工作目录的内容，已将全部作答文件复制到本评分工作目录，不看 git 提交。原始提交仅有 Scratch.lean 和题面（另有本评分表），未发现任何其他位置或名称的证明文件。Scratch.lean 只有 Mathlib 导入与 #check 查询，未声明 problem1–problem8，因此八题均按缺少主定理计 0 分，没有可进行逐题编译、#print axioms 和 #check @problemK 核验的证明。抽读本次归档 session.log 的结尾，模型结束前仍在推敲第一题证明，未落地为定理。",
+    "anomaly":  "会话末尾仍在推敲证明，最终只留接口查询草稿，未提交主定理。"
+}

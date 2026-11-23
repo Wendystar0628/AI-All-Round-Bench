@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' app:; script-src 'self' app:; style-src 'self' app: 'unsafe-inline'; img-src 'self' app: data: blob:; connect-src 'self' app: https: http:; frame-src app: https: http:;">
+<title>Nested OS</title>
+<link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+<div id="desktop-root"></div>
+<script src="../core/nsl-core.js"></script>
+<script src="./js/vfs.js"></script>
+<script src="./js/runtime.js"></script>
+<script src="./js/desktop.js"></script>
+<script src="./js/rootapps.js"></script>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>

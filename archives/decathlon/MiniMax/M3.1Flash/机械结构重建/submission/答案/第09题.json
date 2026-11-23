@@ -1,0 +1,25 @@
+{
+  "problem": "09",
+  "parts": [
+    {
+      "name": "1",
+      "title": "跨腔三向斜流道歧管",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [-10, 0, 188, 126]}], "depth": 6, "name": "底板"},
+        {"type": "fillet", "radius": 2, "edges": [[-10, 0, 3]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[80, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "plane": "ZX", "origin": [0, 7, 0], "loops": [{"path": [[0, 0], [85, 0], [85, 132], [48, 176], [0, 176]]}], "depth": 109, "name": "本体 顶面Z85 右端45度斜面"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 27], "loops": [{"rect": [8, 17, 190, 106]}], "depth": 16, "name": "水平流道"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 27], "loops": [{"rect": [82, 17, 92, 106]}], "depth": 58, "name": "中间立隔板"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[5, 5], [185, 5], [5, 121], [185, 121]], "d": 8, "through": true, "name": "底板角孔Φ8"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 7, 0], "at": [[63, 44]], "d": 22, "depth": 30, "reverse": true, "name": "前通口Φ22"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 7, 0], "at": [[27, 120]], "d": 26, "depth": 30, "reverse": true, "cbore": {"d": 40, "depth": 12}, "name": "Φ26孔 沉孔Φ40"},
+        {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[59, 55]], "d": 12, "through": true, "name": "隔板通孔Φ12"},
+        {"type": "hole", "plane": {"origin": [152, 59, 65], "normal": [0.7071, 0, 0.7071], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 14, "depth": 64, "name": "斜孔Φ14 深64 倾角45 方位0"},
+        {"type": "hole", "plane": {"origin": [89, 30, 85], "normal": [0, 0.5, 0.866], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 10, "depth": 40, "name": "斜孔Φ10 深40 倾角30 方位90"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 85], "at": [[89, 30]], "d": 16, "depth": 79, "name": "顶部孔Φ16"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[21, 24]], "d": 10, "through": true, "name": "底面孔Φ10"}
+      ]
+    }
+  ]
+}

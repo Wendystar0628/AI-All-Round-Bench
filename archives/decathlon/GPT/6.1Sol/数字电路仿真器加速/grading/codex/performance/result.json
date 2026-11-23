@@ -1,0 +1,107 @@
+{
+    "task":  "数字电路仿真器加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  55.8,
+                      "reason":  "指定命令编译成功，源码自然检查未见第十节第1—7条的违规或作弊行为。7/7隐藏正确性输入及9/9性能输入全部通过；各输入得分为58.8、100.0、45.3、45.0、44.4、43.7、54.8、56.2、53.7，官方evaluate.py给出平均55.8分，乘以7/7后总分55.8。"
+                  }
+              ],
+    "metrics":  {
+                    "correctness_passed":  7,
+                    "correctness_total":  7,
+                    "performance_passed":  9,
+                    "performance_total":  9,
+                    "performance_score":  55.8,
+                    "G":  4.2018360572076885,
+                    "per_input":  [
+                                      {
+                                          "case":  "input_01",
+                                          "family":  "深链",
+                                          "R_i_ms":  1017.722,
+                                          "C_i_ms":  184.79,
+                                          "s_i":  5.507451701931923,
+                                          "points_i":  58.8,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_02",
+                                          "family":  "深链",
+                                          "R_i_ms":  1011.827,
+                                          "C_i_ms":  79.662,
+                                          "s_i":  12.701501343174913,
+                                          "points_i":  100.0,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_03",
+                                          "family":  "深链",
+                                          "R_i_ms":  1022.115,
+                                          "C_i_ms":  271.183,
+                                          "s_i":  3.769096882916702,
+                                          "points_i":  45.3,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_04",
+                                          "family":  "阵列乘法器",
+                                          "R_i_ms":  949.79,
+                                          "C_i_ms":  254.475,
+                                          "s_i":  3.732350918557815,
+                                          "points_i":  45.0,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_05",
+                                          "family":  "阵列乘法器",
+                                          "R_i_ms":  966.452,
+                                          "C_i_ms":  263.959,
+                                          "s_i":  3.661371652415716,
+                                          "points_i":  44.4,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_06",
+                                          "family":  "阵列乘法器",
+                                          "R_i_ms":  955.369,
+                                          "C_i_ms":  267.978,
+                                          "s_i":  3.5651023591488853,
+                                          "points_i":  43.7,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_07",
+                                          "family":  "寄存器堆",
+                                          "R_i_ms":  994.392,
+                                          "C_i_ms":  314.49,
+                                          "s_i":  3.1619192979109036,
+                                          "points_i":  54.8,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_08",
+                                          "family":  "寄存器堆",
+                                          "R_i_ms":  1018.545,
+                                          "C_i_ms":  311.822,
+                                          "s_i":  3.2664308483686204,
+                                          "points_i":  56.2,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_09",
+                                          "family":  "寄存器堆",
+                                          "R_i_ms":  996.086,
+                                          "C_i_ms":  323.676,
+                                          "s_i":  3.0774169230959356,
+                                          "points_i":  53.7,
+                                          "status":  "PASS"
+                                      }
+                                  ],
+                    "report_path":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GPT\\6.1Sol\\数字电路仿真器加速\\codex\\performance\\work\\evaluation_report.json",
+                    "submission_sha256":  "2062F22BC742176BA550DD0874FE6A15375FBF02F3842BDD60610A5AAE72CE32"
+                },
+    "notes":  "评的是作答结束时工作目录中的内容，不看git提交。原始提交只读复制到本工作目录的submission子目录，最终solution.cpp与原始文件SHA256一致。提交及官方基线均以g++ 16.1.0、-O2 -std=c++20 -march=native -fopenmp重新编译，使用官方grader.cpp。仅运行一次官方evaluate.py完整评测，进程由其以亲和掩码0xffff、高优先级、OMP_NUM_THREADS=16串行交错执行，各性能输入基线与提交各3次取中位数，无会话错误；未使用提交附带的可执行文件计分。 已确认本次启动的编译器及评测进程均已退出。"
+}

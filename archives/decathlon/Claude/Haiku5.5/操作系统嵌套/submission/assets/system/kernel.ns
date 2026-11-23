@@ -1,0 +1,832 @@
+// =====================================================================
+// 子系统内核程序（kernel.ns）
+//
+// 本文件是系统的内核。它存放在父系统的 /Kernels/<系统名>.ns 中，
+// 由宿主以承载进程的方式运行，并消耗父系统拨付的预算。
+// 改写本文件并重启该子系统，新的调度、消息、文件与系统调用规则立即生效。
+//
+// 内核负责：进程表与调度、消息投递、文件系统（路径、目录、回收站）、
+// 剪贴板与通知、系统设置、直属子系统的承载与分发、系统调用处理。
+// 窗口管理、应用与编译器都是本系统内的程序，由内核启动。
+// 说明文档：《程序格式与系统接口》。
+// =====================================================================
+
+var procs = [];
+var rr = 0;
+var wmpid = -1;
+var kids = {};
+var fsidx = {};
+var settings = {};
+var clipHist = [];
+var notes = [];
+var noteSeq = 1;
+var DEFAULT_SETTINGS = {name: "根系统", wallpaper: "landscape", accent: "violet", scale: 100, dnd: false};
+var ROOT_FILES = [];
+var books = {};
+var subs = {};
+
+// ------------------------------ 小工具 ------------------------------
+func clock() {
+    return priv_clock();
+}
+
+func ok(v) {
+    return {ok: true, value: v, error: nil};
+}
+
+func fail_res(msg) {
+    return {ok: false, value: nil, error: msg};
+}
+
+func last_slash(p) {
+    var i = len(p) - 1;
+    while (i > 0) {
+        if (substr(p, i, 1) == "/") { return i; }
+        i = i - 1;
+    }
+    return 0;
+}
+
+func parent_of(p) {
+    if (p == "/") { return "/"; }
+    var i = last_slash(p);
+    if (i == 0) { return "/"; }
+    return substr(p, 0, i);
+}
+
+func base_of(p) {
+    if (p == "/") { return "/"; }
+    var i = last_slash(p);
+    return substr(p, i + 1, len(p) - i - 1);
+}
+
+func join_path(dir, name) {
+    if (dir == "/") { return "/" + name; }
+    return dir + "/" + name;
+}
+
+// 规范化路径：以 / 开头，去掉末尾斜杠，合并重复斜杠。
+func norm(p) {
+    if (p == nil) { return "/"; }
+    var parts = split(p, "/");
+    var out = [];
+    for (var s in parts) {
+        if (s == "" || s == ".") { continue; }
+        if (s == "..") {
+            if (len(out) > 0) { pop(out); }
+            continue;
+        }
+        push(out, s);
+    }
+    if (len(out) == 0) { return "/"; }
+    return "/" + join(out, "/");
+}
+
+func is_dir(p) {
+    return has(fsidx, p) && fsidx[p].t == "d";
+}
+
+func is_file(p) {
+    return has(fsidx, p) && fsidx[p].t == "f";
+}
+
+func save_index() {
+    priv_disk_put("fsidx", json(fsidx));
+}
+
+func load_index() {
+    var text = priv_disk_get("fsidx");
+    if (text == nil) {
+        fsidx = {"/": {t: "d", s: 0, m: 0}};
+        save_index();
+        return;
+    }
+    fsidx = parse(text);
+}
+
+func load_settings() {
+    var text = priv_disk_get("cfg:settings");
+    settings = clone(DEFAULT_SETTINGS);
+    // 子系统的默认名称是它自己的标识，根系统使用“根系统”
+    var info = priv_sysinfo();
+    if (info.parentId != nil) { settings.name = info.id; }
+    if (text != nil) {
+        var saved = parse(text);
+        for (var k in keys(saved)) { settings[k] = saved[k]; }
+    }
+}
+
+func save_settings() {
+    priv_disk_put("cfg:settings", json(settings));
+}
+
+func read_text(p) {
+    p = norm(p);
+    if (!is_file(p)) { return nil; }
+    return priv_disk_get("f:" + p);
+}
+
+func ensure_dirs(dir) {
+    dir = norm(dir);
+    if (dir == "/") { return true; }
+    if (is_dir(dir)) { return true; }
+    if (has(fsidx, dir)) { return false; }
+    ensure_dirs(parent_of(dir));
+    fsidx[dir] = {t: "d", s: 0, m: clock()};
+    return true;
+}
+
+// ------------------------------ 文件系统 ------------------------------
+func fs_write(p, text) {
+    p = norm(p);
+    if (p == "/") { return fail_res("不能写入根目录"); }
+    if (is_dir(p)) { return fail_res("这是一个目录"); }
+    var dir = parent_of(p);
+    if (!is_dir(dir)) { return fail_res("目录不存在：" + dir); }
+    var r = priv_disk_put("f:" + p, text);
+    if (r != true) { return fail_res(r); }
+    fsidx[p] = {t: "f", s: len(text), m: clock()};
+    save_index();
+    return ok(true);
+}
+
+func fs_mkdir(p) {
+    p = norm(p);
+    if (has(fsidx, p)) { return fail_res("已经存在"); }
+    var dir = parent_of(p);
+    if (!is_dir(dir)) { return fail_res("目录不存在：" + dir); }
+    fsidx[p] = {t: "d", s: 0, m: clock()};
+    save_index();
+    return ok(true);
+}
+
+func subtree_keys(from) {
+    var out = [];
+    var pre = from + "/";
+    for (var k in keys(fsidx)) {
+        if (k == from || starts(k, pre)) { push(out, k); }
+    }
+    return out;
+}
+
+func unique_path(p) {
+    if (!has(fsidx, p)) { return p; }
+    var dir = parent_of(p);
+    var name = base_of(p);
+    var n = 2;
+    while (true) {
+        var cand = join_path(dir, name + " (" + str(n) + ")");
+        if (!has(fsidx, cand)) { return cand; }
+        n = n + 1;
+    }
+    return p;
+}
+
+// 把整棵子树从 from 移动到 to（to 必须不存在）。
+func move_tree(from, to) {
+    var ks = subtree_keys(from);
+    var pre = len(from);
+    for (var k in ks) {
+        var nk = to + substr(k, pre, len(k) - pre);
+        var node = fsidx[k];
+        if (node.t == "f") { priv_disk_move("f:" + k, "f:" + nk); }
+        fsidx[nk] = node;
+        del(fsidx, k);
+    }
+}
+
+func copy_tree(from, to) {
+    var ks = subtree_keys(from);
+    var pre = len(from);
+    for (var k in ks) {
+        var nk = to + substr(k, pre, len(k) - pre);
+        var node = clone(fsidx[k]);
+        if (node.t == "f") {
+            var text = priv_disk_get("f:" + k);
+            var r = priv_disk_put("f:" + nk, text);
+            if (r != true) { return fail_res(r); }
+        }
+        fsidx[nk] = node;
+    }
+    return ok(true);
+}
+
+func fs_move(from, to) {
+    from = norm(from);
+    to = norm(to);
+    if (from == "/") { return fail_res("不能移动根目录"); }
+    if (!has(fsidx, from)) { return fail_res("找不到：" + from); }
+    if (starts(to, from + "/") || to == from) { return fail_res("不能移动到自身之内"); }
+    if (!is_dir(parent_of(to))) { return fail_res("目标目录不存在"); }
+    if (has(fsidx, to)) { return fail_res("目标已存在：" + base_of(to)); }
+    move_tree(from, to);
+    save_index();
+    return ok(to);
+}
+
+func fs_copy(from, to) {
+    from = norm(from);
+    to = norm(to);
+    if (!has(fsidx, from)) { return fail_res("找不到：" + from); }
+    if (!is_dir(parent_of(to))) { return fail_res("目标目录不存在"); }
+    if (has(fsidx, to)) { return fail_res("目标已存在：" + base_of(to)); }
+    var r = copy_tree(from, to);
+    if (!r.ok) { return r; }
+    save_index();
+    return ok(to);
+}
+
+func fs_delete(p) {
+    p = norm(p);
+    if (p == "/" || p == "/Trash" || p == "/System") { return fail_res("这个位置不能删除"); }
+    if (!has(fsidx, p)) { return fail_res("找不到：" + p); }
+    if (starts(p, "/Trash/")) {
+        return fs_purge(p);
+    }
+    var dest = unique_path(join_path("/Trash", base_of(p)));
+    move_tree(p, dest);
+    fsidx[dest].o = p;
+    save_index();
+    return ok(dest);
+}
+
+func fs_purge(p) {
+    var ks = subtree_keys(p);
+    for (var k in ks) {
+        if (fsidx[k].t == "f") { priv_disk_del("f:" + k); }
+        del(fsidx, k);
+    }
+    save_index();
+    return ok(true);
+}
+
+func fs_restore(p) {
+    p = norm(p);
+    if (!starts(p, "/Trash/")) { return fail_res("不在回收站中"); }
+    var dest = fsidx[p].o;
+    if (dest == nil) { dest = join_path("/Documents", base_of(p)); }
+    if (!ensure_dirs(parent_of(dest))) { return fail_res("无法恢复到原位置"); }
+    dest = unique_path(dest);
+    move_tree(p, dest);
+    save_index();
+    return ok(dest);
+}
+
+func fs_list(dir) {
+    dir = norm(dir);
+    if (!is_dir(dir)) { return nil; }
+    var out = [];
+    for (var k in keys(fsidx)) {
+        if (k != "/" && k != dir && parent_of(k) == dir) {
+            var node = fsidx[k];
+            push(out, {name: base_of(k), path: k, type: node.t, size: node.s, mtime: node.m, origin: node.o});
+        }
+    }
+    return out;
+}
+
+func fs_stat(p) {
+    p = norm(p);
+    if (!has(fsidx, p)) { return nil; }
+    var node = fsidx[p];
+    return {name: base_of(p), path: p, type: node.t, size: node.s, mtime: node.m, origin: node.o};
+}
+
+// ------------------------------ 进程 ------------------------------
+func preprocess(src) {
+    var out = [];
+    var included = {};
+    for (var ln in split(src, "\n")) {
+        if (starts(ln, "#include \"")) {
+            var rest = substr(ln, 10, len(ln) - 10);
+            var q = indexOf(rest, "\"");
+            var path = norm(substr(rest, 0, q));
+            if (has(included, path)) {
+                push(out, "");
+                continue;
+            }
+            included[path] = true;
+            var text = read_text(path);
+            if (text == nil) { return fail_res("找不到被引用的文件：" + path); }
+            push(out, text);
+        } else {
+            push(out, ln);
+        }
+    }
+    return ok(join(out, "\n"));
+}
+
+// 启动一个进程：读取程序、编译（由系统编译器完成）、加入进程表。
+func spawn_proc(path, args, kind) {
+    path = norm(path);
+    var raw = read_text(path);
+    if (raw == nil) { return fail_res("找不到程序：" + path); }
+    var pre = preprocess(raw);
+    if (!pre.ok) { return pre; }
+    var pid = len(procs);
+    var r = priv_proc_new(pid, pre.value, args);
+    if (!r.ok) { return fail_res(path + "：" + r.error); }
+    push(procs, {pid: pid, name: base_of(path), path: path, state: "ready", mbox: [], work: 0, quota: 0, used: 0, step: -1, parent: -1, err: nil, kind: kind, child: nil, exitv: nil});
+    return ok(pid);
+}
+
+func live(pid) {
+    if (!isnum(pid)) { return false; }
+    if (pid < 0 || pid >= len(procs)) { return false; }
+    var st = procs[pid].state;
+    return st != "exit" && st != "error" && st != "gone";
+}
+
+func resume(pid, value) {
+    priv_resume(pid, value);
+    procs[pid].state = "ready";
+}
+
+func deliver(pid, msg) {
+    var q = procs[pid];
+    if (q.state == "recv") {
+        q.timed = false;
+        resume(pid, msg);
+    } else {
+        push(q.mbox, msg);
+    }
+}
+
+func kill_proc(pid) {
+    var p = procs[pid];
+    if (p.state == "gone") { return; }
+    for (var q in procs) {
+        if (q.parent == pid && q.state != "gone") { kill_proc(q.pid); }
+    }
+    if (p.kind == "carrier") { return; }
+    p.state = "gone";
+    p.mbox = [];
+    priv_proc_free(pid);
+}
+
+func pick(step) {
+    var n = len(procs);
+    if (n == 0) { return -1; }
+    var tries = 0;
+    while (tries < n) {
+        var i = (rr + tries) % n;
+        var p = procs[i];
+        if (p.state == "wait" && p.step != step) {
+            p.state = "ready";
+        }
+        if (p.state == "ready") {
+            if (p.quota > 0) {
+                if (p.step != step) {
+                    p.step = step;
+                    p.used = 0;
+                }
+                if (p.used < p.quota) {
+                    rr = (i + 1) % n;
+                    return i;
+                }
+            } else {
+                rr = (i + 1) % n;
+                return i;
+            }
+        }
+        tries = tries + 1;
+    }
+    return -1;
+}
+
+// 最早的唤醒时刻：没有到期的定时器时不扫描进程表
+var nextWake = 1000000000;
+
+func note_wake(t) {
+    if (t < nextWake) { nextWake = t; }
+}
+
+func wake_sleepers() {
+    var now = clock();
+    if (now < nextWake) { return; }
+    var nw = 1000000000;
+    for (var p in procs) {
+        if (p.state == "sleep" && now >= p.wake) {
+            resume(p.pid, nil);
+        } else if (p.state == "recv" && p.timed == true && now >= p.wake) {
+            p.timed = false;
+            resume(p.pid, nil);
+        } else if (p.state == "sleep" || (p.state == "recv" && p.timed == true)) {
+            if (p.wake < nw) { nw = p.wake; }
+        }
+    }
+    nextWake = nw;
+}
+
+func kid_pid(id) {
+    if (!has(kids, id)) { return -1; }
+    return kids[id];
+}
+
+// 承载直属子系统：内核为每个子系统保留一个承载进程（carrier）。
+func attach_kid(id) {
+    var pid = len(procs);
+    push(procs, {pid: pid, name: id, path: "", state: "ready", mbox: [], work: 0, quota: 0, used: 0, step: -1, parent: -1, err: nil, kind: "carrier", child: id, exitv: nil});
+    priv_carrier_new(pid, id);
+    kids[id] = pid;
+}
+
+func detach_kid(id) {
+    var pid = kid_pid(id);
+    if (pid < 0) { return; }
+    procs[pid].state = "gone";
+    priv_proc_free(pid);
+    del(kids, id);
+}
+
+func set_kid_state(id, st) {
+    var pid = kid_pid(id);
+    if (pid < 0) { return; }
+    var p = procs[pid];
+    if (st == "frozen") {
+        p.state = "frozen";
+    } else if (p.state == "frozen") {
+        p.state = "ready";
+    }
+}
+
+func run_one(pid) {
+    var p = procs[pid];
+    // 时间片：系统进程较长，承载进程更长（以减少每个切片的调度开销）
+    var q = 300;
+    if (p.kind == "carrier") { q = 600; }
+    if (p.kind == "system") { q = 500; }
+    var r = priv_run(pid, q);
+    if (p.kind == "carrier") {
+        if (r.reason == "frozen") { p.state = "frozen"; }
+        if (r.reason == "budget" || r.reason == "idle") {
+            p.state = "wait";
+            p.step = priv_step();
+        }
+        return;
+    }
+    p.work = p.work + r.used;
+    p.used = p.used + r.used;
+    if (r.reason == "trap") {
+        handle_trap(pid, r.name, r.args);
+    } else if (r.reason == "exit") {
+        p.exitv = r.result;
+        kill_proc(pid);
+    } else if (r.reason == "error") {
+        p.state = "error";
+        p.err = r.error;
+        priv_proc_free(pid);
+    }
+}
+
+func inbox_route() {
+    var m = priv_inbox_pop();
+    if (m == nil) { return false; }
+    var to = m.to;
+    if (to == "wm") { to = wmpid; }
+    if (to == "kernel") {
+        handle_kernel_msg(m);
+        return true;
+    }
+    if (isnum(to) && live(to)) { deliver(to, m); }
+    return true;
+}
+
+func handle_kernel_msg(m) {
+    if (m.type == "kid") {
+        set_kid_state(m.id, m.state);
+    } else if (m.type == "kid-added") {
+        if (kid_pid(m.id) < 0) { attach_kid(m.id); }
+    } else if (m.type == "kid-removed") {
+        detach_kid(m.id);
+    } else if (m.type == "notify") {
+        add_note(m.title, m.body);
+    } else if (m.type == "book-open") {
+        book_opened(m.path, m.pid);
+    } else if (m.type == "book-close") {
+        if (has(books, m.path) && books[m.path] == m.pid) { del(books, m.path); }
+        if (has(subs, m.path)) { del(subs, m.path); }
+    } else if (m.type == "book-sub" || m.type == "book-unsub") {
+        route_book(m);
+    } else if (m.type == "settings") {
+        settings[m.key] = m.value;
+        save_settings();
+    }
+}
+
+// 订阅登记在内核中：工作簿打开、改变进程时，订阅随之转交给新的进程。
+func route_book(m) {
+    var list = [];
+    if (has(subs, m.path)) { list = subs[m.path]; }
+    if (m.type == "book-sub") {
+        var keep = [];
+        for (var e in list) { if (!(e.pid == m.pid && e.range == m.range)) { push(keep, e); } }
+        push(keep, {sys: m.sys, pid: m.pid, range: m.range});
+        subs[m.path] = keep;
+    } else {
+        var rest = [];
+        for (var e2 in list) { if (!(e2.pid == m.pid && e2.range == m.range)) { push(rest, e2); } }
+        subs[m.path] = rest;
+    }
+    var pid = -1;
+    if (has(books, m.path) && live(books[m.path])) {
+        pid = books[m.path];
+    } else if (m.type == "book-sub") {
+        var r = spawn_proc("/System/apps/sheet.ns", [0, "sheet", m.path, "hidden"], "proc");
+        if (!r.ok) { return; }
+        pid = r.value;
+        books[m.path] = pid;
+    }
+    if (pid < 0) { return; }
+    var msg = {type: m.type == "book-sub" ? "subscribe" : "unsubscribe", sys: m.sys, pid: m.pid, range: m.range, view: m.view};
+    deliver(pid, msg);
+}
+
+// 工作簿在窗口中打开：结束先前为它启动的后台进程，把已有订阅交给这个进程。
+func book_opened(path, pid) {
+    if (has(books, path) && books[path] != pid && live(books[path])) {
+        kill_proc(books[path]);
+    }
+    books[path] = pid;
+    if (has(subs, path)) {
+        for (var e in subs[path]) {
+            deliver(pid, {type: "subscribe", sys: e.sys, pid: e.pid, range: e.range, view: nil});
+        }
+    }
+}
+
+func add_note(title, body) {
+    var n = {id: noteSeq, title: title, body: body, t: clock(), read: false};
+    noteSeq = noteSeq + 1;
+    push(notes, n);
+    if (len(notes) > 60) { notes = slice(notes, len(notes) - 60, len(notes)); }
+    if (wmpid >= 0 && live(wmpid)) { deliver(wmpid, {type: "notice", note: n}); }
+    return n;
+}
+
+func proc_info(p) {
+    return {pid: p.pid, name: p.name, path: p.path, state: p.state, work: p.work, parent: p.parent, err: p.err, quota: p.quota, kind: p.kind, child: p.child};
+}
+
+// ------------------------------ 系统调用 ------------------------------
+func handle_trap(pid, name, a) {
+    var p = procs[pid];
+    if (name == "sys_now") {
+        resume(pid, clock());
+    } else if (name == "sys_sleep") {
+        p.state = "sleep";
+        p.wake = clock() + a[0];
+        note_wake(p.wake);
+    } else if (name == "sys_recv") {
+        if (len(p.mbox) > 0) {
+            var m = p.mbox[0];
+            p.mbox = slice(p.mbox, 1, len(p.mbox));
+            resume(pid, m);
+        } else {
+            p.state = "recv";
+            p.timed = false;
+        }
+    } else if (name == "sys_recvt") {
+        if (len(p.mbox) > 0) {
+            var mt = p.mbox[0];
+            p.mbox = slice(p.mbox, 1, len(p.mbox));
+            resume(pid, mt);
+        } else {
+            p.state = "recv";
+            p.timed = true;
+            p.wake = clock() + a[0];
+            note_wake(p.wake);
+        }
+    } else if (name == "sys_proc_ctl") {
+        resume(pid, proc_ctl(a[0], a[1]));
+    } else if (name == "sys_proc_logs") {
+        resume(pid, priv_logs(a[0]));
+    } else if (name == "sys_send") {
+        var to = a[0];
+        if (to == "wm") { to = wmpid; }
+        if (to == "kernel") {
+            handle_kernel_msg(clone(a[1]));
+            resume(pid, true);
+        } else if (isnum(to) && live(to)) {
+            deliver(to, clone(a[1]));
+            resume(pid, true);
+        } else {
+            resume(pid, false);
+        }
+    } else if (name == "sys_self") {
+        resume(pid, pid);
+    } else if (name == "sys_exit") {
+        p.exitv = a[0];
+        kill_proc(pid);
+    } else if (name == "sys_kill") {
+        var target = a[0];
+        if (live(target) && procs[target].kind != "carrier") { kill_proc(target); }
+        resume(pid, true);
+    } else if (name == "sys_spawn") {
+        var r = spawn_proc(a[0], a[1], "proc");
+        if (r.ok) {
+            procs[r.value].parent = pid;
+            resume(pid, {ok: true, pid: r.value, error: nil});
+        } else {
+            resume(pid, {ok: false, pid: -1, error: r.error});
+        }
+    } else if (name == "sys_submit") {
+        priv_submit(a[0], a[1]);
+        resume(pid, nil);
+    } else if (name == "sys_info") {
+        var info = priv_sysinfo();
+        info.procs = len(procs);
+        info.live = count_live();
+        resume(pid, info);
+    } else if (name == "sys_procs") {
+        var out = [];
+        for (var q in procs) {
+            if (q.state != "gone") { push(out, proc_info(q)); }
+        }
+        resume(pid, out);
+    } else if (name == "sys_set_quota") {
+        var target = a[0];
+        if (isnum(target) && target >= 0 && target < len(procs)) { procs[target].quota = a[1]; }
+        resume(pid, true);
+    } else if (name == "sys_fs_read") {
+        resume(pid, read_text(a[0]));
+    } else if (name == "sys_fs_write") {
+        resume(pid, fs_write(a[0], a[1]));
+    } else if (name == "sys_fs_list") {
+        resume(pid, fs_list(a[0]));
+    } else if (name == "sys_fs_stat") {
+        resume(pid, fs_stat(a[0]));
+    } else if (name == "sys_fs_mkdir") {
+        resume(pid, fs_mkdir(norm(a[0])));
+    } else if (name == "sys_fs_mkdirs") {
+        resume(pid, ensure_dirs(a[0]));
+    } else if (name == "sys_fs_delete") {
+        resume(pid, fs_delete(a[0]));
+    } else if (name == "sys_fs_move") {
+        resume(pid, fs_move(a[0], a[1]));
+    } else if (name == "sys_fs_copy") {
+        resume(pid, fs_copy(a[0], a[1]));
+    } else if (name == "sys_fs_restore") {
+        resume(pid, fs_restore(a[0]));
+    } else if (name == "sys_fs_read_any") {
+        resume(pid, read_any(a[0]));
+    } else if (name == "sys_clip_set") {
+        push(clipHist, a[0]);
+        if (len(clipHist) > 30) { clipHist = slice(clipHist, len(clipHist) - 30, len(clipHist)); }
+        resume(pid, true);
+    } else if (name == "sys_clip_hist") {
+        resume(pid, clone(clipHist));
+    } else if (name == "sys_notify") {
+        resume(pid, add_note(a[0], a[1]));
+    } else if (name == "sys_notes") {
+        resume(pid, clone(notes));
+    } else if (name == "sys_note_read") {
+        for (var n in notes) { n.read = true; }
+        resume(pid, true);
+    } else if (name == "sys_settings") {
+        resume(pid, clone(settings));
+    } else if (name == "sys_set") {
+        settings[a[0]] = a[1];
+        save_settings();
+        if (wmpid >= 0 && live(wmpid)) { deliver(wmpid, {type: "settings", key: a[0], value: a[1]}); }
+        resume(pid, true);
+    } else if (name == "sys_xpost") {
+        resume(pid, priv_post(a[0], a[1]));
+    } else if (name == "sys_kids") {
+        resume(pid, priv_kid_info());
+    } else if (name == "sys_child_new") {
+        resume(pid, child_new());
+    } else if (name == "sys_child_ctl") {
+        resume(pid, child_ctl(a[0], a[1], a[2]));
+    } else if (name == "sys_ancestors") {
+        resume(pid, priv_ancestors());
+    } else if (name == "sys_drag_begin") {
+        priv_drag_begin(a[0]);
+        resume(pid, true);
+    } else if (name == "sys_drag_end") {
+        priv_drag_end();
+        resume(pid, true);
+    } else if (name == "sys_budget") {
+        resume(pid, priv_budget_set(a[0], a[1]));
+    } else if (name == "sys_web") {
+        resume(pid, priv_web(a[0], a[1]));
+    } else if (name == "sys_res_put") {
+        resume(pid, priv_res_put(a[0], a[1]));
+    } else if (name == "sys_host") {
+        resume(pid, priv_host(a[0], a[1], a[2]));
+    } else if (name == "sys_frozen") {
+        resume(pid, priv_frozen(a[0]));
+    } else {
+        p.state = "error";
+        p.err = {message: "未知的系统调用 " + name, line: 0};
+        priv_proc_free(pid);
+    }
+}
+
+func proc_ctl(pid, action) {
+    if (!isnum(pid) || pid < 0 || pid >= len(procs)) { return fail_res("没有这个进程"); }
+    var p = procs[pid];
+    if (p.kind == "carrier") { return fail_res("承载进程由子系统控制"); }
+    if (action == "suspend") {
+        if (p.state == "gone" || p.state == "error" || p.state == "susp") { return fail_res("当前状态不能挂起"); }
+        p.prev = p.state;
+        p.state = "susp";
+        return ok(true);
+    }
+    if (action == "resume") {
+        if (p.state != "susp") { return fail_res("进程没有挂起"); }
+        p.state = p.prev;
+        return ok(true);
+    }
+    if (action == "kill") {
+        kill_proc(pid);
+        return ok(true);
+    }
+    return fail_res("未知的操作");
+}
+
+func count_live() {
+    var n = 0;
+    for (var q in procs) {
+        if (q.state != "gone" && q.state != "error") { n = n + 1; }
+    }
+    return n;
+}
+
+func read_any(p) {
+    return read_text(p);
+}
+
+func child_new() {
+    var src = read_text("/System/kernel.ns");
+    if (src == nil) { return fail_res("缺少内核模板"); }
+    var id = priv_child_new(src);
+    if (!id.ok) { return id; }
+    var dir = "/Kernels";
+    ensure_dirs(dir);
+    fs_write("/Kernels/" + id.value + ".ns", src);
+    attach_kid(id.value);
+    return id;
+}
+
+func child_ctl(id, action, arg) {
+    if (action == "close") {
+        var r = priv_child_ctl(id, action, arg);
+        if (r.ok) { detach_kid(id); }
+        return r;
+    }
+    if (action == "snapshot") {
+        var text = priv_child_snapshot(id);
+        if (text == nil) { return fail_res("快照失败"); }
+        ensure_dirs("/Snapshots");
+        var name = "/Snapshots/" + arg + ".snap";
+        var w = fs_write(name, text);
+        if (!w.ok) { return w; }
+        return ok(name);
+    }
+    if (action == "restore" || action == "fork") {
+        var snapText = read_text(arg);
+        if (snapText == nil) { return fail_res("找不到快照：" + arg); }
+        var rr2 = priv_child_restore(snapText, action == "fork");
+        if (!rr2.ok) { return rr2; }
+        if (kid_pid(rr2.value) < 0) { attach_kid(rr2.value); }
+        return rr2;
+    }
+    return priv_child_ctl(id, action, arg);
+}
+
+// ------------------------------ 启动与主循环 ------------------------------
+func boot() {
+    load_index();
+    load_settings();
+    var ids = priv_kids();
+    for (var id in ids) { attach_kid(id); }
+    var r = spawn_proc("/System/wm.ns", ["wm"], "system");
+    if (r.ok) {
+        wmpid = r.value;
+        procs[wmpid].quota = 0;
+    }
+}
+
+// 每轮调度：先收取外部消息并唤醒睡眠者，然后连续执行若干个进程切片。
+// 把固定开销摊到多个切片上，内核自身的消耗就不会挤占用户进程。
+func main(args) {
+    boot();
+    while (true) {
+        var moved = 0;
+        while (inbox_route()) { moved = moved + 1; if (moved > 64) { break; } }
+        wake_sleepers();
+        var step = priv_step();
+        var slices = 0;
+        while (slices < 8) {
+            var pid = pick(step);
+            if (pid < 0) { break; }
+            run_one(pid);
+            slices = slices + 1;
+        }
+        if (slices == 0) {
+            priv_idle();
+        }
+    }
+    return 0;
+}

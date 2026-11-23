@@ -1,0 +1,19 @@
+{
+  "problem": "16",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双蜗室异面三通泵壳",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-8,-8,150,92],"r":6}],"depth":8},
+        {"type":"extrude","plane":"XZ","origin":[0,80,0],"loops":[{"circle":[38,62],"d":132}],"depth":72},
+        {"type":"extrude","plane":"XZ","origin":[0,80,0],"loops":[{"circle":[100,58],"d":112}],"depth":72},
+        {"type":"hole","plane":"XY","origin":[0,0,8],"at":[[0,0],[142,0],[0,84],[142,84]],"d":12,"through":true},
+        {"type":"hole","plane":"XZ","origin":[0,80,0],"at":[[38,62]],"d":76,"depth":72,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,80,0],"at":[[100,58]],"d":64,"depth":72,"reverse":true},
+        {"type":"hole","plane":"YZ","origin":[142,0,0],"at":[[42,58]],"d":38,"depth":90},
+        {"type":"hole","plane":{"origin":[0,0,0],"normal":[0.5,0,0.8660],"x_dir":[0,1,0]},"origin":[110,40,105],"at":[0,0],"d":32,"depth":60}
+      ]
+    }
+  ]
+}

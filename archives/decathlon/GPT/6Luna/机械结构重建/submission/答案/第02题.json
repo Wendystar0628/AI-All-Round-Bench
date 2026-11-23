@@ -1,0 +1,13 @@
+{
+  "problem": "02",
+  "parts": [
+    {"name":"1","title":"夹具底座","features":[{"type":"extrude","plane":"XY","loops":[{"rect":[0,0,180,120]}],"depth":12},{"type":"hole","plane":"XY","origin":[0,0,12],"at":[[10,10],[170,10],[10,110],[170,110]],"d":16,"through":true}]},
+    {"name":"2","title":"左阶梯导柱","placement":{"translate":[35,25,12]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-8,-8,8,8]}],"depth":100}]},
+    {"name":"3","title":"右阶梯导柱","placement":{"translate":[145,85,12]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-8,-8,8,8]}],"depth":100}]},
+    {"name":"4","title":"上横梁","placement":{"translate":[90,55,112]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-70,-40,70,40]}],"depth":18},{"type":"hole","plane":"XY","origin":[0,0,18],"at":[[-55,0],[55,0]],"d":16,"through":true}]},
+    {"name":"5","title":"双孔滑动压头","placement":{"translate":[90,55,68]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-60,-18,60,18]}],"depth":24},{"type":"hole","plane":"XY","origin":[0,0,24],"at":[[-45,0],[45,0]],"d":16,"through":true}]},
+    {"name":"6","title":"驱动斜楔","placement":{"translate":[55,40,68]},"features":[{"type":"extrude","plane":"XZ","origin":[0,18,0],"loops":[{"path":[[0,0],[55,0],[55,22]]}],"depth":36}]},
+    {"name":"7","title":"右止推座","placement":{"translate":[155,45,12]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-12,-20,12,20]}],"depth":78},{"type":"hole","plane":"YZ","origin":[12,0,42],"at":[0,0],"d":12,"depth":24}]},
+    {"name":"8","title":"调节推轴","placement":{"translate":[100,55,80]},"features":[{"type":"extrude","plane":"YZ","loops":[{"circle":[0,0],"d":12}],"depth":72}]}
+  ]
+}

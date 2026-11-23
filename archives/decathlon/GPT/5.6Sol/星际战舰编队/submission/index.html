@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>棱潮舰队 · 航行展示</title>
+  <style>
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#02040b}
+    canvas{display:block;width:100%;height:100%;outline:none}
+    #fallback{position:fixed;inset:0;display:none;place-items:center;color:#c9f8ff;background:#02040b;font:16px/1.8 "Microsoft YaHei",sans-serif;letter-spacing:.12em}
+  </style>
+</head>
+<body>
+  <canvas id="cinema" aria-label="星际战舰编队实时展示"></canvas>
+  <div id="fallback">需要支持 WebGL 2 的桌面版 Chrome</div>
+  <script src="main.js?v=45"></script>
+</body>
+</html>

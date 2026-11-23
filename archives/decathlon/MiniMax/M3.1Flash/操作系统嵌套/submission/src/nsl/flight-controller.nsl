@@ -1,0 +1,101 @@
+/*
+ * 子系统应用：飞控程序（NSL 程序）
+ * ------------------------------------------------------------
+ * 这是子系统里一个普通的、可在编辑器中查看和修改的程序文件：
+ * /System/flight-controller.nsl
+ * 它经系统接口读取带时间戳的传感器值，写出总距与舵面；
+ * 控制量保持到下一次写入，错过周期的控制不补发。
+ * 换一份飞控程序，排演中的飞行就会不同。
+ */
+var PARENT = 0;
+var COLLECTIVE = 50;   /* 总距 0..100 */
+var PITCH = 0;         /* 俯仰舵 -60..60 */
+var YAW = 0;           /* 偏航舵 -60..60 */
+var ROLL = 0;
+var THROTTLE = 70;
+var TARGET_ALT = 14;
+var TARGET_HDG = 0;
+var WRITES = 0;
+var LASTT = -1;
+
+function A(o, k) { return obj.get(o, k); }
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function send(to, obj) { call("msg.send", { to: to, payload: json.str(obj) }); }
+function clamp(v, lo, hi) { if (v < lo) { return lo; } if (v > hi) { return hi; } return v; }
+function wrap(a) {
+  while (a > 3.14159) { a = a - 6.28318; }
+  while (a < -3.14159) { a = a + 6.28318; }
+  return a;
+}
+
+/* 读传感器 → 算控制 → 写舵面 */
+function control(sensor) {
+  var pos = A(sensor, "pos");
+  var rot = A(sensor, "rot");
+  var rotv = A(sensor, "rotv");
+  var alt = num.toInt(A(pos, 1) * 100) / 100;
+  var yaw = num.toInt(A(rot, 1) * 100) / 100;
+  var pitch = num.toInt(A(rot, 0) * 100) / 100;
+  var roll = num.toInt(A(rot, 2) * 100) / 100;
+  var vy = num.toInt(A(sensor, "vy") * 100) / 100;
+  var vs = num.toInt(A(sensor, "speed") * 100) / 100;
+  var altErr = TARGET_ALT - alt;
+  /* 总距：高度误差与垂直速度反馈 */
+  COLLECTIVE = clamp(num.toInt(50 + altErr * 5.5 - vy * 9), 18, 96);
+  /* 偏航：航向误差 */
+  var hdgErr = wrap(TARGET_HDG - yaw);
+  YAW = clamp(num.toInt(hdgErr * 26 - rotv[1] * 30), -60, 60);
+  /* 俯仰：前飞速度与姿态回中 */
+  PITCH = clamp(num.toInt(altErr * 1.1 + pitch * 46 + rotv[0] * 26 - vs * 0.6), -55, 55);
+  ROLL = clamp(num.toInt(-roll * 40), -40, 40);
+  THROTTLE = clamp(num.toInt(45 + COLLECTIVE * 0.35), 30, 100);
+}
+
+function main() {
+  var args = json.parse(sys.syscall("app.args", "{}"));
+  PARENT = num.toInt(A(args, "parent"));
+  while (true) {
+    var guard = 0;
+    var got = 0;
+    while (guard < 32) {
+      guard = guard + 1;
+      var raw = sys.takeMsg();
+      if (raw == null || str.len(raw) == 0) { break; }
+      got = got + 1;
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl == null || str.len(pl) == 0) { continue; }
+      var ev = json.parse(pl);
+      var et = A(ev, "type");
+      if (et == "sensor") {
+        control(ev);
+        LASTT = num.toInt(A(ev, "t"));
+        var c = [];
+        oput(c, "collective", COLLECTIVE);
+        oput(c, "pitch", PITCH);
+        oput(c, "yaw", YAW);
+        oput(c, "roll", ROLL);
+        oput(c, "throttle", THROTTLE);
+        var out = [];
+        oput(out, "type", "ctrl");
+        oput(out, "ctrl", c);
+        oput(out, "writes", WRITES);
+        oput(out, "t", LASTT);
+        send(PARENT, out);
+        WRITES = WRITES + 1;
+        continue;
+      }
+      if (et == "cfg") {
+        TARGET_ALT = num.toInt(A(ev, "alt")) / 10;
+        TARGET_HDG = num.toInt(A(ev, "hdg")) / 100;
+        continue;
+      }
+    }
+    if (got == 0) { nap(16); }
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

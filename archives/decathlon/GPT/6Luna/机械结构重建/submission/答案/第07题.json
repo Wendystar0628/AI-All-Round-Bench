@@ -1,0 +1,21 @@
+{
+  "problem": "07",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层回油支承座",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-8,-36,108,36]}],"depth":8},
+        {"type":"extrude","plane":"XY","origin":[0,0,8],"loops":[{"rect":[5,-25,34,25]}],"depth":24},
+        {"type":"extrude","plane":"XY","origin":[0,0,8],"loops":[{"rect":[72,-25,98,25]}],"depth":29},
+        {"type":"extrude","plane":"YZ","origin":[8,0,0],"loops":[{"circle":[0,45],"d":70}],"depth":24},
+        {"type":"extrude","plane":"YZ","origin":[72,0,0],"loops":[{"circle":[0,52],"d":62}],"depth":24},
+        {"type":"hole","plane":"YZ","origin":[96,0,0],"at":[[0,45]],"d":32,"through":true},
+        {"type":"hole","plane":"YZ","origin":[96,0,0],"at":[[0,52]],"d":38,"through":true},
+        {"type":"hole","plane":"XY","origin":[0,0,8],"at":[[0,0],[100,0]],"d":10,"depth":25},
+        {"type":"fillet","radius":2,"edges":[[-8,-36,4]]},
+        {"type":"chamfer","distance":1,"edges":[[50,-36,0]]}
+      ]
+    }
+  ]
+}

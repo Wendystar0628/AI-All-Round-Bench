@@ -1,0 +1,758 @@
+// ============================================================
+// 飞行场景进程（Scene.osprog）
+// 由播放器启动：在所属系统虚拟时间内连续演化直升机状态，
+// 积分物理、计算部件位姿、提交三维场景；环境特效粒子由
+// Fx 进程通过消息协作提供。默认演出按资源中的飞行记录运行，
+// 排演时读取飞控进程写入的操纵量。
+// ============================================================
+
+let win = 0
+let fxPid = 0
+let tlPid = 0
+let sceneRes = null
+let scenePath = ""
+let viewId = ""
+let mode = "show"        // show | rehearsal | replay
+let playT = 0
+let playing = 1
+let loopMode = 0
+let rate = 1
+let camMode = "orbit"    // orbit | chase | free
+let camYaw = 0.7
+let camR = 15
+let camH = 5.5
+let camFreeR = 15
+let camFreeH = 6
+let camFreeYaw = 0.7
+let duration = 15
+// 机体状态
+let px = 0
+let py = 2.6
+let pz = 0
+let vx = 0
+let vy = 0
+let vz = 0
+let pitch = 0
+let roll = 0
+let yaw = 0.5
+let pr = 0
+let rr = 0
+let yr = 0
+let rotor = 0
+let crashed = 0
+let crashT = 0
+let damage = {}
+let debris = []
+let faultT = -1
+let faultRotor = 0.42
+let faultOn = 0
+let parts = []
+let windDir = 0.8
+let windSpeed = 2.4
+let gust = 1.2
+let gustPhase = 0
+let maxThrust = 15.6
+let dragK = 0.16
+let angDrag = 0.55
+let unstableK = 1.05
+let spinUp = 1.6
+let skidY = 1.02
+let landed = 0
+let record = null
+let recControls = []
+let recFault = null
+let ctrlLog = []
+let inputLog = []
+let startT = 0
+let lastTick = 0
+let booted = 0
+let statSteps = 0
+let camKeys = []
+let selPart = ""
+
+fn boot() {
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    win = m.win
+    tlPid = m.tl
+    let p = m.path
+    if p == "" {
+      p = "/Demo/helicopter-24.scene"
+    }
+    load_scene(p)
+    if m.fx != 0 {
+      fxPid = m.fx
+    }
+  } else if m.t == "closing" {
+    if fxPid != 0 {
+      kill(fxPid)
+    }
+    kill(self())
+  } else if m.t == "tick" {
+    on_tick(m)
+  } else if m.t == "set_mode" {
+    set_mode(m.mode, m.path)
+  } else if m.t == "playctl" {
+    on_playctl(m)
+  } else if m.t == "fx_particles" {
+    // 特效进程交付粒子列表
+    fxParts = m.list
+  } else if m.t == "pick" {
+    let best = ""
+    let bd = 3.5
+    for pt in parts {
+      if pt.v == 1 {
+        let d = dist3(pt.wx - m.x, pt.wy - m.y, pt.wz - m.z)
+        if d < bd {
+          bd = d
+          best = pt.n
+        }
+      }
+    }
+    selPart = best
+    send(tlPid, {"t": "picked", "name": best})
+  } else if m.t == "camera" {
+    on_camera(m)
+  } else if m.t == "save_record" {
+    save_record(m.path)
+  } else if m.t == "continue_from" {
+    continue_from(m.t0)
+  }
+}
+
+let fxParts = []
+
+fn on_playctl(m) {
+  if m.op == "play" {
+    playing = 1
+  } else if m.op == "pause" {
+    playing = 0
+  } else if m.op == "stop" {
+    playing = 0
+    playT = 0
+    reset_state()
+  } else if m.op == "loop" {
+    loopMode = m.on
+  } else if m.op == "rate" {
+    rate = m.rate
+  } else if m.op == "seek" {
+    playT = m.t
+    reset_state()
+  } else if m.op == "cam" {
+    camMode = m.mode
+  }
+}
+
+fn on_camera(m) {
+  if m.op == "drag" {
+    camFreeYaw = camFreeYaw + m.dx * 0.008
+    camFreeH = camFreeH + m.dy * 0.02
+    if camFreeH < 1 {
+      camFreeH = 1
+    }
+    if camFreeH > 40 {
+      camFreeH = 40
+    }
+    camMode = "free"
+  } else if m.op == "zoom" {
+    camFreeR = camFreeR * (1 + m.dy * 0.001)
+    if camFreeR < 5 {
+      camFreeR = 5
+    }
+    if camFreeR > 60 {
+      camFreeR = 60
+    }
+    camMode = "free"
+  } else if m.op == "mode" {
+    camMode = m.mode
+  }
+}
+
+// ---------------- 场景装载 ----------------
+fn load_scene(p) {
+  let txt = read_file(p)
+  if type(txt) == "map" {
+    send(tlPid, {"t": "error", "text": "场景文件无法读取: " + txt.error})
+    return
+  }
+  let r = fromjson(txt)
+  if type(r) != "map" {
+    send(tlPid, {"t": "error", "text": "场景文件格式错误"})
+    return
+  }
+  sceneRes = r
+  scenePath = p
+  duration = get(r, "duration", 15)
+  let env = get(r, "env", {})
+  let h = get(r, "heli", {})
+  maxThrust = get(h, "maxThrust", 15.6)
+  dragK = get(h, "drag", 0.16)
+  angDrag = get(h, "angDrag", 0.55)
+  unstableK = get(h, "unstable", 1.05)
+  spinUp = get(h, "rotorSpinUp", 1.6)
+  skidY = get(h, "skidOffset", 1.02)
+  let w = get(r, "wind", {})
+  windDir = get(w, "dir", 0.8)
+  windSpeed = get(w, "speed", 2.4)
+  gust = get(w, "gust", 1.2)
+  // 演出记录
+  let show = get(r, "show", {})
+  recControls = get(show, "controls", [])
+  recFault = get(show, "fault", null)
+  camKeys = get(show, "camera", [])
+  faultOn = 0
+  faultT = -1
+  if recFault != null {
+    faultT = get(recFault, "t", 6.0)
+    faultRotor = get(recFault, "rotor", 0.42)
+  }
+  build_parts(get(h, "parts", []), 0, 0, 0, 0, -1)
+  reset_state()
+  viewId = "player:" + str(win)
+  submit3d(viewId, r, null)
+  send(tlPid, {"t": "scene_ready", "duration": duration, "path": p})
+}
+
+fn build_parts(list, ox, oy, oz, depth, parent) {
+  for pt in list {
+    let pos = get(pt, "pos", [0, 0, 0])
+    let rot = get(pt, "rot", [0, 0, 0])
+    let nx = ox + pos[0]
+    let ny = oy + pos[1]
+    let nz = oz + pos[2]
+    push(parts, {
+      "n": get(pt, "name", "部件"), "geo": get(pt, "geo", {}), "mat": get(pt, "mat", {}),
+      "ox": nx, "oy": ny, "oz": nz, "rx": rot[0], "ry": rot[1], "rz": rot[2],
+      "spin": get(pt, "spin", ""), "axis": get(pt, "axis", "y"),
+      "wx": nx, "wy": ny, "wz": nz, "d": 0, "v": 1, "depth": depth, "parent": parent
+    })
+    let kids = get(pt, "children", [])
+    if kids != null {
+      build_parts(kids, nx, ny, nz, depth + 1, len(parts) - 1)
+    }
+  }
+}
+
+fn reset_state() {
+  let ini = get(get(sceneRes, "heli", {}), "initial", {})
+  let pos = get(ini, "pos", [0, 2.6, 0])
+  px = pos[0]
+  py = pos[1]
+  pz = pos[2]
+  vx = 0
+  vy = 0
+  vz = 0
+  pitch = 0
+  roll = 0
+  yaw = get(ini, "yaw", 0.5)
+  pr = 0
+  rr = 0
+  yr = 0
+  rotor = get(ini, "rotor", 0)
+  crashed = 0
+  crashT = 0
+  landed = 0
+  damage = {}
+  debris = []
+  fxParts = []
+  faultOn = 0
+  ctrlLog = []
+  inputLog = []
+  startT = playT
+  for pt in parts {
+    pt.d = 0
+    pt.v = 1
+  }
+}
+
+fn set_mode(md, path) {
+  if md == "rehearsal" {
+    mode = "rehearsal"
+    playT = 0
+    reset_state()
+  } else if md == "replay" {
+    mode = "replay"
+    let txt = read_file(path)
+    if type(txt) == "map" {
+      send(tlPid, {"t": "error", "text": "记录文件无法读取"})
+      return
+    }
+    record = fromjson(txt)
+    recControls = get(record, "controls", [])
+    recFault = get(record, "fault", null)
+    faultT = -1
+    if recFault != null {
+      faultT = get(recFault, "t", -1)
+      faultRotor = get(recFault, "rotor", 0.42)
+    }
+    duration = get(record, "duration", 15)
+    playT = 0
+    reset_state()
+  } else {
+    mode = "show"
+    let show = get(sceneRes, "show", {})
+    recControls = get(show, "controls", [])
+    recFault = get(show, "fault", null)
+    faultT = -1
+    if recFault != null {
+      faultT = get(recFault, "t", 6.0)
+      faultRotor = get(recFault, "rotor", 0.42)
+    }
+    duration = get(sceneRes, "duration", 15)
+    playT = 0
+    reset_state()
+  }
+}
+
+fn continue_from(t0) {
+  // 从记录位置继续排演：保留当前状态，切换为排演模式
+  mode = "rehearsal"
+  startT = t0
+}
+
+// ---------------- 每帧 ----------------
+fn on_tick(m) {
+  statSteps = statSteps + 1
+  let dt = m.dt
+  if playing == 1 {
+    let prevT = playT
+    playT = playT + dt / 1000
+    // 固定子步积分，落后时补算（不变成慢动作）
+    let sub = 0.012
+    let total = (playT - prevT)
+    if total > 0.2 {
+      total = 0.2
+    }
+    let n = floor(total / sub)
+    if n > 16 {
+      n = 16
+    }
+    let i = 0
+    while i < n {
+      physics_step(sub)
+      i = i + 1
+    }
+    if playT >= duration {
+      if loopMode == 1 {
+        playT = 0
+        reset_state()
+      } else {
+        playT = duration
+        playing = 0
+      }
+    }
+  }
+  // 部件位姿
+  update_parts()
+  // 相机
+  let cam = camera_at(playT)
+  // 提交三维场景
+  let st = {
+    "time": playT, "parts": parts, "camera": cam, "particles": fxParts,
+    "rotor": rotor, "crashed": crashed, "wind": [cos(windDir) * windSpeed, 0, sin(windDir) * windSpeed],
+    "groundY": 0
+  }
+  submit3d(viewId, null, st)
+  // 通知特效进程
+  if fxPid != 0 {
+    send(fxPid, {"t": "tick", "t": playT, "dt": dt * rate, "alt": py - ground_h(px, pz), "rpm": rotor, "crashed": crashed, "crashX": px, "crashY": py, "crashZ": pz, "px": px, "py": py, "pz": pz})
+  }
+  // 发布传感器状态供飞控进程读取
+  flight_update({
+    "t": playT, "alt": py - ground_h(px, pz), "vy": vy, "vx": vx, "vz": vz,
+    "pitch": pitch, "roll": roll, "yaw": yaw, "pitchRate": pr, "rollRate": rr, "yawRate": yr,
+    "rotor": rotor, "px": px, "py": py, "pz": pz, "crashed": crashed, "landed": landed,
+    "mode": mode, "fault": faultOn
+  })
+  send(tlPid, {"t": "frame", "t": playT, "playing": playing, "crashed": crashed})
+}
+
+fn physics_step(dt) {
+  // 故障
+  if faultOn == 0 and faultT >= 0 and playT >= faultT {
+    faultOn = 1
+    send(tlPid, {"t": "fault", "t": playT})
+  }
+  // 旋翼转速
+  if faultOn == 1 {
+    rotor = rotor - (rotor - faultRotor) * dt * 0.9
+    if rotor < faultRotor {
+      rotor = faultRotor
+    }
+  } else {
+    rotor = rotor + (1 - rotor) * (dt / spinUp)
+    if rotor > 1 {
+      rotor = 1
+    }
+  }
+  // 操纵量：演出/回放用记录，排演用飞控进程的实时写入
+  let col = 0
+  let cx = 0
+  let cz = 0
+  let yw = 0
+  if mode == "rehearsal" {
+    let c = controls()
+    if c != null {
+      col = get(c, "col", 0)
+      cx = get(c, "cx", 0)
+      cz = get(c, "cz", 0)
+      yw = get(c, "yaw", 0)
+    }
+    push(ctrlLog, [playT, col, cx, cz, yw])
+    if len(ctrlLog) > 1200 {
+      ctrlLog = shift(ctrlLog)
+    }
+  } else {
+    let c = ctrl_at(playT)
+    col = c[0]
+    cx = c[1]
+    cz = c[2]
+    yw = c[3]
+  }
+  // 姿态（不稳定被控对象）
+  let ap = unstableK * pitch - angDrag * pr + cz * 2.8
+  let ar = unstableK * roll - angDrag * rr + cx * 2.8
+  pr = pr + ap * dt
+  rr = rr + ar * dt
+  pitch = pitch + pr * dt
+  roll = roll + rr * dt
+  yr = yr + (yw * 2.4 - 0.35 * yr) * dt
+  yaw = yaw + yr * dt
+  // 推力方向
+  let sp = sin(pitch)
+  let cp = cos(pitch)
+  let sr = sin(roll)
+  let cr = cos(roll)
+  let sy = sin(yaw)
+  let cy2 = cos(yaw)
+  let ux = -sr * cy2 + cr * sp * sy
+  let uy = cr * cp
+  let uz = sr * sy + cr * sp * cy2
+  let T = col * rotor * maxThrust
+  // 风（阵风）
+  gustPhase = gustPhase + dt * 1.7
+  let g = 1 + gust * 0.5 * sin(gustPhase) + gust * 0.3 * sin(gustPhase * 2.3)
+  let wx = cos(windDir) * windSpeed * g
+  let wz = sin(windDir) * windSpeed * g
+  let ax = T * ux + wx - dragK * vx
+  let ay = T * uy - 9.81 - dragK * vy
+  let az = T * uz + wz - dragK * vz
+  vx = vx + ax * dt
+  vy = vy + ay * dt
+  vz = vz + az * dt
+  px = px + vx * dt
+  py = py + vy * dt
+  pz = pz + vz * dt
+  // 地面接触
+  let gh = ground_h(px, pz)
+  if py - skidY <= gh {
+    py = gh + skidY
+    if vy < 0 {
+      let impact = 0 - vy
+      vy = -vy * 0.22
+      if impact > 4.2 {
+        do_crash(impact)
+      }
+    }
+    vx = vx * 0.86
+    vz = vz * 0.86
+    landed = 1
+    pitch = pitch * 0.9
+    roll = roll * 0.9
+    pr = pr * 0.8
+    rr = rr * 0.8
+    if abs(pitch) > 0.62 or abs(roll) > 0.62 {
+      do_crash(3.0)
+    }
+  } else {
+    landed = 0
+  }
+  // 与障碍物碰撞
+  if crashed == 0 {
+    let hit = prop_hit(px, py, pz)
+    if hit == 1 {
+      do_crash(6.0)
+    }
+  }
+}
+
+fn ctrl_at(t) {
+  let cs = recControls
+  if len(cs) == 0 {
+    return [0, 0, 0, 0]
+  }
+  if t <= cs[0][0] {
+    return cs[0]
+  }
+  let i = 0
+  while i < len(cs) - 1 and cs[i + 1][0] <= t {
+    i = i + 1
+  }
+  if i >= len(cs) - 1 {
+    return cs[len(cs) - 1]
+  }
+  let a = cs[i]
+  let b = cs[i + 1]
+  let f = (t - a[0]) / (b[0] - a[0])
+  if f < 0 {
+    f = 0
+  }
+  if f > 1 {
+    f = 1
+  }
+  return [a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f, a[4] + (b[4] - a[4]) * f]
+}
+
+fn do_crash(impact) {
+  if crashed == 1 {
+    return
+  }
+  crashed = 1
+  crashT = playT
+  // 部件损坏：尾梁、旋翼、滑橇等按冲击损坏
+  set_damage("尾桨", 1)
+  set_damage("垂尾", 1)
+  if impact > 5 {
+    set_damage("主旋翼", 1)
+    set_damage("尾梁", 1)
+  }
+  if abs(roll) > 0.6 {
+    set_damage("滑橇左", 1)
+  }
+  if abs(pitch) > 0.6 {
+    set_damage("滑橇右", 1)
+  }
+  send(tlPid, {"t": "crash", "t": playT, "impact": impact})
+}
+
+fn set_damage(nm, v) {
+  for pt in parts {
+    if pt.n == nm {
+      pt.d = v
+      if v == 1 {
+        pt.v = 0
+      }
+    }
+  }
+}
+
+// ---------------- 地形与障碍 ----------------
+fn base_h(x, z) {
+  return 8.0 * (0.55 * sin(x * 0.021 + 0.4) * cos(z * 0.019 + 1.1) + 0.3 * sin(x * 0.037 + 1.9) * cos(z * 0.041 + 0.3) + 0.15 * sin(x * 0.083 + 0.8) * cos(z * 0.071 + 2.2))
+}
+fn smooth01(t) {
+  if t < 0 {
+    return 0
+  }
+  if t > 1 {
+    return 1
+  }
+  return t * t * (3 - 2 * t)
+}
+
+fn ground_h(x, z) {
+  let b = base_h(x, z)
+  let b1 = base_h(0, 0)
+  let b2 = base_h(92, -58)
+  let d0 = sqrt(x * x + z * z)
+  let d1 = sqrt((x - 92) * (x - 92) + (z + 58) * (z + 58))
+  let h = b
+  if d0 < 16 {
+    let w = 1 - smooth01(d0 / 16)
+    h = h + (b1 - b) * w
+  }
+  if d1 < 14 {
+    let w = 1 - smooth01(d1 / 14)
+    h = h + (b2 - b) * w
+  }
+  return h
+}
+
+fn prop_hit(x, y, z) {
+  // 建筑（长方体）
+  if abs(x + 48) < 9 and abs(z - 36) < 8.5 and y < 22 {
+    return 1
+  }
+  if abs(x - 62) < 7 and abs(z - 48) < 7 and y < 13 {
+    return 1
+  }
+  if abs(x - 120) < 6 and abs(z - 30) < 6 and y < 9 {
+    return 1
+  }
+  // 塔
+  if sqrt((x + 70) * (x + 70) + (z + 30) * (z + 30)) < 2.2 and y < 26 {
+    return 1
+  }
+  // 树
+  if tree_hit(x, y, z, -26, -18, 1.25) == 1 {
+    return 1
+  }
+  if tree_hit(x, y, z, 34, -34, 1.0) == 1 {
+    return 1
+  }
+  if tree_hit(x, y, z, 58, 12, 0.85) == 1 {
+    return 1
+  }
+  if tree_hit(x, y, z, -58, 20, 1.1) == 1 {
+    return 1
+  }
+  if tree_hit(x, y, z, 20, 66, 0.95) == 1 {
+    return 1
+  }
+  if tree_hit(x, y, z, -92, 62, 1.3) == 1 {
+    return 1
+  }
+  if tree_hit(x, y, z, 104, -20, 1.05) == 1 {
+    return 1
+  }
+  return 0
+}
+
+fn tree_hit(x, y, z, tx, tz, s) {
+  let r = 0.55 * s
+  if sqrt((x - tx) * (x - tx) + (z - tz) * (z - tz)) < r and y - skidY < 4.4 * s {
+    return 1
+  }
+  return 0
+}
+
+// ---------------- 部件位姿 ----------------
+fn rot_pt(ox, oy, oz) {
+  let cr = cos(roll)
+  let sr = sin(roll)
+  let cp2 = cos(pitch)
+  let sp2 = sin(pitch)
+  let cy3 = cos(yaw)
+  let sy3 = sin(yaw)
+  let x1 = ox * cr - oy * sr
+  let y1 = ox * sr + oy * cr
+  let z1 = oz
+  let x2 = x1
+  let y2 = y1 * cp2 - z1 * sp2
+  let z2 = y1 * sp2 + z1 * cp2
+  let x3 = x2 * cy3 + z2 * sy3
+  let y3 = y2
+  let z3 = -x2 * sy3 + z2 * cy3
+  return [px + x3, py + y3, pz + z3]
+}
+
+fn update_parts() {
+  for pt in parts {
+    if pt.v == 1 {
+      let w = rot_pt(pt.ox, pt.oy, pt.oz)
+      pt.wx = w[0]
+      pt.wy = w[1]
+      pt.wz = w[2]
+      if pt.spin == "main" {
+        pt.ang = rotor * 42 + playT * 0.0
+      } else if pt.spin == "tail" {
+        pt.ang = rotor * 95
+      }
+    }
+  }
+}
+
+// ---------------- 相机 ----------------
+fn camera_at(t) {
+  let r = camR
+  let h = camH
+  let ya = camYaw
+  if len(camKeys) > 0 {
+    let k = cam_key(t)
+    r = k[0]
+    h = k[1]
+    ya = k[2]
+    let md = k[3]
+    if md == "chase" {
+      let cp3 = px + cos(yaw) * r
+      let zp3 = pz + sin(yaw) * r
+      return {"p": [cp3, py + h, zp3], "t": [px, py + 0.6, pz], "fov": 55}
+    }
+  }
+  if camMode == "free" {
+    r = camFreeR
+    h = camFreeH
+    ya = camFreeYaw
+  } else if camMode == "chase" {
+    return {"p": [px + cos(yaw) * r, py + h, pz + sin(yaw) * r], "t": [px, py + 0.6, pz], "fov": 55}
+  }
+  let cxp = px + cos(ya) * r
+  let czp = pz + sin(ya) * r
+  return {"p": [cxp, py + h, czp], "t": [px, py + 0.8, pz], "fov": 55}
+}
+
+fn cam_key(t) {
+  let ks = camKeys
+  if t <= get(ks[0], "t", 0) {
+    return [get(ks[0], "r", 15), get(ks[0], "h", 5), get(ks[0], "yaw", 0.7), get(ks[0], "mode", "orbit")]
+  }
+  let i = 0
+  while i < len(ks) - 1 and get(ks[i + 1], "t", 0) <= t {
+    i = i + 1
+  }
+  if i >= len(ks) - 1 {
+    let l = ks[len(ks) - 1]
+    return [get(l, "r", 15), get(l, "h", 5), get(l, "yaw", 0.7), get(l, "mode", "orbit")]
+  }
+  let a = ks[i]
+  let b = ks[i + 1]
+  let f = (t - get(a, "t", 0)) / (get(b, "t", 0) - get(a, "t", 0))
+  if f < 0 {
+    f = 0
+  }
+  if f > 1 {
+    f = 1
+  }
+  return [get(a, "r", 15) + (get(b, "r", 15) - get(a, "r", 15)) * f, get(a, "h", 5) + (get(b, "h", 5) - get(a, "h", 5)) * f, get(a, "yaw", 0.7) + (get(b, "yaw", 0.7) - get(a, "yaw", 0.7)) * f, get(b, "mode", "orbit")]
+}
+
+// ---------------- 记录保存 ----------------
+fn save_record(path) {
+  let ft = -1
+  if faultT >= 0 {
+    ft = faultT
+  }
+  let rec = {
+    "format": "heli-rec-1",
+    "scene": scenePath,
+    "duration": playT,
+    "initial": get(get(sceneRes, "heli", {}), "initial", {}),
+    "controls": ctrlLog,
+    "fault": {"t": ft, "rotor": faultRotor},
+    "inputs": inputLog,
+    "wind": {"dir": windDir, "speed": windSpeed, "gust": gust},
+    "savedAt": playT
+  }
+  let r = write_file(path, tojson(rec))
+  if type(r) == "map" {
+    send(tlPid, {"t": "error", "text": "保存记录失败: " + r.error})
+  } else {
+    send(tlPid, {"t": "record_saved", "path": path})
+  }
+}
+
+fn dist3(a, b, c) { return sqrt(a * a + b * b + c * c) }
+fn get(m, k, d) {
+  if m == null {
+    return d
+  }
+  let v = m[k]
+  if v == null {
+    return d
+  }
+  return v
+}
+
+// ---------------- 入口 ----------------
+boot()

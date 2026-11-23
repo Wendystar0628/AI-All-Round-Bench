@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#050b1c"/><stop offset="0.5" stop-color="#10264a"/><stop offset="1" stop-color="#1d4d66"/>
+    </linearGradient>
+    <linearGradient id="a1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3dffc0" stop-opacity="0"/><stop offset="0.45" stop-color="#3dffc0" stop-opacity=".55"/><stop offset="1" stop-color="#5aa8ff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="a2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a06bff" stop-opacity="0"/><stop offset="0.5" stop-color="#a06bff" stop-opacity=".4"/><stop offset="1" stop-color="#ff7ad9" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe9ff"/><stop offset="1" stop-color="#8294c4"/></linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16294a"/><stop offset="1" stop-color="#0a1226"/></linearGradient>
+    <filter id="b"><feGaussianBlur stdDeviation="16"/></filter>
+    <filter id="b2"><feGaussianBlur stdDeviation="4"/></filter>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <g fill="#fff" opacity=".8">
+    <circle cx="240" cy="140" r="1.6"/><circle cx="420" cy="80" r="1.2"/><circle cx="640" cy="180" r="1.8"/>
+    <circle cx="900" cy="90" r="1.3"/><circle cx="1120" cy="160" r="1.6"/><circle cx="1360" cy="70" r="1.1"/>
+    <circle cx="1600" cy="190" r="1.7"/><circle cx="1780" cy="110" r="1.2"/><circle cx="1500" cy="260" r="1"/>
+    <circle cx="760" cy="280" r="1.1"/><circle cx="1040" cy="320" r="1.3"/><circle cx="320" cy="330" r="1"/>
+    <circle cx="1880" cy="300" r="1.2"/><circle cx="120" cy="420" r="1"/>
+  </g>
+  <g filter="url(#b)" opacity=".85">
+    <path d="M-100 420 C 250 220, 520 500, 860 300 C 1180 110, 1500 430, 2020 250" stroke="url(#a1)" stroke-width="80" fill="none"/>
+    <path d="M-100 520 C 320 330, 620 560, 980 380 C 1320 210, 1620 500, 2020 340" stroke="url(#a2)" stroke-width="60" fill="none"/>
+  </g>
+  <g filter="url(#b2)" opacity=".6">
+    <path d="M-100 470 C 300 300, 600 520, 940 350 C 1260 190, 1580 460, 2020 300" stroke="url(#a1)" stroke-width="18" fill="none"/>
+  </g>
+  <path d="M0 760 L0 640 L230 470 L420 610 L610 430 L820 620 L1000 520 L1200 660 L1420 500 L1640 650 L1820 540 L1920 620 L1920 800 Z" fill="#22365c"/>
+  <path d="M0 820 L0 700 L260 580 L470 700 L650 560 L860 720 L1060 610 L1280 740 L1500 590 L1720 720 L1920 620 L1920 820 Z" fill="#1a2a4a"/>
+  <path d="M0 900 L0 800 L300 720 L560 820 L820 730 L1100 840 L1360 750 L1640 850 L1920 760 L1920 940 Z" fill="#122040"/>
+  <g opacity=".55">
+    <path d="M610 430 L660 500 L610 486 L570 500 Z" fill="url(#snow)"/>
+    <path d="M1420 500 L1470 565 L1420 552 L1380 565 Z" fill="url(#snow)"/>
+    <path d="M1000 520 L1042 578 L1000 566 L966 578 Z" fill="url(#snow)"/>
+  </g>
+  <path d="M0 1080 L0 940 C 300 900, 620 960, 900 940 C 1200 920, 1500 970, 1920 930 L1920 1080 Z" fill="url(#hill)"/>
+  <g fill="#0a1224">
+    <path d="M120 940 L160 820 L200 940 Z"/><path d="M190 950 L240 810 L290 950 Z"/>
+    <path d="M1660 930 L1700 810 L1740 930 Z"/><path d="M1730 945 L1790 800 L1850 945 Z"/>
+  </g>
+  <rect width="1920" height="1080" fill="#5aa8ff" opacity=".04"/>
+</svg>

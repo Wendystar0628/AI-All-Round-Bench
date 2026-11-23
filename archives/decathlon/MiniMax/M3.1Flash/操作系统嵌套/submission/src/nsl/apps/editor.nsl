@@ -1,0 +1,118 @@
+/*
+ * 子系统应用：文本与程序编辑器（NSL 程序）
+ * 可新建、编辑、保存并启动自定义程序；可打开内核源文件与飞控程序。
+ */
+var WIN = 0;
+var PATH = "/System/apps/files.nsl";
+var TEXT = "";
+var STATUS = "就绪";
+var DIRTY = 0;
+
+function A(o, k) { return obj.get(o, k); }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function wid(id, type, x, y, ww, wh, value, data, testid) {
+  return [id, type, x, y, ww, wh, value, data, testid];
+}
+
+function load(p) {
+  var res = call("file.read", { path: p });
+  if (A(res, "ok")) {
+    PATH = p; TEXT = A(res, "content"); DIRTY = 0;
+    STATUS = "已载入 " + p + "（" + num.toStr(str.len(TEXT)) + " 字节）";
+  } else {
+    STATUS = "打开失败：" + A(res, "error");
+  }
+  draw();
+}
+
+function save() {
+  var res = call("file.write", { path: PATH, content: TEXT });
+  if (A(res, "ok")) { DIRTY = 0; STATUS = "已保存 " + PATH; }
+  else { STATUS = "保存失败：" + A(res, "error"); }
+  draw();
+}
+
+function runProgram() {
+  var res = call("proc.spawn", { name: "运行程序", path: PATH, role: "user" });
+  if (A(res, "ok")) { STATUS = "已启动程序（进程 " + num.toStr(A(res, "pid")) + "）"; }
+  else { STATUS = "启动失败：" + A(res, "error"); }
+  draw();
+}
+
+function draw() {
+  var ws = [];
+  arr.push(ws, wid("name", "input", 12, 8, 300, 26, PATH, null, "editor-filename"));
+  arr.push(ws, wid("openk", "button", 318, 8, 58, 26, "内核", null, "editor-open-kernel"));
+  arr.push(ws, wid("openf", "button", 380, 8, 70, 26, "飞控", null, "editor-open-flight"));
+  arr.push(ws, wid("openl", "button", 454, 8, 70, 26, "本系统", null, "editor-open-list"));
+  arr.push(ws, wid("body", "textarea", 12, 42, 596, 296, TEXT, null, "editor-text"));
+  arr.push(ws, wid("save", "button", 12, 346, 68, 26, "保存", null, "editor-save"));
+  arr.push(ws, wid("run", "button", 84, 346, 68, 26, "运行", null, "editor-run"));
+  arr.push(ws, wid("new", "button", 156, 346, 68, 26, "新建", null, "editor-new"));
+  var mark = DIRTY == 1 ? " ● 未保存" : "";
+  arr.push(ws, wid("stat", "text", 12, 378, 596, 22, STATUS + mark, null, "editor-status"));
+  call("ui.declare", { windowId: WIN, widgets: ws });
+}
+
+function listPick(which) {
+  var dir = "/System";
+  var res = call("file.list", { path: dir });
+  if (!A(res, "ok")) { STATUS = "目录读取失败"; draw(); return; }
+  var es = A(res, "entries");
+  for (var i = 0; i < arr.len(es); i = i + 1) {
+    var e = arr.get(es, i);
+    var p = A(e, "path");
+    var want = 0;
+    if (which == 0) { want = (str.endsWith(p, "kernel.nsl")) ? 1 : 0; }
+    if (which == 1) { want = (str.endsWith(p, "flight-controller.nsl")) ? 1 : 0; }
+    if (which == 2) { want = (str.endsWith(p, ".nsl")) ? 1 : 0; }
+    if (want == 1) { load(p); return; }
+  }
+  STATUS = "没有找到可打开的文件";
+  draw();
+}
+
+function onEvent(ev) {
+  var type = A(ev, "type");
+  var w = A(ev, "widget");
+  if (type == "value") {
+    if (w == "name") { PATH = A(ev, "value"); DIRTY = 1; draw(); return; }
+    if (w == "body") { TEXT = A(ev, "value"); DIRTY = 1; draw(); return; }
+  }
+  if (type == "click") {
+    if (w == "save") { save(); return; }
+    if (w == "run") { runProgram(); return; }
+    if (w == "new") { PATH = "/Documents/新建程序.nsl"; TEXT = "// 新程序\nfunction main() {\n  print(\"你好，嵌套操作系统\");\n}\n"; DIRTY = 1; draw(); return; }
+    if (w == "openk") { listPick(0); return; }
+    if (w == "openf") { listPick(1); return; }
+    if (w == "openl") { listPick(2); return; }
+  }
+}
+
+function main() {
+  var r = call("win.open", { app: "editor", title: "文本与程序编辑器", w: 640, h: 440 });
+  WIN = num.toInt(A(r, "id"));
+  load(PATH);
+  while (true) {
+    var guard = 0;
+    var got = 0;
+    while (guard < 32) {
+      guard = guard + 1;
+      var raw = sys.takeMsg();
+      if (raw == null || str.len(raw) == 0) { break; }
+      got = got + 1;
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        var et = A(ev, "type");
+        if (et == "click" || et == "value" || et == "change") { onEvent(ev); }
+      }
+    }
+    if (got == 0) { nap(10); }
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

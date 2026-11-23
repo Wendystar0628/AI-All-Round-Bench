@@ -1,0 +1,19 @@
+// 预置程序：累加计算
+// 在循环中累加并周期性打印，用于核对调度与工作量读数
+let total = 0
+let i = 0
+
+fn main() {
+  print("累加程序启动，pid=" + str(self()))
+  while i < 2000 {
+    total = total + i
+    i = i + 1
+    if i % 200 == 0 {
+      print("i=" + str(i) + " total=" + str(total) + " t=" + str(floor(time())))
+      sleep(100)
+    }
+  }
+  print("累加完成 total=" + str(total))
+}
+
+main()

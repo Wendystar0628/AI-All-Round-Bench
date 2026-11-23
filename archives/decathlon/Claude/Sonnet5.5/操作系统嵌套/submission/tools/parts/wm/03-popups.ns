@@ -1,0 +1,198 @@
+
+// ============================== 绘制：开始菜单 ==============================
+fn start_matches() {
+  let q = lower(ui.vals["start-search"] == nil ? "" : ui.vals["start-search"]);
+  let out = [];
+  for (let a of W.apps) {
+    if (q == "" || contains(lower(a.title), q) || contains(lower(a.id), q) || (a.kw != nil && contains(lower(a.kw), q))) { push(out, a); }
+  }
+  return out;
+}
+fn draw_start_menu() {
+  if (!W.start_open) { return nil; }
+  let w = 380; let h = min(540, desk_h() - 24);
+  let x = 10; let y = W.sh - WCFG.task_h - h - 10;
+  let bg = ui_rect(x, y, w, h, "rgba(24,20,48,.94)", 16); bg.stroke = "rgba(140,120,230,.45)"; bg.sh = "s4"; bg.bl = 22; bg.tid = "start-menu"; bg.aria = "开始菜单";
+  ui_input("start-search", x + 16, y + 16, w - 32, 36, {ph: "搜索应用…", size: 14, pad: 10, r: 18, fill: "rgba(10,8,24,.7)"});
+  ui_icon(x + w - 46, y + 25, "search", 18, TH.muted);
+  let list = start_matches();
+  ui_text(x + 20, y + 66, W.depth == 0 ? "应用" : "本系统的应用", 12, TH.muted, {b: true});
+  let ly = y + 88; let rh = 52;
+  let first = true;
+  for (let a of list) {
+    if (ly + rh > y + h - 56) { break; }
+    let b = ui_rect(x + 10, ly, w - 20, rh - 4, "rgba(0,0,0,0)", 10);
+    b.hf = "rgba(139,108,255,.25)"; b.tid = "launch-" + a.id; b.aria = a.title; b.cur = "pointer"; b.d = {"app-id": a.id};
+    if (ui_in(x + 10, ly, w - 20, rh - 4)) {
+      if (ui_ev_is("down", 0)) { ui.active = "launch-" + a.id; }
+      else if (ui_ev_is("up", 0) && ui.active == "launch-" + a.id) { close_popups(); launch_app(a.id, nil); return nil; }
+    }
+    let tile = ui_rect(x + 18, ly + 4, 40, 40, "rgba(30,24,60,.9)", 11); tile.stroke = "rgba(160,140,240,.3)";
+    ui_icon(x + 26, ly + 12, a.icon, 24, TH.acc);
+    ui_text(x + 70, ly + 6, a.title, 14, TH.text, {b: true});
+    ui_textw(x + 70, ly + 26, w - 100, a.desc == nil ? "" : a.desc, 12, TH.muted);
+    if (first && ui_key_in("Enter", "start-search") != nil) { close_popups(); launch_app(a.id, nil); return nil; }
+    first = false;
+    ly = ly + rh;
+  }
+  if (len(list) == 0) { ui_text(x + 20, ly + 10, "没有匹配的应用", 13, TH.faint); }
+  // 底部：系统信息
+  ui_rect(x + 14, y + h - 50, w - 28, 1, TH.bg4, 0);
+  let lc = level_color(W.depth);
+  ui_icon(x + 20, y + h - 36, "system", 20, lc);
+  ui_textw(x + 48, y + h - 38, w - 120, sys_label() + "（" + W.id + "）", 13, TH.text, {b: true});
+  ui_text(x + 48, y + h - 21, "第 " + W.depth + " 层桌面", 11, lc);
+  if (ui_key("Escape") != nil) { close_popups(); }
+}
+
+// ============================== 绘制：右键菜单、通知面板、提示、对话框 ==============================
+fn menu_items() {
+  let m = W.menu;
+  if (m.kind == "desktop") {
+    let items = [{id: "ctx-refresh", label: "刷新", icon: "reload"}, {id: "ctx-newfolder", label: "新建文件夹", icon: "folder"}, {id: "ctx-newfile", label: "新建文本文件", icon: "doc"}, {sep: true},
+      {id: "ctx-files", label: "打开文件管理器", icon: "folder-open"}, {id: "ctx-tasks", label: "任务管理器", icon: "tasks"}];
+    if (app_by_id("settings") != nil) { push(items, {id: "ctx-settings", label: "个性化设置", icon: "gear"}); }
+    return items;
+  }
+  if (m.kind == "icon") {
+    let items = [{id: "ctx-open", label: "打开", icon: "play"}];
+    if (m.item.kind == "file") { push(items, {id: "ctx-edit", label: "用编辑器打开", icon: "edit"}); push(items, {sep: true}); push(items, {id: "ctx-delete", label: "删除", icon: "trash", danger: true}); }
+    return items;
+  }
+  if (m.kind == "task") {
+    return [{id: "ctx-restore", label: "还原/聚焦", icon: "restore"}, {id: "ctx-min", label: "最小化", icon: "min"}, {sep: true}, {id: "ctx-close", label: "关闭窗口", icon: "close", danger: true}];
+  }
+  return [];
+}
+fn menu_act(id) {
+  let m = W.menu; W.menu = nil;
+  if (id == "ctx-refresh") { refresh_desktop_files(); toast("桌面已刷新", "ok"); }
+  else if (id == "ctx-newfolder") { sys("fs_mkdir", "/Desktop/新建文件夹 " + floor(W.now)); refresh_desktop_files(); }
+  else if (id == "ctx-newfile") { sys("fs_mkdir", "/Desktop"); sys("fs_write", "/Desktop/新建文本 " + floor(W.now) + ".txt", ""); refresh_desktop_files(); }
+  else if (id == "ctx-files") { launch_app("files", nil); }
+  else if (id == "ctx-tasks") { launch_app("tasks", nil); }
+  else if (id == "ctx-settings") { launch_app("settings", nil); }
+  else if (id == "ctx-open") { open_item(m.item); }
+  else if (id == "ctx-edit") { launch_app("editor", {file: m.item.path}); }
+  else if (id == "ctx-delete") {
+    let r = sys("fs_trash", m.item.path);
+    if (r != nil && r.err != nil) { sys("fs_remove", m.item.path); }
+    sys("notify", "已删除", m.item.label);
+    refresh_desktop_files();
+  }
+  else if (id == "ctx-restore") { let w = win_by_n(m.win); if (w != nil) { win_focus(w); } }
+  else if (id == "ctx-min") { let w = win_by_n(m.win); if (w != nil) { win_minimize(w); } }
+  else if (id == "ctx-close") { let w = win_by_n(m.win); if (w != nil) { win_close(w, false); } }
+}
+fn draw_menus() {
+  if (W.menu != nil) {
+    let items = menu_items();
+    let r = ui_menu("context-menu", W.menu.x, W.menu.y, 210, items, 30);
+    if (W.menu.skip == true) { W.menu.skip = false; if (r == "") { r = nil; } }
+    if (r != nil) { if (r == "") { W.menu = nil; } else { menu_act(r); } }
+  }
+  if (W.proj_menu != nil) {
+    let pm = W.proj_menu;
+    let w = win_by_n(pm.n);
+    if (w == nil) { W.proj_menu = nil; return nil; }
+    if (pm.targets == nil) {
+      pm.targets = [];
+      let list = sys("ancestors");
+      if (typeof(list) == "arr") { for (let a of list) { if (a.id != W.id) { push(pm.targets, a); } } }
+    }
+    let items = [{id: "hdr", label: "投送到祖先桌面", disabled: true, icon: "project"}, {sep: true}];
+    for (let a of pm.targets) { push(items, {id: "T:" + a.id, tid: "project-target", label: "L" + a.depth + " · " + a.name + "（" + a.id + "）", icon: a.depth == 0 ? "home" : "system", d: {"target-system-id": a.id}}); }
+    if (len(pm.targets) == 0) { push(items, {id: "none", label: "没有可用的祖先桌面", disabled: true}); }
+    let r = ui_menu("project-menu", pm.x - 150, pm.y, 300, items, 32);
+    if (pm.skip == true) { pm.skip = false; if (r == "") { r = nil; } }
+    if (r != nil) {
+      W.proj_menu = nil;
+      if (r != "" && substr(r, 0, 2) == "T:") {
+        let tid = substr(r, 2, len(r) - 2);
+        for (let a of pm.targets) {
+          if (a.id == tid) {
+            let res = sys("proj_request", {pid: w.pid, target: a.h, wid: win_id(w), sapp: w.app, sapp_title: w.title, ssys: W.id, swid: win_id(w), w: 640, h: 400, targetid: a.id});
+            if (res == nil || res.err != nil) { toast("投送失败：" + (res == nil ? "" : res.err), "error"); } else { toast("已请求投送到 " + a.name, "ok"); }
+          }
+        }
+      }
+    }
+  }
+}
+fn draw_notif_panel() {
+  if (!W.notif_open) { return nil; }
+  let w = 360; let h = min(520, desk_h() - 20);
+  let x = W.sw - w - 10; let y = W.sh - WCFG.task_h - h - 10;
+  let bg = ui_rect(x, y, w, h, "rgba(24,20,48,.95)", 14); bg.stroke = "rgba(140,120,230,.45)"; bg.sh = "s4"; bg.bl = 22; bg.tid = "notification-center"; bg.aria = "通知中心";
+  ui_text(x + 18, y + 16, "通知中心", 15, TH.text, {b: true});
+  if (ui_button("notif-dnd", x + w - 168, y + 10, 92, 30, W.dnd ? "免打扰：开" : "免打扰：关", {fill: W.dnd ? TH.acc : TH.bg3, size: 12, icon: W.dnd ? "bell-off" : "bell"})) {
+    W.dnd = !W.dnd; W.settings.dnd = W.dnd; save_settings();
+  }
+  if (ui_button("notif-clear", x + w - 68, y + 10, 52, 30, "清空", {size: 12})) { W.notes = []; W.unread = 0; sys("note_ctl", "clear"); }
+  ui_rect(x + 14, y + 50, w - 28, 1, TH.bg4, 0);
+  let n = len(W.notes);
+  if (n == 0) { ui_text(x + 18, y + 70, "暂无通知", 13, TH.faint); }
+  let cy = y + 60;
+  for (let i = n - 1; i >= 0; i--) {
+    let nt = W.notes[i];
+    if (cy + 62 > y + h - 8) { break; }
+    let card = ui_rect(x + 12, cy, w - 24, 58, TH.bg2, 10); card.tid = "notification-item"; card.aria = nt.title;
+    let col = nt.kind == "error" ? TH.danger : (nt.kind == "ok" ? TH.ok : TH.acc);
+    ui_rect(x + 12, cy + 8, 3, 42, col, 2);
+    ui_textw(x + 24, cy + 7, w - 100, nt.title, 13, TH.text, {b: true});
+    ui_textw(x + 24, cy + 29, w - 60, nt.text, 12, TH.muted);
+    let d = date_parts(wall_secs() - (W.now - nt.t));
+    ui_textr(x + w - 80, cy + 7, 56, pad(d.hh, 2, "0") + ":" + pad(d.mm, 2, "0"), 11, TH.faint);
+    cy = cy + 64;
+  }
+  if (ui_ev_is("down", nil) && !ui_in_abs(x, y, w, h) && !ui_in_abs(W.sw - 160, W.sh - WCFG.task_h, 160, WCFG.task_h)) { W.notif_open = false; }
+}
+fn ui_in_abs(x, y, w, h) { return ui.mx >= x && ui.mx < x + w && ui.my >= y && ui.my < y + h; }
+fn draw_toasts() {
+  let now = W.now; let keep = [];
+  let y = 14;
+  for (let i = len(W.toasts) - 1; i >= 0; i--) {
+    let t = W.toasts[i];
+    let age = now - t.t;
+    if (age > WCFG.toast_secs) { continue; }
+    let w = 330; let h = t.title == nil ? 46 : 62;
+    let x = W.sw - w - 14;
+    let a = age < 0.25 ? age / 0.25 : (age > WCFG.toast_secs - 0.5 ? (WCFG.toast_secs - age) / 0.5 : 1);
+    let col = t.kind == "error" ? TH.danger : (t.kind == "ok" ? TH.ok : TH.acc);
+    let g = ui_push(x + (1 - a) * 30, y, w, h, false); g.op = max(0.01, a); g.tid = "toast"; g.aria = t.text;
+    let bg = ui_rect(0, 0, w, h, "rgba(28,23,56,.96)", 12); bg.stroke = col; bg.sh = "s3";
+    ui_rect(0, 10, 4, h - 20, col, 2);
+    ui_icon(16, h / 2 - 11, t.kind == "error" ? "error" : (t.kind == "ok" ? "check" : "info"), 22, col);
+    if (t.title != nil) {
+      ui_textw(48, 9, w - 60, t.title, 13, TH.text, {b: true});
+      ui_textw(48, 32, w - 60, t.text, 12, TH.muted);
+    } else { ui_textw(48, h / 2 - 9, w - 60, t.text, 13, TH.text); }
+    ui_pop();
+    y = y + h + 8;
+  }
+  // 只保留未过期的
+  let kept = [];
+  for (let t of W.toasts) { if (now - t.t <= WCFG.toast_secs) { push(kept, t); } }
+  W.toasts = kept;
+}
+fn draw_dialog() {
+  let d = W.dialog;
+  if (d == nil) { return nil; }
+  ui_rect(0, 0, W.sw, W.sh, "rgba(6,4,16,.55)", 0).tid = "dialog-scrim";
+  let w = 440; let h = 190; let x = (W.sw - w) / 2; let y = (W.sh - h) / 2 - 30;
+  let bg = ui_rect(x, y, w, h, TH.bg2, 14); bg.stroke = TH.acc; bg.sh = "s4"; bg.tid = "dialog"; bg.aria = d.title;
+  ui_icon(x + 22, y + 22, "warn", 26, TH.warn);
+  ui_text(x + 60, y + 22, d.title, 16, TH.text, {b: true});
+  ui_text(x + 24, y + 62, d.text, 13, TH.muted, {wrap: true, w: w - 48, lh: 19});
+  if (ui_button("dialog-ok", x + w - 24 - 110 - 100, y + h - 56, 110, 34, d.ok, {fill: TH.danger, hf: "#ff8aa0", b: true})) { dialog_act(d.act, true); W.dialog = nil; }
+  if (ui_button("dialog-cancel", x + w - 24 - 90, y + h - 56, 90, 34, d.cancel, {})) { W.dialog = nil; }
+  if (ui_key("Escape") != nil) { W.dialog = nil; }
+}
+fn dialog_act(act, ok) {
+  if (act.t == "close_system") { let w = win_by_n(act.n); if (w != nil) { win_close(w, true); } }
+}
+fn draw_snap_preview() {
+  let sp = W.snap_preview;
+  if (sp == nil) { return nil; }
+  let r = ui_rect(sp.x, sp.y, sp.w, sp.h, "rgba(139,108,255,.20)", 12); r.stroke = TH.acc; r.sw = 2;
+}

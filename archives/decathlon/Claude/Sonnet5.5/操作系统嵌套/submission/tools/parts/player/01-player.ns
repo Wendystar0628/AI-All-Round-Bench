@@ -1,0 +1,406 @@
+// player.ns — 三维场景播放器：从本系统文件系统打开独立的场景资源（数据，不含宿主代码）并播放；也做飞行排演与记录回放。
+// 播放器、显示设备的代码里没有直升机：画面全部来自场景文件。分工：
+//   timeline（时序）按系统时间推进播放位置 → flight（飞行场景）求出该时刻的部件位姿 → fx（环境特效）算出烟尘火 → 本进程把同一时刻的结果提交给显示设备。
+include "/System/lib/ui.ns";
+
+let S = {path: "", scene: nil, name: "", sc: 1, self_ref: nil, tl_pid: 0, fl_pid: 0, fx_pid: 0, fc_pid: 0,
+  tl: {pos: 0, playing: false, rate: 1, loop: false, dur: 15, live: false}, fl: nil, fx: nil, pend: nil, pend_t: 0,
+  cam: {mode: "show", yaw: 0.7, pitch: 0.32, dist: 24, seen: nil}, sel: nil, msg: "", msg_t: 0, err: nil, rec: nil, rec_path: "", record: nil, scene_data: nil,
+  reh: {on: false, wdir: 250, wspeed: 3, hdg: 90, fault: 0, delay: 0, pad: "B", ctl: "/Programs/flightctl.ns", started: false},
+  last_cam: {}, last_ps: -9, pstat: {}, press: nil, drag: nil, presented: -1, files: nil, last_state_t: -9, loading: false, saves: 0, shots: []};
+let FAULTS = [["tail", "尾桨失效"], ["engine", "发动机熄火"], ["hyd", "液压故障"], ["blade", "桨叶损伤"]];
+let RATES = [0.25, 0.5, 1, 2, 4];
+let NAMES = {fuselage: "机身", cabin: "机身", belt: "黄色腰带", canopy: "座舱玻璃", decalR: "右舷 24 号涂装", decalL: "左舷 24 号涂装", tailBoom: "尾梁", fin: "垂直尾翼", finTip: "垂尾端部",
+  stabR: "水平安定面", cowl: "发动机罩", exhaust: "排气管", skidL: "左滑橇", skidR: "右滑橇", mast: "旋翼轴", hub: "桨毂", mainBlur: "旋翼虚影", tblade1: "尾桨叶", tblade2: "尾桨叶", tailBlur: "尾桨虚影"};
+
+fn say(m) { S.msg = m; S.msg_t = time(); }
+fn part_name(n) {
+  if (NAMES[n] != nil) { return NAMES[n]; }
+  if (substr(n, 0, 5) == "blade") { return "主旋翼桨叶 " + substr(n, 5, 1); }
+  if (substr(n, 0, 8) == "bladeTip") { return "桨叶端部 " + substr(n, 8, 1); }
+  if (substr(n, 0, 5) == "strut") { return "滑橇支柱"; }
+  if (substr(n, 0, 1) == "d") { return "碎片（" + n + "）"; }
+  return n;
+}
+fn part_state(n) {
+  let h = S.fl == nil ? nil : S.fl.hud;
+  if (h == nil) { return "完好"; }
+  if (substr(n, 0, 5) == "blade" && h.blades_off) { return "已脱落"; }
+  if ((n == "tailBoom" || n == "fin" || n == "finTip" || n == "stabR") && h.boom_off) { return "已断裂"; }
+  if ((n == "skidL" || n == "skidR") && h.skids_off) { return "已脱落"; }
+  if (h.crashed) { return "损坏（坠毁）"; }
+  if ((n == "tailRotor" || n == "tblade1" || n == "tblade2") && h.tail) { return "尾桨失效"; }
+  return "完好";
+}
+
+// ---------------------------------------------------------------- 场景的打开与进程协作
+fn kill_helpers() {
+  for (let p of [S.tl_pid, S.fl_pid, S.fx_pid, S.fc_pid]) { if (p > 0) { kill(p); } }
+  S.tl_pid = 0; S.fl_pid = 0; S.fx_pid = 0; S.fc_pid = 0;
+}
+fn scene_ok(sc) { return typeof(sc) == "map" && sc.format == "nested-os-scene" && sc.parts != nil && sc.materials != nil; }
+fn open_path(path) {
+  path = trim(path);
+  if (path == "") { say("请输入场景文件路径"); return false; }
+  let t = sys("fs_read", path);
+  if (typeof(t) != "str") { S.err = "无法打开：" + (t == nil ? path : t.err); say(S.err); return false; }
+  let doc = json_parse(t);
+  if (doc == nil) { S.err = "不是有效的场景/记录文件（JSON 解析失败）"; say(S.err); return false; }
+  let scene = doc; let record = nil; let rec_path = "";
+  if (doc.format == "nested-os-rehearsal") {
+    // 排演记录：读取它引用的场景，再带上记录
+    let st = sys("fs_read", doc.scene_path == nil ? "/Demo/helicopter-24.scene" : doc.scene_path);
+    scene = typeof(st) == "str" ? json_parse(st) : nil;
+    record = doc; rec_path = path;
+  } else if (scene_ok(scene) && scene.flight != nil) { record = scene.flight.record; }
+  if (!scene_ok(scene)) { S.err = "场景文件格式不合法（需要 format、parts、materials）"; say(S.err); return false; }
+  S.err = nil; S.path = path; ui_set("player-path", path);
+  load_scene(scene, record, rec_path, doc.format == "nested-os-rehearsal" ? doc.scene_path : path);
+  return true;
+}
+fn disp_scene(sc) {
+  return {environment: sc.environment, textures: sc.textures, materials: sc.materials, geoms: sc.geoms, terrain: sc.terrain, pads: sc.pads, obstacles: sc.obstacles, parts: sc.parts};
+}
+fn load_scene(scene, record, rec_path, scene_path) {
+  kill_helpers();
+  if (S.scene != nil) { sys("scene_free", S.sc); }
+  S.scene = scene; S.name = scene.name == nil ? "场景" : scene.name; S.scene_path = scene_path; S.record = record; S.rec_path = rec_path;
+  S.fl = nil; S.fx = nil; S.pend = nil; S.sel = nil; S.presented = -1;
+  S.reh.started = false;
+  let r = sys("scene_load", S.sc, disp_scene(scene));
+  if (r != nil && r.err != nil) { S.err = "载入显示设备失败：" + r.err; say(S.err); S.scene = nil; return nil; }
+  S.shots = scene.timeline != nil && scene.timeline.shots != nil ? scene.timeline.shots : [];
+  let dur = record != nil && record.duration != nil ? record.duration : (scene.duration == nil ? 10 : scene.duration);
+  S.tl.dur = dur; S.tl.pos = 0; S.tl.playing = false; S.tl.live = false;
+  S.tl_pid = spawn("/Apps/player/timeline.ns", {player: pid()}, "时序进程");
+  S.fx_pid = spawn("/Apps/player/fx.ns", {player: pid()}, "环境特效");
+  S.fl_pid = spawn("/Apps/player/flight.ns", {player: pid()}, "飞行场景");
+  if (typeof(S.tl_pid) != "num" || typeof(S.fl_pid) != "num") { S.err = "无法启动协作进程"; say(S.err); return nil; }
+  let fsub = {parts: nil};
+  let init = {t: "init", scene: {flight: scene.flight, terrain: scene.terrain == nil ? nil : {size: scene.terrain.size, res: scene.terrain.res, heights: scene.terrain.heights, edge: scene.terrain.edge == nil ? 0 : scene.terrain.edge}, pads: scene.pads, obstacles: scene.obstacles, timeline: scene.timeline}, fx: S.fx_pid, record: record};
+  send(S.fl_pid, init);
+  send(S.tl_pid, {t: "cmd", op: "cfg", flight: S.fl_pid, fx: S.fx_pid, dur: dur, fps: scene.fps == nil ? 30 : scene.fps, live: false, pos: 0});
+  S.cam.mode = "show";
+  if (scene.timeline == nil || len(scene.timeline.shots) == 0) { S.cam.mode = "free"; }
+  say("已打开 " + S.name);
+}
+fn tl_cmd(op, v) { if (S.tl_pid > 0) { send(S.tl_pid, {t: "cmd", op: op, v: v}); } }
+
+// ---------------------------------------------------------------- 相机（应用状态；进快照；不影响飞行）
+fn vadd(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+fn heli_pos() {
+  if (S.fl == nil || S.fl.hud == nil || S.fl.hud.x == nil) { return [0, 1, 0]; }
+  return [S.fl.hud.x, S.fl.hud.y, S.fl.hud.z];
+}
+fn heli_yaw() { if (S.fl == nil || S.fl.hud == nil || S.fl.hud.hdg == nil) { return 0; } return 3.14159265 - S.fl.hud.hdg * 0.0174533; }
+fn look_target(shot, hp) {
+  let l = shot.look;
+  if (l == "fuselage") { return [hp[0], hp[1] + (shot.lookDy == nil ? 0 : shot.lookDy), hp[2]]; }
+  if (l == "crash") { let c = crash_pos(hp); return [c[0], c[1] + (shot.lookDy == nil ? 0 : shot.lookDy), c[2]]; }
+  return l;
+}
+fn crash_pos(hp) { if (S.fl != nil && S.fl.crash != nil) { return [S.fl.crash.x, S.fl.crash.y, S.fl.crash.z]; } return hp; }
+fn local_off(off, yaw, hp) {
+  let fx = sin(yaw); let fz = cos(yaw); let rx = 0 - cos(yaw); let rz = sin(yaw);
+  return [hp[0] + rx * off[0] + fx * off[2], hp[1] + off[1], hp[2] + rz * off[0] + fz * off[2]];
+}
+fn cam_spec() {
+  let hp = heli_pos(); let yaw = heli_yaw(); let t = S.fl == nil ? S.tl.pos : S.fl.simt;
+  let mode = S.cam.mode;
+  if (mode == "show" && len(S.shots) > 0) {
+    let shot = S.shots[len(S.shots) - 1];
+    for (let sh of S.shots) { if (t >= sh.t0 && t < sh.t1) { shot = sh; } }
+    let f = clamp((t - shot.t0) / max(0.001, min(shot.t1, shot.t0 + 60) - shot.t0), 0, 1);
+    f = f * f * (3 - 2 * f);
+    if (shot.kind == "static") {
+      let a = shot.at; let b = shot.to == nil ? shot.at : shot.to;
+      return {pos: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f], target: look_target(shot, hp), fov: shot.fov == nil ? 50 : shot.fov};
+    }
+    if (shot.kind == "chase") { return {pos: local_off(shot.off, yaw, hp), target: local_off(shot.look, yaw, hp), fov: shot.fov == nil ? 52 : shot.fov}; }
+    if (shot.kind == "track") { return {pos: vadd(hp, shot.off), target: look_target(shot, hp), fov: shot.fov == nil ? 48 : shot.fov}; }
+    if (shot.kind == "orbit") {
+      let c = crash_pos(hp); let tt = t - shot.t0;
+      let a = (shot.a0 + shot.rate * tt * 0.5) * 0.0174533; let d = shot.dist + (shot.dist1 - shot.dist) * clamp(tt / 2.8, 0, 1);
+      return {pos: [c[0] + cos(a) * d, c[1] + shot.h, c[2] + sin(a) * d], target: [c[0], c[1] + (shot.lookDy == nil ? 1 : shot.lookDy), c[2]], fov: shot.fov == nil ? 48 : shot.fov};
+    }
+  }
+  if (mode == "follow") { return {pos: local_off([0, 4.5, -15], yaw, hp), target: local_off([0, 1.5, 8], yaw, hp), fov: 55}; }
+  // 自由环绕
+  let c = S.fl == nil || S.fl.hud == nil || S.fl.hud.x == nil ? [0, 2, 0] : hp;
+  let d = S.cam.dist; let cp = cos(S.cam.pitch);
+  return {pos: [c[0] + sin(S.cam.yaw) * cp * d, c[1] + sin(S.cam.pitch) * d + 1, c[2] + cos(S.cam.yaw) * cp * d], target: [c[0], c[1] + 0.8, c[2]], fov: 50};
+}
+
+// ---------------------------------------------------------------- 提交同一时刻的画面
+fn present() {
+  let fl = S.fl;
+  if (fl == nil) { return nil; }
+  let fx = S.fx;
+  let emit = []; let wash = nil;
+  if (fx != nil) { emit = fx.emit; wash = fx.wash; }
+  let st = {time: fl.simt, parts: fl.parts, emit: emit, wash: wash, wind: fl.wind, focus: "fuselage"};
+  sys("scene_state", S.sc, st);
+  S.presented = fl.simt;
+}
+fn on_fl(m) {
+  S.fl = m; S.pend = m; S.pend_t = time();
+  if (S.fx != nil && S.fx.simt == m.simt) { present(); S.pend = nil; }
+  else if (S.fx_pid == 0 || m.mode == "keys") { present(); S.pend = nil; }
+  S.dirty_ui = true;
+}
+fn on_fx(m) {
+  S.fx = m;
+  if (S.pend != nil && S.pend.simt == m.simt) { present(); S.pend = nil; }
+}
+fn player_msg(m) {
+  if (m.t == "tl") { S.tl.pos = m.pos; S.tl.playing = m.playing; S.tl.rate = m.rate; S.tl.loop = m.loop; S.tl.dur = m.dur; S.tl.live = m.live; }
+  else if (m.t == "fl") { on_fl(m); }
+  else if (m.t == "fx") { on_fx(m); }
+  else if (m.t == "rec") { save_record(m.record); }
+  else if (m.t == "open") { let a = m.args; if (a != nil && a.file != nil) { open_path(a.file); } }
+  else if (m.t == "focus") { }
+}
+fn player_idle() {
+  // 即使没有新消息也每隔一会儿检查：飞行场景落后太久未出结果时，用已有的特效结果提交，避免画面卡住
+  if (S.pend != nil && time() - S.pend_t > 0.12) { present(); S.pend = nil; return true; }
+  if (time() - S.last_ps >= 0.5) { S.last_ps = time(); refresh_ps(); return true; }
+  return false;
+}
+fn refresh_ps() {
+  let ps = sys("ps"); S.pstat = {};
+  for (let p of ps) { if (p.pid == S.tl_pid) { S.pstat.tl = p.state; } if (p.pid == S.fl_pid) { S.pstat.fl = p.state; } if (p.pid == S.fx_pid) { S.pstat.fx = p.state; } if (p.pid == S.fc_pid) { S.pstat.fc = p.state; } }
+  if (S.fc_pid > 0 && S.pstat.fc == nil) { S.fc_pid = 0; }
+}
+
+// ---------------------------------------------------------------- 排演
+fn start_rehearsal(from) {
+  if (S.scene == nil || S.scene.flight == nil) { say("这个场景没有飞行数据，无法排演"); return nil; }
+  if (S.fc_pid > 0) { kill(S.fc_pid); S.fc_pid = 0; }
+  let cpath = trim(ui_val("rehearsal-controller"));
+  if (cpath == "") { cpath = "/Programs/flightctl.ns"; }
+  let fc = spawn(cpath, {flight: S.fl_pid, pads: S.scene.pads}, "飞控");
+  if (typeof(fc) != "num") { say("飞控程序启动失败：" + (fc == nil ? "" : fc.err)); return nil; }
+  S.fc_pid = fc; S.reh.started = true; S.reh.on = true;
+  S.reh.ctl = cpath;
+  send(S.fl_pid, {t: "live", fc: fc, wdir: S.reh.wdir, wspeed: S.reh.wspeed, hdg: S.reh.hdg, pad: S.reh.pad, from: from});
+  let pos0 = from == nil ? 0 : from;
+  send(S.tl_pid, {t: "cmd", op: "live", v: true, dur: 100000, pos: pos0, play: true});
+  S.fx = nil;
+  say(from == nil ? "排演开始：飞控 " + cpath + " 正在驾驶" : "已从 " + fmt(from, 1) + " s 处续演");
+}
+fn send_evt(e) { if (S.fl_pid > 0 && S.reh.started) { send(S.fl_pid, {t: "evt", e: e}); } }
+fn save_record(rec) {
+  rec.scene_path = S.scene_path; rec.controller = S.reh.ctl; rec.created = time();
+  S.saves++;
+  let path = "/Documents/排演记录-" + floor(time()) + "-" + S.saves + ".rec";
+  let r = sys("fs_write", path, json_stringify(rec));
+  if (r != nil && r.err != nil) { say("保存记录失败：" + r.err); return nil; }
+  say("已保存排演记录 " + path + "（" + len(rec.controls) + " 个控制样本）");
+  S.rec_path = path; ui_set("player-path", path);
+  sys("notify", "排演记录已保存", path);
+}
+
+// ---------------------------------------------------------------- 界面
+fn fmt_t(t) { let m = floor(t / 60); let s = t - m * 60; return pad(m, 2, "0") + ":" + pad(fmt(s, 1), 4, "0"); }
+fn state_text() {
+  if (S.scene == nil) { return "未打开场景"; }
+  if (S.tl.playing) { return "播放中"; }
+  if (S.tl.pos <= 0.0001) { return "已停止"; }
+  if (!S.tl.live && S.tl.pos >= S.tl.dur - 0.0001) { return "已播放完"; }
+  return "已暂停";
+}
+fn tb(id, x, y, w, h, label, icon, st) {
+  let s = {fill: "rgba(255,255,255,.07)", hf: "rgba(255,255,255,.16)", size: 12, icon: icon};
+  if (st != nil) { for (let k of keys(st)) { s[k] = st[k]; } }
+  return ui_button(id, x, y, w, h, label, s);
+}
+fn view_rect(w, h, v) { return {x: 0, y: 44, w: w, h: h - 44 - 92}; }
+fn player_frame(U, w, h) {
+  let v = U.v;
+  ui_rect(0, 0, w, h, "#0b0818", 0);
+  let vr = view_rect(w, h, v);
+  let modal = false;
+  // ---- 三维视图 ----
+  let cam = cam_spec(); S.last_cam[v] = cam;
+  if (S.scene != nil) {
+    let vn = {o: "view3d", c: S.self_ref.c, sc: S.sc, cam: cam, x: vr.x, y: vr.y, w: vr.w, h: vr.h, tid: "player-view", aria: "三维视图", key: "view3d", d: {scene: S.path}};
+    ui_node(vn);
+  } else {
+    ui_rect(vr.x, vr.y, vr.w, vr.h, "#14102a", 0);
+    ui_textc(0, vr.y + vr.h / 2 - 20, w, S.err == nil ? "在上方输入场景文件路径并点击“打开”" : S.err, 15, S.err == nil ? TH.muted : TH.danger);
+  }
+  // 点选与拖动
+  let in_view = ui_in(vr.x, vr.y, vr.w, vr.h);
+  if (in_view && S.scene != nil && ui.ev != nil) {
+    if (ui.ev.k == "down" && ui.ev.b == 0) { S.press = {x: ui.mx, y: ui.my, v: v, moved: false, yaw: S.cam.yaw, pitch: S.cam.pitch}; }
+    else if (ui.ev.k == "wheel" && S.cam.mode == "free") { S.cam.dist = clamp(S.cam.dist * (1 + ui.ev.dy * 0.0012), 5, 140); }
+  }
+  if (S.press != nil && S.press.v == v && ui.ev != nil) {
+    if (ui.ev.k == "move" && ui.down) {
+      let dx = ui.mx - S.press.x; let dy = ui.my - S.press.y;
+      if (abs(dx) + abs(dy) > 4) { S.press.moved = true; }
+      if (S.press.moved && S.cam.mode == "free") { S.cam.yaw = S.press.yaw - dx * 0.008; S.cam.pitch = clamp(S.press.pitch + dy * 0.006, -0.2, 1.4); }
+    } else if (ui.ev.k == "up") {
+      let pr = S.press; S.press = nil;
+      if (!pr.moved && in_view) { do_pick(v, ui.mx - ui.ox - vr.x, ui.my - ui.oy - vr.y, vr); }
+    }
+  }
+  // ---- 顶栏 ----
+  ui_rect(0, 0, w, 44, TH.bg2, 0);
+  ui_icon(12, 12, "heli", 20, TH.acc2);
+  if (w > 760) { ui_text(40, 12, "三维场景播放器", 14, TH.text, {b: true}); }
+  let compact = w < 760;
+  let px = compact ? 40 : 168;
+  let mw = compact ? 0 : 150;
+  ui_input("player-path", px, 7, max(80, w - px - mw - (compact ? 330 : 300)), 30, {ph: "场景或排演记录，如 /Demo/helicopter-24.scene", size: 12, pad: 8, r: 15, mono: true});
+  let bx = px + max(80, w - px - mw - (compact ? 330 : 300)) + 8;
+  if (tb("player-open", bx, 7, 70, 30, "打开", "folder", {fill: TH.acc})) { open_path(ui_val("player-path")); }
+  if (ui_key_in("Enter", "player-path") != nil) { open_path(ui_val("player-path")); }
+  bx = bx + 78;
+  let modes = [["show", "演出镜头"], ["follow", "跟随"], ["free", "自由"]];
+  for (let m of modes) {
+    let on = S.cam.mode == m[0];
+    if (tb("player-camera", bx, 7, 52, 30, m[1], nil, {fill: on ? TH.acc : "rgba(255,255,255,.07)", d: {value: m[0]}, key: "cam" + m[0], size: 11})) { S.cam.mode = m[0]; }
+    bx = bx + 54;
+  }
+  if (tb("player-mode", bx + 6, 7, 78, 30, S.reh.on ? "排演中" : "排演", "fault", {fill: S.reh.on ? TH.acc2 : "rgba(255,255,255,.07)", color: S.reh.on ? "#2a1a00" : TH.text})) { S.reh.on = !S.reh.on; }
+  // ---- 底栏 ----
+  let by = h - 92;
+  ui_rect(0, by, w, 92, TH.bg1, 0); ui_rect(0, by, w, 1, TH.border, 0);
+  let dur = max(0.001, S.tl.dur);
+  let seek_max = S.tl.live ? max(1, S.fl == nil ? 1 : S.fl.head) : dur;
+  let nv = ui_slider("player-seek", 16, by + 10, w - 32, 22, min(S.tl.pos, seek_max), 0, seek_max);
+  if (abs(nv - S.tl.pos) > 0.004 && ui.active == "player-seek") { tl_cmd("seek", nv); S.tl.pos = nv; }
+  let cx = 16; let cy = by + 44;
+  if (tb("player-play", cx, cy, 40, 36, nil, "play", {fill: S.tl.playing ? "rgba(255,255,255,.07)" : TH.acc, tip: "播放 / 继续", isz: 18})) { tl_cmd("play", nil); } cx = cx + 44;
+  if (tb("player-pause", cx, cy, 40, 36, nil, "pause", {fill: S.tl.playing ? TH.acc : "rgba(255,255,255,.07)", tip: "暂停", isz: 18})) { tl_cmd("pause", nil); } cx = cx + 44;
+  if (tb("player-stop", cx, cy, 40, 36, nil, "stop", {tip: "停止并回到开头", isz: 16})) { tl_cmd("stop", nil); } cx = cx + 44;
+  if (tb("player-replay", cx, cy, 40, 36, nil, "replay", {tip: "重播", isz: 17})) { tl_cmd("replay", nil); } cx = cx + 44;
+  if (tb("player-step", cx, cy, 40, 36, nil, "step", {tip: "逐帧前进一帧", isz: 17})) { tl_cmd("step", nil); } cx = cx + 48;
+  if (tb("player-loop", cx, cy, 64, 36, "循环", "loop", {fill: S.tl.loop ? TH.acc : "rgba(255,255,255,.07)", d: {value: S.tl.loop ? "on" : "off"}})) { tl_cmd("loop", !S.tl.loop); } cx = cx + 68;
+  let ri = 2; for (let i = 0; i < len(RATES); i++) { if (abs(RATES[i] - S.tl.rate) < 0.001) { ri = i; } }
+  if (tb("player-rate", cx, cy, 78, 36, RATES[ri] + "× 速率", "speed", {d: {value: str(S.tl.rate)}, tip: "调节播放速率"})) { tl_cmd("rate", RATES[(ri + 1) % len(RATES)]); } cx = cx + 86;
+  let tt = ui_textw(cx, cy + 3, max(120, w - cx - (w >= 760 ? 150 : 10)), fmt_t(S.tl.pos) + " / " + (S.tl.live ? "实时" : fmt_t(S.tl.dur)) + "  ·  " + state_text() + "  ·  " + RATES[ri] + "×  ·  30 帧/秒", 13, TH.text, {fam: "num"});
+  tt.tid = "player-time"; tt.d = {pos: fmt(S.tl.pos, 3), duration: fmt(S.tl.dur, 3), rate: str(S.tl.rate), state: state_text()};
+  ui_textw(cx, cy + 22, max(120, w - cx - 150), "画面时刻 " + (S.fl == nil ? "—" : fmt(S.fl.simt, 3) + " s") + (S.fl != nil && S.fl.lag > 0.08 ? "（落后 " + fmt(S.fl.lag, 2) + " s）" : "") + "  ·  帧时长 " + fmt(1 / 30, 3) + " s", 11, TH.muted);
+  // 协作进程状态
+  let sx = w - 150; let sy2 = by + 46;
+  if (w >= 760) { for (let it of [["时序", S.pstat.tl], ["飞行", S.pstat.fl], ["特效", S.pstat.fx]]) {
+    let st = it[1] == nil ? "—" : it[1]; let col = st == "挂起" ? TH.warn : (st == "异常" || st == "结束" ? TH.danger : TH.ok);
+    ui_rect(sx, sy2 + 4, 6, 6, col, 3); ui_text(sx + 12, sy2, it[0] + "进程 " + st, 10, TH.muted);
+    sy2 = sy2 + 14;
+  } }
+  // 点选结果
+  let sel = S.sel;
+  let st_y = vr.y + vr.h - 30;
+  let seltxt = sel == nil ? "点击视图中的部件查看名称与损坏状态" : sel;
+  let selbg = ui_rect(10, st_y, min(w - 20, 420), 24, "rgba(11,8,24,.78)", 12); selbg.tid = "player-selection"; selbg.aria = seltxt; selbg.d = {part: S.sel_part == nil ? "" : S.sel_part};
+  ui_textw(22, st_y + 4, min(w - 44, 396), seltxt, 12, sel == nil ? TH.muted : TH.acc2);
+  // 读数
+  hud_panel(vr, w);
+  if (S.reh.on) { reh_panel(vr, w); }
+  if (S.msg != "" && time() - S.msg_t < 6) { let mb = ui_rect(vr.x + vr.w / 2 - 190, vr.y + 12, 380, 26, "rgba(11,8,24,.86)", 13); mb.stroke = TH.acc; ui_textc(vr.x + vr.w / 2 - 190, vr.y + 17, 380, S.msg, 12, TH.text); }
+  // 供自动化与任务管理使用的状态（不可见）
+  if (v == 0) { ui_node({o: "meta", kind: "player", wid: APP.wid, state: state_key(), position: S.tl.pos, duration: S.tl.dur, rate: S.tl.rate, scene: S.path, frameTime: S.fl == nil ? S.tl.pos : S.fl.simt}); }
+}
+fn state_key() {
+  let s = state_text();
+  if (s == "播放中") { return "playing"; } if (s == "已暂停") { return "paused"; } if (s == "已停止") { return "stopped"; } if (s == "已播放完") { return "ended"; }
+  return "idle";
+}
+fn hud_panel(vr, w) {
+  let h = S.fl == nil ? nil : S.fl.hud;
+  if (h == nil || h.alt == nil) { return nil; }
+  let x = vr.x + 10; let y = vr.y + 10;
+  let bg = ui_rect(x, y, 196, 96, "rgba(11,8,24,.62)", 10); bg.stroke = "rgba(160,140,240,.3)";
+  ui_text(x + 10, y + 6, "高度 " + fmt(h.agl, 1) + " m", 12, TH.text, {fam: "num", b: true});
+  ui_text(x + 10, y + 24, "速度 " + fmt(h.speed, 1) + " m/s   升降 " + fmt(h.vs, 1), 12, TH.muted, {fam: "num"});
+  ui_text(x + 10, y + 42, "航向 " + fmt(h.hdg, 0) + "°   俯仰 " + fmt(h.pitch, 0) + "°   横滚 " + fmt(h.roll, 0) + "°", 12, TH.muted, {fam: "num"});
+  ui_text(x + 10, y + 60, "旋翼 " + floor(h.om * 100) + "%   总距 " + fmt(h.c, 2), 12, TH.muted, {fam: "num"});
+  ui_text(x + 10, y + 78, h.crashed ? "已坠毁" : (h.landed ? "已着地" : "飞行中") + (h.wind > 0.1 ? "   风 " + fmt(h.wind, 1) + " m/s" : ""), 12, h.crashed ? TH.danger : TH.ok, {b: true});
+}
+fn reh_panel(vr, w) {
+  let pw = min(280, w * 0.5); let x = vr.x + vr.w - pw - 10; let y = vr.y + 10; let hh = 372;
+  let bg = ui_rect(x, y, pw, hh, "rgba(20,16,42,.9)", 12); bg.stroke = TH.acc2; bg.tid = "rehearsal-panel"; bg.aria = "飞行排演";
+  ui_icon(x + 12, y + 10, "heli", 16, TH.acc2); ui_text(x + 34, y + 10, "飞行排演", 13, TH.acc2, {b: true});
+  ui_text(x + 12, y + 32, "机体是不稳定的被控对象：保持飞行的是飞控进程。", 10, TH.muted, {w: pw - 24, wrap: true, lh: 14});
+  let cy = y + 64;
+  if (ui_button("rehearsal-start", x + 12, cy, pw - 24, 32, S.reh.started ? "重新开始排演" : "开始排演（起飞 → 停机坪 B）", {fill: TH.acc, b: true, icon: "play", size: 12})) { start_rehearsal(nil); }
+  cy = cy + 40;
+  // 风
+  ui_text(x + 12, cy, "风向 " + floor(S.reh.wdir) + "°", 11, TH.muted); let nd = ui_slider("rehearsal-wind-dir", x + 78, cy - 3, pw - 92, 20, S.reh.wdir, 0, 359);
+  if (abs(nd - S.reh.wdir) > 1) { S.reh.wdir = floor(nd); send_evt({kind: "wind", dir: S.reh.wdir, speed: S.reh.wspeed}); }
+  cy = cy + 24;
+  ui_text(x + 12, cy, "风速 " + fmt(S.reh.wspeed, 1), 11, TH.muted); let ns = ui_slider("rehearsal-wind", x + 78, cy - 3, pw - 92, 20, S.reh.wspeed, 0, 14);
+  if (abs(ns - S.reh.wspeed) > 0.1) { S.reh.wspeed = round(ns * 10) / 10; send_evt({kind: "wind", dir: S.reh.wdir, speed: S.reh.wspeed}); }
+  cy = cy + 26;
+  // 目标航向
+  ui_text(x + 12, cy + 6, "目标航向", 11, TH.muted);
+  ui_input("rehearsal-heading", x + 74, cy, 70, 26, {ph: "度", size: 12, pad: 5, r: 8});
+  if (ui_button("rehearsal-heading-apply", x + 150, cy, 52, 26, "应用", {size: 11}) || ui_key_in("Enter", "rehearsal-heading") != nil) {
+    let hv = num(trim(ui_val("rehearsal-heading")));
+    if (hv != nil) { S.reh.hdg = mod(hv, 360); send_evt({kind: "heading", h: S.reh.hdg}); say("目标航向 " + floor(S.reh.hdg) + "°"); }
+  }
+  ui_text(x + 208, cy + 7, "（" + floor(S.reh.hdg) + "°）", 11, TH.acc2);
+  cy = cy + 32;
+  ui_text(x + 12, cy, "点击地面可把该方向设为目标航向", 10, TH.faint);
+  cy = cy + 20;
+  // 故障
+  let fk = FAULTS[S.reh.fault];
+  if (ui_button("rehearsal-fault-kind", x + 12, cy, 112, 28, fk[1], {size: 11, icon: "fault"})) { S.reh.fault = (S.reh.fault + 1) % len(FAULTS); }
+  ui_input("rehearsal-fault-delay", x + 130, cy + 1, 44, 26, {ph: "秒", size: 11, pad: 4, r: 8});
+  if (ui_button("rehearsal-fault", x + 180, cy, pw - 192, 28, "触发故障", {size: 11, fill: TH.danger, hf: "#ff8aa0", b: true})) {
+    let dl = num(trim(ui_val("rehearsal-fault-delay"))); if (dl == nil || dl < 0) { dl = 0; }
+    send_evt({kind: fk[0], delay: dl}); say(fk[1] + (dl > 0 ? " 将在 " + dl + " 秒后触发" : " 已触发"));
+  }
+  cy = cy + 36;
+  // 目标停机坪
+  if (ui_button("rehearsal-pad", x + 12, cy, 140, 28, "目标停机坪：" + S.reh.pad, {size: 11, icon: "target"})) { S.reh.pad = S.reh.pad == "A" ? "B" : "A"; send_evt({kind: "pad", pad: S.reh.pad}); }
+  cy = cy + 36;
+  // 飞控程序
+  ui_text(x + 12, cy, "飞控程序", 11, TH.muted); cy = cy + 16;
+  if (ui.vals["rehearsal-controller"] == nil) { ui_set("rehearsal-controller", S.reh.ctl); }
+  ui_input("rehearsal-controller", x + 12, cy, pw - 24, 26, {size: 11, pad: 6, r: 8, mono: true});
+  cy = cy + 32;
+  if (ui_button("rehearsal-save", x + 12, cy, (pw - 30) / 2, 28, "保存记录", {size: 11, icon: "save"})) { if (S.reh.started && S.fl_pid > 0) { send(S.fl_pid, {t: "save"}); } else { say("先开始排演再保存"); } }
+  if (ui_button("rehearsal-continue", x + 18 + (pw - 30) / 2, cy, (pw - 30) / 2, 28, "从此处续演", {size: 11, icon: "fork"})) { start_rehearsal(S.tl.pos); }
+  let hd = S.fl == nil ? nil : S.fl.hud;
+  if (hd != nil && hd.ctl_period != nil) { ui_text(x + 12, y + hh - 22, "控制周期 " + fmt(hd.ctl_period * 1000, 0) + " ms · 飞控 " + (S.pstat.fc == nil ? "未运行" : S.pstat.fc), 10, hd.ctl_period > 0.1 ? TH.danger : TH.muted); }
+}
+fn do_pick(v, x, y, vr) {
+  let cam = S.last_cam[v];
+  if (cam == nil) { return nil; }
+  let r = sys("scene_pick", S.sc, cam, x, y, vr.w, vr.h);
+  if (r == nil || r.err != nil) { return nil; }
+  if (r.part != nil) {
+    S.sel_part = r.part; S.sel = part_name(r.part) + "（" + r.part + "） · 状态：" + part_state(r.part);
+  } else if (r.ground != nil) {
+    S.sel_part = ""; S.sel = "地面 · 位置 (" + fmt(r.ground[0], 1) + ", " + fmt(r.ground[1], 1) + ", " + fmt(r.ground[2], 1) + ")";
+    if (S.reh.on && S.reh.started && S.fl != nil && S.fl.hud != nil && S.fl.hud.x != nil) {
+      let dx = r.ground[0] - S.fl.hud.x; let dz = r.ground[2] - S.fl.hud.z;
+      let hdg = mod(atan2(dx, 0 - dz) * 57.2958, 360);
+      S.reh.hdg = floor(hdg); send_evt({kind: "heading", h: S.reh.hdg}); S.sel = S.sel + " · 已设为目标航向 " + floor(hdg) + "°";
+    } else if (S.reh.on) { S.sel = S.sel + "（开始排演后点击地面可设为目标航向）"; }
+  } else { S.sel = nil; S.sel_part = ""; }
+}
+fn player_keys(U, w, h) {
+  for (let k of ui.keys) {
+    if (k.ed) { continue; }
+    if (k.key == " ") { if (S.tl.playing) { tl_cmd("pause", nil); } else { tl_cmd("play", nil); } }
+    else if (k.key == "ArrowRight") { tl_cmd("step", nil); }
+    else if (k.key == "Home") { tl_cmd("stop", nil); }
+    else if (k.key == "l" || k.key == "L") { tl_cmd("loop", !S.tl.loop); }
+  }
+}
+fn frame_all(U, w, h) { player_frame(U, w, h); player_keys(U, w, h); }
+
+app_init(&frame_all, &player_msg, 0);
+APP.on_idle = &player_idle;
+APP.on_proj = &proj_changed;
+fn proj_changed(what) { S.dirty_ui = true; }
+S.self_ref = sys("self_ref");
+ui = app_view(0);
+let f0 = (APP.args != nil && APP.args.file != nil) ? APP.args.file : "/Demo/helicopter-24.scene";
+ui_set("player-path", f0);
+open_path(f0);
+app_run();

@@ -1,0 +1,23 @@
+﻿{
+ "problem":"05", "parts":[{"name":"1","title":"双层交汇混流阀箱","features":[
+  {"type":"extrude","plane":"XY","loops":[{"rect":[-12,-12,172,122]}],"depth":14},
+  {"type":"extrude","plane":"XZ","origin":[0,110,0],"loops":[{"path":[[0,14],[160,14],[160,48],[116,92],[0,92]]}],"depth":110},
+  {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,38],"loops":[{"rect":[12,14,68,96]}],"depth":44},
+  {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,14],"loops":[{"rect":[78,14,140,96]}],"depth":32},
+  {"type":"extrude","plane":"YZ","origin":[-6,0,0],"loops":[{"rect":[28,26,82,74]}],"depth":6},
+  {"type":"extrude","plane":"YZ","origin":[-14,0,0],"loops":[{"circle":[55,50],"d":34}],"depth":8},
+  {"type":"hole","plane":"ZY","origin":[-14,0,0],"at":[50,55],"d":20,"depth":26},
+  {"type":"hole","plane":"XY","origin":[0,0,14],"at":[[-6,-6],[-6,116],[166,-6],[166,116]],"d":8,"through":true},
+  {"type":"hole","plane":"XY","origin":[0,0,92],"at":[[8,18],[8,92]],"d":5,"depth":16},
+  {"type":"hole","plane":{"origin":[138,55,70],"normal":[0.70710678,0,0.70710678],"x_dir":[0,1,0]},"at":[0,0],"d":16,"depth":62},
+  {"type":"hole","plane":"XZ","at":[40,60],"d":26,"depth":14},
+  {"type":"hole","plane":"ZY","at":[24,55],"d":14,"depth":78},
+  {"type":"hole","plane":"XZ","origin":[0,110,0],"at":[106,30],"d":24,"depth":14,"reverse":true},
+  {"type":"hole","plane":"XY","origin":[0,0,38],"at":[40,55],"d":10,"depth":14},
+  {"type":"fillet","radius":2,"edges":[[-12,-12,7]]},
+  {"type":"chamfer","distance":1,"edges":[[80,-12,0]]}
+ ]}]
+}
+
+
+

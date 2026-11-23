@@ -1,0 +1,24 @@
+{
+  "task": "数字电路仿真器加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "本题得分",
+      "max": 100,
+      "score": 0.0,
+      "reason": "官方评测已完成正确性 0/7；性能 0/9，9 个输入均分 0.0，最终得分取 evaluate.py 的 score=0.0。"
+    }
+  ],
+  "metrics": {
+    "correctness_passed": 0,
+    "correctness_total": 7,
+    "performance_evaluated": 9,
+    "report_path": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Dots\\Dots3NotePreview\\数字电路仿真器加速\\codex\\performance\\work\\evaluate_report.json",
+    "performance_passed": 0,
+    "performance_score": 0.0,
+    "G": null
+  },
+  "notes": "评的是作答结束时工作目录中的内容，不看 git 提交；已完整复制至本评分工作目录（排除评分表），solution.cpp SHA256=574712D5F70AED1F7813BD5656F287DF1BF5F785FC21E1217B1D3068600FFCB7，与原件一致。提交及官方基线均按指定 g++ 参数重新编译成功，所有编译和唯一一次官方评测均通过 process_job.py --cpus 0-15。源码自然检查未发现硬编码答案、文件读写、计时干扰等第十节第1–7条违规。提交的短批次掩码计算 cnt=hi-lo 可为负值，随后 1ULL<<cnt 为未定义行为；可能使无效尾位进入 H 写入并越界。官方运行出现 0xC0000005（访问冲突）及 0xC0000374（堆损坏）。官方基线全部运行通过，本次评测有效。G 因提交运行失败无法定义，报告值为 null。所有本次启动的评测进程已结束。",
+  "anomaly": "提交存在尾部掩码未定义行为，官方正确性与性能运行全部崩溃。"
+}

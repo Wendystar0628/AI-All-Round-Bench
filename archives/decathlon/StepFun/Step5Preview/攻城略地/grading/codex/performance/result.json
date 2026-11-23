@@ -1,0 +1,69 @@
+{
+    "task":  "攻城略地",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  0.0,
+                      "reason":  "官方480局完成，6胜0平474负；第1档6胜90负，第2至第5档各0胜96负。无CPU超时或判负，实力值r=-200触及下界，按官方evaluate.py输出计0.0分。"
+                  }
+              ],
+    "metrics":  {
+                    "score":  0.0,
+                    "score_ci95":  [
+                                       0.0,
+                                       0.0
+                                   ],
+                    "r":  -200.0,
+                    "total_games":  480,
+                    "wins":  6,
+                    "draws":  0,
+                    "losses":  474,
+                    "by_opponent":  [
+                                        {
+                                            "name":  "第1档",
+                                            "games":  96,
+                                            "wins":  6,
+                                            "draws":  0,
+                                            "losses":  90
+                                        },
+                                        {
+                                            "name":  "第2档",
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96
+                                        },
+                                        {
+                                            "name":  "第3档",
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96
+                                        },
+                                        {
+                                            "name":  "第4档",
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96
+                                        },
+                                        {
+                                            "name":  "第5档",
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96
+                                        }
+                                    ],
+                    "cpu_timeout_turns":  0,
+                    "forfeit_losses":  0,
+                    "opponent_penalty_games":  0,
+                    "simultaneous_forfeit_draws":  0,
+                    "report":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\攻城略地\\codex\\performance\\work\\official_report.json"
+                },
+    "notes":  "评的是作答结束时工作目录的副本，不看git提交。副本保存在work\\submission。通过指定Python process_job.py --cpus 0-15包装执行题面编译命令及唯一一次官方评测；官方入口保持--cpus 0-15 --jobs 8，is_official_configuration=true。数据目录12个文件与官方材料逐一一致；源码使用标准库与engine.hpp，未见影响计时、进程或伪造输出等作弊行为。480局完整，无环境或裁判异常；0分来自实际对局实力低于0分锚点，并非编译或规则判零。评测包装进程PID 25064及评测进程PID 75100均已退出，官方对局程序由裁判及Job收尾；未启动浏览器或网页服务器。",
+    "anomaly":  "策略在第二至第五档全败，480局仅胜6局。"
+}

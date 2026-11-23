@@ -1,0 +1,79 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 45.6,
+      "reason": "官方 evaluate.py 正式实测基线最小用时512.1843ms、提交142.898ms，加速3.584265倍，速度分45.5669645686。5次计时画面和12个隐藏输入全部通过，c=h=1，最终45.6分；源码核对未确认实质性违规。"
+    }
+  ],
+  "metrics": {
+    "baseline_ms": 512.1843,
+    "submission_ms": 142.898,
+    "speedup": 3.5842650002099403,
+    "q": 45.56696456860015,
+    "c": 1,
+    "h": 1,
+    "unrounded_score": 45.56696456860015,
+    "baseline_runs_ms": [
+      514.4149,
+      512.5719,
+      512.1843,
+      514.6996,
+      512.8964
+    ],
+    "submission_runs_ms": [
+      144.2958,
+      142.898,
+      144.2707,
+      143.2885,
+      149.3513
+    ],
+    "timed_image_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "public_boundary_factors": [
+      1,
+      1,
+      1
+    ],
+    "timed_exception_pixels": [
+      1016,
+      1016,
+      1016,
+      1016,
+      1016
+    ],
+    "timed_exception_limit": 3232,
+    "timed_rmse": 4.086758850457694e-05,
+    "timed_channel_bias": [
+      -1.999220818874917e-07,
+      -2.49406535478972e-07,
+      -1.3803271856889082e-07
+    ],
+    "formal": true,
+    "report": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GPT\\5.6Sol\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json"
+  },
+  "notes": "评的是作答结束时的工作目录副本，不看 git 提交。副本位于work/submission，solution.cu SHA256=733AF5E7017355C47219C8A53E3C3FBCA95BEA55A301ECEAC8F5808038CF09AC。官方头文件、grader.cu和reference.cu与原作答材料一致；仅使用官方源码重新编译和一次完整正式evaluate.py，未用提交内的二进制或自测结果计分。3个公开边界均通过、不计分；规则扫描4处命中经人工检查均为容量复用或返回前已join的线程，核查记录见work/rule_review.json。无环境异常。 评测入口及记录的25个运行子进程均已退出，未启动浏览器或服务器。"
+}

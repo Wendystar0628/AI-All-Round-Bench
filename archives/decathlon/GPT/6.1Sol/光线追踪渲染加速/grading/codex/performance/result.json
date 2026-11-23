@@ -1,0 +1,62 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 59.6,
+      "reason": "官方 evaluate.py 正式测量得到4.864094897倍加速，速度分59.6475030502；5次计时画面和12个隐藏输入均通过，c=h=1，最终按未舍入值计算并保留一位小数为59.6分。源码核查未确认实质性违规。"
+    }
+  ],
+  "metrics": {
+    "R_ms": 510.4352,
+    "C_ms": 104.9394,
+    "s": 4.864094896673699,
+    "q": 59.64750305017171,
+    "c": 1,
+    "h": 1,
+    "unrounded_score": 59.64750305017171,
+    "timed_image_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_image_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "public_boundary_passed": 3,
+    "performance_exception_pixels": [
+      801,
+      801,
+      801,
+      801,
+      801
+    ],
+    "performance_exception_limit": 3232,
+    "performance_rmse": 3.5860786765964334e-05,
+    "formal": true,
+    "cpus": "16-27",
+    "timing": {
+      "repeats": 5,
+      "statistic": "min"
+    },
+    "source_sha256": "3edeb45f32b978a69644d0f6578c0cdeaae0b0840374a7f77b39342715af98c1",
+    "evaluation_report": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GPT\\6.1Sol\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json"
+  },
+  "notes": "评的是作答结束时工作目录的完整副本 submission，不看 git 提交；原始提交除指定评分表外未修改。基线与提交均由官方脚本使用固定 nvcc 命令重新编译，逻辑处理器16–27、高优先级，5次取最小值。3个公开边界均通过但不计分。扫描命中的 cuda/atomic 为允许的 Toolkit 设备端原子头文件，静态节点指针仅复用显存；每次 render 重建本次场景，人工核查记录见 work/source_review.txt。"
+}

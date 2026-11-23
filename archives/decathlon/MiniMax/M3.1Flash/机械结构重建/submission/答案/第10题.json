@@ -1,0 +1,21 @@
+{
+  "problem": "10",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双斜座多腔阀体铸件",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 180, 118]}], "depth": 10, "name": "底座 180x118x10"},
+        {"type": "fillet", "radius": 6, "edges": [[0, 0, 5], [180, 0, 5], [0, 118, 5], [180, 118, 5]], "name": "底座四竖棱R6"},
+        {"type": "extrude", "plane": "ZX", "origin": [0, 6, 0], "loops": [{"path": [[10, 8], [63, 8], [84, 25], [103, 45], [103, 135], [84, 155], [63, 172], [10, 172]]}], "depth": 106, "name": "阀体 顶面Z103 双斜座"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 21], "loops": [{"rect": [27, 16, 86, 102]}], "depth": 59, "name": "左腔"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 21], "loops": [{"rect": [95, 16, 149, 102]}], "depth": 59, "name": "右腔"},
+        {"type": "hole", "plane": {"origin": [8.5, 63, 71.5], "normal": [-0.643, 0, 0.766], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 24, "depth": 64, "name": "斜孔Φ24 深64 倾角40 方位0"},
+        {"type": "hole", "plane": {"origin": [162, 63, 70], "normal": [0.766, 0, 0.643], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 22, "depth": 58, "name": "斜孔Φ22 深58 倾角50 方位180"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 10], "at": [[15, 14], [165, 14], [15, 104], [165, 104]], "d": 8, "through": true, "name": "底座孔Φ8"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 10], "at": [[63, 57]], "d": 12, "depth": 60, "name": "孔Φ12"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 10], "at": [[114, 40]], "d": 10, "depth": 60, "name": "孔Φ10"}
+      ]
+    }
+  ]
+}

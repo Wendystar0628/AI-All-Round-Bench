@@ -1,0 +1,19 @@
+{
+  "problem": "03",
+  "parts": [
+    {"name": "1", "title": "双腔斜顶分流阀壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 34, 32]}], "depth": 4},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 28, 0], "loops": [{"path": [[0, 4], [34, 4], [34, 8], [16, 24], [0, 24]]}], "depth": [0, 24]},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 4, 0], "loops": [{"circle": [18, 12], "d": 34}], "depth": [0, 6]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 28, 0], "loops": [{"circle": [18, 12], "d": 22}], "depth": [-8, 34]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 28, 0], "loops": [{"circle": [18, 12], "d": 18}], "depth": [-8, 38]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 28, 0], "loops": [{"circle": [26, 12], "d": 22}], "depth": [-8, 38]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 28, 0], "loops": [{"rect": [4, 8, 30, 18]}], "depth": [4, 20]},
+      {"type": "extrude", "op": "cut", "plane": "XY", "loops": [{"rect": [13, 12, 21, 20]}], "depth": [-2, 6]},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [25, 16, 16], "normal": [0.7071, 0, 0.7071], "x_dir": [0.7071, 0, -0.7071]}, "loops": [{"circle": [0, 0], "d": 12}], "depth": [-42, 0]},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 4], "at": [[8, 8], [8, 24]], "d": 5, "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 4], "at": [[4, 6], [4, 26], [30, 6], [30, 26]], "d": 7, "through": true},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 2]]}
+    ]}
+  ]
+}

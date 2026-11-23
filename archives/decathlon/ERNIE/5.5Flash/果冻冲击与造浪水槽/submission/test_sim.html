@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>water sim test</title>
+<style>html,body{margin:0;background:#111;color:#9cf;font:12px monospace}canvas{display:block;width:100vw;height:100vh}</style>
+</head><body>
+<canvas id="c"></canvas>
+<pre id="log" style="position:fixed;left:0;top:0"></pre>
+<script src="js/util.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/water.js"></script>
+<script>
+(async () => {
+  const canvas = document.getElementById('c');
+  canvas.width = 320; canvas.height = 180;
+  await initGPU(canvas);
+  const T = { Lx: 2.6, Ly: 1.1, Lz: 1.4, h: 0.05, waterLevel: 0.58 };
+  const water = createWater(T);
+  water.init(7);
+  window.__water = water;
+  // 只跑模拟，不渲染
+  const logEl = document.getElementById('log');
+  let frame = 0;
+  function tick() {
+    water.step(1 / 60, []);
+    if (frame % 15 === 0) {
+      water.asyncReadInfo().then(() => {
+        const info = water.info;
+        if (!info) return;
+        let mn = 1e9, mx = -1e9, sum = 0;
+        const d = info.data;
+        for (let i = 0; i < water.nx; i++) {
+          const hv = d[(i + water.nx * Math.floor(water.nz / 2)) * 8 + 1];
+          if (hv > 0.01) { mn = Math.min(mn, hv); mx = Math.max(mx, hv); sum += hv; }
+        }
+        logEl.textContent = `t=${water.time.toFixed(2)} min=${mn.toFixed(3)} max=${mx.toFixed(3)} avg=${(sum / water.nx).toFixed(3)} paddleX=${water.paddleX.toFixed(3)}`;
+      });
+    }
+    frame++;
+    if (frame < 900) requestAnimationFrame(tick);
+    else window.__done = true;
+  }
+  // 初始给一点扰动，便于观察
+  tick();
+  window.__ready = true;
+})().catch(e => { document.title = 'ERR'; console.error(e); window.__err = String(e) + '\n' + e.stack; });
+</script>
+</body></html>

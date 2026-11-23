@@ -1,0 +1,63 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "主定理名称和 #check 打印的命题与题面一致，但独立编译退出码为1，共85处错误，包括第18行等式方向的类型不匹配和第21行未知标识符。追加 #print axioms problem1 的输出含 sorryAx，不满足得分条件。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中未提交 Problem2.lean，且未找到对应主定理文件。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中未提交 Problem3.lean，且未找到对应主定理文件。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中未提交 Problem4.lean，且未找到对应主定理文件。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中未提交 Problem5.lean，且未找到对应主定理文件。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中未提交 Problem6.lean，且未找到对应主定理文件。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中未提交 Problem7.lean，且未找到对应主定理文件。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中未提交 Problem8.lean，且未找到对应主定理文件。"
+    }
+  ],
+  "metrics": {
+    "total_score": 0,
+    "submitted_problems": 1,
+    "passed_problems": 0,
+    "problem1_compile_errors": 85
+  },
+  "notes": "评的是作答结束时工作目录中的内容，已复制到本评分工作目录的 submission 子目录，不看 git 提交。独立编译与追加 #print axioms problem1、#check @problem1 的日志分别保存在 work/Problem1_original.log 和 work/Problem1_audit.log。sorryAx 出现在编译错误恢复后的依赖输出中，源码未发现显式 sorry、自定义公理或绕过检查的手段；未见作弊迹象。编译进程均已正常退出。",
+  "anomaly": "仅提交第1题证明尝试且编译报错，其余七题缺交。"
+}

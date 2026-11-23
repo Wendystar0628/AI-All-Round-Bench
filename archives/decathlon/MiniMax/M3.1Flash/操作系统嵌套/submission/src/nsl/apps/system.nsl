@@ -1,0 +1,121 @@
+/*
+ * 子系统应用：系统管理（NSL 程序）
+ * 管理本系统的直属子系统：新建、暂停、继续、单步、重启、关闭、快照、恢复与分叉。
+ */
+var WIN = 0;
+var KIDS = [];
+var STATUS = "就绪";
+var SEL = 0;
+
+function A(o, k) { return obj.get(o, k); }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function wid(id, type, x, y, ww, wh, value, data, testid) {
+  return [id, type, x, y, ww, wh, value, data, testid];
+}
+
+function refresh() {
+  KIDS = [];
+  var res = call("sys.children", {});
+  for (var i = 0; i < arr.len(res); i = i + 1) {
+    var c = arr.get(res, i);
+    var line = A(c, "id") + " · " + A(c, "name") + " · " + A(c, "state") +
+      " · 层级 " + num.toStr(A(c, "depth")) +
+      " · 时间 " + num.toStr(math.floor(A(c, "time"))) + "ms" +
+      " · 速率 " + num.toStr(A(c, "rate")) +
+      " · 预算 " + num.toStr(A(c, "budget"));
+    arr.push(KIDS, [A(c, "id"), line, "system-child-item"]);
+  }
+  if (SEL >= arr.len(KIDS)) { SEL = arr.len(KIDS) - 1; }
+  if (SEL < 0) { SEL = 0; }
+  draw();
+}
+
+function draw() {
+  var ws = [];
+  arr.push(ws, wid("list", "list", 12, 8, 596, 180, "", KIDS, "system-children"));
+  arr.push(ws, wid("new", "button", 12, 196, 88, 26, "新建子系统", null, "system-new"));
+  arr.push(ws, wid("pause", "button", 104, 196, 62, 26, "暂停", null, "system-pause"));
+  arr.push(ws, wid("resume", "button", 170, 196, 62, 26, "继续", null, "system-resume"));
+  arr.push(ws, wid("step", "button", 236, 196, 62, 26, "单步", null, "system-step"));
+  arr.push(ws, wid("restart", "button", 302, 196, 62, 26, "重启", null, "system-restart"));
+  arr.push(ws, wid("close", "button", 368, 196, 62, 26, "关闭", null, "system-close"));
+  arr.push(ws, wid("snap", "button", 434, 196, 62, 26, "快照", null, "system-snapshot"));
+  arr.push(ws, wid("restore", "button", 500, 196, 62, 26, "恢复", null, "system-restore"));
+  arr.push(ws, wid("fork", "button", 566, 196, 62, 26, "分叉", null, "system-fork"));
+  arr.push(ws, wid("kernel", "button", 12, 228, 110, 26, "打开内核源码", null, "kernel-open"));
+  arr.push(ws, wid("stat", "text", 12, 260, 596, 22, STATUS, null, "system-status"));
+  arr.push(ws, wid("help", "text", 12, 286, 596, 46,
+    "子系统是本系统中的一个承载进程，它执行父系统中保存的内核程序。暂停会停住整棵子树；单步推进一个固定逻辑步。",
+    null, "system-help"));
+  call("ui.declare", { windowId: WIN, widgets: ws });
+}
+
+function ctl(action) {
+  if (arr.len(KIDS) == 0) { STATUS = "没有直属子系统"; draw(); return; }
+  var id = arr.get(arr.get(KIDS, SEL), 0);
+  var res = call("sys.childctl", { id: id, action: action });
+  if (A(res, "ok")) { STATUS = "已对 " + id + " 执行 " + action; }
+  else { STATUS = "操作失败：" + A(res, "error"); }
+  refresh();
+}
+
+function onEvent(ev) {
+  var type = A(ev, "type");
+  var w = A(ev, "widget");
+  var ly = num.toInt(A(ev, "ly"));
+  if (w == "list") {
+    var row = math.floor(ly / 22);
+    if (row >= 0 && row < arr.len(KIDS)) { SEL = row; STATUS = "已选择 " + arr.get(arr.get(KIDS, row), 0); }
+    refresh();
+    return;
+  }
+  if (type != "click") { return; }
+  if (w == "new") {
+    var res = call("sys.newchild", { name: "子系统" });
+    STATUS = A(res, "ok") ? ("已创建子系统 " + A(res, "id")) : "创建失败";
+    refresh(); return;
+  }
+  if (w == "pause") { ctl("pause"); return; }
+  if (w == "resume") { ctl("resume"); return; }
+  if (w == "step") { ctl("step"); return; }
+  if (w == "restart") { ctl("restart"); return; }
+  if (w == "close") { ctl("close"); return; }
+  if (w == "snap") { ctl("snapshot"); return; }
+  if (w == "restore") { ctl("restore"); return; }
+  if (w == "fork") { ctl("fork"); return; }
+  if (w == "kernel") {
+    if (arr.len(KIDS) == 0) { STATUS = "没有直属子系统"; draw(); return; }
+    var id = arr.get(arr.get(KIDS, SEL), 0);
+    var res2 = call("sys.openeditor", { id: id });
+    STATUS = A(res2, "ok") ? ("已在父系统编辑器打开 " + id + " 的内核源文件") : "打开失败";
+    draw(); return;
+  }
+}
+
+function main() {
+  var r = call("win.open", { app: "system", title: "系统管理", w: 640, h: 360 });
+  WIN = num.toInt(A(r, "id"));
+  refresh();
+  while (true) {
+    var guard = 0;
+    var got = 0;
+    while (guard < 32) {
+      guard = guard + 1;
+      var raw = sys.takeMsg();
+      if (raw == null || str.len(raw) == 0) { break; }
+      got = got + 1;
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        var et = A(ev, "type");
+        if (et == "click" || et == "value") { onEvent(ev); }
+      }
+    }
+    if (got == 0) { nap(40); refresh(); }
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

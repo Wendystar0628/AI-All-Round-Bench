@@ -1,0 +1,28 @@
+{
+  "problem": "08",
+  "parts": [
+    {
+      "name": "1",
+      "title": "交错隔板双层润滑箱",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [-12, 0, 185, 139]}], "depth": 12, "name": "底板"},
+        {"type": "fillet", "radius": 2, "edges": [[-12, 0, 6]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[80, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [0, 10, 173, 128]}], "depth": 85, "name": "箱体外壳 顶面Z97"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [11, 21, 162, 117]}], "depth": 77, "name": "内腔"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [46, 21, 54, 117]}], "depth": 77, "name": "竖隔板1"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [103, 21, 111, 117]}], "depth": 77, "name": "竖隔板2"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 40], "loops": [{"rect": [54, 21, 103, 117]}], "depth": 8, "name": "中层隔板"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 40], "loops": [{"rect": [54, 53, 103, 90]}], "depth": 8, "name": "中层隔板开口"},
+        {"type": "extrude", "op": "cut", "plane": "ZX", "origin": [0, 10, 0], "loops": [{"path": [[64, 67], [74, 67], [74, 103], [64, 103]]}], "depth": 12, "name": "前壁方窗"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[-5, 4], [179, 4], [-5, 132], [179, 132]], "d": 8, "through": true, "name": "底板角孔Φ8"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 48], "at": [[85, 43]], "d": 24, "depth": 8, "name": "隔板通孔Φ24"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 48], "at": [[85, 87]], "d": 18, "depth": 8, "cbore": {"d": 30, "depth": 3}, "name": "隔板孔Φ18 沉孔Φ30"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 97], "at": [[140, 87]], "d": 16, "depth": 85, "name": "顶部孔Φ16"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 22, 0], "at": [[32, 140]], "d": 20, "depth": 12, "name": "侧通口Φ20"},
+        {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[40, 70]], "d": 16, "through": true, "name": "横向孔Φ16"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 97], "at": [[27, 65]], "d": 24, "depth": 85, "name": "顶部孔Φ24"}
+      ]
+    }
+  ]
+}

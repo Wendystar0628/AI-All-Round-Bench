@@ -1,0 +1,179 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 0.0,
+      "reason": "官方正式评测：R=516.238200 ms，C=181.272600 ms，加速比 2.847856，q=36.276529，c=0，h=0.25。5 次性能图像均不通过，每次 968319 个例外像素，上限 3232；12 个隐藏输入通过 3 个。"
+    }
+  ],
+  "metrics": {
+    "baseline_ms": 516.2382,
+    "submission_ms": 181.2726,
+    "speedup": 2.8478556604804033,
+    "q": 36.27652876182532,
+    "c": 0,
+    "h": 0.25,
+    "timing_factors": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "hidden_factors": [
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0
+    ],
+    "selected_version": "final",
+    "selected_source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\submission\\solution.cu",
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_final\\results.json",
+    "final_exception_pixels": 968319,
+    "final_exception_limit": 3232,
+    "history": [
+      {
+        "version": "final",
+        "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\submission\\solution.cu",
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_final\\results.json",
+        "score": 0.0,
+        "baseline_ms": 516.2382,
+        "submission_ms": 181.2726,
+        "q": 36.27652876182532,
+        "c": 0,
+        "h": 0.25,
+        "timing_factors": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hidden_factors": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "version": "previous_1",
+        "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\recovered_versions\\previous_1.cu",
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_previous_1\\results.json",
+        "score": 0.0,
+        "baseline_ms": 512.1065,
+        "submission_ms": 81.2237,
+        "q": 72.92900807534832,
+        "c": 0,
+        "h": 0.08333333333333333,
+        "timing_factors": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hidden_factors": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "version": "previous_2",
+        "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\recovered_versions\\previous_2.cu",
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_previous_2\\results.json",
+        "score": 0.0,
+        "baseline_ms": 516.6935,
+        "submission_ms": null,
+        "q": 0,
+        "c": 0,
+        "h": 0.08333333333333333,
+        "timing_factors": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hidden_factors": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "version": "previous_3",
+        "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\recovered_versions\\previous_3.cu",
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_previous_3\\results.json",
+        "score": 0,
+        "baseline_ms": 516.5011,
+        "submission_ms": null,
+        "q": 0,
+        "c": 0,
+        "h": 1,
+        "timing_factors": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hidden_factors": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ]
+  },
+  "notes": "评的是作答结束时工作目录的副本 submission/solution.cu，不看 git 提交。最终版本可编译，正式得分为 0。日志目录没有 versions 快照；从 run-c7e7aa2c7afa40c38f3566eecfbd3d41/session.log 成功写入 solution.cu 的命令逆向还原最近 3 个历史版本，按新到旧复评；还原证据见 recovered_versions/evidence.json，逐步正向重放与后一版本完全一致。 已完成：final=0.0, previous_1=0.0, previous_2=0.0, previous_3=0.0。最终版本和最近 3 个历史版本正式得分均为 0，依指南不再向前查找，最终记 0。 历史 previous_1：q=72.929008，c=0，h=0.08333333333333333；exception_pixels=1612686 > 3232。 历史 previous_2：q=0.000000，c=0，h=0.08333333333333333；process failed, timed out, or did not report a positive time。 历史 previous_3：q=0.000000，c=0，h=1；earlier device failure；process failed, timed out, or did not report a positive time。 源码核对：采样、着色、求交及像素计算均在 GPU；CPU 只建 BVH，所有主机工作线程在 render 返回前 join；未发现实质性违规或作弊。 最终源码第 228、300、319 行：并行建树的 c1 从 0 开始，首次分配子节点复用了根节点 0，破坏树结构。 previous_3 的性能输入首次运行超过 120 秒（wall_s=120.082777），后 4 次由官方保护机制跳过；12 个隐藏输入全部通过。四次正式评测基线均有效，未出现 invalid.json；所有已记录的本次评测进程均已退出，见 process_cleanup.json。",
+  "anomaly": "并行 BVH 根节点被子节点复用，最终图像大面积错误。"
+}

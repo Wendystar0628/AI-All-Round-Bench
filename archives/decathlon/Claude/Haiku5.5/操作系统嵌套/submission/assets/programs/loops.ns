@@ -1,0 +1,12 @@
+// 示例程序：计算 1 到 N 的和并打印中间结果。修改 N 后重新运行。
+func main(args) {
+    var n = 100;
+    var total = 0;
+    for (var i = 1; i <= n; i = i + 1) {
+        total = total + i;
+        if (i % 25 == 0) {
+            print("i =", i, "总和 =", total);
+        }
+    }
+    return total;
+}

@@ -1,0 +1,25 @@
+{
+  "name": "nested-os",
+  "version": "1.0.0",
+  "description": "操作系统嵌套 —— 递归嵌套的图形操作系统（Electron 桌面项目）",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test:nsl": "node tools/test-nsl.js",
+    "test:compiler": "node tools/test-compiler.js",
+    "test:programs": "node tools/test-nsl-programs.js"
+  },
+  "keywords": [
+    "nested-os",
+    "electron",
+    "operating-system"
+  ],
+  "author": "Nested OS",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "45.2.1"
+  },
+  "dependencies": {
+    "three": "0.187.0"
+  }
+}

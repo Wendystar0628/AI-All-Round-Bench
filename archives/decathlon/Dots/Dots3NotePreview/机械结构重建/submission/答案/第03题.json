@@ -1,0 +1,13 @@
+{
+  "problem": "03",
+  "parts": [
+    {"name": "1", "title": "双腔斜顶分流阀壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-17, -17, 17, 17]}], "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [0, 0], "d": 22, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [-8, 0], "d": 18, "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [8, 0], "d": 18, "depth": 30},
+      {"type": "hole", "plane": {"origin": [17, 0, 42], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 12, "depth": 42},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -17, 0], [0, 17, 0], [-17, 0, 0], [17, 0, 0]]}
+    ]}
+  ]
+}

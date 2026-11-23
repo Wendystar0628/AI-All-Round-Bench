@@ -1,0 +1,13 @@
+{
+  "problem": "14",
+  "parts": [
+    {"name": "1", "title": "偏置双出口泵体铸件", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-40, -35, 40, 35]}], "depth": 75},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 75], "at": [0, 0], "d": 46, "depth": 55},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 75], "at": [0, 0], "d": 36, "depth": 35},
+      {"type": "hole", "plane": "XY", "origin": [12, 0, 75], "at": [0, 0], "d": 28, "depth": 45},
+      {"type": "hole", "plane": "XY", "origin": [-12, 0, 75], "at": [0, 0], "d": 20, "depth": 30},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -35, 0], [0, 35, 0], [-40, 0, 0], [40, 0, 0]]}
+    ]}
+  ]
+}

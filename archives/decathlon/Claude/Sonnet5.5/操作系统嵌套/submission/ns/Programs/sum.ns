@@ -1,0 +1,6 @@
+// 累加计算：把 1..n 相加并输出。启动参数 {n: 循环次数}，默认 100。
+let A = args();
+let n = (A != nil && A.n != nil) ? A.n : 100;
+let sum = 0;
+for (let i = 1; i <= n; i++) { sum += i; }
+print("1 + 2 + … + " + n + " = " + sum);

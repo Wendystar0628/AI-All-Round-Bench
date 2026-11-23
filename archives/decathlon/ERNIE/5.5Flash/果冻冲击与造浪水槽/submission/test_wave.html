@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>wave test</title>
+<style>html,body{margin:0;background:#111;color:#9cf;font:12px monospace}canvas{width:320px;height:180px}</style>
+</head><body>
+<canvas id="c"></canvas>
+<pre id="log"></pre>
+<script src="js/util.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/water.js"></script>
+<script>
+(async () => {
+  const canvas = document.getElementById('c');
+  canvas.width = 320; canvas.height = 180;
+  await initGPU(canvas);
+  const T = { Lx: 2.6, Ly: 1.1, Lz: 1.4, h: 0.05, waterLevel: 0.58 };
+  const water = createWater(T);
+  const d = GPU.device;
+  const log = (s) => { document.getElementById('log').textContent += s + "\n"; };
+  async function dump(buf, bytes, fn) {
+    const rb = d.createBuffer({size: bytes, usage: GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+    const e = d.createCommandEncoder(); e.copyBufferToBuffer(buf, 0, rb, 0, bytes); d.queue.submit([e.finish()]);
+    await d.queue.onSubmittedWorkDone(); await rb.mapAsync(GPUMapMode.READ);
+    const a = fn(new Float32Array(rb.getMappedRange().slice(0)));
+    rb.unmap(); rb.destroy(); return a;
+  }
+  window.__waterRef = water;
+  window.__runCase = async function (o) {
+    water.init(7);
+    await new Promise(r=>setTimeout(r,30));
+    water.prime();
+    await GPU.device.queue.onSubmittedWorkDone();
+    water.pressureIters = o.iters; water.omega = o.omega; water.divSign = o.sign; water.flip = o.flip;
+    water.substeps = o.substeps;
+    const n = water.nParticles;
+    const rows=[];
+    for (let f=0; f<90; f++){
+      water.step(1/60, []);
+      await GPU.device.queue.onSubmittedWorkDone();
+      if (f%15===14){
+        const rb = GPU.device.createBuffer({size:n*16, usage:GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+        const e = GPU.device.createCommandEncoder(); e.copyBufferToBuffer(water.pPosBuf,0,rb,0,n*16); GPU.device.queue.submit([e.finish()]);
+        await GPU.device.queue.onSubmittedWorkDone(); await rb.mapAsync(GPUMapMode.READ);
+        const a = new Float32Array(rb.getMappedRange().slice(0)); rb.unmap(); rb.destroy();
+        let mxy=-1e9; for(let i=0;i<n;i++){const y=a[i*4+1]; if(y>mxy)mxy=y;}
+        rows.push(f+':'+mxy.toFixed(3));
+      }
+    }
+    return rows.join(' ');
+  };
+  window.__runWave = async function (amp, freq, frames) {
+    document.getElementById('log').textContent = '';
+    water.init(7);
+    await new Promise(r => setTimeout(r, 30));
+    water.prime();
+    await d.queue.onSubmittedWorkDone();
+    water.waveOn = true; water.paddleAmp = amp; water.paddleFreq = freq;
+    const n = water.nParticles;
+    const rows = [];
+    for (let f = 0; f < frames; f++) {
+      water.step(1/60, []);
+      await d.queue.onSubmittedWorkDone();
+      if (f % 20 === 19) {
+        const P = await dump(water.pPosBuf, n*16, a => {
+          let mxy=-1e9;
+          for (let i=0;i<n;i++){ const y=a[i*4+1]; if(y>mxy)mxy=y; }
+          return +mxy.toFixed(3);
+        });
+        await water.asyncReadInfo();
+        const hs = [];
+        for (let i = 0; i < water.nx; i += 4) hs.push(+(water.sampleHeight((i+0.5)*water.h, 0.7)).toFixed(3));
+        rows.push(`f${f} t=${water.time.toFixed(2)} maxY=${P} H=[${hs.join(',')}]`);
+      }
+    }
+    return rows.join('\n');
+  };
+  window.__ready = true;
+})().catch(e => { document.title='ERR'; console.error(e); window.__err = String(e)+'\n'+e.stack; });
+</script>
+</body></html>

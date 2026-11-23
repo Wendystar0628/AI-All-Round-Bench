@@ -1,0 +1,303 @@
+// flightlib.ns — 直升机飞行动力学（简化的刚体 + 旋翼模型）。
+// 被控对象是不稳定的：俯仰、横滚有正反馈（不控制就会发散），所以保持飞行的是飞控进程，不是预设轨迹。
+// 机体状态随虚拟时间按固定步长 1/120 秒推进，不等待飞控；控制量保持到下一次写入。
+// 本库不含系统调用，飞行场景进程（flight.ns）与离线烘焙工具共用它。
+// #noprelude
+let PRM = nil; let TER = nil; let PADS = []; let OBS = []; let DEFS = [];
+let ST = nil; let SIMT = 0;
+let WIND = {dir: 0, speed: 0, x: 0, z: 0};
+let CUR = {c: 0, cp: 0, cr: 0, ped: 0};
+
+fn hash01(n, seed) { let s = sin(n * 12.9898 + seed * 78.233) * 43758.5453; return s - floor(s); }
+
+// ---- 世界：地形高度场、停机坪、障碍 ----
+fn ter_h(x, z) {
+  let t = TER; let nx = t.res[0]; let nz = t.res[1];
+  let u = (x / t.size[0] + 0.5) * (nx - 1); let v = (z / t.size[1] + 0.5) * (nz - 1);
+  if (u < 0 || v < 0 || u > nx - 1 || v > nz - 1) { return t.edge == nil ? 0 : t.edge; }
+  let i = min(nx - 2, floor(u)); let j = min(nz - 2, floor(v)); let fu = u - i; let fv = v - j;
+  let h = t.heights;
+  let a = h[j * nx + i]; let b = h[j * nx + i + 1]; let c = h[(j + 1) * nx + i]; let d = h[(j + 1) * nx + i + 1];
+  return (a * (1 - fu) + b * fu) * (1 - fv) + (c * (1 - fu) + d * fu) * fv;
+}
+fn ground_h(x, z) {
+  let g = ter_h(x, z);
+  for (let p of PADS) {
+    if (hypot2(x - p.pos[0], z - p.pos[1]) < p.r) { let top = ter_h(p.pos[0], p.pos[1]) + p.h - 0.05; if (top > g) { g = top; } }
+  }
+  return g;
+}
+fn hypot2(a, b) { return sqrt(a * a + b * b); }
+let OBSG = {};
+// 障碍物网格索引：每步只检查机体附近格子里的障碍，计量随障碍数量增长很慢
+fn fl_init(fd, terrain, pads, obstacles) {
+  PRM = fd.params; TER = terrain; PADS = pads; OBS = obstacles; DEFS = fd.debris == nil ? [] : fd.debris;
+  OBSG = {};
+  for (let i = 0; i < len(OBS); i++) {
+    let o = OBS[i];
+    let ext = o.type == "tree" ? 8 : (max(o.size[0], o.size[2]) / 2 + 8);
+    let x0 = floor((o.pos[0] - ext) / 24); let x1 = floor((o.pos[0] + ext) / 24);
+    let z0 = floor((o.pos[1] - ext) / 24); let z1 = floor((o.pos[1] + ext) / 24);
+    for (let ix = x0; ix <= x1; ix++) { for (let iz = z0; iz <= z1; iz++) {
+      let key = (ix + 50) * 1000 + (iz + 50);
+      if (OBSG[key] == nil) { OBSG[key] = []; }
+      push(OBSG[key], o);
+    } }
+  }
+}
+fn fl_new_state() {
+  let s0 = PRM.start; let gx = s0.pos[0]; let gz = s0.pos[2];
+  return {x: gx, y: ground_h(gx, gz) + PRM.gear, z: gz, vx: 0, vy: 0, vz: 0, yaw: s0.yawDeg * 3.14159265 / 180, pitch: 0, roll: 0, p: 0, q: 0, r: 0,
+    om: 0, am: 0, at: 0, engine_out: false, vib: false, smoke_t: -1, landed: true, crashed: false, crash: nil, started: false, tail: false, engine: false, hyd: false, bdmg: 0, debris: [], fire_t: -1, rest: 0,
+    tgt_h: 90, tgt_pad: "B", gust: 0, dmg: 0, blades_off: false, boom_off: false, fin_off: false, land_t: 0, skids_off: false};
+}
+fn fl_reset() { ST = fl_new_state(); SIMT = 0; WIND = {dir: 0, speed: 0, x: 0, z: 0}; CUR = {c: 0, cp: 0, cr: 0, ped: 0}; }
+
+// 风：来自罗盘方位 dir（度，顺时针，0=北=−Z），速度 speed（米/秒）；返回风吹向的分量
+fn wind_set(dir, speed) {
+  let a = dir * 3.14159265 / 180;
+  WIND = {dir: dir, speed: speed, x: 0 - sin(a) * speed, z: cos(a) * speed};
+}
+
+// ---- 事件（风、目标航向、故障、目标停机坪、开始）----
+fn fl_apply_event(e) {
+  let s = ST;
+  if (e.kind == "wind") { wind_set(e.dir, e.speed); }
+  else if (e.kind == "heading") { s.tgt_h = e.h; }
+  else if (e.kind == "pad") { s.tgt_pad = e.pad; }
+  else if (e.kind == "start") { s.started = true; s.engine = true; }
+  else if (e.kind == "tail") { s.tail = true; }
+  else if (e.kind == "engine") { s.engine = false; s.engine_out = true; }
+  else if (e.kind == "hyd") { s.hyd = true; }
+  else if (e.kind == "blade") { s.bdmg = 0.6; }
+  else if (e.kind == "vib") { s.vib = true; }
+  else if (e.kind == "smoke") { s.smoke_t = SIMT; }
+}
+
+// ---- 姿态基向量 ----
+fn basis() {
+  let s = ST;
+  let cy = cos(s.yaw); let sy = sin(s.yaw); let cp = cos(s.pitch); let sp = sin(s.pitch); let cr = cos(s.roll); let sr = sin(s.roll);
+  let f = [cp * sy, sp, cp * cy];
+  let r0 = [0 - cy, 0, sy];
+  let u0 = [0 - sy * sp, cp, 0 - cy * sp];
+  let up = [u0[0] * cr + r0[0] * sr, u0[1] * cr + r0[1] * sr, u0[2] * cr + r0[2] * sr];
+  let rt = [r0[0] * cr - u0[0] * sr, r0[1] * cr - u0[1] * sr, r0[2] * cr - u0[2] * sr];
+  return {f: f, up: up, rt: rt};
+}
+fn quat_from_basis(b) {
+  // 模型局部轴：X=左(−右)，Y=上，Z=前
+  let m11 = 0 - b.rt[0]; let m21 = 0 - b.rt[1]; let m31 = 0 - b.rt[2];
+  let m12 = b.up[0]; let m22 = b.up[1]; let m32 = b.up[2];
+  let m13 = b.f[0]; let m23 = b.f[1]; let m33 = b.f[2];
+  let tr = m11 + m22 + m33; let x = 0; let y = 0; let z = 0; let w = 1;
+  if (tr > 0) { let s = sqrt(tr + 1) * 2; w = 0.25 * s; x = (m32 - m23) / s; y = (m13 - m31) / s; z = (m21 - m12) / s; }
+  else if (m11 > m22 && m11 > m33) { let s = sqrt(1 + m11 - m22 - m33) * 2; w = (m32 - m23) / s; x = 0.25 * s; y = (m12 + m21) / s; z = (m13 + m31) / s; }
+  else if (m22 > m33) { let s = sqrt(1 + m22 - m11 - m33) * 2; w = (m13 - m31) / s; x = (m12 + m21) / s; y = 0.25 * s; z = (m23 + m32) / s; }
+  else { let s = sqrt(1 + m33 - m11 - m22) * 2; w = (m21 - m12) / s; x = (m13 + m31) / s; y = (m23 + m32) / s; z = 0.25 * s; }
+  let n = sqrt(x * x + y * y + z * z + w * w);
+  return [x / n, y / n, z / n, w / n];
+}
+fn euler_q(ex, ey, ez) { // 欧拉角（XYZ 序）→ 四元数
+  let c1 = cos(ex / 2); let s1 = sin(ex / 2); let c2 = cos(ey / 2); let s2 = sin(ey / 2); let c3 = cos(ez / 2); let s3 = sin(ez / 2);
+  return [s1 * c2 * c3 + c1 * s2 * s3, c1 * s2 * c3 - s1 * c2 * s3, c1 * c2 * s3 + s1 * s2 * c3, c1 * c2 * c3 - s1 * s2 * s3];
+}
+
+// ---- 碰撞 ----
+fn obstacle_hit() { // 返回 nil 或 {kind, x, y, z}
+  let s = ST; let R = 1.5;
+  let near = OBSG[(floor(s.x / 24) + 50) * 1000 + (floor(s.z / 24) + 50)];
+  if (near == nil) { return nil; }
+  for (let o of near) {
+    if (o.type == "tree") {
+      let d = hypot2(s.x - o.pos[0], s.z - o.pos[1]);
+      let gh = ter_h(o.pos[0], o.pos[1]);
+      if (d < 0.6 + R * 0.7 && s.y - PRM.gear < gh + o.h) { return {kind: "tree", x: s.x, y: s.y, z: s.z}; }
+      // 旋翼桨盘擦过树冠
+      if (!s.blades_off && s.om > 0.3 && d < PRM.rotorR + o.crown * 0.6 && s.y + 2.6 < gh + o.h && s.y + 2.6 > gh + o.h * 0.35) { return {kind: "rotor", x: s.x, y: s.y + 2.6, z: s.z}; }
+    } else if (o.type == "box") {
+      let a = (o.rotY == nil ? 0 : o.rotY) * 3.14159265 / 180;
+      let dx = s.x - o.pos[0]; let dz = s.z - o.pos[1];
+      let lx = dx * cos(a) - dz * sin(a); let lz = dx * sin(a) + dz * cos(a);
+      let gh = ter_h(o.pos[0], o.pos[1]);
+      let top = gh + o.size[1];
+      let hx = o.size[0] / 2; let hz = o.size[2] / 2;
+      if (abs(lx) < hx + R && abs(lz) < hz + R && s.y - PRM.gear < top && s.y + 1.2 > gh) { return {kind: "wall", x: s.x, y: s.y, z: s.z}; }
+      if (!s.blades_off && s.om > 0.3 && abs(lx) < hx + PRM.rotorR && abs(lz) < hz + PRM.rotorR && s.y + 2.6 < top + 0.3 && s.y + 2.6 > gh + 1) { return {kind: "rotor", x: s.x, y: s.y + 2.6, z: s.z}; }
+    }
+  }
+  return nil;
+}
+
+// ---- 坠毁：碎片、起火与余波完全由撞击时的实际状态决定 ----
+fn do_crash(kind, hit_x, hit_y, hit_z) {
+  let s = ST;
+  let speed = sqrt(s.vx * s.vx + s.vy * s.vy + s.vz * s.vz);
+  s.crashed = true; s.landed = false;
+  s.crash = {t: SIMT, x: hit_x, y: hit_y, z: hit_z, speed: speed, kind: kind, vx: s.vx, vy: s.vy, vz: s.vz, yaw: s.yaw};
+  let seed = floor(SIMT * 1000) + floor(speed * 100);
+  if (speed > 5.5) { s.fire_t = SIMT + 0.3; }
+  let breaks_boom = speed > 8.5 || kind == "wall" || (abs(s.roll) > 0.9);
+  if (breaks_boom) { s.boom_off = true; s.fin_off = true; }
+  if (kind == "rotor" || speed > 7) { s.blades_off = true; }
+  if (s.vy < -6 || kind == "wall") { s.skids_off = true; }
+  s.debris = [];
+  let ba = s.am;
+  let n = 0;
+  for (let d of DEFS) {
+    let spawn = false; let ox = 0; let oy = 0; let oz = 0; let ang = 0;
+    if (d.kind == "blade") {
+      if (s.blades_off) { spawn = true; let i = num(substr(d.part, 6, 1)) - 1; ang = ba + i * 1.5708; ox = cos(ang) * 2.4; oz = 0 - sin(ang) * 2.4; oy = 2.6; }
+    } else if (d.kind == "boom") { if (s.boom_off) { spawn = true; oz = -4.7; oy = 0.4; } }
+    else if (d.kind == "fin") { if (s.fin_off) { spawn = true; oz = -6.8; oy = 1.6; } }
+    else if (d.kind == "skid") { if (s.skids_off) { spawn = true; ox = d.part == "dSkidL" ? 1.2 : -1.2; oy = -1.3; } }
+    else if (speed > 4.5) { spawn = true; ox = (hash01(n, seed) - 0.5) * 1.6; oy = 0.4; oz = (hash01(n, seed + 3) - 0.5) * 2.4; }
+    n++;
+    if (!spawn) { continue; }
+    // 机体局部偏移 → 世界坐标
+    let b = basis();
+    let wx = s.x + (0 - b.rt[0]) * ox + b.up[0] * oy + b.f[0] * oz;
+    let wy = s.y + (0 - b.rt[1]) * ox + b.up[1] * oy + b.f[1] * oz;
+    let wz = s.z + (0 - b.rt[2]) * ox + b.up[2] * oy + b.f[2] * oz;
+    let k = 0.35 + speed * 0.09;
+    let dvx = (wx - s.x) * k + (hash01(n, seed + 5) - 0.5) * (2 + speed * 0.5);
+    let dvz = (wz - s.z) * k + (hash01(n, seed + 7) - 0.5) * (2 + speed * 0.5);
+    let dvy = 1.5 + hash01(n, seed + 9) * (3 + speed * 0.35);
+    let e0 = d.kind == "blade" ? [0, ang, 0] : [hash01(n, seed + 1) * 6.28, hash01(n, seed + 2) * 6.28, hash01(n, seed + 4) * 6.28];
+    push(s.debris, {part: d.part, tip: d.tip, kind: d.kind, x: wx, y: wy, z: wz, vx: s.vx * 0.55 + dvx, vy: s.vy * -0.2 + dvy, vz: s.vz * 0.55 + dvz,
+      ex: e0[0], ey: e0[1], ez: e0[2], wx: (hash01(n, seed + 11) - 0.5) * (8 + speed), wy: (hash01(n, seed + 12) - 0.5) * (8 + speed), wz: (hash01(n, seed + 13) - 0.5) * (8 + speed), rest: false, len: d.kind == "boom" ? 2.3 : (d.kind == "blade" ? 0.2 : 0.35)});
+  }
+  // 机体本身：保留一部分动量，带着撞击姿态翻滚
+  s.vx = s.vx * 0.45; s.vz = s.vz * 0.45; s.vy = s.vy * -0.15;
+  s.p = s.p * 0.3 + (hash01(1, seed) - 0.5) * (2 + speed * 0.4);
+  s.q = s.q * 0.3 + (hash01(2, seed) - 0.5) * (1.5 + speed * 0.3);
+  s.r = s.r * 0.5;
+  s.dmg = 1;
+}
+
+// ---- 控制量：控制周期之间保持上一次写入的值 ----
+fn clampv(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+
+// 推进一步（dt 秒）
+fn fl_step(dt) {
+  let s = ST; let P = PRM;
+  if (s.crashed) { crashed_step(dt); SIMT = SIMT + dt; return nil; }
+  let u = CUR;
+  let k = s.om * s.om;
+  let hyd = s.hyd ? 0.45 : 1;
+  // 旋翼转速：起动后升到 1；发动机熄火后缓慢衰减
+  let om_t = 0;
+  if (s.started && s.engine) { om_t = 1; } else if (s.started && s.engine_out) { om_t = 0; } else if (s.started) { om_t = 1; }
+  s.om = s.om + (om_t - s.om) * dt / (s.engine_out ? 5.5 : P.spoolTau);
+  s.am = s.am + s.om * 38 * dt; s.at = s.at + s.om * 160 * dt;
+  // 阵风与风造成的扰动力矩（确定性）
+  let gust = (sin(SIMT * 2.3) * 0.5 + sin(SIMT * 5.1 + 1) * 0.3) * WIND.speed * 0.045;
+  let dpitch = gust * 0.7; let droll = gust * 0.9 * sin(SIMT * 0.9 + 0.5);
+  if (s.vib) { dpitch = dpitch + 1.5 * sin(SIMT * 37); droll = droll + 1.3 * sin(SIMT * 31 + 2); }
+  if (s.landed) {
+    // 在地面：滑橇托着，姿态被拉平
+    s.pitch = s.pitch * (1 - 6 * dt); s.roll = s.roll * (1 - 6 * dt); s.p = 0; s.q = 0;
+    s.r = s.r * (1 - 4 * dt);
+  } else {
+    let tq = 0 - 14 * k * hyd * u.cp - 1.6 * s.q + 3.4 * s.pitch + dpitch;
+    let tp = 14 * k * hyd * u.cr - 1.6 * s.p + 3.4 * s.roll + droll;
+    let tr = 7 * k * (s.tail ? 0 : 1) * u.ped - 1.0 * s.r + (s.tail ? 2.9 * s.om * (0.35 + u.c) : 0) + dpitch * 0.3;
+    // 大偏航率耦合进俯仰/横滚
+    tq = tq + 0.04 * s.r * s.p; tp = tp - 0.04 * s.r * s.q + 0.18 * s.r * (s.tail ? 1 : 0);
+    s.q = s.q + tq * dt; s.p = s.p + tp * dt; s.r = s.r + tr * dt;
+    s.pitch = s.pitch + s.q * dt; s.roll = s.roll + s.p * dt;
+  }
+  s.yaw = s.yaw + s.r * dt;
+  // 平动
+  let b = basis();
+  let agl = s.y - P.gear * b.up[1] - ground_h(s.x, s.z);
+  let ce = u.c * (1 - 0.7 * s.bdmg);
+  let tacc = P.g * (ce / P.hoverC) * k;
+  if (agl < 6) { tacc = tacc * (1 + 0.12 * (1 - max(0, agl) / 6)); }
+  let ax = tacc * b.up[0] - 0.16 * (s.vx - WIND.x);
+  let ay = tacc * b.up[1] - P.g - 0.16 * s.vy - 0.35 * s.vy;
+  let az = tacc * b.up[2] - 0.16 * (s.vz - WIND.z);
+  s.vx = s.vx + ax * dt; s.vy = s.vy + ay * dt; s.vz = s.vz + az * dt;
+  s.x = s.x + s.vx * dt; s.y = s.y + s.vy * dt; s.z = s.z + s.vz * dt;
+  // 接地与碰撞
+  let gh = ground_h(s.x, s.z);
+  let low = s.y - P.gear * b.up[1];
+  if (low <= gh) {
+    let vdown = 0 - s.vy; let tilt = acos(clamp(b.up[1], -1, 1)); let hs = hypot2(s.vx, s.vz);
+    if (s.landed) {
+      s.y = gh + P.gear * b.up[1]; if (s.vy < 0) { s.vy = 0; }
+    } else if (vdown > 4.6 || tilt > 0.5 || hs > 7.5 || (s.om < 0.3 && vdown > 3.2)) {
+      do_crash("ground", s.x, gh, s.z);
+      SIMT = SIMT + dt; return nil;
+    } else {
+      s.landed = true; s.land_t = SIMT; s.y = gh + P.gear * b.up[1]; s.vy = 0;
+    }
+    if (s.landed) { let f = max(0, 1 - 2.5 * dt); s.vx = s.vx * f; s.vz = s.vz * f; }
+  } else if (s.landed && low > gh + 0.04 && s.vy > 0.05) { s.landed = false; }
+  if (!s.landed) {
+    let hit = obstacle_hit();
+    if (hit != nil) { if (hit.kind == "rotor") { s.blades_off = true; s.bdmg = 1; } do_crash(hit.kind, hit.x, hit.y, hit.z); SIMT = SIMT + dt; return nil; }
+  }
+  SIMT = SIMT + dt;
+}
+
+// 坠毁后：机体翻滚落定，碎片翻滚落地后停稳
+fn crashed_step(dt) {
+  let s = ST;
+  s.vy = s.vy - 9.81 * dt;
+  s.x = s.x + s.vx * dt; s.y = s.y + s.vy * dt; s.z = s.z + s.vz * dt;
+  s.pitch = s.pitch + s.q * dt; s.roll = s.roll + s.p * dt; s.yaw = s.yaw + s.r * dt;
+  let gh = ground_h(s.x, s.z); let half = 0.95;
+  if (s.y - half < gh) {
+    s.y = gh + half;
+    if (s.vy < -1) { s.vy = 0 - s.vy * 0.25; } else { s.vy = 0; }
+    let f = max(0, 1 - 3.2 * dt); s.vx = s.vx * f; s.vz = s.vz * f; s.p = s.p * (1 - 2.2 * dt); s.q = s.q * (1 - 2.2 * dt); s.r = s.r * (1 - 2.5 * dt);
+    // 逐渐躺向一侧
+    let side = s.roll >= 0 ? 1.25 : -1.25;
+    s.roll = s.roll + (side - s.roll) * 1.4 * dt; s.pitch = s.pitch * (1 - 1.2 * dt);
+  }
+  s.om = max(0, s.om - 0.7 * dt); s.am = s.am + s.om * 20 * dt;
+  let still = abs(s.vx) + abs(s.vz) + abs(s.vy) < 0.25 && abs(s.p) + abs(s.q) + abs(s.r) < 0.3;
+  s.rest = still ? s.rest + dt : 0;
+  for (let d of s.debris) {
+    if (d.rest) { continue; }
+    d.vy = d.vy - 9.81 * dt;
+    d.x = d.x + d.vx * dt; d.y = d.y + d.vy * dt; d.z = d.z + d.vz * dt;
+    d.ex = d.ex + d.wx * dt; d.ey = d.ey + d.wy * dt; d.ez = d.ez + d.wz * dt;
+    let g = ground_h(d.x, d.z) + d.len * 0.4;
+    if (d.y < g) {
+      d.y = g;
+      if (d.vy < -1.2) { d.vy = 0 - d.vy * 0.32; } else { d.vy = 0; }
+      let f = max(0, 1 - 4 * dt); d.vx = d.vx * f; d.vz = d.vz * f; d.wx = d.wx * f; d.wy = d.wy * f; d.wz = d.wz * f;
+      if (abs(d.vx) + abs(d.vz) + abs(d.vy) < 0.35 && abs(d.wx) + abs(d.wy) + abs(d.wz) < 0.8) { d.rest = true; d.wx = 0; d.wy = 0; d.wz = 0; }
+    }
+  }
+}
+
+// ---- 传感器与表现 ----
+fn fl_agl() { let b = basis(); return ST.y - PRM.gear * b.up[1] - ground_h(ST.x, ST.z); }
+fn fl_sensors() {
+  let s = ST; let b = basis();
+  return {ts: SIMT, x: s.x, y: s.y, z: s.z, vx: s.vx, vy: s.vy, vz: s.vz, roll: s.roll, pitch: s.pitch, yaw: s.yaw, p: s.p, q: s.q, r: s.r,
+    agl: s.y - PRM.gear * b.up[1] - ground_h(s.x, s.z), om: s.om, smoke_t: s.smoke_t, landed: s.landed, crashed: s.crashed, go: s.started, tgt_h: s.tgt_h, tgt_pad: s.tgt_pad,
+    wind: [WIND.x, WIND.z], wind_speed: WIND.speed, g: PRM.g, hoverC: PRM.hoverC};
+}
+fn pad_by_name(n) { for (let p of PADS) { if (p.name == n) { return p; } } return nil; }
+// 部件位姿（提交给显示设备）
+fn fl_parts() {
+  let s = ST; let b = basis(); let parts = {};
+  parts.fuselage = {p: [s.x, s.y, s.z], q: quat_from_basis(b), dmg: s.dmg, heat: s.crashed ? max(0, 0.7 - (SIMT - s.crash.t) * 0.05) : 0};
+  let blur = s.om > 0.55 && !s.blades_off;
+  parts.mainRotor = {r: [0, s.am, 0]};
+  parts.mainBlur = {vis: blur ? 1 : 0, op: 0.26 * min(1, (s.om - 0.5) * 2)};
+  parts.tailRotor = {r: [s.at, 0, 0], vis: s.fin_off ? 0 : 1};
+  parts.tailBlur = {vis: (s.om > 0.55 && !s.fin_off) ? 1 : 0, op: 0.2};
+  if (s.blades_off) { for (let i = 1; i <= 4; i++) { parts["blade" + i] = {vis: 0}; parts["bladeTip" + i] = {vis: 0}; } }
+  if (s.boom_off) { parts.tailBoom = {vis: 0}; parts.fin = {vis: 0}; parts.finTip = {vis: 0}; parts.stabR = {vis: 0}; parts.tailRotor = {vis: 0}; parts.tailBlur = {vis: 0}; }
+  if (s.skids_off) { parts.skidL = {vis: 0}; parts.skidR = {vis: 0}; }
+  for (let d of s.debris) {
+    parts[d.part] = {p: [d.x, d.y, d.z], r: [d.ex, d.ey, d.ez], vis: 1, dmg: 0.4};
+    if (d.tip != nil) { parts[d.tip] = {p: [d.x + cos(d.ey) * 2.15, d.y, d.z - sin(d.ey) * 2.15], r: [d.ex, d.ey, d.ez], vis: 1}; }
+  }
+  return parts;
+}

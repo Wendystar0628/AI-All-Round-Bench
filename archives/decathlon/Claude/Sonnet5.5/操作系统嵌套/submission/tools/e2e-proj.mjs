@@ -1,0 +1,22 @@
+import { connect, evalJs, shot, clickTid, rectOf } from './cdp.mjs';
+const c = await connect(); const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const D = process.argv[2] || 'C:/Users/AIAgent/AppData/Local/Temp/nos';
+await evalJs(c, 'window.__os.reload().then(()=>1)'); await sleep(2500);
+await clickTid(c, 'desktop-icon', 'app-id=systems&system-id=outer', { count: 2 }); await sleep(1500);
+await clickTid(c, 'system-new', 'system-id=outer'); await sleep(8000);
+await clickTid(c, 'window-project', 'system-id=inner-1'); await sleep(900);
+await clickTid(c, 'project-target', 'target-system-id=outer'); await sleep(2500);
+const insp = async () => JSON.stringify(await evalJs(c, 'window.bench.inspect().then(i => ({proj: i.projections, players: i.players, wins: i.windows.map(w => w.systemId + ":" + w.appId + ":" + w.state)}))'));
+console.log(await insp());
+// 最大化投送窗口
+const pw = await evalJs(c, "(() => { const e = document.querySelector('[data-app-id=projection][data-testid=app-window]'); return e && e.dataset.windowId; })()");
+console.log('projection window', pw);
+await clickTid(c, 'window-maximize', 'window-id=' + pw + '&system-id=outer'); await sleep(2000);
+await clickTid(c, 'player-play', 'window-id=' + pw + '&system-id=outer'); await sleep(1500);
+console.log(await insp());
+await sleep(3000); await shot(c, D + '/j2.png');
+await sleep(3500); await shot(c, D + '/j3.png');
+await sleep(4800); await shot(c, D + '/j4.png');
+await sleep(3000); await shot(c, D + '/j5.png');
+console.log(await insp());
+c.close();

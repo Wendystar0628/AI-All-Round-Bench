@@ -1,0 +1,29 @@
+{
+ "problem": "04",
+ "parts": [
+  {
+   "name": "1",
+   "title": "偏心双级迷宫泵盖",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 144
+      }
+     ],
+     "depth": [
+      0.0,
+      28.0
+     ]
+    }
+   ]
+  }
+ ]
+}

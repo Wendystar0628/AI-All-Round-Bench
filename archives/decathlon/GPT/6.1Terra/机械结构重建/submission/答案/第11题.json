@@ -1,0 +1,14 @@
+﻿{"problem":"11","parts":[{"name":"1","title":"三腔分层伺服分配箱","features":[
+ {"type":"extrude","plane":"XY","loops":[{"rect":[-12,-12,210,148]}],"depth":14},
+ {"type":"extrude","plane":"XZ","origin":[0,136,0],"loops":[{"path":[[0,14],[198,14],[198,54],[154,98],[0,98]]}],"depth":136},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,14],"loops":[{"rect":[12,12,64,124]}],"depth":28},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,50],"loops":[{"rect":[12,12,64,124]}],"depth":38},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,14],"loops":[{"rect":[74,12,128,64]},{"rect":[74,74,128,124]}],"depth":74},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,14],"loops":[{"rect":[138,12,182,124]}],"depth":36},
+ {"type":"hole","plane":"XY","origin":[0,0,14],"at":[[-6,-6],[-6,142],[204,-6],[204,142]],"d":9,"through":true},
+ {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[38,72],"d":28,"depth":12},
+ {"type":"hole","plane":{"origin":[176,68,76],"normal":[0.70710678,0,0.70710678],"x_dir":[0,1,0]},"at":[0,0],"d":18,"depth":72},
+ {"type":"fillet","radius":2,"edges":[[-12,-12,7]]},
+ {"type":"chamfer","distance":1,"edges":[[90,-12,0]]}
+]}]}
+

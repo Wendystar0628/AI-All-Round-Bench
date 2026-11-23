@@ -1,0 +1,8 @@
+// 时钟节拍程序：每 0.25 秒（系统时间）通知窗口管理程序刷新时钟与通知。
+func main(args) {
+    while (true) {
+        sys_sleep(0.25);
+        sys_send("wm", {type: "tick"});
+    }
+    return 0;
+}

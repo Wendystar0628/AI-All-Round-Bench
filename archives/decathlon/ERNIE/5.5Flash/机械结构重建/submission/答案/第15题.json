@@ -1,0 +1,15 @@
+{
+  "problem": "15",
+  "parts": [
+    {"name": "1", "title": "双轴错层传动箱体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 92, 64]}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [0, 0, 92, 64]}], "depth": 60},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [46, 46], "d": 78}], "depth": [-34, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [46, 46], "d": 52}], "depth": [-12, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [46, 46], "d": 44}], "depth": [-22, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [46, 46], "d": 32}], "through": true},
+      {"type": "extrude", "op": "cut", "plane": "YZ", "origin": [0, 0, 0], "loops": [{"circle": [32, 24], "d": 42}], "depth": [0, 92]},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 74], "at": [[24, 18], [68, 18], [24, 46], [68, 46]], "d": 10, "depth": 10, "cbore": {"d": 16, "depth": 4}}
+    ]}
+  ]
+}

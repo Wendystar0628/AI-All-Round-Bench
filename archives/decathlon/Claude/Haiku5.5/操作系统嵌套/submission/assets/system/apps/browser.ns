@@ -1,0 +1,210 @@
+// =====================================================================
+// 浏览器（/System/apps/browser.ns）：自制的标签栏、地址栏与导航按钮；
+// 网页由宿主以 Chromium 网页视图（web 节点）呈现。
+// 参数：args[0] 窗口号，args[1] 应用名，args[2] 可选的起始网址。
+// 网页内的新窗口在本浏览器内以新标签打开；加载失败有提示并可重试。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var VW = 1040;
+var VH = 640;
+var tabs = [];
+var active = 0;
+var seq = 1;
+var addrEdit = false;
+var addrBuf = "";
+var TOP = 84;
+var HOME = "https://www.bilibili.com";
+
+func new_tab(url) {
+    var t = {id: "t" + str(seq), url: url, title: "新标签页", loadState: "loading", error: ""};
+    seq = seq + 1;
+    push(tabs, t);
+    active = len(tabs) - 1;
+    return t;
+}
+
+func cur() {
+    return tabs[active];
+}
+
+func normalize(text) {
+    var t = trim(text);
+    if (t == "") { return HOME; }
+    if (starts(t, "http://") || starts(t, "https://")) { return t; }
+    if (indexOf(t, ".") >= 0 && indexOf(t, " ") < 0) { return "https://" + t; }
+    return "https://search.bilibili.com/all?keyword=" + t;
+}
+
+func navigate(url) {
+    var t = cur();
+    t.url = url;
+    t.loadState = "loading";
+    t.error = "";
+    t.title = "加载中…";
+}
+
+func close_tab(i) {
+    if (len(tabs) <= 1) {
+        tabs[0].url = HOME;
+        tabs[0].loadState = "loading";
+        tabs[0].error = "";
+        return;
+    }
+    var out = [];
+    for (var k = 0; k < len(tabs); k = k + 1) {
+        if (k != i) { push(out, tabs[k]); }
+    }
+    tabs = out;
+    if (active >= len(tabs)) { active = len(tabs) - 1; }
+}
+
+func publish() {
+    var list = [];
+    for (var t in tabs) {
+        push(list, {tabId: t.id, url: t.url, loadState: t.loadState, title: t.title});
+    }
+    sys_res_put("browser:" + str(WID), {windowId: WID, systemId: sys_info().id, tabs: list});
+}
+
+func web_event(m) {
+    for (var t in tabs) {
+        if (t.id == m.tab) {
+            if (m.ev == "navigate") { t.url = m.url; if (addrEdit == false) { addrBuf = m.url; } }
+            if (m.ev == "title") { t.title = m.title; }
+            if (m.ev == "loading") {
+                if (m.loading) { t.loadState = "loading"; } else { t.loadState = "loaded"; }
+            }
+            if (m.ev == "error") { t.loadState = "error"; t.error = m.text; }
+            if (m.ev == "new-window") { new_tab(m.url); }
+        }
+    }
+    publish();
+}
+
+func paint() {
+    var L = [];
+    add_rect(L, 0, 0, VW, VH, "#f7f8fc");
+    // 标签栏
+    var tx = 8;
+    for (var i = 0; i < len(tabs); i = i + 1) {
+        var t = tabs[i];
+        var on = i == active;
+        var tab = add_rect(L, tx, 6, 190, 30, pick(on, "#ffffff", "#e9ebf3"));
+        tab.r = 8;
+        tab.tid = "browser-tab";
+        tab.da = {"tab-id": t.id};
+        tab.cur = "pointer";
+        add_text(L, tx + 12, 6, 150, 30, fit_text(t.title, 12, 146), 12, THEME.text, "l");
+        var cb = add_btn(L, tx + 164, 10, 22, 22, "×", "browser-close-tab", "#00000000", THEME.sub);
+        cb.da = {"tab-id": t.id};
+        tx = tx + 196;
+    }
+    add_btn(L, tx + 4, 6, 30, 30, "+", "browser-new-tab", "#e9ebf3", THEME.text);
+
+    // 导航栏
+    add_btn(L, 8, 42, 34, 32, "←", "browser-back", "#ffffff", THEME.text);
+    add_btn(L, 46, 42, 34, 32, "→", "browser-forward", "#ffffff", THEME.text);
+    add_btn(L, 84, 42, 34, 32, "↻", "browser-reload", "#ffffff", THEME.text);
+    var shown = pick(addrEdit, addrBuf, cur().url);
+    var ab = add_frame(L, 128, 42, VW - 128 - 90, 32, "#ffffff", pick(addrEdit, accent_color("violet"), THEME.line), 16);
+    ab.tid = "browser-address";
+    add_text(L, 144, 42, VW - 128 - 120, 32, shown + pick(addrEdit, "▏", ""), 13, THEME.text, "l");
+    add_btn(L, VW - 80, 42, 72, 32, "前往", "browser-go", accent_color("violet"), "#ffffff");
+    add_rect(L, 0, 80, VW, 1, THEME.line);
+
+    // 网页区
+    var t2 = cur();
+    var wy = TOP;
+    var wh = VH - TOP;
+    if (t2.loadState == "error") {
+        add_rect(L, 0, wy, VW, wh, "#ffffff");
+        add_bold(L, 0, wy + 120, VW, 30, "页面加载失败", 18, THEME.text, "c");
+        add_text(L, 0, wy + 160, VW, 24, pick(t2.error == "", "网络不可用或站点无法访问", t2.error), 13, THEME.sub, "c");
+        add_btn(L, VW / 2 - 60, wy + 200, 120, 36, "重试", "browser-retry", accent_color("violet"), "#ffffff");
+    } else {
+        var w = {t: "web", tab: t2.id, url: t2.url, pid: sys_self(), x: 0, y: wy, w: VW, h: wh, k: "web-" + t2.id};
+        push(L, w);
+    }
+    if (t2.loadState == "loading") {
+        add_rect(L, 0, 81, VW, 2, accent_color("violet"));
+    }
+    sys_submit("win-" + str(WID), L);
+}
+
+func on_pointer(m) {
+    var x = m.x;
+    var y = m.y;
+    if (m.kind != "down") { return; }
+    if (y < 40) {
+        var tx = 8;
+        for (var i = 0; i < len(tabs); i = i + 1) {
+            if (inside(x, y, tx + 164, 10, 22, 22)) { close_tab(i); return; }
+            if (inside(x, y, tx, 6, 190, 30)) { active = i; addrBuf = cur().url; return; }
+            tx = tx + 196;
+        }
+        if (inside(x, y, tx + 4, 6, 30, 30)) { new_tab(HOME); addrBuf = HOME; return; }
+        return;
+    }
+    if (y >= 42 && y < 74) {
+        if (inside(x, y, 8, 42, 34, 32)) { sys_web("back", cur().id); return; }
+        if (inside(x, y, 46, 42, 34, 32)) { sys_web("forward", cur().id); return; }
+        if (inside(x, y, 84, 42, 34, 32)) { sys_web("reload", cur().id); return; }
+        if (inside(x, y, 128, 42, VW - 128 - 90, 32)) { addrEdit = true; addrBuf = cur().url; return; }
+        if (inside(x, y, VW - 80, 42, 72, 32)) { go(); return; }
+    }
+    if (cur().loadState == "error" && inside(x, y, VW / 2 - 60, TOP + 200, 120, 36)) {
+        cur().loadState = "loading";
+        cur().error = "";
+        sys_web("reload", cur().id);
+    }
+}
+
+func go() {
+    navigate(normalize(addrBuf));
+    addrEdit = false;
+}
+
+func on_key(m) {
+    if (!addrEdit) { return; }
+    if (m.key == "Enter") { go(); return; }
+    if (m.key == "Escape") { addrEdit = false; return; }
+    if (m.key == "Backspace") { if (len(addrBuf) > 0) { addrBuf = substr(addrBuf, 0, len(addrBuf) - 1); } return; }
+    if (m.text != nil && m.text != "") { addrBuf = addrBuf + m.text; }
+}
+
+func main(args) {
+    WID = args[0];
+    var start = HOME;
+    if (len(args) > 2 && args[2] != nil) { start = args[2]; }
+    new_tab(start);
+    addrBuf = start;
+    paint();
+    publish();
+    while (true) {
+        var m = sys_recv();
+        if (m.type == "web") {
+            web_event(m);
+            paint();
+        } else if (m.type == "view") {
+            VW = m.w;
+            VH = m.h;
+            paint();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+            publish();
+            paint();
+        } else if (m.type == "key") {
+            on_key(m);
+            paint();
+        } else if (m.type == "text") {
+            on_key(m);
+            paint();
+        } else if (m.type == "close-req") {
+            sys_send("wm", {type: "close", win: WID});
+            return 0;
+        }
+    }
+    return 0;
+}

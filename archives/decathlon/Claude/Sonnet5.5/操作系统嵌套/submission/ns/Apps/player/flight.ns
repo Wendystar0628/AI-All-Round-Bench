@@ -1,0 +1,202 @@
+// flight.ns — 飞行场景进程：按时序进程给出的目标时刻推进场景状态，并把部件位姿、读数与尾迹交给播放器和特效进程。
+//  · 默认演出 / 记录回放：按记录里的控制时序与事件运行同一套动力学（结局不随预算变化）；
+//  · 排演（实时）：接收飞控进程写入的总距与舵面，机体状态随虚拟时间连续演化，不等待飞控；
+//  · 没有飞行数据的通用场景：按 timeline.tracks 的关键帧求值。
+// 物理计算落后于目标时刻时，只发出“已经算完的时刻”，补算仍按虚拟时间和当时的控制量进行。
+include "/Apps/player/flightlib.ns";
+let A = args();
+let PLAYER = A.player; let FX = 0; let FC = 0;
+let MODE = "idle";            // idle | show | live | keys
+let SC = nil;                 // 场景（精简）：timeline / flight
+let CTLS = []; let EVTS = []; let CPS = [];
+let ci = 0; let ei = 0; let TARGET = 0; let SENT = -1; let HEAD = 0; let LIVE = false;
+let TRAIL = []; let next_trail = 0; let next_cp = 0; let next_sensor = 0; let DT = 1 / 60;
+let CREATED = 0; let CTL_COUNT = 0; let LAST_CTL_T = -1; let CTL_PERIOD = 0;
+let DUR = 15; let BASE_REC = nil;
+
+fn load_init(m) {
+  SC = m.scene; FX = m.fx;
+  MODE = "idle"; LIVE = false; FC = 0;
+  if (SC.flight != nil && SC.terrain != nil) {
+    fl_init(SC.flight, SC.terrain, SC.pads == nil ? [] : SC.pads, SC.obstacles == nil ? [] : SC.obstacles);
+    DT = PRM.dt;
+    fl_reset(); CTLS = []; EVTS = []; CPS = []; ci = 0; ei = 0; TRAIL = []; next_trail = 0; next_cp = 0; HEAD = 0; BASE_REC = nil;
+    if (m.record != nil) { use_record(m.record); }
+  } else if (SC.timeline != nil && SC.timeline.tracks != nil) { MODE = "keys"; }
+  TARGET = 0; SENT = -1;
+}
+fn use_record(rec) {
+  fl_reset(); CTLS = copy(rec.controls); EVTS = copy(rec.events); CPS = rec.cp == nil ? [] : copy(rec.cp);
+  ci = 0; ei = 0; TRAIL = []; next_trail = 0; next_cp = 0; HEAD = rec.duration == nil ? 0 : rec.duration; DUR = rec.duration;
+  MODE = "show"; LIVE = false; BASE_REC = rec;
+  if (rec.init != nil) { ST = copy(rec.init); }
+  SENT = -1;
+}
+// 回到某个检查点（不早于 target 前 2.5 秒，保证尾迹完整）
+fn restore_before(target) {
+  let best = nil;
+  for (let c of CPS) { if (c.t <= target - 2.5 || (best == nil && c.t <= target)) { if (best == nil || c.t > best.t) { best = c; } } }
+  if (best == nil) { for (let c of CPS) { if (c.t <= target && (best == nil || c.t > best.t)) { best = c; } } }
+  if (best == nil) { fl_reset(); ci = 0; ei = 0; TRAIL = []; next_trail = 0; next_cp = 0; return nil; }
+  ST = copy(best.st); SIMT = best.t;
+  if (best.wind != nil) { WIND = copy(best.wind); } else { WIND = {dir: 0, speed: 0, x: 0, z: 0}; }
+  if (best.cur != nil) { CUR = copy(best.cur); } else { CUR = {c: 0, cp: 0, cr: 0, ped: 0}; }
+  ci = 0; while (ci < len(CTLS) && CTLS[ci][0] <= SIMT - 1e-5) { ci++; }
+  ei = 0; while (ei < len(EVTS) && EVTS[ei].t <= SIMT - 1e-5) { ei++; }
+  TRAIL = []; next_trail = floor(SIMT / 0.1) * 0.1 + 0.1; next_cp = best.t + 0.5;
+}
+fn sensors_msg() {
+  let m = fl_sensors();
+  return {t: "sensor", s: m};
+}
+// 推进最多 maxn 步
+fn advance(maxn) {
+  let n = 0;
+  while (n < maxn && SIMT + DT <= TARGET + 1e-5) {
+    while (ei < len(EVTS) && EVTS[ei].t <= SIMT + 1e-5) { fl_apply_event(EVTS[ei]); ei++; }
+    while (ci < len(CTLS) && CTLS[ci][0] <= SIMT + 1e-5) { let c = CTLS[ci]; CUR = {c: c[1], cp: c[2], cr: c[3], ped: c[4]}; ci++; }
+    if (SIMT + 1e-5 >= next_cp) {
+      let has = false;
+      if (len(CPS) > 0) { has = abs(CPS[len(CPS) - 1].t - SIMT) < 0.25 && CPS[len(CPS) - 1].t >= SIMT - 0.25; }
+      if (!has && (LIVE || MODE == "show") && !cp_exists(SIMT)) { push(CPS, {t: round(SIMT * 1000000) / 1000000, st: copy(ST), wind: copy(WIND), cur: copy(CUR)}); }
+      next_cp = next_cp + 0.5;
+    }
+    if (SIMT + 1e-5 >= next_trail) {
+      push(TRAIL, [SIMT, ST.x, ST.y, ST.z, fl_agl(), ST.om, CUR.c]);
+      if (len(TRAIL) > 28) { shift(TRAIL); }
+      next_trail = next_trail + 0.1;
+    }
+    if (LIVE && FC > 0 && SIMT + 1e-5 >= next_sensor) { send(FC, sensors_msg()); next_sensor = next_sensor + 1 / PRM.ctlRate; }
+    fl_step(DT);
+    if (LIVE && SIMT > HEAD) { HEAD = SIMT; }
+    n++;
+  }
+  return n;
+}
+fn cp_exists(t) { for (let c of CPS) { if (abs(c.t - t) < 0.05) { return true; } } return false; }
+
+// ---- 向播放器与特效进程发出一帧 ----
+fn hud() {
+  let s = ST;
+  let spd = sqrt(s.vx * s.vx + s.vz * s.vz);
+  let hd = 180 - s.yaw * 180 / 3.14159265; hd = mod(hd, 360);
+  return {alt: s.y - ground_h(s.x, s.z) - PRM.gear, agl: fl_agl(), speed: spd, vs: s.vy, hdg: hd, pitch: s.pitch * 57.2958, roll: s.roll * 57.2958, om: s.om, c: CUR.c, wind: WIND.speed, wdir: WIND.dir,
+    landed: s.landed, crashed: s.crashed, tail: s.tail, engine_out: s.engine_out, hyd: s.hyd, tgt_h: s.tgt_h, tgt_pad: s.tgt_pad, ctl_period: CTL_PERIOD, x: s.x, y: s.y, z: s.z, simt: SIMT, started: s.started,
+    boom_off: s.boom_off, blades_off: s.blades_off, skids_off: s.skids_off};
+}
+fn send_frame() {
+  if (MODE == "keys") { return nil; }
+  let m = {t: "fl", simt: SIMT, target: TARGET, parts: fl_parts(), hud: hud(), trail: copy(TRAIL), crash: ST.crashed ? ST.crash : nil, smoke_t: ST.smoke_t, wind: [WIND.x, WIND.z], mode: MODE, live: LIVE, head: HEAD, lag: TARGET - SIMT};
+  send(PLAYER, m);
+  if (FX > 0) { send(FX, m); }
+  SENT = SIMT;
+}
+// 关键帧通用场景：对每条轨道线性插值
+fn eval_keys(pos) {
+  let parts = {};
+  for (let tr of SC.timeline.tracks) {
+    let keys = tr.keys; let n = len(keys);
+    if (n == 0) { continue; }
+    let v = nil;
+    if (pos <= keys[0][0]) { v = slice(keys[0], 1, len(keys[0])); }
+    else if (pos >= keys[n - 1][0]) { v = slice(keys[n - 1], 1, len(keys[n - 1])); }
+    else {
+      for (let i = 0; i < n - 1; i++) {
+        let a = keys[i]; let b = keys[i + 1];
+        if (pos >= a[0] && pos <= b[0]) {
+          let f = (pos - a[0]) / (b[0] - a[0]); v = [];
+          for (let j = 1; j < len(a); j++) { push(v, a[j] + (b[j] - a[j]) * f); }
+        }
+      }
+    }
+    if (parts[tr.part] == nil) { parts[tr.part] = {}; }
+    if (tr.ch == "pos") { parts[tr.part].p = v; } else if (tr.ch == "rot") { parts[tr.part].r = [v[0] * 0.0174533, v[1] * 0.0174533, v[2] * 0.0174533]; }
+    else if (tr.ch == "scale") { parts[tr.part].s = v; } else if (tr.ch == "vis") { parts[tr.part].vis = v[0] > 0.5 ? 1 : 0; }
+  }
+  return parts;
+}
+fn send_keys(pos) {
+  let m = {t: "fl", simt: pos, target: pos, parts: eval_keys(pos), hud: {simt: pos}, trail: [], crash: nil, smoke_t: -1, wind: [0, 0], mode: "keys", live: false, head: pos, lag: 0};
+  send(PLAYER, m);
+  if (FX > 0) { send(FX, m); }
+  SENT = pos;
+}
+
+// ---- 事件与控制的追加（排演中由用户输入与飞控进程产生，同时就是被记录的“实际输入”）----
+fn insert_event(e) {
+  let i = len(EVTS);
+  while (i > ei && EVTS[i - 1].t > e.t) { i--; }
+  insert(EVTS, i, e);
+}
+fn on_ctl(m) {
+  if (!LIVE) { return nil; }
+  let t = max(m.ts == nil ? SIMT : SIMT, SIMT);
+  if (len(CTLS) > 0 && CTLS[len(CTLS) - 1][0] > t) { t = CTLS[len(CTLS) - 1][0]; }
+  push(CTLS, [round(t * 1000000) / 1000000, clamp(m.c, 0, 1), clamp(m.cp, -1, 1), clamp(m.cr, -1, 1), clamp(m.ped, -1, 1)]);
+  CTL_COUNT++;
+  if (LAST_CTL_T >= 0) { CTL_PERIOD = CTL_PERIOD * 0.8 + (t - LAST_CTL_T) * 0.2; }
+  LAST_CTL_T = t;
+}
+fn go_live(m) { // 开始排演：从初态（或截断记录的当前位置）起，由飞控驾驶
+  if (m.from != nil) {
+    let t = m.from;
+    restore_before(t); TARGET = t; advance(100000);
+    // 截断：丢弃之后的控制、事件、检查点
+    let nc = []; for (let c of CTLS) { if (c[0] <= t + 1e-5) { push(nc, c); } } CTLS = nc;
+    let ne = []; for (let e of EVTS) { if (e.t <= t + 1e-5) { push(ne, e); } } EVTS = ne;
+    let np = []; for (let c of CPS) { if (c.t <= t + 1e-5) { push(np, c); } } CPS = np;
+    ci = len(CTLS); ei = len(EVTS); HEAD = SIMT;
+  } else {
+    fl_reset(); CTLS = []; EVTS = []; CPS = []; ci = 0; ei = 0; TRAIL = []; next_trail = 0; next_cp = 0; HEAD = 0; BASE_REC = nil;
+    push(EVTS, {t: 0, kind: "wind", dir: m.wdir == nil ? 250 : m.wdir, speed: m.wspeed == nil ? 3 : m.wspeed});
+    push(EVTS, {t: 0, kind: "heading", h: m.hdg == nil ? 90 : m.hdg});
+    push(EVTS, {t: 0, kind: "pad", pad: m.pad == nil ? "B" : m.pad});
+    push(EVTS, {t: 0, kind: "start"});
+  }
+  MODE = "live"; LIVE = true; FC = m.fc; next_sensor = SIMT; LAST_CTL_T = -1; CTL_PERIOD = 1 / PRM.ctlRate;
+  DUR = 1e9;
+  SENT = -1;
+}
+fn to_record() {
+  // 排演记录：场景、初态、实际输入与实际发生的控制时序、检查点
+  let cps = [];
+  for (let c of CPS) { if (abs(c.t - round(c.t)) < 0.02 || true) { push(cps, c); } }
+  return {format: "nested-os-rehearsal", v: 1, dt: 1 / PRM.ctlRate, duration: round(HEAD * 100) / 100, controls: CTLS, events: EVTS, cp: cps, init: fl_new_state(), pads: PADS};
+}
+
+fn handle(m) {
+  let t = m.t;
+  if (t == "init") { load_init(m); }
+  else if (t == "at") {
+    TARGET = m.pos;
+    if (MODE == "keys") { send_keys(m.pos); return nil; }
+    if (MODE == "idle") { return nil; }
+    if (TARGET < SIMT - 1e-6) { restore_before(TARGET); SENT = -1; }
+    else if (MODE == "show" && TARGET > SIMT + 0.75) {
+      // 向前大跳：从记录里最近的检查点接着算
+      let best = nil; for (let c of CPS) { if (c.t > SIMT && c.t <= TARGET) { if (best == nil || c.t > best.t) { best = c; } } }
+      if (best != nil && best.t - SIMT > 0.3) { restore_before(best.t + 0.001); }
+    }
+  }
+  else if (t == "ctl") { on_ctl(m); }
+  else if (t == "live") { go_live(m); }
+  else if (t == "evt") {
+    if (!LIVE) { return nil; }
+    let e = m.e; e.t = SIMT + (e.delay == nil ? 0 : e.delay); del(e, "delay"); insert_event(e);
+  }
+  else if (t == "save") { send(PLAYER, {t: "rec", record: to_record(), tag: m.tag}); }
+  else if (t == "record") { use_record(m.record); }
+  else if (t == "state_request") { SENT = -1; }
+}
+
+while (true) {
+  let busy = (MODE == "show" || MODE == "live") && SIMT + DT <= TARGET + 1e-5;
+  let e = busy ? poll_msg() : recv();
+  while (e != nil) { handle(e.msg); e = poll_msg(); }
+  if ((MODE == "show" || MODE == "live")) {
+    let busy2 = SIMT + DT <= TARGET + 1e-5;
+    if (busy2) { advance(12); }
+    if (SIMT != SENT && (SIMT + DT > TARGET + 1e-5 || true)) { send_frame(); }
+    else if (SENT < 0) { send_frame(); }
+  }
+}

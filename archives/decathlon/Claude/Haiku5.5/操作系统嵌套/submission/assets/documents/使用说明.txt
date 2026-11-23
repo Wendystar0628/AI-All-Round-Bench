@@ -1,0 +1,95 @@
+嵌套操作系统 · 使用说明
+==========================
+
+一、系统结构
+- 根系统（outer）：宿主直接运行的日常桌面。提供文件管理器、电子表格、小组件、文本与程序编辑器、
+  浏览器（真实的 Chromium 网页）、任务管理器与设置。
+- 子系统（inner-N）：由父系统创建，作为父系统窗口中的一个“系统窗口”运行，桌面完整嵌套其中。
+  子系统提供文件管理器、编辑器、任务管理器、三维场景播放器与图表工作台，并可继续创建下一层子系统。
+- 每个系统都有自己的内核、窗口管理程序、进程、消息队列、文件系统、时钟与预算。
+
+二、操作方法（鼠标与键盘）
+- 桌面：图标单击选中、双击打开；右键桌面或文件项打开菜单；Esc 关闭菜单。
+- 开始菜单：点击左下角 ⊞，输入名称可搜索应用，回车启动第一个结果。
+- 窗口：拖动标题栏移动；拖到屏幕左、右边缘贴成半屏；拖到顶部最大化；右下角缩放；双击标题栏切换最大化。
+- 任务栏：点击窗口条目可最小化或恢复；右侧 🔔 打开通知中心，▦ 打开小组件面板。
+- 文件管理器：双击目录进入，双击文件按类型打开（.sheet 表格、.scene 与 .rec 播放器、.ns 与 .txt 编辑器）；
+  Ctrl+C / Ctrl+V 复制粘贴；Delete 删除到回收站；F2 重命名；回收站中可恢复；可以把文件拖到另一个文件管理器中复制。
+- 电子表格：点击单元格选择，直接输入开始编辑，回车确认；公式以 = 开头，支持 + - * / 括号、单元格与区域引用（A1、B2:D4）
+  以及 SUM、AVG、MIN、MAX、COUNT；Ctrl+Z 撤销、Ctrl+Y 重做、Ctrl+C 复制选区、Ctrl+V 粘贴。
+- 编辑器：Ctrl+S 保存，Ctrl+R 运行 .ns 程序（底部显示该进程的消息输出）。
+- 播放器：空格键播放或暂停；底部进度条拖动跳转；倍速、循环、逐帧、镜头（演出、跟随、自由）；
+  自由镜头下拖动旋转，滚轮缩放。
+- 排演：点击“排演”启动子系统中的飞控进程（/Flight/controller.ns），风、航向、尾桨故障可以在飞行中改变。
+  “保存记录”把本次排演的输入与控制时序保存为 .rec 文件，双击即可回放并续演。
+- 窗口投送：在图表或播放器窗口中点击“投送到祖先桌面”，选择目标桌面；投送窗口与源窗口显示同一应用状态。
+
+三、程序格式（Nest Script，扩展名 .ns）
+- 语法接近 C：var 声明；func 定义函数（main(args) 为入口，args 为启动参数数组）；
+  if/else、while、for (init; cond; post)、for (var x in 数组)、return、break、continue；
+  条件表达式 a ? b : c；字符串用双引号；注释用 // 与 /* */。
+- 值：nil、布尔、数字、字符串、数组、映射（键为名字或字符串）。
+- 原生函数（所有程序可用）：len push pop slice concat indexOf sort reverse keys has del substr split join
+  str num chr ord upper lower trim starts ends repeat replace fmt floor ceil round abs sqrt sin cos exp log
+  atan2 pow min max clamp rand json parse clone print assert measure。
+- 系统调用（以 sys_ 开头，由内核处理）：
+  sys_now、sys_sleep(秒)、sys_recv、sys_recvt(秒)、sys_send(pid 或 "wm", 消息)、sys_self、sys_exit、sys_kill(pid)、
+  sys_spawn(路径, 参数) -> {ok,pid,error}、sys_proc_ctl(pid, "suspend"|"resume"|"kill")、sys_proc_logs(pid)、
+  sys_info、sys_procs、sys_set_quota(pid, 额度)、
+  文件：sys_fs_read sys_fs_write sys_fs_list sys_fs_stat sys_fs_mkdir sys_fs_mkdirs sys_fs_delete sys_fs_move sys_fs_copy sys_fs_restore、
+  显示：sys_submit(面标识, 节点列表)、
+  剪贴板与通知：sys_clip_set sys_clip_hist sys_notify sys_notes sys_note_read、
+  设置：sys_settings sys_set(键, 值)、
+  子系统：sys_kids sys_child_new sys_child_ctl(id, 动作, 参数) sys_ancestors sys_budget(键, 值) sys_xpost(系统标识, 消息)、
+  其他：sys_drag_begin sys_drag_end sys_frozen sys_res_put(键, 数据) sys_web(动作, 标签)。
+- 编译：程序由本系统的编译器（/System/compiler.ns）编译，编译开销计入所属系统的预算。
+  修改编译器并用它重新编译后，此后启动的程序使用新编译器。
+- 包含：程序首行可以写 #include "/System/lib/ui.ns"，由内核展开。
+
+四、内核程序
+- 每个子系统的内核是父系统中的一个文件：/Kernels/<子系统名>.ns（例如 /Kernels/inner-1.ns）。
+  在编辑器中打开、修改、保存，然后在任务管理器中点击“重启”，新的调度、消息、文件与系统调用规则即生效；
+  其他子系统不受影响。内核写坏时该子系统显示内核错误并停止，改回后可以重新启动。
+- 根系统的内核是 /System/kernel.ns。
+- 窗口管理程序 /System/wm.ns、应用 /System/apps/*.ns、编译器 /System/compiler.ns 都是本系统的程序，可以在编辑器中修改。
+
+五、预算、配额与拨付
+- 每个逻辑步（1/60 秒）系统拿到一份执行预算。内核把预算分给自己的进程与直属子系统；子系统的预算受父系统的实际拨付与自身上限共同限制。
+- 任务管理器显示：预算/步、实际拨付、内核自身、用户进程、子系统的消耗与存储配额。
+  可以调节本系统的总预算与存储配额，也可以调整直属子系统的拨付上限、速率。
+- 进程额度限制单个进程每步可用的预算（0 为不限）。
+
+六、时间与快照
+- 每个系统有自己的虚拟时钟：可以暂停、继续、单步（单步为固定的 0.1 秒虚拟时间）、调速（0.25 至 4 倍）。
+  暂停一个系统会停止它的整棵子树；兄弟子系统与父系统仍可操作。
+- 快照：在任务管理器的子系统页点击“快照”，保存为父系统 /Snapshots/<名称>.snap；
+  “恢复”回到原实例，“分叉”从快照启动一棵独立的新子树。快照包含内核、进程、消息、文件、桌面与应用状态。
+
+七、数据与场景格式
+- 工作簿（.sheet）：JSON {"format":"sheet","version":1,"cells":{地址: 输入文本}}。示例 /Demo/sample.sheet。
+- 三维场景（.scene）：JSON，包含 terrain（高度网格）、helipads（停机坪）、obstacles（障碍）、trees、
+  camera（演出镜头关键帧）、start（起点）与 record（默认演出的输入时序）。
+- 排演记录（.rec）：JSON {"format":"rec","scene":场景路径,"events":[[时刻, 类型, 值], ...],"duration":秒}。
+  事件类型：ctl（控制量 c、lon、lat、tail）、wind（风 [东, 北]）、target（目标点 [x, z]）、fault（"tail"、"engine"、"clear"）。
+
+八、飞控接口（/Flight/controller.ns）
+- func control(s)：s 为传感器读数（高度 alt、位置 x y z、速度 vx vy vz、俯仰 pitch、横滚 roll、偏航 yaw、
+  偏航角速度 yawRate、旋翼转速 rotor、目标 tgtX tgtZ、是否坠毁 crashed、是否着地 onGround）。
+  返回 {c, lon, lat, tail}：总距 0~1（约 0.5 悬停）、纵向周期与横向周期 -1~1、尾桨 -1~1。
+- 飞控进程每 0.02 秒（虚拟时间）通过消息读取传感器、写入控制量；控制量保持到下一次写入。
+  预算不足时飞控跟不上，飞行随之变差；尾桨故障会导致失控坠毁。
+
+九、投送与实时数据
+- 投送：源窗口的应用持续渲染；投送窗口在目标桌面上，只负责外框与输入转发（输入回到源应用处理）。
+  源系统或其祖先暂停时，投送内容冻结。关闭源窗口会结束投送。
+- 图表工作台：选择数据源（工作簿路径）、区域（如 A1:D4）、标签列（A）与数值列（D，可用逗号分隔多列），
+  点击“连接”后建立实时订阅；根系统表格每次提交（输入、粘贴、撤销、重做）后，图表收到区域的新版本。
+  断开后保留最后的数据。
+
+十、网页与浏览器
+- 浏览器界面由系统程序绘制，网页由 Chromium 网页视图加载真实网站。网页窗口随窗口的最小化与标签切换保留状态。
+  网页中打开的新窗口在浏览器内以新标签打开。宿主的 Chromium 不被外部浏览器替代。
+
+十一、自动化与开发
+- 项目根目录的 automation.json 记录启动命令、参数、主窗口标题、素材路径与自动化接口。
+- 渲染进程的 window.bench 提供 ready()、reset()、inspect()；控件带有稳定的 data-testid 与 data-system-id 等标识。

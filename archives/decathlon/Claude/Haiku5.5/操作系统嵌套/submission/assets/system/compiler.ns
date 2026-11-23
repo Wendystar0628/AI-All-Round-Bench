@@ -1,0 +1,851 @@
+// =====================================================================
+// Nest Script 编译器（系统程序，/System/compiler.ns）
+//
+// 输入：args[0] 为源代码文本。
+// 输出：程序退出值为镜像 {code, lines, funcs, init}，可直接由虚拟机执行。
+// 出错：调用 assert 报错，错误信息形如 "第 N 行：……"，由所属内核转给调用方。
+//
+// 修改本文件并用系统的编译器重新编译它，此后启动的程序就使用新编译器。
+// 语言规则见系统内的《程序格式说明》。
+// =====================================================================
+
+var toks = [];
+var tp = 0;
+var code = [];
+var lines = [];
+var funcs = {};
+var gvars = {};
+var curLine = 0;
+var inFunc = false;
+var ns = 0;
+var scopes = [];
+var loops = [];
+
+var KW = {"var": true, "func": true, "if": true, "else": true, "while": true, "for": true, "in": true, "return": true, "break": true, "continue": true, "true": true, "false": true, "nil": true};
+var TWO = {"==": true, "!=": true, "<=": true, ">=": true, "&&": true, "||": true};
+var ONE = {"+": true, "-": true, "*": true, "/": true, "%": true, "<": true, ">": true, "=": true, "!": true, "(": true, ")": true, "{": true, "}": true, "[": true, "]": true, ",": true, ";": true, ".": true, ":": true, "?": true};
+var LEVELS = [["||"], ["&&"], ["==", "!="], ["<", "<=", ">", ">="], ["+", "-"], ["*", "/", "%"]];
+
+// ---------------------------- 错误 ----------------------------
+func fail(msg, line) {
+    assert(false, "第 " + str(line) + " 行：" + msg);
+}
+
+func tok(t, v, line) {
+    return {t: t, v: v, line: line};
+}
+
+// ---------------------------- 词法分析 ----------------------------
+func is_digit(c) {
+    return c >= "0" && c <= "9";
+}
+
+func is_alpha(c) {
+    return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z") || c == "_";
+}
+
+func is_alnum(c) {
+    return is_alpha(c) || is_digit(c);
+}
+
+func escape_char(e, line) {
+    if (e == "n") { return "\n"; }
+    if (e == "t") { return "\t"; }
+    if (e == "r") { return "\r"; }
+    if (e == "\"") { return "\""; }
+    if (e == "\\") { return "\\"; }
+    if (e == "0") { return chr(0); }
+    fail("未知的转义字符 \\" + e, line);
+    return "";
+}
+
+func tokenize_src(s) {
+    var out = [];
+    var n = len(s);
+    var i = 0;
+    var line = 1;
+    while (i < n) {
+        var c = substr(s, i, 1);
+        if (c == "\n") {
+            line = line + 1;
+            i = i + 1;
+        } else if (c == " " || c == "\t" || c == "\r") {
+            i = i + 1;
+        } else if (c == "/" && substr(s, i + 1, 1) == "/") {
+            while (i < n && substr(s, i, 1) != "\n") { i = i + 1; }
+        } else if (c == "/" && substr(s, i + 1, 1) == "*") {
+            i = i + 2;
+            while (i < n && !(substr(s, i, 1) == "*" && substr(s, i + 1, 1) == "/")) {
+                if (substr(s, i, 1) == "\n") { line = line + 1; }
+                i = i + 1;
+            }
+            if (i >= n) { fail("注释没有结束", line); }
+            i = i + 2;
+        } else if (is_alpha(c)) {
+            var j = i;
+            while (j < n && is_alnum(substr(s, j, 1))) { j = j + 1; }
+            var word = substr(s, i, j - i);
+            if (has(KW, word)) {
+                push(out, tok("kw", word, line));
+            } else {
+                push(out, tok("id", word, line));
+            }
+            i = j;
+        } else if (is_digit(c)) {
+            var k = i;
+            while (k < n && is_digit(substr(s, k, 1))) { k = k + 1; }
+            if (substr(s, k, 1) == "." && is_digit(substr(s, k + 1, 1))) {
+                k = k + 1;
+                while (k < n && is_digit(substr(s, k, 1))) { k = k + 1; }
+            }
+            push(out, tok("num", num(substr(s, i, k - i)), line));
+            i = k;
+        } else if (c == "\"") {
+            var p = i + 1;
+            var text = "";
+            while (true) {
+                if (p >= n || substr(s, p, 1) == "\n") { fail("字符串没有结束", line); }
+                var ch = substr(s, p, 1);
+                if (ch == "\"") {
+                    p = p + 1;
+                    break;
+                }
+                if (ch == "\\") {
+                    text = text + escape_char(substr(s, p + 1, 1), line);
+                    p = p + 2;
+                } else {
+                    text = text + ch;
+                    p = p + 1;
+                }
+            }
+            push(out, tok("str", text, line));
+            i = p;
+        } else {
+            var two = substr(s, i, 2);
+            if (has(TWO, two)) {
+                push(out, tok("op", two, line));
+                i = i + 2;
+            } else if (has(ONE, c)) {
+                push(out, tok("op", c, line));
+                i = i + 1;
+            } else {
+                fail("无法识别的字符 \"" + c + "\"", line);
+            }
+        }
+    }
+    push(out, tok("eof", "", line));
+    return out;
+}
+
+// ---------------------------- 语法分析 ----------------------------
+func peekt(k) {
+    var p = tp + k;
+    if (p >= len(toks)) { return toks[len(toks) - 1]; }
+    return toks[p];
+}
+
+func nexttok() {
+    var t = toks[tp];
+    if (tp < len(toks) - 1) { tp = tp + 1; }
+    return t;
+}
+
+func isop(v) {
+    var t = peekt(0);
+    return t.t == "op" && t.v == v;
+}
+
+func isop_at(k, v) {
+    var t = peekt(k);
+    return t.t == "op" && t.v == v;
+}
+
+func iskw(v) {
+    var t = peekt(0);
+    return t.t == "kw" && t.v == v;
+}
+
+func iskw_at(k, v) {
+    var t = peekt(k);
+    return t.t == "kw" && t.v == v;
+}
+
+func describe(t) {
+    if (t.t == "eof") { return "文件结束"; }
+    return "\"" + t.v + "\"";
+}
+
+func expect_op(v) {
+    if (!isop(v)) { fail("缺少 \"" + v + "\"，遇到 " + describe(peekt(0)), peekt(0).line); }
+    return nexttok();
+}
+
+func expect_id() {
+    if (peekt(0).t != "id") { fail("需要一个名字，遇到 " + describe(peekt(0)), peekt(0).line); }
+    return nexttok();
+}
+
+func parse_program() {
+    var items = [];
+    while (peekt(0).t != "eof") {
+        if (iskw("var")) {
+            var d = parse_var();
+            expect_op(";");
+            push(items, d);
+        } else if (iskw("func")) {
+            push(items, parse_func());
+        } else {
+            fail("顶层只能是 var 或 func 声明，遇到 " + describe(peekt(0)), peekt(0).line);
+        }
+    }
+    return items;
+}
+
+func parse_func() {
+    var kw = nexttok();
+    var name = expect_id();
+    expect_op("(");
+    var params = [];
+    if (!isop(")")) {
+        while (true) {
+            var pid = expect_id();
+            if (indexOf(params, pid.v) >= 0) { fail("参数名重复 " + pid.v, pid.line); }
+            push(params, pid.v);
+            if (isop(",")) {
+                nexttok();
+            } else {
+                break;
+            }
+        }
+    }
+    expect_op(")");
+    var body = parse_block();
+    return ["func", name.v, params, body, kw.line];
+}
+
+func parse_block() {
+    expect_op("{");
+    var stmts = [];
+    while (!isop("}")) {
+        if (peekt(0).t == "eof") { fail("代码块没有结束", peekt(0).line); }
+        push(stmts, parse_stmt());
+    }
+    nexttok();
+    return stmts;
+}
+
+func parse_var() {
+    var kw = nexttok();
+    var name = expect_id();
+    var init = nil;
+    if (isop("=")) {
+        nexttok();
+        init = parse_expr();
+    }
+    return ["var", name.v, init, kw.line];
+}
+
+func check_lvalue(e) {
+    if (e[0] == "var" || e[0] == "idx") { return; }
+    fail("赋值的左边必须是变量、下标或成员", curLine);
+}
+
+func parse_simple() {
+    var line = peekt(0).line;
+    if (iskw("var")) { return parse_var(); }
+    var e = parse_expr();
+    if (isop("=")) {
+        nexttok();
+        check_lvalue(e);
+        return ["set", e, parse_expr(), line];
+    }
+    return ["expr", e, line];
+}
+
+func parse_stmt() {
+    var t = peekt(0);
+    if (iskw("var")) {
+        var d = parse_var();
+        expect_op(";");
+        return d;
+    }
+    if (iskw("if")) { return parse_if(); }
+    if (iskw("while")) {
+        nexttok();
+        expect_op("(");
+        var cond = parse_expr();
+        expect_op(")");
+        return ["while", cond, parse_block(), t.line];
+    }
+    if (iskw("for")) { return parse_for(); }
+    if (iskw("return")) {
+        nexttok();
+        var rv = nil;
+        if (!isop(";")) { rv = parse_expr(); }
+        expect_op(";");
+        return ["ret", rv, t.line];
+    }
+    if (iskw("break")) {
+        nexttok();
+        expect_op(";");
+        return ["break", t.line];
+    }
+    if (iskw("continue")) {
+        nexttok();
+        expect_op(";");
+        return ["cont", t.line];
+    }
+    if (isop("{")) { return ["block", parse_block(), t.line]; }
+    var s = parse_simple();
+    expect_op(";");
+    return s;
+}
+
+func parse_if() {
+    var t = nexttok();
+    expect_op("(");
+    var cond = parse_expr();
+    expect_op(")");
+    var thenb = parse_block();
+    var elseb = nil;
+    if (iskw("else")) {
+        nexttok();
+        if (iskw("if")) {
+            elseb = [parse_if()];
+        } else {
+            elseb = parse_block();
+        }
+    }
+    return ["if", cond, thenb, elseb, t.line];
+}
+
+func parse_for() {
+    var t = nexttok();
+    expect_op("(");
+    if (iskw("var") && peekt(1).t == "id" && iskw_at(2, "in")) {
+        nexttok();
+        var name = nexttok();
+        nexttok();
+        var e = parse_expr();
+        expect_op(")");
+        return ["forin", name.v, e, parse_block(), t.line];
+    }
+    var init = nil;
+    if (!isop(";")) { init = parse_simple(); }
+    expect_op(";");
+    var cond = nil;
+    if (!isop(";")) { cond = parse_expr(); }
+    expect_op(";");
+    var post = nil;
+    if (!isop(")")) { post = parse_simple(); }
+    expect_op(")");
+    return ["for", init, cond, post, parse_block(), t.line];
+}
+
+func parse_expr() {
+    var c = parse_bin(0);
+    if (isop("?")) {
+        nexttok();
+        var a = parse_expr();
+        expect_op(":");
+        var b = parse_expr();
+        return ["cond", c, a, b];
+    }
+    return c;
+}
+
+func parse_bin(level) {
+    if (level > 5) { return parse_unary(); }
+    var l = parse_bin(level + 1);
+    while (peekt(0).t == "op" && indexOf(LEVELS[level], peekt(0).v) >= 0) {
+        var op = nexttok().v;
+        var r = parse_bin(level + 1);
+        if (level == 0) {
+            l = ["or", l, r];
+        } else if (level == 1) {
+            l = ["and", l, r];
+        } else {
+            l = ["bin", op, l, r];
+        }
+    }
+    return l;
+}
+
+func parse_unary() {
+    if (isop("-") || isop("!")) {
+        var op = nexttok().v;
+        return ["un", op, parse_unary()];
+    }
+    return parse_postfix();
+}
+
+func parse_postfix() {
+    var e = parse_primary();
+    while (true) {
+        if (isop("[")) {
+            nexttok();
+            var k = parse_expr();
+            expect_op("]");
+            e = ["idx", e, k];
+        } else if (isop(".")) {
+            nexttok();
+            var name = expect_id();
+            e = ["idx", e, ["str", name.v]];
+        } else if (isop("(")) {
+            fail("只能调用具名函数", peekt(0).line);
+        } else {
+            break;
+        }
+    }
+    return e;
+}
+
+func parse_primary() {
+    var t = peekt(0);
+    if (t.t == "num") {
+        nexttok();
+        return ["num", t.v];
+    }
+    if (t.t == "str") {
+        nexttok();
+        return ["str", t.v];
+    }
+    if (iskw("true")) {
+        nexttok();
+        return ["const", true];
+    }
+    if (iskw("false")) {
+        nexttok();
+        return ["const", false];
+    }
+    if (iskw("nil")) {
+        nexttok();
+        return ["const", nil];
+    }
+    if (t.t == "id") {
+        nexttok();
+        if (isop("(")) {
+            nexttok();
+            var args = [];
+            if (!isop(")")) {
+                while (true) {
+                    push(args, parse_expr());
+                    if (isop(",")) {
+                        nexttok();
+                    } else {
+                        break;
+                    }
+                }
+            }
+            expect_op(")");
+            return ["call", t.v, args, t.line];
+        }
+        return ["var", t.v, t.line];
+    }
+    if (isop("(")) {
+        nexttok();
+        var inner = parse_expr();
+        expect_op(")");
+        return inner;
+    }
+    if (isop("[")) {
+        nexttok();
+        var items = [];
+        if (!isop("]")) {
+            while (true) {
+                push(items, parse_expr());
+                if (isop(",")) {
+                    nexttok();
+                    if (isop("]")) { break; }
+                } else {
+                    break;
+                }
+            }
+        }
+        expect_op("]");
+        return ["arr", items];
+    }
+    if (isop("{")) {
+        nexttok();
+        var entries = [];
+        if (!isop("}")) {
+            while (true) {
+                var kt = peekt(0);
+                if (kt.t != "id" && kt.t != "str") { fail("映射的键必须是名字或字符串", kt.line); }
+                nexttok();
+                expect_op(":");
+                push(entries, [kt.v, parse_expr()]);
+                if (isop(",")) {
+                    nexttok();
+                    if (isop("}")) { break; }
+                } else {
+                    break;
+                }
+            }
+        }
+        expect_op("}");
+        return ["map", entries];
+    }
+    fail("缺少表达式，遇到 " + describe(t), t.line);
+    return nil;
+}
+
+// ---------------------------- 代码生成 ----------------------------
+func emit(ins) {
+    push(code, ins);
+    push(lines, curLine);
+    return len(code) - 1;
+}
+
+func here() {
+    return len(code);
+}
+
+func patch(idx, target) {
+    code[idx][1] = target;
+}
+
+func declare(name, line) {
+    if (!inFunc) {
+        if (has(gvars, name)) { fail("变量 " + name + " 重复声明", line); }
+        gvars[name] = true;
+        return nil;
+    }
+    var sc = scopes[len(scopes) - 1];
+    if (has(sc, name)) { fail("变量 " + name + " 重复声明", line); }
+    var slot = ns;
+    ns = ns + 1;
+    sc[name] = slot;
+    return slot;
+}
+
+func lookup(name) {
+    if (inFunc) {
+        var i = len(scopes) - 1;
+        while (i >= 0) {
+            var sc = scopes[i];
+            if (has(sc, name)) { return sc[name]; }
+            i = i - 1;
+        }
+    }
+    return nil;
+}
+
+func gen_expr(e) {
+    var k = e[0];
+    if (k == "num" || k == "str" || k == "const") {
+        emit(["c", e[1]]);
+        return;
+    }
+    if (k == "var") {
+        if (e[2] != nil) { curLine = e[2]; }
+        var slot = lookup(e[1]);
+        if (slot != nil) {
+            emit(["l", slot]);
+        } else {
+            emit(["g", e[1]]);
+        }
+        return;
+    }
+    if (k == "arr") {
+        for (var x in e[1]) { gen_expr(x); }
+        emit(["arr", len(e[1])]);
+        return;
+    }
+    if (k == "map") {
+        var keys = [];
+        for (var pr in e[1]) {
+            if (indexOf(keys, pr[0]) >= 0) { fail("映射的键 " + pr[0] + " 重复", curLine); }
+            push(keys, pr[0]);
+            gen_expr(pr[1]);
+        }
+        emit(["map", keys]);
+        return;
+    }
+    if (k == "idx") {
+        gen_expr(e[1]);
+        gen_expr(e[2]);
+        emit(["idx"]);
+        return;
+    }
+    if (k == "call") {
+        if (e[3] != nil) { curLine = e[3]; }
+        for (var a in e[2]) { gen_expr(a); }
+        emit(["call", e[1], len(e[2])]);
+        return;
+    }
+    if (k == "un") {
+        gen_expr(e[2]);
+        emit(["un", e[1]]);
+        return;
+    }
+    if (k == "bin") {
+        gen_expr(e[2]);
+        gen_expr(e[3]);
+        emit(["bin", e[1]]);
+        return;
+    }
+    if (k == "and") {
+        gen_expr(e[1]);
+        var ja = emit(["jfk", 0]);
+        gen_expr(e[2]);
+        patch(ja, here());
+        return;
+    }
+    if (k == "or") {
+        gen_expr(e[1]);
+        var jo = emit(["jtk", 0]);
+        gen_expr(e[2]);
+        patch(jo, here());
+        return;
+    }
+    if (k == "cond") {
+        gen_expr(e[1]);
+        var jc = emit(["jf", 0]);
+        gen_expr(e[2]);
+        var jce = emit(["j", 0]);
+        patch(jc, here());
+        gen_expr(e[3]);
+        patch(jce, here());
+        return;
+    }
+    fail("未知的表达式 " + k, curLine);
+}
+
+func gen_block(stmts) {
+    if (inFunc) { push(scopes, {}); }
+    for (var s in stmts) { gen_stmt(s); }
+    if (inFunc) { pop(scopes); }
+}
+
+func gen_set(target, value, line) {
+    curLine = line;
+    if (target[0] == "var") {
+        var slot = lookup(target[1]);
+        gen_expr(value);
+        if (slot != nil) {
+            emit(["s", slot]);
+        } else {
+            emit(["G", target[1]]);
+        }
+    } else {
+        gen_expr(target[1]);
+        gen_expr(target[2]);
+        gen_expr(value);
+        emit(["sidx"]);
+    }
+}
+
+func gen_vardecl(s) {
+    curLine = s[3];
+    if (s[2] != nil) {
+        gen_expr(s[2]);
+    } else {
+        emit(["c", nil]);
+    }
+    var slot = declare(s[1], s[3]);
+    if (slot == nil) {
+        emit(["G", s[1]]);
+    } else {
+        emit(["s", slot]);
+    }
+}
+
+func gen_simple(s) {
+    if (s[0] == "var") {
+        gen_vardecl(s);
+    } else if (s[0] == "set") {
+        gen_set(s[1], s[2], s[3]);
+    } else {
+        curLine = s[2];
+        gen_expr(s[1]);
+        emit(["p"]);
+    }
+}
+
+func gen_stmt(s) {
+    var k = s[0];
+    if (k == "var") {
+        gen_vardecl(s);
+        return;
+    }
+    if (k == "set" || k == "expr") {
+        gen_simple(s);
+        return;
+    }
+    if (k == "if") {
+        curLine = s[4];
+        gen_expr(s[1]);
+        var jf = emit(["jf", 0]);
+        gen_block(s[2]);
+        if (s[3] != nil) {
+            var jend = emit(["j", 0]);
+            patch(jf, here());
+            gen_block(s[3]);
+            patch(jend, here());
+        } else {
+            patch(jf, here());
+        }
+        return;
+    }
+    if (k == "while") {
+        curLine = s[3];
+        var top = here();
+        gen_expr(s[1]);
+        var jw = emit(["jf", 0]);
+        var wl = {brk: [], cont: []};
+        push(loops, wl);
+        gen_block(s[2]);
+        pop(loops);
+        curLine = s[3];
+        emit(["j", top]);
+        var wend = here();
+        patch(jw, wend);
+        for (var b1 in wl.brk) { patch(b1, wend); }
+        for (var c1 in wl.cont) { patch(c1, top); }
+        return;
+    }
+    if (k == "for") {
+        curLine = s[5];
+        push(scopes, {});
+        if (s[1] != nil) { gen_simple(s[1]); }
+        var ftop = here();
+        var jfc = -1;
+        if (s[2] != nil) {
+            curLine = s[5];
+            gen_expr(s[2]);
+            jfc = emit(["jf", 0]);
+        }
+        var fl = {brk: [], cont: []};
+        push(loops, fl);
+        gen_block(s[4]);
+        pop(loops);
+        var contAt = here();
+        if (s[3] != nil) { gen_simple(s[3]); }
+        curLine = s[5];
+        emit(["j", ftop]);
+        var fend = here();
+        if (jfc >= 0) { patch(jfc, fend); }
+        for (var b2 in fl.brk) { patch(b2, fend); }
+        for (var c2 in fl.cont) { patch(c2, contAt); }
+        pop(scopes);
+        return;
+    }
+    if (k == "forin") {
+        curLine = s[4];
+        push(scopes, {});
+        var arrSlot = ns;
+        ns = ns + 1;
+        var idxSlot = ns;
+        ns = ns + 1;
+        gen_expr(s[2]);
+        emit(["s", arrSlot]);
+        emit(["c", 0]);
+        emit(["s", idxSlot]);
+        var itop = here();
+        emit(["l", idxSlot]);
+        emit(["l", arrSlot]);
+        emit(["call", "len", 1]);
+        emit(["bin", "<"]);
+        var jfi = emit(["jf", 0]);
+        emit(["l", arrSlot]);
+        emit(["l", idxSlot]);
+        emit(["idx"]);
+        var varSlot = declare(s[1], s[4]);
+        emit(["s", varSlot]);
+        var il = {brk: [], cont: []};
+        push(loops, il);
+        gen_block(s[3]);
+        pop(loops);
+        var icont = here();
+        emit(["l", idxSlot]);
+        emit(["c", 1]);
+        emit(["bin", "+"]);
+        emit(["s", idxSlot]);
+        emit(["j", itop]);
+        var iend = here();
+        patch(jfi, iend);
+        for (var b3 in il.brk) { patch(b3, iend); }
+        for (var c3 in il.cont) { patch(c3, icont); }
+        pop(scopes);
+        return;
+    }
+    if (k == "ret") {
+        curLine = s[2];
+        if (s[1] != nil) {
+            gen_expr(s[1]);
+        } else {
+            emit(["c", nil]);
+        }
+        emit(["ret"]);
+        return;
+    }
+    if (k == "break") {
+        curLine = s[1];
+        if (len(loops) == 0) { fail("break 只能用在循环里", s[1]); }
+        var bl = loops[len(loops) - 1];
+        push(bl.brk, emit(["j", 0]));
+        return;
+    }
+    if (k == "cont") {
+        curLine = s[1];
+        if (len(loops) == 0) { fail("continue 只能用在循环里", s[1]); }
+        var cl = loops[len(loops) - 1];
+        push(cl.cont, emit(["j", 0]));
+        return;
+    }
+    if (k == "block") {
+        gen_block(s[1]);
+        return;
+    }
+    fail("未知的语句 " + k, curLine);
+}
+
+func generate(items) {
+    var topvars = [];
+    for (var it in items) {
+        if (it[0] == "func") {
+            var name = it[1];
+            var params = it[2];
+            var line = it[4];
+            if (has(funcs, name)) { fail("函数 " + name + " 重复定义", line); }
+            if (name == "main" && len(params) != 1) { fail("main 必须有且只有一个参数（启动参数数组）", line); }
+            curLine = line;
+            inFunc = true;
+            ns = 0;
+            scopes = [{}];
+            loops = [];
+            var entry = here();
+            for (var p in params) { declare(p, line); }
+            gen_block(it[3]);
+            curLine = line;
+            emit(["c", nil]);
+            emit(["ret"]);
+            funcs[name] = {entry: entry, np: len(params), ns: ns};
+            inFunc = false;
+        } else if (it[0] == "var") {
+            push(topvars, it);
+        }
+    }
+    var init = here();
+    inFunc = false;
+    for (var v in topvars) { gen_vardecl(v); }
+    curLine = 0;
+    if (has(funcs, "main")) {
+        emit(["argv"]);
+        emit(["call", "main", 1]);
+    } else {
+        emit(["c", nil]);
+    }
+    emit(["halt"]);
+    return {code: code, lines: lines, funcs: funcs, init: init};
+}
+
+// ---------------------------- 入口 ----------------------------
+func main(args) {
+    var src = args[0];
+    toks = tokenize_src(src);
+    tp = 0;
+    var items = parse_program();
+    return generate(items);
+}

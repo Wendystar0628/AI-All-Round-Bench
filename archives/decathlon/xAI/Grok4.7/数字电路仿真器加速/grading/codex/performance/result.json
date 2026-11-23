@@ -1,0 +1,111 @@
+{
+  "task": "数字电路仿真器加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "总分",
+      "max": 100,
+      "score": 12.7,
+      "reason": "官方评测正确性 7/7、性能 9/9 全部通过，evaluate.py score=12.7。最终源码在正常路径向标准错误打印自身耗时，不影响评测读数，按用户决定判为有效。"
+    }
+  ],
+  "metrics": {
+    "correctness_passed": 7,
+    "correctness_total": 7,
+    "correctness_factor": "7/7",
+    "performance_passed": 9,
+    "performance_inputs": 9,
+    "performance_score": 12.7,
+    "evaluate_score_before_validity_gate": 12.7,
+    "final_score": 12.7,
+    "G": 0.6844792411735556,
+    "summary": [
+      {
+        "case": "input_01",
+        "family": "深链",
+        "R_i_ms": 1008.97,
+        "C_i_ms": 461.128,
+        "s_i": 2.1880475703058586,
+        "points_i": 29.6,
+        "status": "PASS"
+      },
+      {
+        "case": "input_02",
+        "family": "深链",
+        "R_i_ms": 1017.991,
+        "C_i_ms": 307.064,
+        "s_i": 3.315240471041867,
+        "points_i": 41.6,
+        "status": "PASS"
+      },
+      {
+        "case": "input_03",
+        "family": "深链",
+        "R_i_ms": 1013.638,
+        "C_i_ms": 1085.341,
+        "s_i": 0.933935048984605,
+        "points_i": 11.3,
+        "status": "PASS"
+      },
+      {
+        "case": "input_04",
+        "family": "阵列乘法器",
+        "R_i_ms": 953.235,
+        "C_i_ms": 1461.712,
+        "s_i": 0.6521359884847358,
+        "points_i": 7.7,
+        "status": "PASS"
+      },
+      {
+        "case": "input_05",
+        "family": "阵列乘法器",
+        "R_i_ms": 975.51,
+        "C_i_ms": 1708.59,
+        "s_i": 0.5709444629782452,
+        "points_i": 6.3,
+        "status": "PASS"
+      },
+      {
+        "case": "input_06",
+        "family": "阵列乘法器",
+        "R_i_ms": 960.566,
+        "C_i_ms": 1337.531,
+        "s_i": 0.7181635416300632,
+        "points_i": 8.7,
+        "status": "PASS"
+      },
+      {
+        "case": "input_07",
+        "family": "寄存器堆",
+        "R_i_ms": 987.802,
+        "C_i_ms": 3826.09,
+        "s_i": 0.258175317360543,
+        "points_i": 2.9,
+        "status": "PASS"
+      },
+      {
+        "case": "input_08",
+        "family": "寄存器堆",
+        "R_i_ms": 1028.741,
+        "C_i_ms": 3655.362,
+        "s_i": 0.2814334120669854,
+        "points_i": 3.2,
+        "status": "PASS"
+      },
+      {
+        "case": "input_09",
+        "family": "寄存器堆",
+        "R_i_ms": 989.856,
+        "C_i_ms": 3950.606,
+        "s_i": 0.2505580156563322,
+        "points_i": 2.9,
+        "status": "PASS"
+      }
+    ],
+    "report_path": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\xAI\\Grok4.7\\数字电路仿真器加速\\codex\\performance\\work\\evaluation-report.json",
+    "submission_sha256": "367D5FE7E7F10B41BA8A73E7F2D117C47A2971D92C09EA6C04B1065BAE0F9CDB"
+  },
+  "notes": "评的是作答结束时工作目录中的内容，已复制到 work\\submission，不看 git 提交；复制时排除评分表，原始提交除本评分表外未改动。副本与原始 solution.cpp 的SHA256一致。提交和官方基线均按规定命令从源码编译成功（提交仅有 NOMINMAX 重定义警告）；所有编译和一次官方 evaluate.py 均经指定 Python 3.12 / process_job.py --cpus 0-15 包装，原有官方亲和性、优先级、OMP_NUM_THREADS=16及三次交错测量逻辑保持。evaluate.py 未检测源码规则，所以其报告 score=12.7 是门槛判定前的测量分，最终按指南第十节第4条记0分，评分表及 items 一致。自然审阅未见预置摘要或篡改评测；三处标准错误使用是明确的提交规则违规，不推断作弊意图。报告、编译日志、运行日志和PID记录均在工作目录。所有启动的编译和评测程序均已退出，Job已关闭；未启动浏览器或服务器，无需终止其他进程。",
+  "total": 12.7
+}

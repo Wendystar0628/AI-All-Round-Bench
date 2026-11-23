@@ -1,0 +1,13 @@
+import { System, createKernelProcess } from '../js/kernel.js';
+import { KERNEL_TEMPLATE, SERVICE_PROGRAM } from '../js/data.js';
+const os = {};
+const sys = new System(os, { id: 's', name: 's' });
+sys.fs.write('/System/kernel.sys', KERNEL_TEMPLATE);
+sys.fs.write('/Demo/service.prog', SERVICE_PROGRAM);
+createKernelProcess(sys, KERNEL_TEMPLATE, 900);
+sys.spawn('svc', SERVICE_PROGRAM, { type: 'program', quota: 1200 });
+for (let i = 0; i < 400; i++) sys.step(60000);
+const svc = sys.processes.find(p => p.name === 'svc');
+console.log('state', svc.state, 'pc', svc.pc, 'out', svc.output);
+console.log('kernel', sys.processes.find(p => p.name === 'kernel').output);
+console.log('msg', sys.processes.find(p => p.name === 'kernel').inbox);

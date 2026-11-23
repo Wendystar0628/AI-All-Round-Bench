@@ -1,0 +1,3705 @@
+{
+  "schema": 1,
+  "model": "Claude/Sonnet5.5",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 503,
+      "sha256": "be628b23cd57528a2c50c2ea9a9b6a3035a63886a73732a4ed2f6eaffb83175c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\claude\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/claude/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6978,
+      "sha256": "8e34796b23070a85a3e3dfd7303d56d70299cb7f1637fe4099db45a421ebd460"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8674,
+      "sha256": "3f5dd00d6ea60652f862372292357e9a219549532e557ba6a1a0e3f68ba69300"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6118,
+      "sha256": "f537b774f43d78841607a47e01891af68314b2f3deb3d3c41b709e4515bd0b96"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\评分表_Opus5.5.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6219,
+      "sha256": "319d5f2d0bf451f4c09dc47a5a2f41edd9400dceb7fce370ce505edafb6318aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\css\\style.css",
+      "path": "AE风味动效设计编辑器/submission/css/style.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 18895,
+      "sha256": "1ebba6795a29b48991076292d2de91c108badee92c0c68838bb9685ca456b18d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1991,
+      "sha256": "015d06865094df3f82cb0a33b0053b76ddba48350de190b990eb75441473cb8b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\actions.js",
+      "path": "AE风味动效设计编辑器/submission/js/actions.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 20376,
+      "sha256": "c50caef537bf977aa488ae397c124d51a5c4bb39dd1f92e9b18b5088c75cb17b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\app.js",
+      "path": "AE风味动效设计编辑器/submission/js/app.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8468,
+      "sha256": "965da7446e05a31e2f1ceb3f5874fc22becf845d0be47b3103e819eac03417b1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\audio.js",
+      "path": "AE风味动效设计编辑器/submission/js/audio.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10992,
+      "sha256": "f56628a9f7c3dbe93b9e24d1981fc7ff3310cbe28ddc11102f34d5a70cf4f15b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\boot.js",
+      "path": "AE风味动效设计编辑器/submission/js/boot.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2393,
+      "sha256": "2f8b89cfcf1b197b4270f309c58d1b96643bbadeda7f389ccb1c6a6342465a3a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\comp.js",
+      "path": "AE风味动效设计编辑器/submission/js/comp.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8539,
+      "sha256": "90eb21b30c10f6bd2d480ab1d64aeceb7de44ca3414dd9b4aecb6182c3a6fe7c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\curves.js",
+      "path": "AE风味动效设计编辑器/submission/js/curves.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 16469,
+      "sha256": "cd36109fc1f96cb95141836080402d07e8d91aea361e2033ef4bcb0ae6803df1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\demo.js",
+      "path": "AE风味动效设计编辑器/submission/js/demo.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 23240,
+      "sha256": "7a1bd369877c50a91dd38bc03a7540e7d08dd66c88d12a603ee4509524e5b953"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\evalr.js",
+      "path": "AE风味动效设计编辑器/submission/js/evalr.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9057,
+      "sha256": "93ff81a87a8f1356d13718af4bc73e1df0ae9ac7ca8e36c4ee20bf3e757c786a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\export.js",
+      "path": "AE风味动效设计编辑器/submission/js/export.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 218,
+      "sha256": "3d25c9b6d7bc41b45760a6a5b3eed35c0185672f5292fe5c15501218ab7a3981"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\expr.js",
+      "path": "AE风味动效设计编辑器/submission/js/expr.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 25043,
+      "sha256": "2a82451ae6a144a7ad79ac8bfe72e5e99c36e16fb3df329c4d0783cfde31a984"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\font.js",
+      "path": "AE风味动效设计编辑器/submission/js/font.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12518,
+      "sha256": "5d0fb3f14c561accc08d199b1265e10197ee5046167bbc807fca930c5bf21ddf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\geom.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 31458,
+      "sha256": "86f44a79f62ce923eefe8e871fb512d536a4a1b4913397811b29e7eede5d8243"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\gl.js",
+      "path": "AE风味动效设计编辑器/submission/js/gl.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9274,
+      "sha256": "804e7ae6104ac5b8bedb98ee55b17f165169d15cc4f27b7618fa14ffb63db8bf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\mesh.js",
+      "path": "AE风味动效设计编辑器/submission/js/mesh.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22260,
+      "sha256": "1d9139adb33d553b4945e08aac323525a4bc50226f972c14a82592f0bb246ac1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\model.js",
+      "path": "AE风味动效设计编辑器/submission/js/model.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 34200,
+      "sha256": "3c2fe147df0ebd161f83c230552112d0618cc2fcdad054eeae440cf43f3df704"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\nodeeditor.js",
+      "path": "AE风味动效设计编辑器/submission/js/nodeeditor.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 24218,
+      "sha256": "00baa3145f6f8f55c17f361321290f95a96ea74597c1b1e3816ba2996c06876c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\nodes.js",
+      "path": "AE风味动效设计编辑器/submission/js/nodes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 36069,
+      "sha256": "3e20737d6b589242fb68db864a71f6511e12057789cbb96d0458460d6cfd07d2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\projectpanel.js",
+      "path": "AE风味动效设计编辑器/submission/js/projectpanel.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3631,
+      "sha256": "a8d484c73dda016b445642cb72947eee70181dbc5204450166486fec32b875b8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\props.js",
+      "path": "AE风味动效设计编辑器/submission/js/props.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 35666,
+      "sha256": "a5706cc23d55b6889377b065b388000d39be7a20f14af964d79a4d6dc3caea7e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\render2d.js",
+      "path": "AE风味动效设计编辑器/submission/js/render2d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 19231,
+      "sha256": "58631b2ba61e58c0aae3dce4e31d841d36282d66fb5a7e1b77c85d88df1e7d6e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\render3d.js",
+      "path": "AE风味动效设计编辑器/submission/js/render3d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 32735,
+      "sha256": "8b4d6c245d642c550ca5b9e28b53f3d1448392e3bf0bace3f13d7bc9c3dba4cc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\shapes.js",
+      "path": "AE风味动效设计编辑器/submission/js/shapes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12348,
+      "sha256": "571213ccef4034da3cbaa7e9b550fd04ce97a763378780fd66039c58c5f048d3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\sim.js",
+      "path": "AE风味动效设计编辑器/submission/js/sim.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22981,
+      "sha256": "d5f62244d04a3d4c9103a3b708e54e09d38fd418f80dba743e1fa7fc73a5d118"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\timeline.js",
+      "path": "AE风味动效设计编辑器/submission/js/timeline.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 33116,
+      "sha256": "0c9f0b6c40dd9c097b34d401249c2915c10053c9177712404d07325709c2cbd7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\ui.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 25001,
+      "sha256": "c1f5e5734e181e0d4bc6db169acfe881a9d29057c88f26db7378027ce0064b1f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\util.js",
+      "path": "AE风味动效设计编辑器/submission/js/util.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10620,
+      "sha256": "4f781411cce2ea0d1107ad93f892cd5e97bc236833ba733715da0599121a0eb8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\js\\viewer.js",
+      "path": "AE风味动效设计编辑器/submission/js/viewer.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 65331,
+      "sha256": "75ca84e6c14edfebec7f87cca9362f77041a1b9658febd4b6cf4b2ca65ea3426"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\font.html",
+      "path": "AE风味动效设计编辑器/submission/test/font.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1199,
+      "sha256": "ef3f14f8a5c1f99df44d7cf118154c48bf0e05da6b82f8806105d57228e64d0b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\group_code.js",
+      "path": "AE风味动效设计编辑器/submission/test/group_code.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6546,
+      "sha256": "8b31f6f60784e63a6991a011ab2b1ff94c905a72159643e30e0e6bbd07eda58f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\patch_nodes.py",
+      "path": "AE风味动效设计编辑器/submission/test/patch_nodes.py",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1897,
+      "sha256": "af0b0f7b8e82da6080cdecb3072db25f463e9aab25344f78bd5439a459f3f5e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\r2d.html",
+      "path": "AE风味动效设计编辑器/submission/test/r2d.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3469,
+      "sha256": "409645b40b6b59c522b47187d6a1f04815069f0945b3620e303a1552a043e5f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\r3d.html",
+      "path": "AE风味动效设计编辑器/submission/test/r3d.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3554,
+      "sha256": "168a475ed8beef6225ceb62cae0b57635aae7abb1f79bcc1a47e893cbca21ae7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\t_expr.js",
+      "path": "AE风味动效设计编辑器/submission/test/t_expr.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3738,
+      "sha256": "fae5c596afba46c5a9efa9a0795279ec2da2e187c342300c5d7efc0174799937"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\t_font.js",
+      "path": "AE风味动效设计编辑器/submission/test/t_font.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 585,
+      "sha256": "1db284db3ae901ad6feacdcf839029cd8f41a1922f4f538fd22a770294662d42"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\t_geom.js",
+      "path": "AE风味动效设计编辑器/submission/test/t_geom.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1193,
+      "sha256": "e0370dd07454fa9a86db6007bdbc84235a675cf6c75ac19e409882fbf2aa8133"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\t_mesh.js",
+      "path": "AE风味动效设计编辑器/submission/test/t_mesh.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1384,
+      "sha256": "dbceba4543183e64f772e2fd0735162625d81b54d01bcc7b8d20cca5fc53ee46"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\test\\t_nodes.js",
+      "path": "AE风味动效设计编辑器/submission/test/t_nodes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1570,
+      "sha256": "0f6237f29e02a8d7a87216f966da822773cb54be298ce17888d0b04796743ce4"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 493,
+      "sha256": "05354c320aeedd6afd4564b0694b1389cc9ab5891c3dc71d061731fade6fa5f5"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 3022,
+      "sha256": "9be0b09e4d1c94651e284ec1bb13e87df878428ffb7a0e35687fdd4673d9d2ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2085,
+      "sha256": "ec9f952ee34b8053694a3daaa8bbaddf07848422444f02abe252b4ea0cb82379"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 43252,
+      "sha256": "22579797a4e292c7bff2878bf163a652e742f5d578ac78660c68544be8316c3c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 435,
+      "sha256": "f2c53512babaeec95ec382e2cc8ae44dbe721da8a5ed400eff188fcf21124a61"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\claude\\main\\result.json",
+      "path": "动态路由塔防/grading/claude/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 5596,
+      "sha256": "dd5e2609028ccbaeb82759e981a99244eb66b6b46a556f7f97a63bdd18eaab19"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 6525,
+      "sha256": "5b6ff3ad4d1cf54aa0e901ba8c9df9efa8c0683a2c37b82aba71229a44c9c4d1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4014,
+      "sha256": "a08daad35a56c988385e859d669011bf00692c9082d0c25c5f17877852bfd5d5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\评分表_Opus5.5.md",
+      "path": "动态路由塔防/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4075,
+      "sha256": "17d57d75cd9d5234b2a7509395d322f0af8979f3411b0e8c5d226300704cd4b8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\.gitignore",
+      "path": "动态路由塔防/submission/.gitignore.txt",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 20,
+      "sha256": "0fd1a48756ff00e9451fcc9f30772bcc84b3bdd17cc3f2ea5785f339439b8db0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\README.md",
+      "path": "动态路由塔防/submission/README.md",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2699,
+      "sha256": "1a310a67556fce9c72c4c0b2da17ccd58a7e6f765ae21e9a236eff67a12b2e51"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\css\\style.css",
+      "path": "动态路由塔防/submission/css/style.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 24938,
+      "sha256": "1af8ea67eede0882ac1179c578b3b5ee9243fc9f86fb1fd60c2b1d8505dd5d8d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1203,
+      "sha256": "284f76acca19c3c6ba126ba55c7c8224203e8be8146e14c1e7840c465ef33d3b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\audio.js",
+      "path": "动态路由塔防/submission/js/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 20826,
+      "sha256": "573e244838b6bba9f9c44ad8badb74649ddb4f76ced3eab0558bfa5f78bec279"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\core.js",
+      "path": "动态路由塔防/submission/js/core.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 29982,
+      "sha256": "55afcf28ebe380d9a6f44086e6ed31be7802e854196ffacbb17962bad043e46c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\data.js",
+      "path": "动态路由塔防/submission/js/data.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 14890,
+      "sha256": "a1247b7d003b02b70b141b5eb74d7aad0fcf44491a7c1086c97ccc1c26cdbf3e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\demo.js",
+      "path": "动态路由塔防/submission/js/demo.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 20872,
+      "sha256": "9dbfac120f761b1d3a37e6af8c055746419ecd550f53447270b22ead863247ba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\export.js",
+      "path": "动态路由塔防/submission/js/export.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 6446,
+      "sha256": "b20625546420b8d07ea64eeccca10a7e26389fc5ae47bfb6fac3d8f3f0628f5c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\fx.js",
+      "path": "动态路由塔防/submission/js/fx.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 10333,
+      "sha256": "462301142eee176ac732285705c42b4cdf3dcca54babfca1791cff7ef6ca2722"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\gfx.js",
+      "path": "动态路由塔防/submission/js/gfx.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 17394,
+      "sha256": "eb4279d1a55ed444dc6811331c8177f72329b55477c597eae5e46d140a1b2c67"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\input.js",
+      "path": "动态路由塔防/submission/js/input.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 17581,
+      "sha256": "f431bbea8376b02d098dbd3ce873450dddd868bfababa61332537fb4a68ddc7c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\main.js",
+      "path": "动态路由塔防/submission/js/main.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 7582,
+      "sha256": "8dd1134e307ea7cc2323072c5d6d5e2ea625cd76db4e17e95c0fcb02ee84d067"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\maps.js",
+      "path": "动态路由塔防/submission/js/maps.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 12237,
+      "sha256": "3cc895e0cdee7daba4415490ea359f96c4a1110afe097bf893f181708a3edc47"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\models.js",
+      "path": "动态路由塔防/submission/js/models.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 40463,
+      "sha256": "268daf306db20d6ce4c9dc2c755aa114efcbb88c674c1b0c7613a480981222a1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\screens.js",
+      "path": "动态路由塔防/submission/js/screens.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 35902,
+      "sha256": "a28460d41f354f16987ef36dfb12fe01847d0811f494a7482dc18903945334b1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\sim.js",
+      "path": "动态路由塔防/submission/js/sim.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 35961,
+      "sha256": "26bd2053024e499bd85aa42a05e70608e687483a2aaa4862ea4d74081c214279"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\terrain.js",
+      "path": "动态路由塔防/submission/js/terrain.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 41775,
+      "sha256": "9bbc1eecaa3c6cd2e330175d4cb50dda87b1f5357e4a2179bbad218da60eba99"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\ui.js",
+      "path": "动态路由塔防/submission/js/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 38715,
+      "sha256": "0f27dfa4e7ab754e895f8c52b7f1e7ad83273b9fe76d45f4991efaf9d52d7e77"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\vtime.js",
+      "path": "动态路由塔防/submission/js/vtime.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1157,
+      "sha256": "5bfe20bafa8e5fae3a893c07703a5d6c63cb2b3b035c117cae289d0de0856670"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\js\\world.js",
+      "path": "动态路由塔防/submission/js/world.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 61968,
+      "sha256": "69865488f99e82e18da6b6571b4911a1fdf84adfe986ca5538e3f7e378022906"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\lib\\three.min.js",
+      "path": "动态路由塔防/submission/lib/three.min.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 669655,
+      "sha256": "f740853ced8c7f3c5a221ef0a0231404f8606fd6d5cc870230f3cf63bd6ace82"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\boss.js",
+      "path": "动态路由塔防/submission/test/boss.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 965,
+      "sha256": "1f178a2df6825658e3240dfac6da5d3f4b0c46fff38eaa3f1765adf706c170ff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\bot.js",
+      "path": "动态路由塔防/submission/test/bot.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4652,
+      "sha256": "cfac56bb438fa6123dc97532aa85ae075a6122800a9100b74e36e6990da031ae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\bot2.js",
+      "path": "动态路由塔防/submission/test/bot2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4243,
+      "sha256": "c7356e422e0a1740a3270dfa439db58dcd2c73e52e519e09dca57af4d24c149e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\gallery.html",
+      "path": "动态路由塔防/submission/test/gallery.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2543,
+      "sha256": "e0aea662868ee5e61abf82b99698e35a2308e06b2779db24a85121e611c30788"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\inv.js",
+      "path": "动态路由塔防/submission/test/inv.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3352,
+      "sha256": "de17636a4e0b6609264663cf186a149755908592e1ec1c28758b525c6b5efe23"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\load.js",
+      "path": "动态路由塔防/submission/test/load.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 402,
+      "sha256": "0abe3dca54704f23296a9c0b32008667dd64287281fa0a38dce587f7775db828"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\maps_test.js",
+      "path": "动态路由塔防/submission/test/maps_test.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1689,
+      "sha256": "38c02551f331f6444acab80c618cebb8fd6ab811d1ff94816f834965f0d44b8c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\mech.js",
+      "path": "动态路由塔防/submission/test/mech.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 8498,
+      "sha256": "dd09647d6860e47bc2adaca29cbdaea4503756b202782ee5bb93480ba318fee2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\test\\sim_test.js",
+      "path": "动态路由塔防/submission/test/sim_test.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 559,
+      "sha256": "0ba0385c2249457e183aef83814134139e1fa293caff850650c3150f6af7b969"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 445,
+      "sha256": "e9f80071f74669145bf0e3d6f90ca17ac221c423d4bf6be98209ee94bd78fb48"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\claude\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/claude/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4808,
+      "sha256": "9134d7c360383d515d912a6d137faf2a5b60cf5af4b2f8d7d22a5c314899f897"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5819,
+      "sha256": "99093b0b56f88d79a92f7db6f75a987d9a1b5724ffc7354cb54a2f9af9396c80"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4050,
+      "sha256": "da64564fb9c065dab0e2b9f71648772aa61d50c2bf0ca1347041bdbffe2d3500"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\评分表_Opus5.5.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4112,
+      "sha256": "9d5906b10b82d2b3f56612e9fd1f359777db242d0b75b5ceccc923aa4be59fa6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\README.md",
+      "path": "太阳雨渔港3D渲染/submission/README.md",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 2021,
+      "sha256": "6cab015f9157653871c04ac36b5a24b53f3fbad2692b51fca0e90237a35e83b0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1194,
+      "sha256": "63ca0caded4716034c67eb7fd4db2c249f327d8047890f925d899b3c48cdd647"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\base.js",
+      "path": "太阳雨渔港3D渲染/submission/js/base.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 16175,
+      "sha256": "0fb266bb8a20008f5b0829c7d5e4c5161484920935a403c97c045b5789f9453d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\boat_parts.js",
+      "path": "太阳雨渔港3D渲染/submission/js/boat_parts.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 18900,
+      "sha256": "64ae64e96381a49b1fb689a3ca5fa2a9841cfac690268649bfbc663a6d37d349"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\boats.js",
+      "path": "太阳雨渔港3D渲染/submission/js/boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 30276,
+      "sha256": "8e0f66ecbdb5bd54e3def9f3e87e8ca272f5e1449cd0eb2a3a00be9a6a7da32d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/js/buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 24966,
+      "sha256": "e2aa36a8ec1e61f0fbd4b78ddad5fcbebcb925b3f81795de8c7a50a82609a428"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\creatures.js",
+      "path": "太阳雨渔港3D渲染/submission/js/creatures.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 27845,
+      "sha256": "988a4cd0d91f25164320e9ece936ceb36963e3827586d898123ea4b835eee2fb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\env.js",
+      "path": "太阳雨渔港3D渲染/submission/js/env.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 10022,
+      "sha256": "83f89c27652fc52405f90781089dc21ef1162231d811cb80a1d01797566fe150"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\fx.js",
+      "path": "太阳雨渔港3D渲染/submission/js/fx.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 16854,
+      "sha256": "6c39cf1e58d453361b2827e9c96bd8f181ab30504bf7696174161511f0236716"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\fxobjs.js",
+      "path": "太阳雨渔港3D渲染/submission/js/fxobjs.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 10709,
+      "sha256": "48b8397a6977cc108a6b0164480310ae7740f617223f63af941464384dd2f254"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\main.js",
+      "path": "太阳雨渔港3D渲染/submission/js/main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8252,
+      "sha256": "ff90eb7e80f377ee995107e36e6ac3f6da15f33d2b1c4f4b54b1caa519545152"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\post.js",
+      "path": "太阳雨渔港3D渲染/submission/js/post.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 12235,
+      "sha256": "d3ba8d7c222e3804075805ce97302a50ee65fb921ef161d3f4c383aa9ad64c5b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\props.js",
+      "path": "太阳雨渔港3D渲染/submission/js/props.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 29842,
+      "sha256": "812466bcde077014f7dc191b638692b2d10a1e9aee3c3de707e264cc38b65bd6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\terrain.js",
+      "path": "太阳雨渔港3D渲染/submission/js/terrain.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 30375,
+      "sha256": "88e69b50e86f63e583ee7623ff73004142047ab9575d91f9199b6f03726a1d63"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\textures.js",
+      "path": "太阳雨渔港3D渲染/submission/js/textures.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 15016,
+      "sha256": "a76157ddd3adef4cf505762073f4020448b5efba0fe0a8d846c7473839878914"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\util.js",
+      "path": "太阳雨渔港3D渲染/submission/js/util.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 9318,
+      "sha256": "bb245ffd646f59fa6a153234f33fdee11ed6cf0414cadf180e18787a9ed02e22"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\water.js",
+      "path": "太阳雨渔港3D渲染/submission/js/water.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 15768,
+      "sha256": "e062dad2e689b2d3249f2d7402b4d363546970490e366664a55eca0ee247e618"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\weather.js",
+      "path": "太阳雨渔港3D渲染/submission/js/weather.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 10766,
+      "sha256": "fa983a50375c2f195ea4b2b501acfcbf0721b2524b3771d0e2c4bb8063a7f376"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\js\\world_water.js",
+      "path": "太阳雨渔港3D渲染/submission/js/world_water.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 2828,
+      "sha256": "95ec63f403501f84a0b2d6be2a4941ae7627a8fd1936ac99e05b8cb1e5a15347"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\video_export.js",
+      "path": "太阳雨渔港3D渲染/submission/video_export.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 10818,
+      "sha256": "6f2e1733f54951e240a35a853346ace6edeae06311ef59bbc112b7d12f292d63"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 459,
+      "sha256": "65089c0992e4eb691dd9fc3d6986e2da1c623be3dbdb0c301bca0bb68e7979c5"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 1850,
+      "sha256": "856fa9662caf26c14be13690d120913197e49ea443fb37bfc2ec06db652f865a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1117,
+      "sha256": "74fd9af0da8cd6733fa0e8a4c886f80aac34b5763bb2b9d415f66866c63abf7d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 10640,
+      "sha256": "30976718705b76a27537db43e8e572a784216f794ad8397907466d72510617f2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\形式化证明题\\Problem2.lean",
+      "path": "形式化证明题/submission/Problem2.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 8783,
+      "sha256": "8ae1579646d5c6d5339be0e0b93793bde2e3f5a6eb17af6fa69d73d1b8c2afea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\形式化证明题\\Problem6.lean",
+      "path": "形式化证明题/submission/Problem6.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 8572,
+      "sha256": "44fdbb366ba2be987d0df3f632d024ca486c5a71001a9e9092902afa9308a86f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\形式化证明题\\Problem7.lean",
+      "path": "形式化证明题/submission/Problem7.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 13487,
+      "sha256": "051879b49ea3a0fe2c14e5ec6084d8dd88de95eed570b33742db85a983f5df1e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 482,
+      "sha256": "645b12411dca14e07272aa971e9c13c535311d4be1c2f7c5e8ef437d2ce58dd3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\claude\\main\\result.json",
+      "path": "操作系统嵌套/grading/claude/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 8543,
+      "sha256": "1560bfc0769cacb3fefb6fa6999b261d0611215cfab2bbed56c30409a9caecbf"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 10839,
+      "sha256": "e0f44993d09775bb1b99dc981f8c8e98f124926b052c7b07dc912bb4cbccf1fd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10537,
+      "sha256": "2a658babb5d571ecaf31c31e5b0d377a365fb65e32455f4107ad2ded6ac03df1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\评分表_Opus5.5.md",
+      "path": "操作系统嵌套/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10707,
+      "sha256": "71487053b4b4ce35a978253c5e4d9a2026f17486d2d6f623661aeff6d7f0db82"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\.gitignore",
+      "path": "操作系统嵌套/submission/.gitignore.txt",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 26,
+      "sha256": "72021cac3ed837ddb68cc529d4aa59376f825a7952072ee208a44461626417c2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\assets\\wallpapers\\aurora.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/aurora.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1419,
+      "sha256": "920de0a40281d78f03b0cfc999f4349f019e643d9a2f1b7be901364455b2184b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\assets\\wallpapers\\dusk.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/dusk.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1255,
+      "sha256": "4de7b3eff1a2ca7001fd33cbda687619a99f91547d4b649184440da68c984270"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\assets\\wallpapers\\landscape.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/landscape.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4965,
+      "sha256": "d37fe9a1763d3b3039063bf453839560ea1346f20dbc9a157b2865aa181d91ce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\assets\\wallpapers\\meadow.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/meadow.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1983,
+      "sha256": "6e0ee19eeecfec12a2be44c6cb223821343474ed28c6b5234e703befb3a78b84"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\index.html",
+      "path": "操作系统嵌套/submission/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 518,
+      "sha256": "abe807c2ea03c8ec112e226e0defced3b8853a63dfa13ccd4b97a0bbed418487"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\main.js",
+      "path": "操作系统嵌套/submission/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4805,
+      "sha256": "0162261c714d570adc5a46306f5f65aa0015f76f4af80e51a0e9f913de7a92a9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\charts.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/charts.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9953,
+      "sha256": "b5f5f71103168d3b8c538e20767288936b384f345650751886c5ef68d20f3073"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\charts.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/charts.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 78531,
+      "sha256": "83c425eaad9e87c4e18938938d690ff76a776fef220262a4ba3976195e4ccdd6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\charts\\chartdraw.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/charts/chartdraw.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9532,
+      "sha256": "6588806b42548d0080d426fb1236d5f255d218c58e8bac33e3e5375c42e97a85"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\charts\\chartdraw.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/charts/chartdraw.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30057,
+      "sha256": "0d585033c6db42e202c4ad8dba181b76d97a89e5d8daa2ee0cdf9cd36b04b54e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\charts\\chartrx.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/charts/chartrx.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2690,
+      "sha256": "0b9a1d45bd55a8bd68961c69eab4ea454429816bdcddf1f3296fd7cb0096c154"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\charts\\chartrx.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/charts/chartrx.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9312,
+      "sha256": "4b89ef6032fe9037d30ff5bb011da6edec404520896095cb92e5e8a895fb001d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\editor.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/editor.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9185,
+      "sha256": "a183bf64eec148db3007cad168b207269c36cd6b676658d6001a64bdf2d99434"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\editor.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/editor.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 76669,
+      "sha256": "ae1fa722678e1e3c8c4f666135e00b0e0f01ac5bf3904398451fcc90cfb9e663"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\files.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/files.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30099,
+      "sha256": "07e347a7ed1ca8fe9ca1a1d6b4eb946ddd694cfa7aefce9c4760c4c3e3682811"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\files.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/files.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 132887,
+      "sha256": "8cf8eef10edb790e8654e58f097ad9c9e06ecd06d6b9a3ffc6acd79c10011291"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/player.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 27173,
+      "sha256": "e1aebf9d33de7ae9949fd5f2c3b95267037bc95df028f1fbe770e0bafb9703e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/player.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 127714,
+      "sha256": "1fcf1753ef26eaf954f4531776528724a69cf2afcc7e44f9a86e39cf6c336d07"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\flight.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/player/flight.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10372,
+      "sha256": "33a4fe7357fe1b153ecd5037f1e6b527578b685f74442c9c68914eea853dc264"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\flight.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/player/flight.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 82096,
+      "sha256": "dfacfd8791b9cdb4539e5a68a63baa29966569d0d01a69f62c841856d83ba89e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\flightlib.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/player/flightlib.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 16835,
+      "sha256": "3bfcda5876ba7c56485bc4ce776578000dc2a2c391663d75393f98c531720d3a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\flightlib.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/player/flightlib.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 52126,
+      "sha256": "a2cf8255065203e8fde17c3646b28187539abcf3ad5c0e0c903d82cb3727860f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\fx.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/player/fx.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2948,
+      "sha256": "08ffa5353fd32182c6012a4dd4c904d7785eb8b3ad2400c32ca88dec5e05ac4f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\fx.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/player/fx.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10690,
+      "sha256": "5c06dd55db4d5e3408a261ab75711ef29eabaf603c8c76c00527e2ace6622669"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\timeline.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/player/timeline.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2514,
+      "sha256": "d52ebc704426d7beb216c79f64039b2beeda7964fd4dcc43a83768121d2ce194"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\player\\timeline.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/player/timeline.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10126,
+      "sha256": "9c52f7be44a47bebc69c89a9f65a11f1efdca3336c5125b69536edeb19347944"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\settings.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/settings.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6125,
+      "sha256": "706a33ed214c9cb005d8b55755473f3ca0110c2ac542f3b17cd30dddb5382db3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\settings.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/settings.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 68838,
+      "sha256": "2b5fa5df77eab6b648e980613519f5ad202ddf8a7f7a9d02022075f3bcf23c3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\systems.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/systems.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11351,
+      "sha256": "1b568e2d03235a9670b407c3d838a90b9db92a1a3c4e6097f369d30fc118a2bc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\systems.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/systems.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 82409,
+      "sha256": "e12524ab8800814466cc698c9c6c5ae85cbd0ce42155abe48ab3695b5617bd99"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\tasks.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/tasks.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13020,
+      "sha256": "52ecab9ee38a78ed8075215d037e32da93b7ca69bb26358468976720746621c7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\tasks.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/tasks.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 88323,
+      "sha256": "2b984e67ac709878f2c8500e9b3119f40bc1d87974b87b6398ea1e41ddaf6562"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\widgets.ns",
+      "path": "操作系统嵌套/submission/ns/Apps/widgets.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11539,
+      "sha256": "291497b72a2e52cd0e3b1d9f893df34bf976e655db74971a01602a348888b6ea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Apps\\widgets.nsx",
+      "path": "操作系统嵌套/submission/ns/Apps/widgets.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 84321,
+      "sha256": "70e2a934a56c38858385780a7392821ee9184fbbc401381287362c4dd90c2b28"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Demo\\helicopter-24.scene",
+      "path": "操作系统嵌套/submission/ns/Demo/helicopter-24.scene",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 95985,
+      "sha256": "a659f3ffffade491b16c5c3474b85d9d9b4a9d363f8151915dfe1167f5387cbf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Demo\\sample.sheet",
+      "path": "操作系统嵌套/submission/ns/Demo/sample.sheet",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 304,
+      "sha256": "c74ea4f4a884e23aa2d760126834e7421166a2f92e9319ba5a23c7704a128f70"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Documents\\欢迎.txt",
+      "path": "操作系统嵌套/submission/ns/Documents/欢迎.txt",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 227,
+      "sha256": "9e7b574476f0f96e1a71305091de1cec54307e2e48c62276cddf853124102dc4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\busy.ns",
+      "path": "操作系统嵌套/submission/ns/Programs/busy.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 213,
+      "sha256": "7689241a366abbfd0c9e235b0ed401cecb8efb1dbba1a358ba837369034632cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\busy.nsx",
+      "path": "操作系统嵌套/submission/ns/Programs/busy.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3833,
+      "sha256": "d8e7812630dbb763cd77bdac8dcb77f961d979032eb6d02b9ecb09fccfbf6554"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\flightctl.ns",
+      "path": "操作系统嵌套/submission/ns/Programs/flightctl.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4222,
+      "sha256": "bda3933208b953a7adcf19faca3e2e5e7fc64bf3f1bdbbbbdaaa6d1b23004567"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\flightctl.nsx",
+      "path": "操作系统嵌套/submission/ns/Programs/flightctl.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11627,
+      "sha256": "943b7b24f5b5baf672e426030222f5aba538eee1709a5e708b8708ca74fdaa39"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\msg-recv.ns",
+      "path": "操作系统嵌套/submission/ns/Programs/msg-recv.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 285,
+      "sha256": "3b4cf2ed764f898740823d1636d18c85b3e6aecd2dbd2e116b0bd059c3f0c91b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\msg-recv.nsx",
+      "path": "操作系统嵌套/submission/ns/Programs/msg-recv.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4027,
+      "sha256": "6222b6d2b0bbf86540ff8a3e667716bad7d39bf932e6ee5dfbfb5a671e5f4449"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\msg-send.ns",
+      "path": "操作系统嵌套/submission/ns/Programs/msg-send.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 435,
+      "sha256": "42d385686fc09fcd39d36313034029b38e7fe5da450775fe5c8e5b2f695e0da2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\msg-send.nsx",
+      "path": "操作系统嵌套/submission/ns/Programs/msg-send.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4523,
+      "sha256": "647670fc2a88f34ef8ddecc0f73e5b8ba25e622c15f5beed9395a79af61830f7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\sum.ns",
+      "path": "操作系统嵌套/submission/ns/Programs/sum.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 253,
+      "sha256": "e2253dd629782e78507df7aa3d6e9e106cab5644613731963ee7407513e769ba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Programs\\sum.nsx",
+      "path": "操作系统嵌套/submission/ns/Programs/sum.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4130,
+      "sha256": "1952157f869300832f34b28f6d7e871358347c10d1e1af36f321cbdda439e9f7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\Recycle\\.index",
+      "path": "操作系统嵌套/submission/ns/Recycle/.index",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2,
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\apps.json",
+      "path": "操作系统嵌套/submission/ns/System/apps.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2772,
+      "sha256": "b09e3d6e3ef76931a12495b158bc7a25ebdbe22600d4784a1f9140fbe2ab5335"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\compiler.ns",
+      "path": "操作系统嵌套/submission/ns/System/compiler.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 20534,
+      "sha256": "d990be8881b360e8ee83b77b921ad0a3ae2505d08c6ca341f9e60b229d973310"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\compiler.nsx",
+      "path": "操作系统嵌套/submission/ns/System/compiler.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 52968,
+      "sha256": "125797ac3a4e4dc8dd0a6dc871b882d60c6666355f1d0f1d102f9d47d8a9467b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\kernel.ns",
+      "path": "操作系统嵌套/submission/ns/System/kernel.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 47160,
+      "sha256": "867891c332f5c27845dd7816365843cf0b23b122b89e4d077cc9b3852e8297bf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\kernel.nsx",
+      "path": "操作系统嵌套/submission/ns/System/kernel.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 117781,
+      "sha256": "6a82da8d4efc1ed4fc178672bf2c9180e61507704356f9a61d946096069732ea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\lib\\sys.ns",
+      "path": "操作系统嵌套/submission/ns/System/lib/sys.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1481,
+      "sha256": "430e29fad36890fbba58e74bcba00575f2d755a8223433104a8c8464191311c7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\lib\\ui.ns",
+      "path": "操作系统嵌套/submission/ns/System/lib/ui.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17921,
+      "sha256": "6d714f6fae8d4396b0f05e6018d02257c8a35d2d456ab7140c72e066ca0fffc3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\wm.ns",
+      "path": "操作系统嵌套/submission/ns/System/wm.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 53203,
+      "sha256": "55bb3962fe29f9bd8fe64aa18c25907b7f021d5a80c05f6d27f7e62af7cb450e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\ns\\System\\wm.nsx",
+      "path": "操作系统嵌套/submission/ns/System/wm.nsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 195981,
+      "sha256": "1de36a22bc57b30043a2a7d26ebe6da5bda0b41565509522073faaa12e5ea556"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6108,
+      "sha256": "e7258f29b0d46a150b252b2c19938e93d4fbba5bc04f627c193f6dc890066795"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 279,
+      "sha256": "49dc6260aed2af66473ebdc66ff1cb495737afc31d5cea7b424998b97362a091"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\preload.js",
+      "path": "操作系统嵌套/submission/preload.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 834,
+      "sha256": "02e7bb309b263be74eedb5f8e603b37887e9f9f45e90fcd838a7f025f70675a2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\app.js",
+      "path": "操作系统嵌套/submission/src/host/app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4969,
+      "sha256": "3f409b369648a3ece1a83efc692a8c701ea22d5738ab237c9c261e9ae9110b66"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\browser.js",
+      "path": "操作系统嵌套/submission/src/host/browser.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13616,
+      "sha256": "444409e4a854ab1c45e6c4fd2267a8d066aa93e051cc3308488f31d7922fe67b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\compiler.js",
+      "path": "操作系统嵌套/submission/src/host/compiler.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 19517,
+      "sha256": "678dd77f2061c9334ebafe5634edc214f33832f53b021a9f74b58bfd8683c8ed"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\data.js",
+      "path": "操作系统嵌套/submission/src/host/data.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4546,
+      "sha256": "a537163c258acb5b7881eb2011fdb1c39569d0268dc511e1dacdf932023c40a7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\display.js",
+      "path": "操作系统嵌套/submission/src/host/display.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 25621,
+      "sha256": "cd259ea5c6b4131ef8c6f03c49717f862bcd7fb38fb586d55fb2fcc0745ba0e9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\icons.js",
+      "path": "操作系统嵌套/submission/src/host/icons.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6679,
+      "sha256": "3e3edc4480392c7c4fe28eb51beaa6ca164f0befbc877a011ee619ca2b9812c5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\machine.js",
+      "path": "操作系统嵌套/submission/src/host/machine.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17158,
+      "sha256": "7cb38470e32a35541e6cfe0117b933ea65edb2fbf23106b888bc996b45be8092"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\natives.js",
+      "path": "操作系统嵌套/submission/src/host/natives.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8159,
+      "sha256": "e6388942b4a34d60dbb8cf6121baf5be059eee73e6698547571c134728c01bce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\render3d.js",
+      "path": "操作系统嵌套/submission/src/host/render3d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30058,
+      "sha256": "1188eb70020a21cfae850c2a0e2a428ccd53b2a3768fe00d55ce4a36bc8e8e12"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\services.js",
+      "path": "操作系统嵌套/submission/src/host/services.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3975,
+      "sha256": "b48d5876e55bbb5226fb0c1c0982e813588c9f36c9971592262653eef3f9bb21"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\sheet.js",
+      "path": "操作系统嵌套/submission/src/host/sheet.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 33899,
+      "sha256": "38b96d4ce2f67036d2c07d96220acc470c10c0294894c4d916d4bb65ccae69cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\snapshot.js",
+      "path": "操作系统嵌套/submission/src/host/snapshot.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11654,
+      "sha256": "9650bb7fe722a8a30fed5d42a39da4844536d1d90fe5a5102f4967fdecd4c29a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\host\\vm.js",
+      "path": "操作系统嵌套/submission/src/host/vm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 31842,
+      "sha256": "eca6680d25a65af4757a51590a3110d9712a62ffc173e51b21e297d1b340812b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\package.json",
+      "path": "操作系统嵌套/submission/src/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18,
+      "sha256": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\style.css",
+      "path": "操作系统嵌套/submission/src/style.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1880,
+      "sha256": "d3945489ae5022227d9e4982cba3e0b9a30143f7b51ff169ac106aab9b42d1b3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\bake-record.mjs",
+      "path": "操作系统嵌套/submission/tools/bake-record.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2396,
+      "sha256": "373a82fa390599e1ea651fd4ac9b2f4bd5f9fa9e9a5ac29a9314d4a5c615b923"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\bake.ns",
+      "path": "操作系统嵌套/submission/tools/bake.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3694,
+      "sha256": "a1a6db13d99b04c25238429677d24bb6fd0cccc5e84ec8ad5106e1fd4819b964"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\boottest.mjs",
+      "path": "操作系统嵌套/submission/tools/boottest.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1866,
+      "sha256": "db65b045553537a6b5c07bbe27722f5f7dadbd4a4cc9ee890f181eb3a8d25383"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\build.mjs",
+      "path": "操作系统嵌套/submission/tools/build.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2488,
+      "sha256": "c130cf8f8ed64a58382239b51cc04559270af2ad2f6bf6340c5a55347cff6e0d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\cdp.mjs",
+      "path": "操作系统嵌套/submission/tools/cdp.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4624,
+      "sha256": "8d6f47633f1eb1cb8d424385614d50066b5784db158385b11441b751f4edfd82"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\dev-restart.ps1",
+      "path": "操作系统嵌套/submission/tools/dev-restart.ps1",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1004,
+      "sha256": "8097614dacb325760f387abe339c8f738639eee2633e3ab5dd327adf123631d7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\dump.mjs",
+      "path": "操作系统嵌套/submission/tools/dump.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 528,
+      "sha256": "87f7b64dabe11e945a0f59e5e62ca485c942a8d2478ea2463b00d56bfa4e3a2b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\e2e-chart.mjs",
+      "path": "操作系统嵌套/submission/tools/e2e-chart.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1950,
+      "sha256": "40b7bb345844689555eec39ebc2423290e3983d2c7d88c1bb0158edc92d7fdce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\e2e-nest.mjs",
+      "path": "操作系统嵌套/submission/tools/e2e-nest.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1023,
+      "sha256": "7c1a064f691ef7e4483e73948c8048c8c0404ae316d94af3dbe54b4e23ba0230"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\e2e-proj.mjs",
+      "path": "操作系统嵌套/submission/tools/e2e-proj.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1545,
+      "sha256": "15760827d2b1ec7f33735595442e4e05505295fe04c3ccf1d347ea57ddc6aafa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\gen-scene.mjs",
+      "path": "操作系统嵌套/submission/tools/gen-scene.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13183,
+      "sha256": "ccae57582158529d901e574e8dd594585088f934d64aba25db60c608cf7528b8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\image.mjs",
+      "path": "操作系统嵌套/submission/tools/image.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 636,
+      "sha256": "3ff72649c4c241f63339fdb7b5695a632edcec9ed6ce4aec762e297a84827eee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\live-test.mjs",
+      "path": "操作系统嵌套/submission/tools/live-test.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3246,
+      "sha256": "48b31584eca1b80b9c5a38d429f6550c35b5b8a3d6fe106ca3cac88a517251ab"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\nsc.mjs",
+      "path": "操作系统嵌套/submission/tools/nsc.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1776,
+      "sha256": "a4b2f82310d97493bf979a606a6e116b12319b695de414f82fa9ff5a5e83de26"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\charts\\01-charts.ns",
+      "path": "操作系统嵌套/submission/tools/parts/charts/01-charts.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9953,
+      "sha256": "b5f5f71103168d3b8c538e20767288936b384f345650751886c5ef68d20f3073"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\editor\\01-editor.ns",
+      "path": "操作系统嵌套/submission/tools/parts/editor/01-editor.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9185,
+      "sha256": "a183bf64eec148db3007cad168b207269c36cd6b676658d6001a64bdf2d99434"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\files\\01-files.ns",
+      "path": "操作系统嵌套/submission/tools/parts/files/01-files.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30099,
+      "sha256": "07e347a7ed1ca8fe9ca1a1d6b4eb946ddd694cfa7aefce9c4760c4c3e3682811"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\kernel\\01-base.ns",
+      "path": "操作系统嵌套/submission/tools/parts/kernel/01-base.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13795,
+      "sha256": "6da40c0e81a03bc650d2ece13126f4e23b588978e2bb6b3bb058bbaf43be8a0f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\kernel\\02-syscalls.ns",
+      "path": "操作系统嵌套/submission/tools/parts/kernel/02-syscalls.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 12988,
+      "sha256": "8fa6d6826382a7f9e2b4a34dad4f66101e8911305f3de5bcbd8051db83165c84"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\kernel\\03-child.ns",
+      "path": "操作系统嵌套/submission/tools/parts/kernel/03-child.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18489,
+      "sha256": "071800c0864662ecd1cca361ec443e0910c10259de87128be9b2570ae52c4211"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\kernel\\04-main.ns",
+      "path": "操作系统嵌套/submission/tools/parts/kernel/04-main.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1885,
+      "sha256": "b37fed7a68763131ac8e5083d3f6f8d175d5dd3a45fae4b2435c7439c0ec78e5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\player\\01-player.ns",
+      "path": "操作系统嵌套/submission/tools/parts/player/01-player.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 27173,
+      "sha256": "e1aebf9d33de7ae9949fd5f2c3b95267037bc95df028f1fbe770e0bafb9703e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\settings\\01-settings.ns",
+      "path": "操作系统嵌套/submission/tools/parts/settings/01-settings.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6125,
+      "sha256": "706a33ed214c9cb005d8b55755473f3ca0110c2ac542f3b17cd30dddb5382db3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\systems\\01-systems.ns",
+      "path": "操作系统嵌套/submission/tools/parts/systems/01-systems.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11351,
+      "sha256": "1b568e2d03235a9670b407c3d838a90b9db92a1a3c4e6097f369d30fc118a2bc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\tasks\\01-tasks.ns",
+      "path": "操作系统嵌套/submission/tools/parts/tasks/01-tasks.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13020,
+      "sha256": "52ecab9ee38a78ed8075215d037e32da93b7ca69bb26358468976720746621c7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\widgets\\01-widgets.ns",
+      "path": "操作系统嵌套/submission/tools/parts/widgets/01-widgets.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11539,
+      "sha256": "291497b72a2e52cd0e3b1d9f893df34bf976e655db74971a01602a348888b6ea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\wm\\01-state.ns",
+      "path": "操作系统嵌套/submission/tools/parts/wm/01-state.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10070,
+      "sha256": "bdb15b8474d27e41587395024e62f60e88b3679dfe16280b777536f8b3658a25"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\wm\\02-draw.ns",
+      "path": "操作系统嵌套/submission/tools/parts/wm/02-draw.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17246,
+      "sha256": "7680982542b5236fac3d73872b5f3b03c8eccbb9a40174447aa461b3dd0dc763"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\wm\\03-popups.ns",
+      "path": "操作系统嵌套/submission/tools/parts/wm/03-popups.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11108,
+      "sha256": "3a01abca5d3c26af15cc05aa4d61b5b34256eb117983f3af5e364f341e31d495"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\parts\\wm\\04-input.ns",
+      "path": "操作系统嵌套/submission/tools/parts/wm/04-input.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14776,
+      "sha256": "44138d31c2431aa91c0340d31a5aa0f27458770b9c688ce1df3a3d7a30dc46ee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\selfhost.mjs",
+      "path": "操作系统嵌套/submission/tools/selfhost.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3471,
+      "sha256": "d6585bbc38c894f1c57bbe23d668620a701ed4c84ee017aa9c00c700d38ab264"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\t1.ns",
+      "path": "操作系统嵌套/submission/tools/t1.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 657,
+      "sha256": "3b198df171e13565894e6c16cfaa77c0480ce7126ea71eb40612269d264c3630"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\tools\\t2.ns",
+      "path": "操作系统嵌套/submission/tools/t2.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 70,
+      "sha256": "3c73990a82d5df304a785716a0d54f68c746c33d487d28acdc402e5ad2c410d2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 469,
+      "sha256": "d1ee6ceca7238aa9dcb9b1bce3df3a97c11cbd6d593679d0634421f58fe75bad"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 4309,
+      "sha256": "e5a7c287afedebd810963ac804f01a1e61fbc49266b167ca15fd51b821050249"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1727,
+      "sha256": "5a2f438162397444f89eb26d60128f92dd8527610f24067d44f49b31e6905c98"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 27808,
+      "sha256": "86da5c161431f05c182e0b2d2593b2e3ba118e985a46f80124baf68ec67ccf2e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 498,
+      "sha256": "8c3c7e11720d497b6aa44c484516d81b82893c16e55d4df97227602aab9c2e16"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 6289,
+      "sha256": "41e225a8bdd45a1cb33f8adb7e8bd7da8c6a7b4ad0f66947482e26893512d33a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 1945,
+      "sha256": "6adf04de072e56d7a1aa4cafff5ae8967911f277b5bd77ad5c79a5675f24def4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 47163,
+      "sha256": "eab161061f6059faffe7a39805f07c74f45893797ca21b1789f0ed1cbc7475b7"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 491,
+      "sha256": "785964ac364412fe50b30bca35ee9c2f993740213e072492ef5cea442ef1c2f9"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 5351,
+      "sha256": "3053d4269ad755fdcec93269223a941944776f59ee02bef11c219615ad5615d4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3351,
+      "sha256": "2fd920d6e5bda54f57daa68750528b5b80e1f7fae92810ff3d7f3be6ed4e9a22"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第04题.md",
+      "path": "数学竞赛原创试题/submission/答案/第04题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5868,
+      "sha256": "06d374e99b9a5fc1895ee649967559223ff18946086976f080c9ffa6ac2b3bbb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5099,
+      "sha256": "9ddcbc1fed4349b66a80acf2eaad665b8aa51e7a2a6b29f9f21baa08fb0f0650"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第06题.md",
+      "path": "数学竞赛原创试题/submission/答案/第06题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4294,
+      "sha256": "e9bc04a2af9d7c2bddec48f1a9efd0a302341a04766ee974f93904d439697724"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第10题.md",
+      "path": "数学竞赛原创试题/submission/答案/第10题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3949,
+      "sha256": "907af4273d9651458cb1f277facfe07c465392dfe20e6c686e305059ff41c1e3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3611,
+      "sha256": "a33f8cd3a26d22296be669795621fed2ff7c60302646b42dd5130cd8252eb959"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第12题.md",
+      "path": "数学竞赛原创试题/submission/答案/第12题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4776,
+      "sha256": "f08ef338e85699f20c6d3ce490052c478175b8f64d1df7b68655ace1ab4be790"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第15题.md",
+      "path": "数学竞赛原创试题/submission/答案/第15题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4414,
+      "sha256": "6299e7874556375343c0cdbf368490dd037bad6af944ace3a52dc26d92e89134"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\答案\\第19题.md",
+      "path": "数学竞赛原创试题/submission/答案/第19题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5910,
+      "sha256": "52501f415eff8cd5dde74022321437ce88513fdb9a60c6801f9ec2ee679490a6"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 483,
+      "sha256": "b6ae48985da5631e1b683cb7f3930fd2002af3ad353f6fd7475657022230a68d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\claude\\main\\result.json",
+      "path": "星际战舰编队/grading/claude/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 6933,
+      "sha256": "538303c3300ce6083b489cc6a9b298ae110e775c7e36b506f5e99aa2a123d8fe"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 7802,
+      "sha256": "31e60671899077e655dee325fcb47f7612d8b9d704bf22e951764eff64ac209a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7222,
+      "sha256": "b4feb89392ecebc6c0269ee043f13ab010463e3f969ec02ad5c8b2387dd861ed"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\评分表_Opus5.5.md",
+      "path": "星际战舰编队/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7314,
+      "sha256": "1fdc87016e4b272a00a97b963d5b4efdacdef7654e7faecdff6cb49dfded4213"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 1741,
+      "sha256": "d14c36bf91e31a73fe04e79637134b6f74d6bb50240c6e000d2db82d6e64e06c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\frame.js",
+      "path": "星际战舰编队/submission/js/frame.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 5477,
+      "sha256": "2d9ed7a0eab23e0dbc968ec8b666ed3b3fbe16596cd8a67810101467dd8abff6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\fx.js",
+      "path": "星际战舰编队/submission/js/fx.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 27120,
+      "sha256": "e416b8c32a3632d666fe0f0914412b7a060f25be9c27d83ce98790a4bafad46d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\interiors.js",
+      "path": "星际战舰编队/submission/js/interiors.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 14730,
+      "sha256": "d5e95098b391518cb020a0aafe0505468180e10b38107df125c08ce2655cd5c0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4234,
+      "sha256": "5c423e5b55df632857c507fd4fa6a3e5582d976fba5ac6219c88c26e6eaf0271"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\mesh.js",
+      "path": "星际战舰编队/submission/js/mesh.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9884,
+      "sha256": "162633c274767a955c900b8daaa56bf37d5b6964b554621aca93c9fe2502c973"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\meteor.js",
+      "path": "星际战舰编队/submission/js/meteor.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 12072,
+      "sha256": "772396fc0f07f69426fad324b9682da9435ccbb6267c1bdbf7c740ea29ced2eb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\models.js",
+      "path": "星际战舰编队/submission/js/models.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 10431,
+      "sha256": "e6af22072fa9d611095fdb1123b899107c6bb46787573be33fb721f843708793"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\models2.js",
+      "path": "星际战舰编队/submission/js/models2.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 15574,
+      "sha256": "b3fed74c4891d5ecd41705efebd5a85420c73b92dcbc3052a980a5bdfaddd564"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\models3.js",
+      "path": "星际战舰编队/submission/js/models3.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9931,
+      "sha256": "846dcf898539123e15215508d392043c0651795591e76f4ea814c9c7dc8fae07"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\models4.js",
+      "path": "星际战舰编队/submission/js/models4.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 26512,
+      "sha256": "707a5364b4f4690c7207840a097850b6c0933e71153b7cdcff79a133e6a11947"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\render.js",
+      "path": "星际战舰编队/submission/js/render.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 24092,
+      "sha256": "d2aa86f9eaf1479197ebf615aca61b118134588cebca75cf1a0f80e8fe799105"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\scene.js",
+      "path": "星际战舰编队/submission/js/scene.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 5499,
+      "sha256": "557fd498d4d91053e6436ad4bc51aae57f1a2e62a32b82a0884440560e1d410b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\shaders.js",
+      "path": "星际战舰编队/submission/js/shaders.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 26864,
+      "sha256": "a86246cd31aa13e063cf7b59e987919c4e7bc0b94368dfd8b1d666eee588301f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\strike.js",
+      "path": "星际战舰编队/submission/js/strike.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 13996,
+      "sha256": "29926ba263058dd0f21a2d480241b35c98bbb779a70d46ba8450ddb2786525dc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\timeline.js",
+      "path": "星际战舰编队/submission/js/timeline.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4987,
+      "sha256": "47fc2022ae49f758e47fb06ece1e2ae56e69aed46a5efd31f65dc3185fa2ed41"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\util.js",
+      "path": "星际战舰编队/submission/js/util.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 6013,
+      "sha256": "b7a6da03785e72ffc2179bcbf02e5b8baaa62f6b3f74dd74d6384016d6a58cbe"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\voxel.js",
+      "path": "星际战舰编队/submission/js/voxel.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 11503,
+      "sha256": "efbdd3093f8f0a539cbd46ae1bc54eb316c504d8411ba44bd087f82b9950ae6c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\js\\world.js",
+      "path": "星际战舰编队/submission/js/world.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 5037,
+      "sha256": "c03597309b98f45765e4ed5ce2ccaa0d9a0051aef5c12929c4519fa62b7494e0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 2859,
+      "sha256": "8ef21cc59cb123df7a2fba682b49ec2ded7333871e55844579a2e0669e003047"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 482,
+      "sha256": "7d4a387974cb98fa9375e23bd42ee44c3725283f4434b62ed31254cb83eaf555"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 19546,
+      "sha256": "840f138fb88f5356b906f4db2992350b67491244202d32fd9ad4f4d55d66e934"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 2936,
+      "sha256": "c27433a0b781f7b5e00dbd01bda2b4fb7c2e419ea5e40a09ac86662f614cb76b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 5654,
+      "sha256": "86fc242ec117f6821d657141e5e351a5fc25b2007ddeaea6e787653d6d85b0da"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4537,
+      "sha256": "0b19912a66784b2d6527755054dbbabd1e5dad47b52a27c47f98f4b1d84dd7eb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2063,
+      "sha256": "ee5d4a5ebd5b9e9546fa1b3f874ca05eb6e4c2088f6b80839c52dc0a650e1743"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2517,
+      "sha256": "e207d2c1969d92e0b02bbdbeadaff6f77365c631a8cfe31ba32ddf0a83b37a98"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3324,
+      "sha256": "aba7efa8b255142b01ad4ffedfe7606357a66fbea03ebbc72209717d28811ae2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2852,
+      "sha256": "97a66da12462898da3b8bab2c8235cbfc878acc4a139bda981058c646307a905"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2692,
+      "sha256": "876d608a0f49668623f6da6230ae9fd3586365874f9831fac962b8a518c0384c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2764,
+      "sha256": "fe840f848ef4942e3c53c61ed2b8375c20fd9ed2ec76c3924e1228de6bf60824"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3137,
+      "sha256": "cc7923dd32ddd3d1793f4d739a2314861c4a27ee14af334b2178dfa250c1e6ea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2954,
+      "sha256": "7d66884f778fd655f2966ea9777da39c717f8839408823c013b1490687555765"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3529,
+      "sha256": "5db2eec2dd459950152d73528c16621e36ce05902e7a1dfe0ed531038d49dac1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 6035,
+      "sha256": "685175f6976c5a2dc78c02e18eab21b5d0c66a36a294a4a148a716e0a0430a8a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3052,
+      "sha256": "178b02c27c69568bb396a91e64b4200093e831f4a236b099ff122cec5fc05855"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2462,
+      "sha256": "08e987c3ea3710b80272e21a51568c146a2e1de02c173088451debf7fddeef59"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2870,
+      "sha256": "fd58974df20714510d7c967c9fb53627755eb797892fae476f30a9f0b32c1fd4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1727,
+      "sha256": "b7f7cc8498c3e1519ef05c13966e00d590e9f5785b6fdc20a8f5fce911ea6861"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1591,
+      "sha256": "5c517a44eeb0573316953269e77fbddba030bbec49147aae7179991377bb26ca"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1043,
+      "sha256": "8442747ff781092bab0d71824db71c3f86baf9786d2d46204e78935aad4e1d5a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2861,
+      "sha256": "928a4d33a888a4bc5be8380a3723d348c897a2c5e617439dbb3b04aef5aa7664"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 963,
+      "sha256": "6d3cf6b3c2d39a5e8f2502f6585945171f9474376a7f43b6bd3eeaaf40a0f28b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2805,
+      "sha256": "30e0fe4f21e0b3c34107ec311da9112358b7380be9b9bb30dab361b9f37c56e8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 567,
+      "sha256": "36dd04a9529691da8159bce45ccf15494f016148739e3740db2071f077986e05"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 567,
+      "sha256": "f39fa99543e3351dc08deee17295d2de8b8f6250cdf84137749447acdcc944aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 567,
+      "sha256": "ded249dc24d01841e9646a220628bbcb11bfe3c869b5efff459a1c7f2a3b3e82"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 567,
+      "sha256": "973edda392a78e1108806dcbc86516ce7bc41a2aec7a0afcd4ab8374692e8158"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 500,
+      "sha256": "6114b91a4904ffe4c5733e6e802a5e9cddd3f5243acb603b7337f5c7d823c182"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\claude\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/claude/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5573,
+      "sha256": "250088ea26319e151a90f4bb611580b0861eb63904efa43ea9f8015ef522b769"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6627,
+      "sha256": "9cb93cabcc3697efc3062b0aa52ba3e37d847c0408a36c63414331659fef5756"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4778,
+      "sha256": "63e04e00c2f58c9e457511b3e63e5c734ee3e424fd6626059de9bea30ed8a9e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\评分表_Opus5.5.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4910,
+      "sha256": "875f4f98330a716642e0893a3fe0728d6aa31bb12880ecc776393ac6968121dd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\damptest.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/damptest.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 890,
+      "sha256": "3094c40665b88beef2a75a48e92d6118bfedcc900537b8937e889f914e1023e5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\demotest.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/demotest.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1880,
+      "sha256": "e32ae9ff457e589113a77cd810085553f4d8435bb52ea5539c8fcfbace3d6d84"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\h.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/h.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2045,
+      "sha256": "6a428f1720a9512309b0602765ad81a83f46afeb79c2dd6c7b368c42f07437bd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\impact.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/impact.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2142,
+      "sha256": "fd6b8c7238359348b4399829fac50ea2302241f648bcf6fb7f253145510544b3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\load.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/load.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 590,
+      "sha256": "ed900cd94d27e154d36122ff39c976d927ee55fe987f953ef624875c6d1b1584"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\probe.html",
+      "path": "果冻冲击与造浪水槽/submission/dev/probe.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 515,
+      "sha256": "df24f3ec94f952cd29515243c6559a820813c106d7e2ba35642ef115e3d3d4d2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\sagtest.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/sagtest.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1065,
+      "sha256": "df9a9f1b43ddcc095304b1b4c2d23682782d423a312b060af536b0c9c6b2b746"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\simtest.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/simtest.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1409,
+      "sha256": "e24cd77fdaf7be43e94217add613bf9bdc20ec2105a96c88bfebb826ee7123e4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\dev\\snaptest.js",
+      "path": "果冻冲击与造浪水槽/submission/dev/snaptest.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1197,
+      "sha256": "e2e1185b1ba74c9d39747f321531603ae144f4416991227c8ee642ba37231439"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 9153,
+      "sha256": "6ad999f742804135ca13dc61982e533770e92ab94120cb1f589e0a534d72d864"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\app.js",
+      "path": "果冻冲击与造浪水槽/submission/js/app.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10418,
+      "sha256": "f840c9c8d21682abcd1ca8a237591dd7d8d2728257c52cbc85d62ecb01b7bd8c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\audio.js",
+      "path": "果冻冲击与造浪水槽/submission/js/audio.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6952,
+      "sha256": "2634d785d468a10781f4dc54509fe59e080350d08f9f4a8e880b1d67186a94a1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\core.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 33289,
+      "sha256": "b4ab546d755b9aba3aaadd028bd5ab652380076932678af06a2017b130b68074"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\demo.js",
+      "path": "果冻冲击与造浪水槽/submission/js/demo.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10889,
+      "sha256": "3ce34306e631989b3619125a6bb1f281b600a1afeef0e75bfc617fbdc30833e2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\jelly_scene.js",
+      "path": "果冻冲击与造浪水槽/submission/js/jelly_scene.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 28550,
+      "sha256": "b8b3680e95cefd37dad8288ca5f1a04bd96fc29243c1a118231d784961c88e46"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\jelly_sim.js",
+      "path": "果冻冲击与造浪水槽/submission/js/jelly_sim.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 42244,
+      "sha256": "39221e736f6974c2de10e951a3914456574d2a7a3edcc84878a0bfcb0d34b5d9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\stage.js",
+      "path": "果冻冲击与造浪水槽/submission/js/stage.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 12120,
+      "sha256": "d3a99148438b751145d32881c1d16fd23021509764a7dac893cd6ad14a1c94b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\water_scene.js",
+      "path": "果冻冲击与造浪水槽/submission/js/water_scene.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 30954,
+      "sha256": "bf6b09b77b4456a1ed9ceabdcf49afddfeb6a3f466eb5ea854c2108cdb277500"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\js\\water_sim.js",
+      "path": "果冻冲击与造浪水槽/submission/js/water_sim.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 33864,
+      "sha256": "8dd6170c02536c19b36f8e91a280bf3028e299645725db97c2b73af738e2b344"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 453,
+      "sha256": "2e2349329169e4c2cc48f898b21491d229fe6cf15a711a5beb2a6360e2f64d3d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 2720,
+      "sha256": "b02aa50ff5dbb16d108f8b382e78f8105cda941555786a35f7d4b0e82ffe6ce0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 1304,
+      "sha256": "6c1ed5db5bc7bf6be958b31f616d3130fca57dedf0fdb5a783ccf18023968460"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\答案\\第01题.json",
+      "path": "鲁班锁拆解/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 637,
+      "sha256": "e030544cf325ec99a88353eff146c007697efb692504e035cc3e10c78b4429d8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\答案\\第02题.json",
+      "path": "鲁班锁拆解/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 722,
+      "sha256": "46bac716810f206838925cb146ca8164d01aaf231d5bfdabde559e44d1d6827e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\答案\\第03题.json",
+      "path": "鲁班锁拆解/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1004,
+      "sha256": "42a4bc3ab6ab66bd6d90fc1509f2cc6a31b3a89ee232f79b6f444eb906de6447"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a1000.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a1000.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a64.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a64.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a64s.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_a64s.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ao.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ao.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_b.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_b256.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_b256.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_b64.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_b64.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c32.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_c32.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_cand.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_cand.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_cs.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_cs.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ct6.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ct6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_edge",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_edge.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_f4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_k.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_k.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_l4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_l4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_lb10.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_lb10.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_lf4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_lf4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_m128.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_m128.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_m512.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_m512.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_n.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_n.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_noao.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_noao.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_p1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_p1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_p2048.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_p2048.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_p6000.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_p6000.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pool.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pool.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pp3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pr.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_pr.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_q1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_q1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_q2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_q2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_q3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_q3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_r1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_r1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_r2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_r2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_r3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_r3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_run.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_s0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_s0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_s10.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_s10.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_s6.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_s6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_sh.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_sh.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_skip.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_skip.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_st.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_st.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_t.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_t.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_tube.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_tube.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_u0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_u0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_u1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_u1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ua.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ua.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ub.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_ub.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_uc.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_uc.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_up.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_up.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_v.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\dev_v.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\err_timed.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\grader.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\out_ref_timed.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\ref_test.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\ref_test.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\ref_timed.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\ref_timed.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\ref_timed.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\sass_all.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\sass_dump.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_ao_ball_experiment.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup1.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup2.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup3.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup4_pool.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup5_cand.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup6_shadow.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup7_tube.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_backup8_pre_ao.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_flat_experiment.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\solution_ref_copy.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\形式化证明题\\形式化证明题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\src\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_c2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_c2r5.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_f0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_f1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_ls.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_n1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_n2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_r0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_v3a.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\b_v3b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\bot_dbg.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\bot_tmp.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_f1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_f2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_f3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_f4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_h1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_h2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_h3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_p1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_p2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_p3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_p4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_r1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_r2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\cfg_r3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\g_e0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\g_e1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\g_e2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\g_e3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\h0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\h1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\i_i0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\i_i1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\i_i2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\l_add.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\l_hub.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\l_rm.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\logsB",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\ls_o1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\ls_o2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\o_a.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\old",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_base.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_base2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_lock.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_lock2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_r10.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_r10m3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_r13.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\p_r13n13.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\pm_a.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\pm_b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\pm_c.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\pm_d.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\pm_e.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\q_a.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\q_b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\q_c.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\q_d.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\q_n0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\q_n3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\q_n6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\r_x0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\r_x1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\r_x2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\r_x3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\r_y1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\r_y2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\r_y3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\res1.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\res2.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\res3.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\res4.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\s_t30.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\s_t30b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\simtest.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\sparring_weak.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\strong.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\strong2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\timing.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\tmp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\tools",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\weak.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数字电路仿真器加速\\work",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\机械结构重建.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\笔记",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\机械结构重建\\预览",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\记录",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Sonnet5.5\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": []
+}

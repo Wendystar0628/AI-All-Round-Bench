@@ -1,0 +1,22 @@
+{
+  "problem": "08",
+  "parts": [
+    {
+      "name": "1",
+      "title": "交错隔板双层润滑箱",
+      "features": [
+        {"type":"extrude","plane":"XZ","origin":[0,64,0],"loops":[{"path":[[-4,0],[84,0],[84,6],[80,6],[80,42],[0,42],[0,6],[-4,6]]}],"depth":68},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,42],"loops":[{"rect":[6,6,24,54]}],"depth":-28},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,42],"loops":[{"rect":[29,6,51,54]}],"depth":-14},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,24],"loops":[{"rect":[29,6,51,54]}],"depth":-12},
+        {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,42],"loops":[{"rect":[56,6,74,54]}],"depth":-28},
+        {"type":"hole","plane":"XY","origin":[0,0,6],"at":[[0,0],[80,0],[0,60],[80,60]],"d":8,"through":true},
+        {"type":"hole","plane":"XZ","origin":[0,60,0],"at":[[18,22]],"d":24,"depth":20,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,60,0],"at":[[66,16]],"d":20,"depth":20,"reverse":true},
+        {"type":"hole","plane":"YZ","origin":[80,0,0],"at":[[42,28]],"d":16,"depth":20},
+        {"type":"hole","plane":"XY","origin":[0,0,42],"at":[[40,30]],"d":18,"depth":28},
+        {"type":"fillet","radius":2,"edges":[[-4,-4,3]]}
+      ]
+    }
+  ]
+}

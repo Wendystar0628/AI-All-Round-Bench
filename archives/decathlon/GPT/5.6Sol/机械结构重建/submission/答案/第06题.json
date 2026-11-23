@@ -1,0 +1,24 @@
+{
+  "problem":"06",
+  "parts":[
+    {
+      "name":"1","title":"双斜接口差压控制块",
+      "features":[
+        {"type":"extrude","plane":"XY","origin":[0,0,-2],"loops":[{"rect":[-5,-3,95,43]}],"depth":2},
+        {"type":"extrude","plane":"XZ","loops":[{"path":[[0,0],[90,0],[90,18],[72,36],[18,36],[0,18]]}],"depth":-40},
+        {"type":"extrude","plane":"YZ","origin":[-6,0,0],"loops":[{"circle":[20,14],"d":40}],"depth":6,"name":"横向大接口"},
+        {"type":"hole","plane":"ZY","origin":[0,0,0],"at":[14,20],"d":36,"through":true,"reverse":true},
+        {"type":"extrude","plane":"XZ","origin":[0,-6,0],"loops":[{"circle":[45,26],"d":30}],"depth":-6,"name":"前向上接口"},
+        {"type":"hole","plane":"XZ","origin":[0,-6,0],"at":[45,26],"d":18,"through":true},
+        {"type":"hole","plane":"XY","origin":[0,0,36],"at":[45,20],"d":12,"through":true},
+        {"type":"hole","plane":{"origin":[72,20,36],"normal":[0.707106781,0,0.707106781],"x_dir":[0,1,0]},"at":[0,0],"d":16,"depth":50,"name":"右45度斜孔"},
+        {"type":"hole","plane":{"origin":[18,20,36],"normal":[-0.707106781,0,0.707106781],"x_dir":[0,1,0]},"at":[0,0],"d":14,"depth":48,"name":"左45度斜孔"},
+        {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[[22,14],[68,14]],"d":8,"through":true},
+        {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[0,0],[90,0],[0,40],[90,40]],"d":7,"through":true,"reverse":true},
+        {"type":"hole","plane":"XY","origin":[0,0,36],"at":[[26,8],[64,32]],"d":6,"through":true},
+        {"type":"fillet","radius":2,"edges":[[-5,-3,-1]]},
+        {"type":"chamfer","distance":1,"edges":[[45,-3,-2]]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+// 消息发送：向进程 to 依次发送 count 条内容为 text 的消息。参数 {to, text, count}。
+let A = args();
+let to = A.to;
+let text = A.text == nil ? "hello" : A.text;
+let count = A.count == nil ? 3 : A.count;
+for (let i = 1; i <= count; i++) {
+  let r = send(to, text + " #" + i);
+  if (r != true) { print("发送失败：" + r.err); exit(1); }
+  print("已发送给 " + to + "：" + text + " #" + i);
+  sleep(0.2);
+}

@@ -1,0 +1,41 @@
+{
+  "problem": "02",
+  "parts": [
+    {"name": "1", "title": "夹具底座", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 200, 110]}], "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 20], "at": [[12, 12], [188, 12], [12, 98], [188, 98]], "d": 9, "through": true, "cbore": {"d": 15, "depth": 6}},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 20], "at": [[35, 25], [145, 85]], "d": 18, "depth": 20},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 10]]},
+      {"type": "chamfer", "distance": 1, "edges": [[100, 0, 0]]}
+    ]},
+    {"name": "2", "title": "左阶梯导柱", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [35, 25, 12], "loops": [{"circle": [0, 0], "d": 18}], "depth": 8},
+      {"type": "extrude", "plane": "XY", "origin": [35, 25, 20], "loops": [{"circle": [0, 0], "d": 16}], "depth": 52},
+      {"type": "extrude", "plane": "XY", "origin": [35, 25, 72], "loops": [{"circle": [0, 0], "d": 12}], "depth": 28}
+    ]},
+    {"name": "3", "title": "右阶梯导柱", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [145, 85, 12], "loops": [{"circle": [0, 0], "d": 18}], "depth": 8},
+      {"type": "extrude", "plane": "XY", "origin": [145, 85, 20], "loops": [{"circle": [0, 0], "d": 16}], "depth": 52},
+      {"type": "extrude", "plane": "XY", "origin": [145, 85, 72], "loops": [{"circle": [0, 0], "d": 12}], "depth": 28}
+    ]},
+    {"name": "4", "title": "上横梁", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 84], "loops": [{"rect": [15, 5, 165, 105]}], "depth": 16},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [[35, 25], [145, 85]], "d": 12, "depth": 16}
+    ]},
+    {"name": "5", "title": "双孔滑动压头", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 48], "loops": [{"rect": [20, 10, 160, 100]}], "depth": 14},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 62], "at": [[35, 25], [145, 85]], "d": 16, "depth": 14}
+    ]},
+    {"name": "6", "title": "驱动斜楔", "features": [
+      {"type": "extrude", "plane": "XZ", "origin": [0, 20, 0], "loops": [{"path": [[60, 62], [90, 62], [90, 80], [60, 72]]}], "depth": 20}
+    ]},
+    {"name": "7", "title": "右止推座", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [168, 0, 0], "loops": [{"rect": [0, 19, 24, 43]}], "depth": 40},
+      {"type": "hole", "plane": "YZ", "origin": [168, 0, 0], "at": [[31, 20]], "d": 18, "depth": 24, "reverse": true}
+    ]},
+    {"name": "8", "title": "调节推轴", "features": [
+      {"type": "extrude", "plane": "YZ", "origin": [120, 31, 20], "loops": [{"circle": [0, 0], "d": 8}], "depth": 72},
+      {"type": "extrude", "plane": "YZ", "origin": [150, 31, 20], "loops": [{"circle": [0, 0], "d": 18}], "depth": 12}
+    ]}
+  ]
+}

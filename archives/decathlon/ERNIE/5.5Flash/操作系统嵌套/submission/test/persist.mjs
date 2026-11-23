@@ -1,0 +1,25 @@
+import puppeteer from 'puppeteer-core';
+const browser = await puppeteer.connect({ browserURL: 'http://127.0.0.1:19106', defaultViewport: null });
+const page = (await browser.pages()).find(p => p.url().includes('18106'));
+const errs = [];
+page.on('console', msg => { if (msg.type() === 'error') { errs.push(msg.text()); console.log('CONSOLE', msg.text()); } });
+page.on('pageerror', err => { errs.push(err.message); console.log('PAGEERROR', err.message, err.stack?.slice(0,600)); });
+await page.reload({ waitUntil: 'load' });
+await new Promise(r => setTimeout(r, 800));
+await page.evaluate(() => window.bench.reset());
+await new Promise(r => setTimeout(r, 300));
+await page.evaluate(async () => {
+  const os = window.__os; const c = os.createChild(os.root); await new Promise(r => setTimeout(r, 400));
+  const p = await os.openApp(c, 'player'); await new Promise(r => setTimeout(r, 600)); p.app.togglePlay();
+  await new Promise(r => setTimeout(r, 1500));
+  await os.saveState();
+});
+const before = await page.evaluate(() => ({ time: [...window.__os.windows.values()].find(w=>w.appId==='player').app.time, systems: [...window.__os.systems.values()].map(s=>[s.id,s.parentId]), windows: [...window.__os.windows.values()].map(w=>[w.id,w.appId,w.systemId]) }));
+await page.reload({ waitUntil: 'load' });
+await new Promise(r => setTimeout(r, 2000));
+const after = await page.evaluate(() => ({ time: [...window.__os.windows.values()].find(w=>w.appId==='player')?.app.time, systems: [...window.__os.systems.values()].map(s=>[s.id,s.parentId]), windows: [...window.__os.windows.values()].map(w=>[w.id,w.appId,w.systemId]), inspect: window.bench.inspect(), errors: window.__os.root.errorLog }));
+console.log('BEFORE', JSON.stringify(before, null, 2));
+console.log('AFTER', JSON.stringify(after, null, 2));
+console.log('ERRS', errs.slice(0, 10));
+await page.screenshot({ path: 'C:\\Users\\AIAgent\\AppData\\Local\\Temp\\opencode\\reload.png' });
+await browser.disconnect();

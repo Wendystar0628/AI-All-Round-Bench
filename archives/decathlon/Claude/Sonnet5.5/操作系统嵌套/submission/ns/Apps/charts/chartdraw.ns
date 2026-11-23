@@ -1,0 +1,176 @@
+// chartdraw.ns — 图表更新进程：用接收进程送来的完整选区计算坐标轴、刻度、柱/折线，并让数值在“版本更新”之间用
+// 所属系统的虚拟时间做过渡；结果（二维图形指令）交给图表工作台的界面进程提交。源窗口与投送窗口各按自己的尺寸取得一份。
+let A = args();
+let APP = A.app;
+let D = {cfg: {label: "A", series: ["D"], type: "bar", title: ""}, data: nil, from: nil, to: nil, t0: 0, dur: 0.5, views: {}, sel: -1, version: 0, hover: -1, dirty: true, range_c1: 0};
+let PAL = ["#8b6cff", "#ffc83d", "#2fd0b5", "#ff7a6b", "#4aa8ff", "#f472b6", "#4ade80"];
+fn col_index(s) { return ord(upper(s), 0) - 65; }
+fn is_num(v) { return typeof(v) == "num"; }
+fn nice(v) {
+  if (v <= 0) { return 1; }
+  let e = pow(10, floor(log(v) / 2.302585));
+  let f = v / e;
+  let n = f <= 1 ? 1 : (f <= 2 ? 2 : (f <= 5 ? 5 : 10));
+  return n * e;
+}
+// 从选区矩阵中取出 标签 + 各数值列
+fn extract() {
+  let vals = D.data.values; let c1 = D.range_c1;
+  let cfg = D.cfg; let li = col_index(cfg.label) - c1;
+  let labels = []; let series = [];
+  let r0 = 0;
+  // 第一行如果数值列都是文本，视为表头
+  let header = false;
+  if (len(vals) > 0) {
+    header = true;
+    for (let sc of cfg.series) { let ci = col_index(sc) - c1; if (ci >= 0 && ci < len(vals[0]) && is_num(vals[0][ci])) { header = false; } }
+  }
+  if (header) { r0 = 1; }
+  for (let j = 0; j < len(cfg.series); j++) {
+    let ci = col_index(cfg.series[j]) - c1;
+    let name = header && ci >= 0 && ci < len(vals[0]) && vals[0][ci] != nil ? str(vals[0][ci]) : "系列 " + (j + 1) + "（" + cfg.series[j] + " 列）";
+    push(series, {name: name, values: [], col: cfg.series[j]});
+  }
+  for (let r = r0; r < len(vals); r++) {
+    let lv = li >= 0 && li < len(vals[r]) ? vals[r][li] : nil;
+    push(labels, lv == nil ? "第 " + (r + 1) + " 行" : str(lv));
+    for (let j = 0; j < len(series); j++) {
+      let ci = col_index(cfg.series[j]) - c1;
+      let v = ci >= 0 && ci < len(vals[r]) ? vals[r][ci] : nil;
+      push(series[j].values, is_num(v) ? v : 0);
+    }
+  }
+  return {labels: labels, series: series};
+}
+fn eased() {
+  if (D.dur <= 0) { return 1; }
+  let f = clamp((time() - D.t0) / D.dur, 0, 1);
+  return 1 - pow(1 - f, 3);
+}
+fn animating() { return D.from != nil && (time() - D.t0) < D.dur; }
+// 过渡中的数值（旧版本 → 新版本）
+fn shown(ex) {
+  let out = [];
+  let f = eased();
+  for (let j = 0; j < len(ex.series); j++) {
+    let arr = [];
+    for (let i = 0; i < len(ex.labels); i++) {
+      let to = ex.series[j].values[i];
+      let fr = 0;
+      if (D.from != nil && D.from[j] != nil && D.from[j][i] != nil) { fr = D.from[j][i]; }
+      push(arr, fr + (to - fr) * f);
+    }
+    push(out, arr);
+  }
+  return out;
+}
+fn fmtv(v) { if (floor(v) == v) { return str(v); } return fmt(v, 2); }
+fn build(w, h, vi) {
+  let cmds = [];
+  let cfg = D.cfg;
+  if (D.data == nil) { return {cmds: [{o: "text", x: w / 2 - 150, y: h / 2 - 12, s: "尚未连接数据：选择工作簿与区域后点击“连接”", size: 14, color: "#a49ecb"}], n: 0, labels: [], series: []}; }
+  let ex = extract();
+  let n = len(ex.labels); let ns = len(ex.series);
+  if (n == 0 || ns == 0) { return {cmds: [{o: "text", x: w / 2 - 170, y: h / 2 - 12, s: "所选区域里没有可绘制的数值（请检查标签列与数值列）", size: 14, color: "#ff6b81"}], n: 0, labels: [], series: []}; }
+  let cur = shown(ex);
+  let ymax = 0; let ymin = 0;
+  for (let j = 0; j < ns; j++) { for (let i = 0; i < n; i++) { ymax = max(ymax, max(cur[j][i], ex.series[j].values[i])); ymin = min(ymin, min(cur[j][i], ex.series[j].values[i])); } }
+  let step = nice((ymax - ymin) / 5);
+  let top = ymax <= 0 ? 0 : ceil(ymax / step) * step; let bot = ymin >= 0 ? 0 : floor(ymin / step) * step;
+  if (top == bot) { top = bot + step; }
+  let ml = 58; let mr = 22; let mt = 58; let mb = 44;
+  let px = ml; let py = mt; let pw = max(60, w - ml - mr); let ph = max(40, h - mt - mb);
+  let title = cfg.title != "" ? cfg.title : (D.data.title + "（" + D.data.range + "）");
+  push(cmds, {o: "text", x: 14, y: 8, s: title, size: 16, color: "#ece9ff", b: true, fam: "title", w: w - 200, ell: true, tid: "chart-title"});
+  push(cmds, {o: "text", x: 14, y: 30, s: (cfg.type == "bar" ? "分组柱状图" : "折线图") + " · 数据版本 " + D.version, size: 11, color: "#a49ecb"});
+  // 图例
+  let lx = w - 14;
+  for (let j = ns - 1; j >= 0; j--) {
+    let nm = ex.series[j].name; let tw = text_w(nm, 12) + 24;
+    lx = lx - tw;
+    push(cmds, {o: "rect", x: lx, y: 12, w: 12, h: 12, fill: PAL[j % 7], r: 3});
+    push(cmds, {o: "text", x: lx + 18, y: 9, s: nm, size: 12, color: "#ece9ff", tid: "chart-legend", aria: nm});
+  }
+  // 网格与纵轴
+  let nt = round((top - bot) / step);
+  for (let k = 0; k <= nt; k++) {
+    let v = bot + k * step; let y = py + ph - (v - bot) / (top - bot) * ph;
+    push(cmds, {o: "line", x1: px, y1: y, x2: px + pw, y2: y, color: v == 0 ? "rgba(200,190,255,.55)" : "rgba(160,150,220,.16)", sw: v == 0 ? 1.5 : 1});
+    push(cmds, {o: "text", x: 0, y: y - 8, w: px - 8, al: "r", s: fmtv(v), size: 11, color: "#a49ecb", fam: "num"});
+  }
+  push(cmds, {o: "line", x1: px, y1: py, x2: px, y2: py + ph, color: "rgba(200,190,255,.55)", sw: 1.5});
+  let gw = pw / n;
+  let zero_y = py + ph - (0 - bot) / (top - bot) * ph;
+  if (cfg.type == "bar") {
+    let bw = min(54, gw * 0.76 / ns);
+    for (let i = 0; i < n; i++) {
+      let gx = px + gw * i + (gw - bw * ns) / 2;
+      if (D.sel == i) { push(cmds, {o: "rect", x: px + gw * i + 2, y: py, w: gw - 4, h: ph, fill: "rgba(139,108,255,.14)", r: 6}); }
+      for (let j = 0; j < ns; j++) {
+        let v = cur[j][i]; let real = ex.series[j].values[i];
+        let y = py + ph - (v - bot) / (top - bot) * ph; let bh = abs(y - zero_y);
+        let by = v >= 0 ? y : zero_y;
+        let tip = ex.labels[i] + " · " + ex.series[j].name + "：" + fmtv(real);
+        push(cmds, {o: "rect", x: gx + j * bw + 1, y: by, w: max(2, bw - 3), h: max(1, bh), fill: PAL[j % 7], r: 4, tid: "chart-bar", aria: tip, tip: tip, hf: "#ffffff", d: {category: ex.labels[i], series: ex.series[j].name, value: str(real), index: str(i)}, stroke: D.sel == i ? "#ffffff" : nil, sw: 2});
+        if (bw >= 22) { push(cmds, {o: "text", x: gx + j * bw - 8, y: by - 17, w: bw + 14, al: "c", s: fmtv(round(v * 100) / 100), size: 11, color: "#ece9ff", fam: "num"}); }
+      }
+    }
+  } else {
+    for (let j = 0; j < ns; j++) {
+      let pts = [];
+      for (let i = 0; i < n; i++) { let x = px + gw * i + gw / 2; let y = py + ph - (cur[j][i] - bot) / (top - bot) * ph; push(pts, x); push(pts, y); }
+      push(cmds, {o: "poly", x: 0, y: 0, w: w, h: h, pts: pts, stroke: PAL[j % 7], sw: 3});
+      for (let i = 0; i < n; i++) {
+        let x = pts[i * 2]; let y = pts[i * 2 + 1]; let real = ex.series[j].values[i];
+        let tip = ex.labels[i] + " · " + ex.series[j].name + "：" + fmtv(real);
+        push(cmds, {o: "rect", x: x - 5, y: y - 5, w: 10, h: 10, fill: PAL[j % 7], stroke: "#ffffff", sw: D.sel == i ? 3 : 1.5, r: 5, tid: "chart-point", aria: tip, tip: tip, hf: "#ffffff", d: {category: ex.labels[i], series: ex.series[j].name, value: str(real), index: str(i)}});
+        push(cmds, {o: "text", x: x - 30, y: y - 22, w: 60, al: "c", s: fmtv(round(cur[j][i] * 100) / 100), size: 11, color: "#ece9ff", fam: "num"});
+      }
+    }
+  }
+  // 横轴标签
+  for (let i = 0; i < n; i++) { push(cmds, {o: "text", x: px + gw * i, y: py + ph + 8, w: gw, al: "c", s: ex.labels[i], size: 12, color: D.sel == i ? "#ffffff" : "#c9c3ee", ell: true, b: D.sel == i}); }
+  return {cmds: cmds, n: n, labels: ex.labels, series: ex.series, plot: {x: px, y: py, w: pw, h: ph}};
+}
+fn send_geoms() {
+  for (let k of keys(D.views)) {
+    let v = num(k); let vw = D.views[k];
+    let g = build(vw.w, vw.h, v);
+    let info = {n: g.n, version: D.version, sel: D.sel};
+    if (D.sel >= 0 && D.sel < g.n) { info.sel_text = g.labels[D.sel]; let parts = []; for (let s of g.series) { push(parts, s.name + " = " + fmtv(s.values[D.sel])); } info.sel_values = join(parts, "，"); }
+    send(APP, {t: "geom", v: v, cmds: g.cmds, plot: g.plot, info: info, anim: animating()});
+  }
+  D.dirty = false;
+}
+fn on_data(m) {
+  // 新版本：从当前显示的数值开始过渡
+  if (D.data != nil) {
+    let ex = extract(); let cur = shown(ex); D.from = cur;
+  } else { D.from = nil; }
+  D.data = {values: m.values, title: m.title, range: m.range};
+  let rng = m.range; let colon = indexOf(rng, ":");
+  let a = colon >= 0 ? substr(rng, 0, colon) : rng;
+  D.range_c1 = ord(upper(a), 0) - 65;
+  D.version = m.version; D.t0 = time(); D.dirty = true;
+  if (D.from == nil) {
+    // 第一次：从 0 长出来
+    let ex2 = extract(); D.from = [];
+    for (let s of ex2.series) { let z = []; for (let i = 0; i < len(ex2.labels); i++) { push(z, 0); } push(D.from, z); }
+  }
+}
+while (true) {
+  let e = recv_timeout(animating() || D.dirty ? 0.033 : 1);
+  let got = false;
+  while (e != nil) {
+    let m = e.msg;
+    if (typeof(m) == "map") {
+      if (m.t == "data") { on_data(m); got = true; }
+      else if (m.t == "cfg") { D.cfg = m.cfg; D.dirty = true; got = true; }
+      else if (m.t == "viewport") { D.views[m.v] = {w: m.w, h: m.h}; D.dirty = true; got = true; }
+      else if (m.t == "drop_view") { del(D.views, m.v); }
+      else if (m.t == "select") { D.sel = m.i; D.dirty = true; got = true; }
+    }
+    e = poll_msg();
+  }
+  if (got || D.dirty || animating()) { send_geoms(); }
+}

@@ -1,0 +1,5 @@
+let chartTicks = 0
+while true {
+  syscall("charts.receive")
+  chartTicks = chartTicks + 1
+}

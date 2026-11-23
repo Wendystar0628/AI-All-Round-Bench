@@ -1,0 +1,17 @@
+{
+  "problem": "10",
+  "parts": [
+    {"name": "1", "title": "双斜座多腔阀体铸件", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 90, 70], "r": 6}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [0, 0, 90, 70]}], "depth": 58},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[35, 36]], "d": 72, "depth": 10, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[35, 36]], "d": 64, "depth": 22, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[35, 36]], "d": 34, "depth": 40, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [[35, 36]], "d": 30, "through": true, "reverse": true},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [48, 36], "d": 32}], "depth": [-20, 0]},
+      {"type": "hole", "plane": {"origin": [30, 25, 72], "normal": [0.643, 0, 0.766], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 24, "depth": 64},
+      {"type": "hole", "plane": {"origin": [60, 45, 72], "normal": [-0.766, 0, 0.643], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 22, "depth": 58},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 72], "at": [[20, 18], [70, 18], [20, 52], [70, 52]], "d": 8, "depth": 12}
+    ]}
+  ]
+}

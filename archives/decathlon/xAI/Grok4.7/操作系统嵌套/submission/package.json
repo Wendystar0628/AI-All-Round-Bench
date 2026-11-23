@@ -1,0 +1,17 @@
+{
+  "name": "nested-os",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test:vm": "node tools/vm-test.js",
+    "build:scene": "node tools/build-scene.js",
+    "precompile": "node tools/precompile.js"
+  },
+  "dependencies": {
+    "electron": "45.2.1",
+    "three": "0.170.0"
+  }
+}

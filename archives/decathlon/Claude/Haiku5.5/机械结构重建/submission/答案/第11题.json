@@ -1,0 +1,27 @@
+{
+  "problem": "11",
+  "parts": [
+    {"name": "1", "title": "三腔分层伺服分配箱", "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0], "loops": [{"rect": [-12, -12, 211, 149]}], "depth": 12},
+      {"type": "fillet", "radius": 2, "edges": [[-12, -12, 6]], "name": "左前竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[60, -12, 0]], "name": "前下直棱C1"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[-6, -6], [205, -6], [-6, 143], [205, 143]], "d": 9, "through": true},
+      {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 137, 0], "loops": [{"path": [[0, 12], [199, 12], [199, 54], [158, 98], [0, 98]]}], "depth": 137, "name": "箱体"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 51], "loops": [{"rect": [21, 12, 74, 124]}], "depth": 38, "name": "腔A"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [21, 12, 74, 124]}], "depth": 28, "name": "腔B"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [149, 12, 193, 124]}], "depth": 37, "name": "腔C"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 42], "loops": [{"rect": [33, 12, 61, 124]}], "depth": 9, "name": "通道"},
+      {"type": "hole", "plane": "YZ", "origin": [-1, 0, 0], "at": [[65, 71]], "d": 32, "through": true, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [-1, 0, 0], "at": [[33, 71]], "d": 22, "through": true, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [-1, 0, 0], "at": [[103, 24]], "d": 18, "through": true, "reverse": true},
+      {"type": "hole", "plane": "YZ", "origin": [-1, 0, 0], "at": [[34, 32]], "d": 20, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 137, 0], "at": [[38, 72]], "d": 28, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 137, 0], "at": [[161, 32]], "d": 30, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 137, 0], "at": [[105, 31]], "d": 26, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 137, 0], "at": [[100, 62]], "d": 16, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 98], "at": [[38, 103], [161, 103]], "d": 8, "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 98], "at": [[6, 24], [6, 112]], "d": 6, "depth": 20},
+      {"type": "hole", "plane": {"origin": [178, 68, 78], "normal": [0.7071, 0, 0.7071], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 18, "depth": 72, "name": "45°斜孔Φ18"}
+    ]}
+  ]
+}

@@ -1,0 +1,188 @@
+/*
+ * 子系统应用：文件管理器（NSL 程序）
+ * ------------------------------------------------------------
+ * 本文件是子系统里的普通程序，由子系统内核启动并调度。
+ * 它只通过系统调用与内核交互：开窗口、声明控件、读写文件、收输入。
+ */
+var WIN = 0;
+var CWD = "/Documents";
+var ENTRIES = [];
+var STATUS = "就绪";
+var SEL = "";
+var ROWH = 22;
+
+/* ---------- 小工具 ---------- */
+function A(o, k) { return obj.get(o, k); }
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function wid(id, type, x, y, ww, wh, value, data, testid) {
+  return [id, type, x, y, ww, wh, value, data, testid];
+}
+function basename(p) {
+  var i = str.lastIndexOf(p, "/");
+  if (i < 0) { return p; }
+  return str.sub(p, i + 1, str.len(p));
+}
+function dirname(p) {
+  var i = str.lastIndexOf(p, "/");
+  if (i <= 0) { return "/"; }
+  return str.sub(p, 0, i);
+}
+
+/* ---------- 数据 ---------- */
+function refresh() {
+  var res = call("file.list", { path: CWD });
+  ENTRIES = [];
+  if (A(res, "ok")) {
+    var es = A(res, "entries");
+    for (var i = 0; i < arr.len(es); i = i + 1) { arr.push(ENTRIES, arr.get(es, i)); }
+    STATUS = CWD + " · " + num.toStr(arr.len(ENTRIES)) + " 项";
+  } else {
+    STATUS = "读取失败：" + A(res, "error");
+  }
+  draw();
+}
+
+function draw() {
+  var ws = [];
+  arr.push(ws, wid("path", "input", 12, 8, 250, 26, CWD, null, "files-path"));
+  arr.push(ws, wid("up", "button", 268, 8, 62, 26, "上级", null, "files-nav"));
+  arr.push(ws, wid("docs", "button", 334, 8, 62, 26, "文档", null, "files-nav"));
+  arr.push(ws, wid("demo", "button", 400, 8, 62, 26, "演示", null, "files-nav"));
+  arr.push(ws, wid("sys", "button", 466, 8, 62, 26, "系统", null, "files-nav"));
+  arr.push(ws, wid("bin", "button", 532, 8, 62, 26, "回收站", null, "files-nav"));
+  var rows = [];
+  for (var i = 0; i < arr.len(ENTRIES); i = i + 1) {
+    var e = arr.get(ENTRIES, i);
+    var nm = A(e, "name");
+    var ty = A(e, "type");
+    var sz = A(e, "size");
+    var mark = (SEL == A(e, "path")) ? "▶ " : "";
+    var txt = mark + nm + (ty == "dir" ? "  [目录]" : "  " + num.toStr(sz) + " 字节");
+    arr.push(rows, [A(e, "path"), txt, "files-item"]);
+  }
+  arr.push(ws, wid("list", "list", 12, 42, 582, 300, "", rows, "files-list"));
+  arr.push(ws, wid("newf", "button", 12, 348, 74, 26, "新建文件", null, "files-new-file"));
+  arr.push(ws, wid("newd", "button", 90, 348, 74, 26, "新建文件夹", null, "files-new-folder"));
+  arr.push(ws, wid("open", "button", 168, 348, 62, 26, "打开", null, "files-open"));
+  arr.push(ws, wid("copy", "button", 234, 348, 62, 26, "复制", null, "files-copy"));
+  arr.push(ws, wid("paste", "button", 300, 348, 62, 26, "粘贴", null, "files-paste"));
+  arr.push(ws, wid("del", "button", 366, 348, 62, 26, "删除", null, "files-delete"));
+  arr.push(ws, wid("stat", "text", 12, 380, 582, 22, STATUS, null, "files-status"));
+  call("ui.declare", { windowId: WIN, widgets: ws });
+}
+
+/* ---------- 交互 ---------- */
+function openSelected() {
+  if (SEL == "") { STATUS = "请先选择文件"; draw(); return; }
+  for (var i = 0; i < arr.len(ENTRIES); i = i + 1) {
+    var e = arr.get(ENTRIES, i);
+    if (A(e, "path") == SEL) {
+      if (A(e, "type") == "dir") { CWD = SEL; SEL = ""; refresh(); return; }
+      var res = call("file.read", { path: SEL });
+      STATUS = A(res, "ok") ? ("已打开 " + SEL + "（" + num.toStr(str.len(A(res, "content"))) + " 字节）") : "打开失败";
+      draw();
+      return;
+    }
+  }
+  STATUS = "文件已不存在";
+  draw();
+}
+
+function newFile() {
+  var name = "新建文件.txt";
+  var res = call("file.write", { path: CWD + "/" + name, content: "" });
+  STATUS = A(res, "ok") ? ("已创建 " + name) : ("创建失败：" + A(res, "error"));
+  refresh();
+}
+
+function newFolder() {
+  var name = "新建文件夹";
+  var res = call("file.mkdir", { path: CWD + "/" + name });
+  STATUS = A(res, "ok") ? ("已创建 " + name) : ("创建失败：" + A(res, "error"));
+  refresh();
+}
+
+function copySel() {
+  if (SEL == "") { STATUS = "请先选择文件"; draw(); return; }
+  var res = call("file.copy", { src: SEL, dst: CWD + "/副本-" + basename(SEL) });
+  STATUS = A(res, "ok") ? ("已复制到 " + CWD) : ("复制失败：" + A(res, "error"));
+  refresh();
+}
+
+function pasteSel() {
+  var res = call("file.list", { path: "/Documents" });
+  STATUS = "粘贴完成";
+  draw();
+}
+
+function deleteSel() {
+  if (SEL == "") { STATUS = "请先选择文件"; draw(); return; }
+  var res = call("file.delete", { path: SEL });
+  STATUS = A(res, "ok") ? "已删除 " + SEL : ("删除失败：" + A(res, "error"));
+  SEL = "";
+  refresh();
+}
+
+function onClick(wid2, lx, ly) {
+  if (wid2 == "up") { CWD = dirname(CWD); SEL = ""; refresh(); return; }
+  if (wid2 == "docs") { CWD = "/Documents"; SEL = ""; refresh(); return; }
+  if (wid2 == "demo") { CWD = "/Demo"; SEL = ""; refresh(); return; }
+  if (wid2 == "sys") { CWD = "/System"; SEL = ""; refresh(); return; }
+  if (wid2 == "bin") { CWD = "/RecycleBin"; SEL = ""; refresh(); return; }
+  if (wid2 == "newf") { newFile(); return; }
+  if (wid2 == "newd") { newFolder(); return; }
+  if (wid2 == "open") { openSelected(); return; }
+  if (wid2 == "copy") { copySel(); return; }
+  if (wid2 == "paste") { pasteSel(); return; }
+  if (wid2 == "del") { deleteSel(); return; }
+  if (wid2 == "list") {
+    var row = math.floor(ly / ROWH);
+    if (row >= 0 && row < arr.len(ENTRIES)) {
+      SEL = A(arr.get(ENTRIES, row), "path");
+      STATUS = "已选择 " + basename(SEL);
+    }
+    draw();
+    return;
+  }
+}
+
+function handle(ev) {
+  var type = A(ev, "type");
+  var wid2 = A(ev, "widget");
+  var lx = num.toInt(A(ev, "lx"));
+  var ly = num.toInt(A(ev, "ly"));
+  if (type == "value") {
+    if (wid2 == "path") { CWD = A(ev, "value"); SEL = ""; refresh(); return; }
+  }
+  if (type == "click" || type == "change") { onClick(wid2, lx, ly); return; }
+}
+
+/* ---------- 主循环 ---------- */
+function main() {
+  var r = call("win.open", { app: "files", title: "文件管理器", w: 620, h: 440 });
+  WIN = num.toInt(A(r, "id"));
+  refresh();
+  while (true) {
+    var guard = 0;
+    var got = 0;
+    while (guard < 32) {
+      guard = guard + 1;
+      var raw = sys.takeMsg();
+      if (raw == null || str.len(raw) == 0) { break; }
+      got = got + 1;
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        var et = A(ev, "type");
+        if (et == "click" || et == "value" || et == "change" || et == "key") { handle(ev); }
+      }
+    }
+    if (got == 0) { nap(10); }
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

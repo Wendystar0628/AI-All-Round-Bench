@@ -1,0 +1,26 @@
+<!doctype html><meta charset="utf-8"><body style="background:#222;margin:0">
+<canvas id="c" width="960" height="540"></canvas><pre id="log" style="color:#fff"></pre>
+<script>window.onerror=(m,s,l,c)=>document.getElementById('log').textContent+=m+' @'+s.split('/').pop()+':'+l+':'+c+'\n';</script>
+<script src="../js/util.js"></script><script src="../js/geom.js"></script><script src="../js/mesh.js"></script><script src="../js/font.js"></script><script src="../js/model.js"></script><script src="../js/expr.js"></script><script src="../js/evalr.js"></script><script src="../js/shapes.js"></script><script src="../js/nodes.js"></script><script src="../js/gl.js"></script><script src="../js/render2d.js"></script><script src="../js/comp.js"></script><script src="../js/render3d.js"></script>
+<script>
+const {Model,U,G,Nodes}=AE; const proj=Model.newProject(); const comp=proj.comps[0]; comp.dur=5;
+const mk=(type,name,o)=>{const L=Model.newLayer(type,comp,Object.assign({name},o||{})); comp.layers.unshift(L); return L;};
+const bgL=mk('shape','bg'); { const gr=Model.addShapeItem(bgL,'group',null); Model.addShapeItem(bgL,'rect',gr,{params:{size:[1920,1080]}}); const f=Model.addShapeItem(bgL,'fill',gr,{}); f.gradient={type:'radial',p0:[0,0],p1:[1200,0],stops:[[0,[0.25,0.18,0.15,1]],[1,[0.02,0.02,0.04,1]]]}; bgL.props['transform.position'].v=[960,540,0]; }
+const T=mk('text','字',{text:'金'}); T.props['text.size'].v=420; T.visible=false;
+const src=Nodes.create(proj,'src.text',0,0,{layer:T.id}); const tess=Nodes.create(proj,'tess'); Nodes.link(proj,tess,'in',src);
+const ex=Nodes.create(proj,'extrude'); Nodes.link(proj,ex,'in',tess); const out=Nodes.create(proj,'output'); Nodes.link(proj,out,'in',ex);
+const G1=mk('geo','金块'); G1.geo.node=out.id; G1.props['transform.position'].v=[960,540,0]; G1.props['transform.rotation'].v=0; G1.props['transform.rotX'].v=-90; G1.props['transform.position'].v=[960,700,300];
+G1.props['mat.emitI'].v=0.0; G1.props['mat.base'].v=[0.8,0.82,0.86,1]; G1.props['mat.rough'].v=0.3;
+const fl=Nodes.create(proj,'prim.rect',0,200); fl.props.size.v=[2400,1400]; const ex2=Nodes.create(proj,'extrude',0,300); ex2.props.depth.v=30; ex2.props.bevel.v=4; Nodes.link(proj,ex2,'in',fl); const out2=Nodes.create(proj,'output'); Nodes.link(proj,out2,'in',ex2);
+const F=mk('geo','地面'); F.geo.node=out2.id; F.props['transform.rotX'].v=-90; F.props['transform.position'].v=[960,820,300]; F.props['mat.base'].v=[0.12,0.12,0.14,1]; F.props['mat.metal'].v=0.8; F.props['mat.rough'].v=0.45;
+const Ls=mk('light','Key',{lightType:'dir'}); Ls.props['transform.position'].v=[400,100,-600]; Ls.props['light.target'].v=[960,780,300]; Ls.props['light.intensity'].v=3.2; Ls.props['light.color'].v=[1,0.92,0.8,1];
+const Lp=mk('light','Forge',{lightType:'point'}); Lp.props['transform.position'].v=[960,500,0]; Lp.props['light.color'].v=[1,0.5,0.15,1]; Lp.props['light.intensity'].v=2.5; Lp.props['light.radius'].v=1800;
+const C=mk('camera','Cam'); C.props['transform.position'].v=[960,100,-1500]; C.props['cam.target'].v=[960,720,300]; C.props['cam.fov'].v=34; C.props['cam.aperture'].v=20; C.props['cam.focus'].v=1800; C.cam.dof=true;
+const ev=new AE.Evaluator(()=>proj,()=>0);
+const cv=document.getElementById('c'); const g=new AE.GLCtx(cv); const r=new AE.Renderer(g); r.ev=ev;
+const t0=performance.now();
+const rt=r.renderComp(comp,0,1920,1080,{root:true});
+r.present(rt,[0,0,960,540],false);
+document.title='ok '+(performance.now()-t0).toFixed(0)+'ms';
+window.__r=r; window.__proj=proj; window.__ev=ev; window.__comp=comp;
+</script>

@@ -1,0 +1,14 @@
+{
+  "problem": "04",
+  "parts": [
+    {"name": "1", "title": "偏心双级迷宫泵盖", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-72, -72, 72, 72]}], "depth": 30},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 45}], "depth": 8},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 30], "at": [0, 0], "d": 30, "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 30], "at": [15, 0], "d": 8, "depth": 10},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 30], "at": [-15, 0], "d": 8, "depth": 10},
+      {"type": "hole", "plane": {"origin": [50, 0, 30], "normal": [-0.5, 0, -0.866025404], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 6, "depth": 28},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -72, 0], [0, 72, 0], [-72, 0, 0], [72, 0, 0]]}
+    ]}
+  ]
+}

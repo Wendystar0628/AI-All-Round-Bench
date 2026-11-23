@@ -1,0 +1,19 @@
+# 机身进程。只根据时序或物理发来的同一时刻姿态提交画面。
+
+fn main() {
+  let last = null;
+  while (true) {
+    let m = wait_msg();
+    if (m != null && m.tag == "pose") { last = m; }
+    let g = 0;
+    while (g < 8) {
+      let e = recv();
+      if (e == null) { g = 100; }
+      else {
+        if (e.tag == "pose") { last = e; }
+        g = g + 1;
+      }
+    }
+    if (last != null) { present3d("stage", last); }
+  }
+}

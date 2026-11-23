@@ -1,0 +1,150 @@
+// charts.ns — 图表工作台：从根系统电子表格显式建立实时数据连接（选择已打开的工作簿、矩形区域、标签列与数值列），
+// 生成分组柱状图或折线图。三个进程协作：本进程（界面）、chartrx（数据接收）、chartdraw（图表更新）。
+// 图表通过“数据连接”接收更新；复制工作簿文件则是另一回事——复制出的文件保持独立。
+include "/System/lib/ui.ns";
+
+let S = {books: [], doc: "", doc_title: "", menu: false, rx: 0, draw: 0, st: {state: "idle", version: 0, title: "", err: nil}, geom: {}, vp: {}, type: "bar", range: "A1:D4", self_ref: nil,
+  last_books: -9, msg: "", msg_t: 0, sel: -1, label: "A", series: "D", info: nil, last_ps: -9, pstat: {}, dirty_cfg: true};
+
+fn say(m) { S.msg = m; S.msg_t = time(); }
+fn refresh_books() {
+  let b = sys("dev", "data", "books");
+  S.books = typeof(b) == "arr" ? b : [];
+  S.last_books = time();
+  // 选中的工作簿已关闭
+  if (S.doc != "") { let ok = false; for (let x of S.books) { if (x.doc == S.doc) { ok = true; } } S.doc_open = ok; }
+}
+fn series_list() {
+  let out = [];
+  for (let p of split(replace(replace(ui_val("chart-series"), "，", ","), " ", ""), ",")) { if (p != "") { push(out, upper(p)); } }
+  return out;
+}
+fn send_cfg() {
+  let lab = upper(trim(ui_val("chart-label-column")));
+  send(S.draw, {t: "cfg", cfg: {label: lab == "" ? "A" : lab, series: series_list(), type: S.type, title: trim(ui_val("chart-title"))}});
+}
+fn do_connect() {
+  if (S.doc == "") { say("请先选择一个已打开的工作簿"); return nil; }
+  let rg = upper(trim(ui_val("chart-range")));
+  if (rg == "") { say("请填写区域，例如 A1:D4"); return nil; }
+  if (len(series_list()) == 0) { say("请填写至少一个数值列，例如 D 或 B,D"); return nil; }
+  S.range = rg;
+  send_cfg();
+  send(S.rx, {t: "connect", doc: S.doc, range: rg});
+  say("正在建立连接…");
+}
+fn do_disconnect() { send(S.rx, {t: "disconnect"}); say("已请求断开连接"); }
+fn state_key() {
+  let s = S.st.state;
+  if (s == "connected") { return "connected"; } if (s == "disconnected") { return "disconnected"; } if (s == "source_closed") { return "source-closed"; }
+  if (s == "restored") { return "restored-pending-reconnect"; } if (s == "error") { return "error"; }
+  return "idle";
+}
+fn status_text() {
+  let s = S.st;
+  if (s.state == "idle") { return "未连接"; }
+  if (s.state == "connected") { return "已连接 · 数据版本 " + s.version + " · 数据源：" + s.title + "（" + s.range + "）"; }
+  if (s.state == "disconnected") { return "已断开 · 保留最后的图表与数据（版本 " + s.version + "）"; }
+  if (s.state == "source_closed") { return "数据源已关闭 · 已保留已接收的数据（版本 " + s.version + "），重新打开工作簿后请重新选择连接"; }
+  if (s.state == "restored") { return "已恢复，待重新连接 · 用缓存数据续行（版本 " + s.version + "），点击“连接”取得源工作簿当前的完整选区"; }
+  if (s.state == "error") { return "连接失败：" + (s.err == nil ? "" : s.err); }
+  return s.state;
+}
+fn status_color() {
+  let s = S.st.state;
+  if (s == "connected") { return TH.ok; } if (s == "idle" || s == "disconnected") { return TH.muted; } if (s == "restored") { return TH.warn; } return TH.danger;
+}
+fn chart_msg(m) {
+  if (m.t == "status") { S.st = m; if (m.state == "connected" && m.initial) { say("已连接，取得完整选区（版本 " + m.version + "）"); } }
+  else if (m.t == "geom") { S.geom[m.v] = m; if (m.v == 0 || true) { S.info = m.info; } }
+  else if (m.t == "open") { }
+}
+fn chart_idle() {
+  if (time() - S.last_books > 1.5) { refresh_books(); return true; }
+  if (time() - S.last_ps > 0.6) { S.last_ps = time(); let ps = sys("ps"); S.pstat = {}; for (let p of ps) { if (p.pid == S.rx) { S.pstat.rx = p.state; } if (p.pid == S.draw) { S.pstat.draw = p.state; } } return true; }
+  return false;
+}
+fn book_label() {
+  if (S.doc == "") { return "选择已打开的工作簿…"; }
+  for (let b of S.books) { if (b.doc == S.doc) { return b.title + (b.path != "" ? "（" + b.path + "）" : ""); } }
+  return S.doc_title + "（已关闭）";
+}
+fn chart_frame(U, w, h) {
+  let v = U.v;
+  ui_rect(0, 0, w, h, TH.bg1, 0);
+  let TOP = 120;
+  ui_rect(0, 0, w, TOP, TH.bg2, 0); ui_rect(0, TOP, w, 1, TH.border, 0);
+  ui.enabled = !S.menu;
+  // 第一行：源工作簿
+  ui_text(14, 14, "数据源", 12, TH.muted, {b: true});
+  let sb = ui_button("chart-source", 64, 8, max(160, w - 64 - 14 - 90), 30, book_label(), {fill: TH.bg0, stroke: TH.border, hf: TH.bg3, size: 12, icon: "sheet", d: {value: S.doc}});
+  if (sb) { refresh_books(); S.menu = !S.menu; }
+  ui_icon(64 + max(160, w - 64 - 14 - 90) - 24, 15, "chevd", 14, TH.muted);
+  if (ui_button("chart-refresh", w - 14 - 78, 8, 78, 30, "刷新", {icon: "reload", size: 12})) { refresh_books(); say("工作簿列表已刷新（" + len(S.books) + " 个）"); }
+  // 第二行：区域、标签列、数值列、标题
+  let y2 = 46;
+  ui_text(14, y2 + 6, "区域", 12, TH.muted); ui_input("chart-range", 50, y2, 100, 28, {ph: "A1:D4", size: 12, pad: 6, r: 8, mono: true});
+  ui_text(162, y2 + 6, "标签列", 12, TH.muted); ui_input("chart-label-column", 210, y2, 50, 28, {ph: "A", size: 12, pad: 6, r: 8, mono: true});
+  ui_text(272, y2 + 6, "数值列", 12, TH.muted); ui_input("chart-series", 320, y2, 100, 28, {ph: "D 或 B,D", size: 12, pad: 6, r: 8, mono: true});
+  ui_text(432, y2 + 6, "标题", 12, TH.muted); ui_input("chart-title", 468, y2, max(60, w - 468 - 14), 28, {ph: "（可选）图表标题", size: 12, pad: 6, r: 8});
+  // 第三行：连接、断开、类型、状态
+  let y3 = 82; let bx = 14;
+  if (ui_button("chart-connect", bx, y3, 92, 30, S.st.state == "connected" ? "重新连接" : "连接", {fill: TH.acc, b: true, icon: "link", size: 12})) { do_connect(); } bx = bx + 98;
+  if (ui_button("chart-disconnect", bx, y3, 80, 30, "断开", {icon: "unlink", size: 12, fill: S.st.state == "connected" ? TH.bg3 : TH.bg1, color: S.st.state == "connected" ? TH.text : TH.faint})) { if (S.st.state == "connected") { do_disconnect(); } else { say("当前没有活动的连接"); } } bx = bx + 88;
+  for (let t of [["bar", "分组柱状图", "bars"], ["line", "折线图", "chart"]]) {
+    let on = S.type == t[0];
+    if (ui_button("chart-type", bx, y3, 104, 30, t[1], {icon: t[2], size: 12, fill: on ? TH.acc2 : TH.bg3, color: on ? "#2a1a00" : TH.text, b: on, d: {value: t[0]}, key: "ct" + t[0]})) { if (S.type != t[0]) { S.type = t[0]; send_cfg(); } }
+    bx = bx + 110;
+  }
+  let stw = ui_textw(bx + 6, y3 + 3, max(100, w - bx - 20), status_text(), 12, status_color(), {b: true});
+  stw.tid = "chart-status"; stw.d = {state: state_key(), version: str(S.st.version)};
+  // 图表区
+  let cw = w - 24; let ch = h - TOP - 36 - 14;
+  let vp = S.vp[v];
+  if (vp == nil || vp.w != cw || vp.h != ch) { S.vp[v] = {w: cw, h: ch}; send(S.draw, {t: "viewport", v: v, w: cw, h: ch}); }
+  ui_rect(12, TOP + 10, cw, ch, "rgba(10,8,24,.55)", 12);
+  let g = S.geom[v];
+  let area = ui_push(12, TOP + 10, cw, ch, true); area.tid = "chart-view"; area.aria = "图表"; area.d = {type: S.type, state: state_key()};
+  if (g != nil) {
+    for (let c of g.cmds) { ui_node(c); }
+    // 点击选择类别（选中反馈）
+    if (g.plot != nil && ui_in(g.plot.x, g.plot.y, g.plot.w, g.plot.h + 40) && ui_ev_is("up", 0) && g.info != nil && g.info.n > 0) {
+      let gw = g.plot.w / g.info.n; let i = floor((ui.mx - ui.ox - g.plot.x) / gw);
+      if (i >= 0 && i < g.info.n) { S.sel = S.sel == i ? -1 : i; send(S.draw, {t: "select", i: S.sel}); }
+    }
+  } else { ui_textc(0, ch / 2 - 10, cw, "连接后在这里显示图表", 14, TH.faint); }
+  ui_pop();
+  // 底部信息条
+  ui_rect(0, h - 30, w, 30, TH.bg2, 0);
+  let inf = g != nil ? g.info : nil;
+  let bottom = S.msg != "" && time() - S.msg_t < 6 ? S.msg : (inf != nil && inf.sel_text != nil ? "选中：" + inf.sel_text + " · " + inf.sel_values + " · 版本 " + inf.version : "点击图表中的柱/点可查看数值；悬停显示提示");
+  ui_textw(12, h - 22, w - 300, bottom, 12, S.msg != "" && time() - S.msg_t < 6 ? TH.acc2 : TH.muted);
+  let cx = w - 280;
+  for (let it of [["接收", S.pstat.rx], ["图表", S.pstat.draw]]) {
+    let st = it[1] == nil ? "—" : it[1]; let col = st == "挂起" ? TH.warn : (st == "异常" || st == "结束" ? TH.danger : TH.ok);
+    ui_rect(cx, h - 18, 6, 6, col, 3); ui_text(cx + 10, h - 23, it[0] + "进程 " + st, 11, TH.muted); cx = cx + 118;
+  }
+  ui.enabled = true;
+  // 数据源下拉
+  if (S.menu) {
+    let items = [];
+    for (let b of S.books) { push(items, {id: "B:" + b.doc, tid: "chart-source-option", label: b.title + (b.path != "" ? "  " + b.path : "") + (b.dirty ? "  ●未保存" : ""), icon: "sheet", d: {value: b.doc}}); }
+    if (len(items) == 0) { push(items, {id: "none", label: "根系统没有打开的工作簿（请先在根桌面打开电子表格）", disabled: true}); }
+    let r = ui_menu("chart-source-menu", 64, 40, min(w - 80, 520), items, 30);
+    if (r != nil) {
+      S.menu = false;
+      if (r != "" && substr(r, 0, 2) == "B:") { S.doc = substr(r, 2, len(r) - 2); for (let b of S.books) { if (b.doc == S.doc) { S.doc_title = b.title; } } say("已选择工作簿：" + S.doc_title); }
+    }
+  }
+  if (v == 0) { ui_node({o: "meta", kind: "chart", wid: APP.wid, sourceTitle: S.st.title != "" ? S.st.title : S.doc_title, range: S.range, chartType: S.type, connectionState: state_key()}); }
+}
+app_init(&chart_frame, &chart_msg, 0);
+APP.on_idle = &chart_idle;
+ui = app_view(0);
+S.self_ref = sys("self_ref");
+S.draw = spawn("/Apps/charts/chartdraw.ns", {app: pid()}, "图表更新");
+S.rx = spawn("/Apps/charts/chartrx.ns", {app: pid(), draw: S.draw}, "数据接收");
+ui_set("chart-range", "A1:D4"); ui_set("chart-label-column", "A"); ui_set("chart-series", "D");
+refresh_books();
+send_cfg();
+app_run();

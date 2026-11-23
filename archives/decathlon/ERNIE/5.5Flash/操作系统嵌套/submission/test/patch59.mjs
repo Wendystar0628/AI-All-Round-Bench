@@ -1,0 +1,14 @@
+import fs from 'fs';
+let s = fs.readFileSync('js/shell.js', 'utf8');
+s = s.replace(`      this.widgetsEl.classList.remove('hidden');
+      this.widgetsEl.dataset.testid = 'widgets-panel';`, `      this.widgetsEl.classList.remove('hidden');
+      this.widgetsEl.dataset.testid = 'widgets-panel';
+      this.widgetsEl.dataset.appId = 'widgets';
+      this.widgetsEl.dataset.systemId = this.system.id;`);
+s = s.replace(`      this.notifEl.classList.remove('hidden');
+      this.notifEl.dataset.testid = 'notifications-panel';`, `      this.notifEl.classList.remove('hidden');
+      this.notifEl.dataset.testid = 'notifications-panel';
+      this.notifEl.dataset.appId = 'widgets';
+      this.notifEl.dataset.systemId = this.system.id;`);
+fs.writeFileSync('js/shell.js', s);
+console.log('done');

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": ["start", "--", "--data-dir", "{dataDir}", "--width", "{width}", "--height", "{height}", "--remote-debugging-port={port}"],
+    "cwd": "."
+  },
+  "mainWindow": { "title": "Nested OS" },
+  "debugPort": 19106,
+  "bench": {
+    "access": "渲染进程全局对象 window.bench（版本 1）：ready()、reset()、inspect()；通过调试端口 19106 连接应用页面（chrome devtools 协议）。",
+    "stableIds": "data-testid（控件）、data-system-id（所属系统）、data-window-id（窗口）、data-app-id（应用）、data-target-system-id（子系统控件的目标）、data-file-path（文件项）、data-cell-address（单元格）、data-value（选项）、data-tab-id（浏览器标签）"
+  },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "trash": "/Trash",
+      "kernelDir": "/Kernels",
+      "compiler": "/System/compiler.ns",
+      "flight": "/Flight/controller.ns"
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernel": "/System/kernel.ns",
+      "compiler": "/System/compiler.ns",
+      "flight": "/Flight/controller.ns"
+    }
+  },
+  "notes": "子系统的素材路径指新建实例中的预置路径；子系统的内核源文件位于父系统的 /Kernels/<名称>.ns；示例工作簿 A1:D4 为项目、数量、单价、小计（D 列为公式）。"
+}

@@ -1,0 +1,573 @@
+# Nest 编译器。修改 num_hook 或 transform_source 后执行「编译自身」，
+# 之后启动的程序会按新规则编译。本文件用 Nest 写成，并可编译自身。
+
+fn num_hook(n) {
+  return n;
+}
+
+fn transform_source(src) {
+  return src;
+}
+
+fn main() {
+  let src = read_in();
+  src = transform_source(src);
+  return compile_source(src);
+}
+
+fn fail(st, msg) {
+  if (st.dead) { return 0; }
+  st.dead = true;
+  st.err = msg;
+  return 0;
+}
+
+fn tokenize(src) {
+  let toks = [];
+  let i = 0;
+  let line = 1;
+  let n = len(src);
+  while (i < n) {
+    let c = slice(src, i, i + 1);
+    if (c == "\n") {
+      line = line + 1;
+      i = i + 1;
+    } else if (c == " " || c == "\t" || c == "\r") {
+      i = i + 1;
+    } else if (c == "#") {
+      while (i < n && slice(src, i, i + 1) != "\n") { i = i + 1; }
+    } else if (c == "/" && i + 1 < n && slice(src, i + 1, i + 2) == "/") {
+      while (i < n && slice(src, i, i + 1) != "\n") { i = i + 1; }
+    } else if (c == "/" && i + 1 < n && slice(src, i + 1, i + 2) == "*") {
+      i = i + 2;
+      while (i + 1 < n && !(slice(src, i, i + 1) == "*" && slice(src, i + 1, i + 2) == "/")) {
+        if (slice(src, i, i + 1) == "\n") { line = line + 1; }
+        i = i + 1;
+      }
+      i = i + 2;
+    } else if (c == "\"") {
+      i = i + 1;
+      let chars = [];
+      while (i < n && slice(src, i, i + 1) != "\"") {
+        let ch = slice(src, i, i + 1);
+        if (ch == "\\") {
+          let nch = slice(src, i + 1, i + 2);
+          if (nch == "n") { push(chars, "\n"); }
+          else if (nch == "t") { push(chars, "\t"); }
+          else if (nch == "r") { push(chars, "\r"); }
+          else { push(chars, nch); }
+          i = i + 2;
+        } else {
+          if (ch == "\n") { line = line + 1; }
+          push(chars, ch);
+          i = i + 1;
+        }
+      }
+      i = i + 1;
+      push(toks, tok("str", join(chars, ""), line));
+    } else if (c >= "0" && c <= "9") {
+      let j = i;
+      while (j < n && slice(src, j, j + 1) >= "0" && slice(src, j, j + 1) <= "9") { j = j + 1; }
+      if (j < n && slice(src, j, j + 1) == ".") {
+        let k = j + 1;
+        if (k < n && slice(src, k, k + 1) >= "0" && slice(src, k, k + 1) <= "9") {
+          j = k;
+          while (j < n && slice(src, j, j + 1) >= "0" && slice(src, j, j + 1) <= "9") { j = j + 1; }
+        }
+      }
+      push(toks, tok("num", num(slice(src, i, j)), line));
+      i = j;
+    } else if (is_letter(c)) {
+      let jw = i + 1;
+      while (jw < n && is_ident(slice(src, jw, jw + 1))) { jw = jw + 1; }
+      let w = slice(src, i, jw);
+      if (w == "true") { push(toks, tok("bool", true, line)); }
+      else if (w == "false") { push(toks, tok("bool", false, line)); }
+      else if (w == "null") { push(toks, tok("null", null, line)); }
+      else { push(toks, tok("id", w, line)); }
+      i = jw;
+    } else if (i + 1 < n && is_op2(slice(src, i, i + 2))) {
+      push(toks, tok("op", slice(src, i, i + 2), line));
+      i = i + 2;
+    } else if (is_op1(c)) {
+      push(toks, tok("op", c, line));
+      i = i + 1;
+    } else {
+      push(toks, tok("err", "无法识别的字符 " + c, line));
+      i = i + 1;
+    }
+  }
+  push(toks, tok("eof", "", line));
+  return toks;
+}
+
+fn tok(t, v, line) {
+  return { t: t, v: v, line: line };
+}
+
+fn is_letter(c) {
+  if (c >= "A" && c <= "Z") { return true; }
+  if (c >= "a" && c <= "z") { return true; }
+  if (c == "_") { return true; }
+  if (ord(c) > 127) { return true; }
+  return false;
+}
+
+fn is_ident(c) {
+  if (is_letter(c)) { return true; }
+  if (c >= "0" && c <= "9") { return true; }
+  return false;
+}
+
+fn is_op2(s) {
+  if (s == "==" || s == "!=" || s == "<=" || s == ">=" || s == "&&" || s == "||") { return true; }
+  return false;
+}
+
+fn is_op1(c) {
+  if (c == "+" || c == "-" || c == "*" || c == "/" || c == "%" || c == "<" || c == ">" || c == "=" || c == "!") { return true; }
+  if (c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "," || c == "." || c == ";" || c == ":") { return true; }
+  return false;
+}
+
+fn compile_source(src) {
+  let st = { toks: tokenize(src), i: 0, dead: false, err: "", fns: {}, line: 1 };
+  let guard = 0;
+  while (!st.dead && peek(st).t != "eof" && guard < 10000) {
+    guard = guard + 1;
+    if (peek(st).t == "err") {
+      fail(st, peek(st).v + "（第 " + str(peek(st).line) + " 行）");
+    } else if (peek(st).t == "id" && peek(st).v == "fn") {
+      parse_fn(st);
+    } else {
+      fail(st, "顶层只能是函数（第 " + str(peek(st).line) + " 行）");
+    }
+  }
+  if (st.dead) { return { ok: false, error: st.err, program: null }; }
+  return { ok: true, error: null, program: { functions: st.fns, entry: "main" } };
+}
+
+fn peek(st) { return st.toks[st.i]; }
+
+fn eat(st, t, v) {
+  let p = st.toks[st.i];
+  if (p.t == t && p.v == v) {
+    st.i = st.i + 1;
+    st.line = p.line;
+    return p;
+  }
+  return null;
+}
+
+fn eat_type(st, t) {
+  let p = st.toks[st.i];
+  if (p.t == t) {
+    st.i = st.i + 1;
+    st.line = p.line;
+    return p;
+  }
+  return null;
+}
+
+fn expect(st, t, v) {
+  let p = eat(st, t, v);
+  if (p == null) {
+    let g = peek(st);
+    fail(st, "期望 " + v + "（第 " + str(g.line) + " 行）");
+    if (!st.dead) { return null; }
+    if (g.t != "eof") { st.i = st.i + 1; }
+  }
+  return p;
+}
+
+fn parse_fn(st) {
+  if (st.dead) { return 0; }
+  expect(st, "id", "fn");
+  let name = eat_type(st, "id");
+  if (name == null) { fail(st, "缺少函数名"); return 0; }
+  expect(st, "op", "(");
+  let params = [];
+  if (eat(st, "op", ")") == null) {
+    let guard = 0;
+    while (!st.dead && guard < 64) {
+      guard = guard + 1;
+      let p = eat_type(st, "id");
+      if (p == null) { fail(st, "参数无效"); return 0; }
+      push(params, p.v);
+      if (eat(st, "op", ")") != null) { guard = 100; }
+      else { expect(st, "op", ","); }
+    }
+  }
+  let em = { code: [], slots: {}, nexts: len(params), line: st.line };
+  let pi = 0;
+  while (pi < len(params)) {
+    em.slots[params[pi]] = pi;
+    pi = pi + 1;
+  }
+  expect(st, "op", "{");
+  parse_block(st, em);
+  emit(em, 4, 0, 0);
+  emit(em, 24, 0, 0);
+  if (st.dead) { return 0; }
+  st.fns[name.v] = { name: name.v, params: params, locals: em.nexts, code: em.code };
+  return 1;
+}
+
+fn parse_block(st, em) {
+  let guard = 0;
+  while (!st.dead && guard < 10000) {
+    guard = guard + 1;
+    let p = peek(st);
+    if (p.t == "op" && p.v == "}") { st.i = st.i + 1; return 0; }
+    if (p.t == "eof") { fail(st, "代码块没有结束"); return 0; }
+    parse_stmt(st, em);
+  }
+  return 0;
+}
+
+fn parse_stmt(st, em) {
+  if (st.dead) { return 0; }
+  let p = peek(st);
+  em.line = p.line;
+  if (p.t == "id" && p.v == "let") { return parse_let(st, em); }
+  if (p.t == "id" && p.v == "if") { return parse_if(st, em); }
+  if (p.t == "id" && p.v == "while") { return parse_while(st, em); }
+  if (p.t == "id" && p.v == "return") { return parse_return(st, em); }
+  if (p.t == "id" && p.v == "fn") { fail(st, "函数不能嵌套"); return 0; }
+  if (p.t == "id") {
+    let n1 = st.toks[st.i + 1];
+    if (n1.t == "op" && n1.v == "=") {
+      if (!has(em.slots, p.v)) { fail(st, "未定义变量 " + p.v); return 0; }
+      let slot = em.slots[p.v];
+      st.i = st.i + 2;
+      parse_expr(st, em);
+      expect(st, "op", ";");
+      emit(em, 6, slot, 0);
+      return 0;
+    }
+    if (n1.t == "op" && (n1.v == "." || n1.v == "[")) {
+      return parse_chain_stmt(st, em);
+    }
+  }
+  parse_expr(st, em);
+  if (st.dead) { return 0; }
+  expect(st, "op", ";");
+  emit(em, 25, 0, 0);
+  return 0;
+}
+
+fn parse_chain_stmt(st, em) {
+  let root = eat_type(st, "id");
+  if (root == null || !has(em.slots, root.v)) { fail(st, "未定义变量"); return 0; }
+  emit(em, 5, em.slots[root.v], 0);
+  let guard = 0;
+  while (!st.dead && guard < 32) {
+    guard = guard + 1;
+    if (eat(st, "op", ".") != null) {
+      let field = eat_type(st, "id");
+      if (field == null) { fail(st, "缺少属性名"); return 0; }
+      if (peek(st).t == "op" && peek(st).v == "=") {
+        st.i = st.i + 1;
+        emit(em, 2, field.v, 0);
+        parse_expr(st, em);
+        expect(st, "op", ";");
+        emit(em, 29, 0, 0);
+        return 0;
+      }
+      emit(em, 2, field.v, 0);
+      emit(em, 28, 0, 0);
+    } else if (eat(st, "op", "[") != null) {
+      parse_expr(st, em);
+      expect(st, "op", "]");
+      if (peek(st).t == "op" && peek(st).v == "=") {
+        st.i = st.i + 1;
+        parse_expr(st, em);
+        expect(st, "op", ";");
+        emit(em, 29, 0, 0);
+        return 0;
+      }
+      emit(em, 28, 0, 0);
+    } else {
+      expect(st, "op", ";");
+      emit(em, 25, 0, 0);
+      return 0;
+    }
+  }
+  return 0;
+}
+
+fn parse_let(st, em) {
+  expect(st, "id", "let");
+  let name = eat_type(st, "id");
+  if (name == null) { fail(st, "let 缺少名字"); return 0; }
+  expect(st, "op", "=");
+  parse_expr(st, em);
+  expect(st, "op", ";");
+  if (has(em.slots, name.v)) { fail(st, "变量重复 " + name.v); return 0; }
+  let slot = em.nexts;
+  em.slots[name.v] = slot;
+  em.nexts = em.nexts + 1;
+  emit(em, 6, slot, 0);
+  return 0;
+}
+
+fn parse_return(st, em) {
+  expect(st, "id", "return");
+  if (eat(st, "op", ";") != null) {
+    emit(em, 4, 0, 0);
+    emit(em, 24, 0, 0);
+    return 0;
+  }
+  parse_expr(st, em);
+  expect(st, "op", ";");
+  emit(em, 24, 0, 0);
+  return 0;
+}
+
+fn parse_while(st, em) {
+  expect(st, "id", "while");
+  expect(st, "op", "(");
+  let start = here(em);
+  parse_expr(st, em);
+  expect(st, "op", ")");
+  let jz = emit(em, 21, 0, 0);
+  expect(st, "op", "{");
+  parse_block(st, em);
+  emit(em, 20, start, 0);
+  patch(em, jz, here(em));
+  return 0;
+}
+
+fn parse_if(st, em) {
+  expect(st, "id", "if");
+  expect(st, "op", "(");
+  parse_expr(st, em);
+  expect(st, "op", ")");
+  let jz = emit(em, 21, 0, 0);
+  expect(st, "op", "{");
+  parse_block(st, em);
+  if (eat(st, "id", "else") != null) {
+    let jmp = emit(em, 20, 0, 0);
+    patch(em, jz, here(em));
+    if (peek(st).t == "id" && peek(st).v == "if") { parse_if(st, em); }
+    else {
+      expect(st, "op", "{");
+      parse_block(st, em);
+    }
+    patch(em, jmp, here(em));
+  } else {
+    patch(em, jz, here(em));
+  }
+  return 0;
+}
+
+fn parse_expr(st, em) { return parse_or(st, em); }
+
+fn parse_or(st, em) {
+  parse_and(st, em);
+  while (!st.dead && peek(st).t == "op" && peek(st).v == "||") {
+    st.i = st.i + 1;
+    emit(em, 30, 0, 0);
+    let jnz = emit(em, 22, 0, 0);
+    emit(em, 25, 0, 0);
+    parse_and(st, em);
+    patch(em, jnz, here(em));
+  }
+  return 0;
+}
+
+fn parse_and(st, em) {
+  parse_cmp(st, em);
+  while (!st.dead && peek(st).t == "op" && peek(st).v == "&&") {
+    st.i = st.i + 1;
+    emit(em, 30, 0, 0);
+    let jz = emit(em, 21, 0, 0);
+    emit(em, 25, 0, 0);
+    parse_cmp(st, em);
+    patch(em, jz, here(em));
+  }
+  return 0;
+}
+
+fn parse_cmp(st, em) {
+  parse_add(st, em);
+  while (!st.dead && is_cmp(peek(st))) {
+    let op = peek(st).v;
+    st.i = st.i + 1;
+    parse_add(st, em);
+    emit(em, cmp_op(op), 0, 0);
+  }
+  return 0;
+}
+
+fn is_cmp(p) {
+  if (p.t != "op") { return false; }
+  if (p.v == "==" || p.v == "!=" || p.v == "<" || p.v == ">" || p.v == "<=" || p.v == ">=") { return true; }
+  return false;
+}
+
+fn cmp_op(op) {
+  if (op == "==") { return 12; }
+  if (op == "!=") { return 13; }
+  if (op == "<") { return 14; }
+  if (op == ">") { return 15; }
+  if (op == "<=") { return 16; }
+  return 17;
+}
+
+fn parse_add(st, em) {
+  parse_mul(st, em);
+  while (!st.dead && peek(st).t == "op" && (peek(st).v == "+" || peek(st).v == "-")) {
+    let op = peek(st).v;
+    st.i = st.i + 1;
+    parse_mul(st, em);
+    if (op == "+") { emit(em, 7, 0, 0); }
+    else { emit(em, 8, 0, 0); }
+  }
+  return 0;
+}
+
+fn parse_mul(st, em) {
+  parse_unary(st, em);
+  while (!st.dead && peek(st).t == "op" && (peek(st).v == "*" || peek(st).v == "/" || peek(st).v == "%")) {
+    let op = peek(st).v;
+    st.i = st.i + 1;
+    parse_unary(st, em);
+    if (op == "*") { emit(em, 9, 0, 0); }
+    else if (op == "/") { emit(em, 10, 0, 0); }
+    else { emit(em, 11, 0, 0); }
+  }
+  return 0;
+}
+
+fn parse_unary(st, em) {
+  if (st.dead) { return 0; }
+  if (eat(st, "op", "!") != null) { parse_unary(st, em); emit(em, 18, 0, 0); return 0; }
+  if (eat(st, "op", "-") != null) { parse_unary(st, em); emit(em, 19, 0, 0); return 0; }
+  return parse_post(st, em);
+}
+
+fn parse_post(st, em) {
+  parse_primary(st, em);
+  while (!st.dead) {
+    if (eat(st, "op", "[") != null) {
+      parse_expr(st, em);
+      expect(st, "op", "]");
+      emit(em, 28, 0, 0);
+    } else if (eat(st, "op", ".") != null) {
+      let name = eat_type(st, "id");
+      if (name == null) { fail(st, "缺少属性名"); return 0; }
+      emit(em, 2, name.v, 0);
+      emit(em, 28, 0, 0);
+    } else { return 0; }
+  }
+  return 0;
+}
+
+fn parse_primary(st, em) {
+  if (st.dead) { return 0; }
+  let p = peek(st);
+  em.line = p.line;
+  if (p.t == "num") {
+    st.i = st.i + 1;
+    emit(em, 1, num_hook(p.v), 0);
+    return 0;
+  }
+  if (p.t == "str") {
+    st.i = st.i + 1;
+    emit(em, 2, p.v, 0);
+    return 0;
+  }
+  if (p.t == "bool") {
+    st.i = st.i + 1;
+    if (p.v) { emit(em, 3, 1, 0); }
+    else { emit(em, 3, 0, 0); }
+    return 0;
+  }
+  if (p.t == "null") {
+    st.i = st.i + 1;
+    emit(em, 4, 0, 0);
+    return 0;
+  }
+  if (p.t == "id") {
+    st.i = st.i + 1;
+    if (eat(st, "op", "(") != null) {
+      let argc = 0;
+      if (eat(st, "op", ")") == null) {
+        let guard = 0;
+        while (!st.dead && guard < 64) {
+          guard = guard + 1;
+          parse_expr(st, em);
+          argc = argc + 1;
+          if (eat(st, "op", ")") != null) { guard = 100; }
+          else { expect(st, "op", ","); }
+        }
+      }
+      emit(em, 23, p.v, argc);
+      return 0;
+    }
+    if (!has(em.slots, p.v)) { fail(st, "未定义变量 " + p.v); return 0; }
+    emit(em, 5, em.slots[p.v], 0);
+    return 0;
+  }
+  if (eat(st, "op", "(") != null) {
+    parse_expr(st, em);
+    expect(st, "op", ")");
+    return 0;
+  }
+  if (eat(st, "op", "[") != null) {
+    let narr = 0;
+    if (eat(st, "op", "]") == null) {
+      let guardArr = 0;
+      while (!st.dead && guardArr < 10000) {
+        guardArr = guardArr + 1;
+        parse_expr(st, em);
+        narr = narr + 1;
+        if (eat(st, "op", "]") != null) { guardArr = 20000; }
+        else { expect(st, "op", ","); }
+      }
+    }
+    emit(em, 26, narr, 0);
+    return 0;
+  }
+  if (eat(st, "op", "{") != null) {
+    let nobj = 0;
+    if (eat(st, "op", "}") == null) {
+      let guardObj = 0;
+      while (!st.dead && guardObj < 10000) {
+        guardObj = guardObj + 1;
+        let k = peek(st);
+        if (k.t == "str" || k.t == "id") {
+          st.i = st.i + 1;
+          emit(em, 2, k.v, 0);
+        } else {
+          fail(st, "对象键无效");
+          return 0;
+        }
+        expect(st, "op", ":");
+        parse_expr(st, em);
+        nobj = nobj + 1;
+        if (eat(st, "op", "}") != null) { guardObj = 20000; }
+        else { expect(st, "op", ","); }
+      }
+    }
+    emit(em, 27, nobj, 0);
+    return 0;
+  }
+  fail(st, "表达式无效（第 " + str(p.line) + " 行）");
+  if (p.t != "eof") { st.i = st.i + 1; }
+  return 0;
+}
+
+fn emit(em, op, a, b) {
+  push(em.code, [op, a, b, em.line]);
+  return len(em.code) - 1;
+}
+
+fn here(em) { return len(em.code); }
+
+fn patch(em, at, addr) {
+  let ins = em.code[at];
+  ins[1] = addr;
+  return 0;
+}

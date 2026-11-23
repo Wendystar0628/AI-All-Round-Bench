@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><body style="background:#222;margin:0">
+<canvas id="c" width="1400" height="520"></canvas>
+<script src="../js/util.js"></script><script src="../js/geom.js"></script><script src="../js/mesh.js"></script><script src="../js/font.js"></script>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const chars=[...AE.Font.strokeChars]; let i=0;
+chars.forEach((ch,k)=>{ const g=AE.Font.glyph('forge',ch); const S=100; const x0=(k%14)*100+5, y0=Math.floor(k/14)*105+5;
+ ctx.save(); ctx.translate(x0,y0); ctx.fillStyle='#e8a050'; ctx.beginPath();
+ for(const p of g.polys){ for(let q=0;q<p.length;q+=2){ if(q==0)ctx.moveTo(p[q]*S,p[q+1]*S); else ctx.lineTo(p[q]*S,p[q+1]*S);} ctx.closePath(); }
+ ctx.fill('nonzero'); ctx.restore(); });
+// system font
+const row=3; ['锻','锤','a','B'].forEach((ch,k)=>{ const g=AE.Font.glyph('system',ch); const S=100; ctx.save(); ctx.translate(k*100+5, 320); ctx.fillStyle='#8cf'; ctx.beginPath(); for(const p of g.polys){ for(let q=0;q<p.length;q+=2){ if(q==0)ctx.moveTo(p[q]*S,p[q+1]*S); else ctx.lineTo(p[q]*S,p[q+1]*S);} ctx.closePath(); } ctx.fill('nonzero'); ctx.restore(); });
+document.title='done';
+</script>

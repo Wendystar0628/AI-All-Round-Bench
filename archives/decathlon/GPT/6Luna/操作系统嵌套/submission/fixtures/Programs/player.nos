@@ -1,0 +1,5 @@
+let playerTicks = 0
+while true {
+  syscall("player.frame")
+  playerTicks = playerTicks + 1
+}

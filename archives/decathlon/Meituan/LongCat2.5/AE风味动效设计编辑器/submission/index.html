@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AE 风味动效设计编辑器</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- 顶部菜单 -->
+  <div id="menubar">
+    <div class="mb-brand">锻 · 动效设计编辑器</div>
+    <div class="mb-menus" id="menus"></div>
+    <div class="mb-right">
+      <span id="mb-compname" class="mb-compname"></span>
+      <button id="btn-save" class="mb-btn" title="保存工程 (Ctrl+S)">保存</button>
+      <button id="btn-open" class="mb-btn" title="打开工程">打开</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <!-- 左：项目 -->
+    <div id="panel-left">
+      <div class="panel-title">项目<span class="panel-sub" id="proj-stats"></span></div>
+      <div id="project-tree" class="project-tree"></div>
+      <div class="panel-title" style="margin-top:6px">素材 / 合成</div>
+      <div id="comp-list" class="comp-list"></div>
+    </div>
+
+    <!-- 中：画布 -->
+    <div id="center">
+      <div id="viewer-toolbar">
+        <div class="vt-group" id="tool-group"></div>
+        <div class="vt-sep"></div>
+        <div class="vt-group">
+          <button class="vt-btn" data-act="zoom-out" title="缩小 (-)">−</button>
+          <span id="zoom-label" class="vt-label">100%</span>
+          <button class="vt-btn" data-act="zoom-in" title="放大 (+)">+</button>
+          <button class="vt-btn" data-act="zoom-fit" title="适配 (Shift+/)" style="width:auto;padding:0 8px">适配</button>
+        </div>
+        <div class="vt-sep"></div>
+        <div class="vt-group">
+          <button class="vt-btn" data-act="toggle-grid" title="网格 (Ctrl+')">网格</button>
+          <button class="vt-btn" data-act="toggle-guides" title="辅助线">辅助</button>
+          <button class="vt-btn" data-act="toggle-safe" title="安全框">安全框</button>
+        </div>
+        <div class="vt-sep"></div>
+        <div class="vt-group">
+          <button class="vt-btn" data-act="view-2d" title="二维视图">2D</button>
+          <button class="vt-btn" data-act="view-3d" title="三维视图">3D</button>
+          <button class="vt-btn" data-act="view-top" title="顶视">顶</button>
+          <button class="vt-btn" data-act="view-front" title="前视">前</button>
+        </div>
+        <div class="vt-right">
+          <label class="vt-check"><input type="checkbox" id="chk-motionblur"> 运动模糊</label>
+          <label class="vt-check"><input type="checkbox" id="chk-dof" checked> 景深</label>
+          <label class="vt-check"><input type="checkbox" id="chk-helpers" checked> 辅助元素</label>
+        </div>
+      </div>
+      <div id="viewer-wrap">
+        <canvas id="gl"></canvas>
+        <canvas id="overlay"></canvas>
+        <div id="viewer-empty" class="viewer-empty hidden">
+          <div class="ve-inner">
+            <div class="ve-title">空工程</div>
+            <div class="ve-desc">在「项目」中新建合成，或从示例工程开始。</div>
+            <button class="vt-btn big" id="btn-newcomp">新建合成</button>
+            <button class="vt-btn big" id="btn-loaddemo">载入「锻字」示例</button>
+          </div>
+        </div>
+        <div id="viewer-hud">
+          <div id="hud-time">0:00:00:00</div>
+          <div id="hud-info"></div>
+        </div>
+        <div id="viewer-label"></div>
+      </div>
+      <!-- 底部：时间轴 / 曲线 / 节点 / 音频 -->
+      <div id="bottom">
+        <div id="bottom-tabs">
+          <button class="bt-tab active" data-tab="timeline">时间轴</button>
+          <button class="bt-tab" data-tab="graph">曲线编辑器</button>
+          <button class="bt-tab" data-tab="nodes">节点编辑器</button>
+          <button class="bt-tab" data-tab="audio">音频</button>
+          <div class="bt-right">
+            <button class="vt-btn" id="btn-add-layer" title="新建图层">+ 图层</button>
+            <button class="vt-btn" id="btn-add-comp" title="新建合成">+ 合成</button>
+          </div>
+        </div>
+        <div id="bottom-body">
+          <div id="tab-timeline" class="tab-page active">
+            <div id="timeline">
+              <div id="tl-left">
+                <div id="tl-head">
+                  <div class="tl-corner">
+                    <button class="vt-btn" id="btn-play" title="播放/暂停 (空格)">▶</button>
+                    <button class="vt-btn" id="btn-stop" title="回到工作区起点">⏮</button>
+                    <button class="vt-btn" id="btn-prevframe" title="上一帧 (←)">‹</button>
+                    <button class="vt-btn" id="btn-nextframe" title="下一帧 (→)">›</button>
+                    <button class="vt-btn" id="btn-loop" title="循环工作区 (L)">🔁</button>
+                    <button class="vt-btn" id="btn-ramp" title="RAM 预览">预览</button>
+                  </div>
+                  <div class="tl-transport">
+                    <span id="tl-clock">00:00:00:00</span>
+                    <span class="tl-sep">/</span>
+                    <span id="tl-dur" class="tl-dim">00:15:00:00</span>
+                    <span class="tl-sep">·</span>
+                    <span id="tl-fps" class="tl-dim">30fps</span>
+                  </div>
+                </div>
+                <div id="tl-layers"></div>
+              </div>
+              <div id="tl-right">
+                <div id="tl-ruler-wrap"><canvas id="tl-ruler"></canvas></div>
+                <div id="tl-tracks-wrap"><canvas id="tl-tracks"></canvas></div>
+                <div id="tl-scrollbar"><div id="tl-scrollbar-thumb"></div></div>
+              </div>
+            </div>
+          </div>
+          <div id="tab-graph" class="tab-page">
+            <div id="graph-wrap">
+              <div id="graph-left"></div>
+              <div id="graph-main"><canvas id="graph-canvas"></canvas></div>
+            </div>
+          </div>
+          <div id="tab-nodes" class="tab-page">
+            <div id="node-wrap">
+              <div id="node-toolbar">
+                <select id="node-geometry-select" class="vt-select"></select>
+                <button class="vt-btn" id="node-add">+ 节点</button>
+                <button class="vt-btn" id="node-regroup">封装为组</button>
+                <button class="vt-btn" id="node-eval">求值</button>
+                <span id="node-status" class="tl-dim"></span>
+              </div>
+              <div id="node-canvas-wrap"><canvas id="node-canvas"></canvas></div>
+            </div>
+          </div>
+          <div id="tab-audio" class="tab-page">
+            <div id="audio-wrap">
+              <div id="audio-layers"></div>
+              <div id="audio-info" class="tl-dim">音色图层使用内置合成器生成声音，播放时声画同步。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右：属性 -->
+    <div id="panel-right">
+      <div class="panel-title">属性 <span class="panel-sub" id="prop-layer-name"></span></div>
+      <div id="prop-body">
+        <div id="prop-empty" class="prop-empty">未选择图层</div>
+        <div id="prop-content" class="hidden">
+          <div id="prop-scroll"></div>
+          <div id="expr-editor" class="hidden">
+            <div class="expr-head">
+              <span id="expr-propname">表达式</span>
+              <span class="expr-btns">
+                <button class="vt-btn" id="expr-apply">应用</button>
+                <button class="vt-btn" id="expr-close">关闭</button>
+              </span>
+            </div>
+            <textarea id="expr-text" spellcheck="false"></textarea>
+            <div id="expr-error" class="expr-error"></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-title">效果 <span class="panel-sub" id="fx-count"></span></div>
+      <div id="fx-list"></div>
+      <div class="panel-title">预览 / 导出</div>
+      <div id="export-box">
+        <div class="tl-dim" style="font-size:11px;line-height:1.5">window.videoExport<br>runs / begin / frame / end</div>
+        <button class="vt-btn" id="btn-export-test">测试导出接口</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="statusbar">
+    <span id="sb-msg">就绪</span>
+    <span class="sb-right" id="sb-stats"></span>
+  </div>
+</div>
+
+<!-- 弹窗 -->
+<div id="modal-mask" class="hidden"><div id="modal"></div></div>
+<input type="file" id="file-open" accept=".json" style="display:none">
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/expression.js"></script>
+<script src="js/model.js"></script>
+<script src="js/geometry.js"></script>
+<script src="js/nodes.js"></script>
+<script src="js/render.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/composite.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

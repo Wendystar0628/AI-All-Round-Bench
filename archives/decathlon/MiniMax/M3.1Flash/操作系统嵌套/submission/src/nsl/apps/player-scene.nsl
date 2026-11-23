@@ -1,0 +1,217 @@
+/*
+ * 子系统应用：飞行场景进程（NSL 程序）
+ * ------------------------------------------------------------
+ * 负责直升机本体状态：默认演出按场景资源里的关键帧时序取样；
+ * 飞行排演时按虚拟时间连续积分机体状态，读取飞控进程写入的舵面。
+ * 状态只由本进程计算，播放器只负责显示与转发。
+ */
+var PARENT = 0;
+var FXPID = 0;
+var MODE = "show";
+var T = 0;
+var LAST = 0;
+
+/* 演出时序（从场景资源读入） */
+var KEYS = [];
+var KEYTIMES = [];
+
+/* 排演状态 */
+var POS = [0, 1.62, 0];
+var VEL = [0, 0, 0];
+var ROT = [0, 0, 0];     /* 俯仰、偏航、滚转 */
+var ROTV = [0, 0, 0];
+var ROTOR = 0;
+var DMG = [];
+var CTRL = [0.5, 0, 0];
+var CTRLTIME = 0;
+var DEAD = 0;
+var IMPACT = 0;
+var FAULT = 0;
+var WIND = 0;
+var HDG = 0;
+var FAULTAT = 999;
+var TICK = 0;
+
+function A(o, k) { return obj.get(o, k); }
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function send(to, obj) { call("msg.send", { to: to, payload: json.str(obj) }); }
+function f(v) { return num.toInt(v * 1000) / 1000; }
+
+/* ---------- 演出取样 ---------- */
+function loadKeys(text) {
+  KEYS = []; KEYTIMES = [];
+  var doc = json.parse(text);
+  var tl = A(doc, "timeline");
+  if (tl == null) { return; }
+  var ks = A(tl, "keys");
+  for (var i = 0; i < arr.len(ks); i = i + 1) {
+    var k = arr.get(ks, i);
+    arr.push(KEYS, k);
+    arr.push(KEYTIMES, num.toInt(A(k, "t") * 1000));
+  }
+}
+function lerp(a, b, u) { return a + (b - a) * u; }
+function sampleShow(t) {
+  if (arr.len(KEYS) == 0) { return; }
+  var ms = num.toInt(t * 1000);
+  var i = 0;
+  while (i < arr.len(KEYTIMES) - 1 && arr.get(KEYTIMES, i + 1) <= ms) { i = i + 1; }
+  var k0 = arr.get(KEYS, i);
+  var k1 = arr.get(KEYS, math.min(i + 1, arr.len(KEYS) - 1));
+  var t0 = arr.get(KEYTIMES, i);
+  var t1 = arr.get(KEYTIMES, math.min(i + 1, arr.len(KEYTIMES) - 1));
+  var u = 0;
+  if (t1 > t0) { u = (ms - t0) / (t1 - t0); }
+  if (u < 0) { u = 0; }
+  if (u > 1) { u = 1; }
+  var p0 = A(k0, "pos"); var p1 = A(k1, "pos");
+  var r0 = A(k0, "rot"); var r1 = A(k1, "rot");
+  var np = []; var nr = [];
+  for (var q = 0; q < 3; q = q + 1) {
+    arr.push(np, lerp(num.toInt(arr.get(p0, q) * 1000) / 1000, num.toInt(arr.get(p1, q) * 1000) / 1000, u));
+    arr.push(nr, lerp(num.toInt(arr.get(r0, q) * 1000) / 1000, num.toInt(arr.get(r1, q) * 1000) / 1000, u));
+  }
+  POS = np; ROT = nr;
+  ROTOR = lerp(num.toInt(A(k0, "rotor") * 100) / 100, num.toInt(A(k1, "rotor") * 100) / 100, u);
+  var d0 = A(k0, "damage"); var d1 = A(k1, "damage");
+  DMG = [];
+  var names = [];
+  arr.push(names, "body"); arr.push(names, "glass"); arr.push(names, "engine");
+  arr.push(names, "blades"); arr.push(names, "hub"); arr.push(names, "skidL");
+  arr.push(names, "skidR"); arr.push(names, "strutL"); arr.push(names, "strutR");
+  arr.push(names, "boom");
+  for (var z = 0; z < arr.len(names); z = z + 1) {
+    var nm = arr.get(names, z);
+    var a0 = num.toInt(A(d0, nm) * 100) / 100;
+    var a1 = num.toInt(A(d1, nm) * 100) / 100;
+    arr.push(DMG, [nm, lerp(a0, a1, u)]);
+  }
+  if (IMPACT == 0 && t >= 12.85) { IMPACT = 1; }
+}
+
+/* ---------- 排演积分 ---------- */
+function stepRehearse(dt) {
+  TICK = TICK + 1;
+  if (FAULT == 1 && FAULTAT > 0 && T >= FAULTAT) { FAULT = 2; FAULTAT = 0; }
+  var stale = 0;
+  if (T - CTRLTIME > 260) { stale = 1; }
+  /* 旋翼 */
+  if (FAULT == 2) { ROTOR = ROTOR - dt * 22; }
+  else { ROTOR = ROTOR + dt * (CTRL[0] * 26 - 6); }
+  if (ROTOR < 0) { ROTOR = 0; }
+  if (ROTOR > 34) { ROTOR = 34; }
+  /* 控制：舵面保持到下一次写入；控制陈旧时机体失稳 */
+  var pitchCmd = CTRL[1];
+  var yawCmd = CTRL[2];
+  if (stale == 1) {
+    pitchCmd = pitchCmd + (TICK % 7 - 3) * 0.02 * math.min(3, (T - CTRLTIME) / 300);
+    yawCmd = yawCmd + (TICK % 5 - 2) * 0.03 * math.min(3, (T - CTRLTIME) / 300);
+  }
+  /* 姿态 */
+  ROTV[0] = ROTV[0] + (pitchCmd - ROT[0] * 1.4) * dt * 3.0;
+  ROTV[1] = ROTV[1] + (yawCmd - ROT[1] * 1.2) * dt * 2.2;
+  ROTV[2] = ROTV[2] + (stale * 0.5 + pitchCmd * 0.35) * dt * 1.6;
+  ROTV[0] = ROTV[0] * (1 - dt * 0.8);
+  ROTV[1] = ROTV[1] * (1 - dt * 0.8);
+  ROTV[2] = ROTV[2] * (1 - dt * 0.8);
+  ROT[0] = ROT[0] + ROTV[0] * dt;
+  ROT[1] = ROT[1] + ROTV[1] * dt;
+  ROT[2] = ROT[2] + ROTV[2] * dt;
+  /* 升力与重力 */
+  var lift = ROTOR * ROTOR * 0.0092 * (0.45 + CTRL[0]);
+  var g = 9.8;
+  VEL[1] = VEL[1] + (lift - g) * dt;
+  VEL[0] = VEL[0] + (math.sin(ROT[1]) * lift * 0.5 + WIND * 0.6) * dt;
+  VEL[2] = VEL[2] + (-math.cos(ROT[1]) * lift * 0.5) * dt;
+  VEL[0] = VEL[0] * (1 - dt * 0.35);
+  VEL[1] = VEL[1] * (1 - dt * 0.12);
+  VEL[2] = VEL[2] * (1 - dt * 0.35);
+  POS[0] = POS[0] + VEL[0] * dt;
+  POS[1] = POS[1] + VEL[1] * dt;
+  POS[2] = POS[2] + VEL[2] * dt;
+  /* 触地 */
+  if (POS[1] <= 0.9 && DEAD == 0) {
+    POS[1] = 0.9;
+    DEAD = 1; IMPACT = 1;
+    VEL[0] = VEL[0] * 0.2; VEL[1] = 0; VEL[2] = VEL[2] * 0.2;
+    ROTV[0] = 0; ROTV[1] = 0; ROTV[2] = 0;
+    DMG = [];
+    arr.push(DMG, ["body", 0.55]);
+    arr.push(DMG, ["skidL", 0.9]);
+    arr.push(DMG, ["skidR", 0.9]);
+    arr.push(DMG, ["strutL", 0.8]);
+    arr.push(DMG, ["glass", 0.5]);
+    arr.push(DMG, ["blades", 0.7]);
+  }
+  if (POS[1] < -4) { POS[1] = -4; }
+}
+
+/* ---------- 主循环 ---------- */
+function main() {
+  var args = json.parse(sys.syscall("app.args", "{}"));
+  PARENT = num.toInt(A(args, "parent"));
+  FXPID = num.toInt(A(args, "fxPid"));
+  var sc = call("file.read", { path: "/Demo/helicopter-24.scene" });
+  if (A(sc, "ok")) { loadKeys(A(sc, "content")); }
+  LAST = sys.time();
+  while (true) {
+    var raw = sys.takeMsg();
+    if (raw != null && str.len(raw) > 0) {
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        var et = A(ev, "type");
+        if (et == "tick") {
+          MODE = A(ev, "mode");
+          T = num.toInt(A(ev, "t"));
+        }
+        if (et == "ctrl") {
+          var c = A(ev, "ctrl");
+          CTRL = [num.toInt(A(c, "collective")) / 100, num.toInt(A(c, "pitch")) / 100, num.toInt(A(c, "yaw")) / 100];
+          CTRLTIME = T;
+        }
+        if (et == "rehearse") {
+          MODE = "rehearse";
+          T = 0; DEAD = 0; IMPACT = 0; FAULT = 0; FAULTAT = 999;
+          POS = [0, 1.62, 0]; VEL = [0, 0, 0]; ROT = [0, 0, 0]; ROTV = [0, 0, 0];
+          ROTOR = 0; CTRL = [0.5, 0, 0]; CTRLTIME = 0; TICK = 0;
+        }
+        if (et == "wind") { WIND = num.toInt(A(ev, "value")) / 10; }
+        if (et == "fault") {
+          var fa = num.toInt(A(ev, "at"));
+          FAULT = 1; FAULTAT = fa;
+        }
+        if (et == "hdg") { HDG = num.toInt(A(ev, "value")) / 100; }
+      }
+    }
+    var now = sys.time();
+    var dt = (now - LAST) / 1000;
+    LAST = now;
+    if (dt < 0) { dt = 0; }
+    if (dt > 0.4) { dt = 0.4; }
+    if (MODE == "rehearse") { stepRehearse(dt); }
+    else { sampleShow(T); }
+    var out = [];
+    oput(out, "type", "heli");
+    oput(out, "pos", POS);
+    oput(out, "rot", ROT);
+    oput(out, "rotor", ROTOR);
+    oput(out, "dmg", DMG);
+    oput(out, "dead", DEAD);
+    oput(out, "impact", IMPACT);
+    oput(out, "vel", VEL);
+    oput(out, "rotv", ROTV);
+    oput(out, "t", T);
+    oput(out, "mode", MODE);
+    send(PARENT, out);
+    /* 机体状态同时交给环境特效进程，用于下洗扬尘 */
+    if (FXPID > 0) { send(FXPID, out); }
+    nap(16);
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

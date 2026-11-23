@@ -1,0 +1,132 @@
+{
+  "task": "攻城略地",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "总分",
+      "max": 100,
+      "score": 9.2,
+      "reason": "按官方 evaluate.py 完成全部480局，五档胜/平/负为：第1档 61/0/35；第2档 13/0/83；第3档 3/0/93；第4档 0/0/96；第5档 0/0/96。实力值 r=-16.790580，95%分数区间 [6.6, 11.1]；CPU超时0回合，判负0局，按官方输出计分。"
+    }
+  ],
+  "metrics": {
+    "score": 9.2,
+    "score_ci95": [
+      6.6,
+      11.1
+    ],
+    "r": -16.79058021574137,
+    "rating_ci95": [
+      -67.77814496635335,
+      25.732590622317108
+    ],
+    "total_games": 480,
+    "total_points": 77.0,
+    "wins": 77,
+    "draws": 0,
+    "losses": 403,
+    "by_opponent": [
+      {
+        "id": "tier1",
+        "name": "第1档",
+        "rating": 0.0,
+        "score_anchor": 10.0,
+        "games": 96,
+        "wins": 61,
+        "draws": 0,
+        "losses": 35,
+        "points": 61.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier2",
+        "name": "第2档",
+        "rating": 232.72971403075087,
+        "score_anchor": 20.0,
+        "games": 96,
+        "wins": 13,
+        "draws": 0,
+        "losses": 83,
+        "points": 13.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier3",
+        "name": "第3档",
+        "rating": 374.02562493412154,
+        "score_anchor": 40.0,
+        "games": 96,
+        "wins": 3,
+        "draws": 0,
+        "losses": 93,
+        "points": 3.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier4",
+        "name": "第4档",
+        "rating": 581.4837730581465,
+        "score_anchor": 60.0,
+        "games": 96,
+        "wins": 0,
+        "draws": 0,
+        "losses": 96,
+        "points": 0.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier5",
+        "name": "第5档",
+        "rating": 825.1484030205629,
+        "score_anchor": 80.0,
+        "games": 96,
+        "wins": 0,
+        "draws": 0,
+        "losses": 96,
+        "points": 0.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      }
+    ],
+    "cpu_timeout_turns": 0,
+    "forfeit_losses": 0,
+    "penalty_reasons": {
+      "bot": {},
+      "opponents": {}
+    },
+    "opponent_penalty_games": 0,
+    "simultaneous_forfeit_draws": 0,
+    "report": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\ERNIE\\5.5Flash\\攻城略地\\codex\\performance\\work\\official_report.json"
+  },
+  "notes": "评的是作答结束时的工作目录，不看 git 提交；副本位于 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\ERNIE\\5.5Flash\\攻城略地\\codex\\performance\\work\\submission。提交 bot.cpp 已按题面命令通过指定 Job 包装编译，数据目录全部官方文件逐字节一致；源码审查未见触犯指南所列整题记零规则或绕过评测的行为。首次后台启动因 PowerShell 5.1 读取无 BOM 脚本导致中文路径解析失败，未进入 evaluate.py、未进行任何对局；修正启动脚本编码后只运行一次官方评测，未重跑或剔除对局。全部480局完成；已确认本会话启动的编译、评测及其记录的子进程均已退出。"
+}

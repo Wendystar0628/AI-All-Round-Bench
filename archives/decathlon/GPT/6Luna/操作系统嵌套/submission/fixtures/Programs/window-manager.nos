@@ -1,0 +1,9 @@
+window-manager v1
+focus = click
+z-order = focused-last
+hit-test = visible-only
+let layoutTicks = 0
+while true {
+  syscall("window-manager.reconcile")
+  layoutTicks = layoutTicks + 1
+}

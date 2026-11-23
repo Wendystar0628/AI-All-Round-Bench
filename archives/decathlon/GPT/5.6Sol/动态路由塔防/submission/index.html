@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%236ee7df' d='M16 1 30 16 16 31 2 16zm0 5L7 16l9 10 9-10z'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23071014'/%3E%3C/svg%3E">
+  <title>网络安全攻防战 · 汐域守护进程</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="scene" aria-label="汐域三维网络战场"></canvas>
+
+  <div id="app">
+    <header id="topbar" class="hidden">
+      <button class="brand button-reset" id="backBtn" title="返回任务台">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span><b>汐域</b><small>GUARDIAN / 04</small></span>
+      </button>
+      <div class="mission-title"><span id="mapCode">SEC-01</span><b id="mapName">分段内网</b><em id="missionState">链路稳定</em></div>
+      <div class="resources">
+        <div class="resource compute"><span>算力</span><b id="computeVal">480</b><i>TF</i></div>
+        <div class="resource intel"><span>情报</span><b id="intelVal">90</b><i>IX</i></div>
+        <div class="integrity"><span>中枢完整度</span><div class="bar"><i id="integrityBar"></i></div><b id="integrityVal">100%</b></div>
+      </div>
+      <div class="time-controls">
+        <button id="pauseBtn" class="icon-btn" title="暂停 [空格]">Ⅱ</button>
+        <button id="speedBtn" class="speed-btn" title="调速">×1</button>
+        <button id="resetViewBtn" class="icon-btn" title="恢复默认视角 [R]">⌂</button>
+        <button id="menuBtn" class="icon-btn" title="系统菜单 [Esc]">☰</button>
+      </div>
+    </header>
+
+    <aside id="forecast" class="glass hidden">
+      <div class="panel-kicker"><i></i> TRAFFIC FORECAST</div>
+      <div class="panel-title"><b>流量预报</b><span id="waveReadout">波次 01 / 14</span></div>
+      <div id="forecastRows"></div>
+      <button id="waveBtn" class="primary wide">启动下一波 <span>↗</span></button>
+    </aside>
+
+    <aside id="inspector" class="glass hidden">
+      <button id="closeInspector" class="panel-close">×</button>
+      <div class="panel-kicker"><i></i> OBJECT INSPECTOR</div>
+      <div id="inspectorBody"></div>
+    </aside>
+
+    <div id="routeLegend" class="hidden">
+      <span data-entry="A"><i class="route-a"></i>入口 A</span>
+      <span data-entry="B"><i class="route-b"></i>入口 B</span>
+      <span data-entry="C"><i class="route-c"></i>入口 C</span>
+      <span><i class="preview-line"></i>预览改道</span>
+    </div>
+
+    <div id="eventFeed" class="hidden"></div>
+    <div id="subtitle" class="hidden"><span></span><b></b></div>
+    <div id="demoBadge" class="hidden"><i></i> 实战演示 <b id="demoTimer">00:00</b><button id="exitDemo">退出演示</button></div>
+    <div id="fakeCursor" class="hidden"><i></i><span></span></div>
+
+    <section id="deployDock" class="hidden">
+      <div class="dock-label"><span>DEPLOYMENT</span><b>设备编排</b></div>
+      <div id="towerCards" class="tower-cards"></div>
+      <div class="tools-block">
+        <button class="tool-card" data-tool="isolate"><i>◇</i><span><b>应急隔离</b><small>情报 32</small></span></button>
+        <button class="tool-card" data-tool="protocol"><i>⇣</i><span><b>协议降级</b><small>情报 26</small></span></button>
+        <button class="tool-card" data-tool="restore"><i>↻</i><span><b>备份还原</b><small>算力 60</small></span></button>
+      </div>
+    </section>
+
+    <div id="toast" role="status"></div>
+
+    <section id="landing" class="screen active">
+      <div class="landing-grid"></div>
+      <div class="landing-noise"></div>
+      <div class="hero-copy">
+        <div class="eyebrow"><i></i> AUTONOMOUS DOMAIN / TIDAL REACH</div>
+        <h1><span>网络安全</span><b>攻防战</b></h1>
+        <p>入侵组织「蛰影」已混入正常业务流。作为汐域守护进程，重构路由、部署防线，维持中枢与每一个入口的连接。</p>
+        <div class="hero-actions">
+          <button id="startBtn" class="primary hero-primary">进入任务台 <span>↗</span></button>
+          <button id="manualBtn" class="secondary">设备与威胁档案</button>
+        </div>
+        <div class="system-status"><i></i> GUARDIAN PROCESS ONLINE <span>路由表同步 6ms</span></div>
+      </div>
+      <div class="hero-orbit" aria-hidden="true">
+        <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
+        <div class="core-glyph"><i></i><span></span><b>XY</b></div>
+        <div class="float-label l1"><i></i><span>DMZ-03</span><b>可信</b></div>
+        <div class="float-label l2"><i></i><span>ICS-07</span><b>受监控</b></div>
+        <div class="float-label l3 warn"><i></i><span>WAN-11</span><b>异常</b></div>
+      </div>
+      <footer class="landing-footer"><span>汐域自治区安全响应中心</span><b>BUILD 27.4.11 // CN</b><em>所有系统由守护进程接管</em></footer>
+    </section>
+
+    <section id="selectScreen" class="screen">
+      <div class="screen-head">
+        <button class="text-back" data-screen="landing">← 退出任务台</button>
+        <div><span>MISSION CONTROL</span><h2>选择防区</h2><p>每个防区拥有不同的网络拓扑、威胁构成与布防取舍。</p></div>
+        <button id="selectManual" class="secondary compact">打开图鉴</button>
+      </div>
+      <div id="mapCards" class="map-cards"></div>
+      <div class="demo-section">
+        <div class="demo-heading"><span>COMBAT RECORDS</span><h3>实战演示</h3><p>从关键局面开始，观察改道、节点攻防与技能联动。</p></div>
+        <div id="demoCards" class="demo-cards"></div>
+      </div>
+    </section>
+
+    <section id="manualScreen" class="screen">
+      <div class="screen-head manual-head">
+        <button class="text-back" id="manualBack">← 返回</button>
+        <div><span>KNOWLEDGE BASE</span><h2>守护进程手册</h2><p>设备能力、威胁行为与网络地形的实时档案。</p></div>
+        <div class="tabs"><button class="active" data-tab="devices">设备手册</button><button data-tab="threats">威胁档案</button><button data-tab="terrain">协议与地形</button></div>
+      </div>
+      <div id="manualGrid" class="manual-grid"></div>
+    </section>
+
+    <div id="systemMenu" class="modal hidden">
+      <div class="modal-card system-card">
+        <div class="modal-kicker">GUARDIAN CONTROL</div><h2>系统已暂停</h2><p>当前战场时间与全部单位已冻结。</p>
+        <button id="resumeBtn" class="primary wide">返回战场</button>
+        <button id="restartBtn" class="secondary wide">重新启动本防区</button>
+        <button id="returnBtn" class="secondary wide danger">结束任务并返回</button>
+        <div class="volume-row"><span>主音量</span><input id="volumeSlider" type="range" min="0" max="100" value="55"><button id="muteBtn">声音：开</button></div>
+      </div>
+    </div>
+
+    <div id="report" class="modal hidden">
+      <div class="modal-card report-card">
+        <div class="report-seal" id="reportSeal">S</div><div class="modal-kicker">INCIDENT REPORT</div>
+        <h2 id="reportTitle">威胁已收束</h2><p id="reportDesc">防区链路恢复到可接受状态。</p>
+        <div id="reportStats" class="report-stats"></div>
+        <div class="report-actions"><button id="reportRestart" class="primary">再次执行</button><button id="reportReturn" class="secondary">返回任务台</button></div>
+      </div>
+    </div>
+
+    <div id="orientationPrompt" class="modal hidden">
+      <div class="modal-card orient-card"><div class="modal-kicker">INTERCEPTOR VECTOR</div><h2>设定拦截朝向</h2><p>移动鼠标调整扇形火力区，单击确认，右键取消。</p><div class="orient-actions"><button id="orientConfirm" class="primary">确认朝向</button><button id="orientCancel" class="secondary">取消部署</button></div></div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

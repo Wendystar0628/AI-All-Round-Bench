@@ -1,0 +1,100 @@
+// ============================================================
+// 图表数据进程（ChartData.osprog）
+// 从根系统电子表格的实时数据连接接收版本，按序处理，
+// 计算坐标序列后交给图表视图进程绘制。是子系统内职责
+// 可区分的独立进程，通过消息协作。
+// ============================================================
+
+let viewPid = 0
+let subId = ""
+let workbook = ""
+let range = "A1:D4"
+let labelCol = "A"
+let valueCols = ["D"]
+let version = 0
+let rows = []
+let chartType = "bar"
+let pending = []
+let state = "idle"       // idle | connecting | live | closed
+let booted = 0
+let recvCount = 0
+let procCount = 0
+
+fn boot() {
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    viewPid = m.view
+  } else if m.t == "closing" {
+    kill(self())
+  } else if m.t == "connect" {
+    do_connect(m)
+  } else if m.t == "disconnect" {
+    state = "closed"
+    send(viewPid, {"t": "data_state", "state": state, "version": version, "rows": rows, "chartType": chartType, "labelCol": labelCol, "valueCols": valueCols, "range": range, "subId": subId})
+  } else if m.t == "set_type" {
+    chartType = m.type
+    send(viewPid, {"t": "data_state", "state": state, "version": version, "rows": rows, "chartType": chartType, "labelCol": labelCol, "valueCols": valueCols, "range": range, "subId": subId})
+  } else if m.t == "data_snapshot" {
+    push(pending, m)
+    state = "live"
+    pump()
+  } else if m.t == "data_version" {
+    push(pending, m)
+    pump()
+  } else if m.t == "data_closed" {
+    state = "closed"
+    send(viewPid, {"t": "data_state", "state": state, "version": version, "rows": rows, "chartType": chartType, "labelCol": labelCol, "valueCols": valueCols, "range": range, "subId": subId})
+  }
+}
+
+fn do_connect(m) {
+  workbook = m.workbook
+  range = m.range
+  labelCol = m.labelCol
+  valueCols = m.valueCols
+  state = "connecting"
+  subId = ""
+  send(viewPid, {"t": "data_state", "state": state, "version": version, "rows": rows, "chartType": chartType, "labelCol": labelCol, "valueCols": valueCols, "range": range, "subId": subId})
+  let r = connect_data(workbook, range, labelCol, valueCols)
+  if type(r) == "map" and r.error != null {
+    state = "idle"
+    send(viewPid, {"t": "data_state", "state": "error", "error": r.error, "version": version, "rows": rows, "chartType": chartType, "labelCol": labelCol, "valueCols": valueCols, "range": range, "subId": subId})
+    return
+  }
+  state = "live"
+}
+
+fn pump() {
+  // 按序处理已接收版本（图表版本只前进不后退）
+  while len(pending) > 0 {
+    let m = pending[0]
+    pending = shift(pending)
+    if m.version > version or version == 0 {
+      version = m.version
+      rows = m.rows
+      labelCol = m.labelCol
+      valueCols = m.valueCols
+      range = m.range
+      if m.subId != null {
+        subId = m.subId
+      }
+    }
+    recvCount = recvCount + 1
+    procCount = procCount + 1
+    send(viewPid, {"t": "data_state", "state": state, "version": version, "rows": rows, "chartType": chartType, "labelCol": labelCol, "valueCols": valueCols, "range": range, "subId": subId})
+  }
+}
+
+// ---------------- 入口 ----------------
+boot()

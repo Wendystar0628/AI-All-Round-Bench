@@ -1,0 +1,162 @@
+// =====================================================================
+// 设置（/System/apps/settings.ns）：系统名称、壁纸、强调色、界面缩放、勿扰。
+// 设置保存在本系统的内核中（sys_set），窗口管理程序收到变化后立即生效。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var VW = 640;
+var VH = 500;
+var cfg = {};
+var editName = false;
+var nameText = "";
+var WALLS = [["landscape", "晨光原野"], ["dusk", "黄昏湖畔"], ["night", "星夜"]];
+var ACC = [["violet", "紫"], ["blue", "蓝"], ["teal", "青"], ["orange", "橙"], ["pink", "粉"]];
+var SCALES = [100, 125, 150, 175];
+
+func load_cfg() {
+    cfg = sys_settings();
+    nameText = cfg.name;
+}
+
+func apply(key, value) {
+    cfg[key] = value;
+    sys_set(key, value);
+}
+
+func option_row(L, x, y, tidName, val, label, sel, color) {
+    var b = add_btn(L, x, y, 0, 0, label, tidName, "#00000000", THEME.text);
+    return b;
+}
+
+func paint() {
+    var L = [];
+    add_rect(L, 0, 0, VW, VH, THEME.panel);
+    add_bold(L, 28, 22, 300, 30, "设置", 18, THEME.text, "l");
+    add_text(L, 28, 52, VW - 56, 22, "修改会立即作用于本系统的桌面与应用", 12, THEME.sub, "l");
+
+    // 系统名称
+    add_text(L, 28, 92, 200, 22, "系统名称", 13, THEME.sub, "l");
+    var nf = add_frame(L, 28, 118, 300, 36, "#f7f8fc", editName ? accent_color(cfg.accent) : THEME.line, 8);
+    nf.tid = "settings-name";
+    add_text(L, 40, 118, 280, 36, nameText + (editName ? "▏" : ""), 14, THEME.text, "l");
+
+    // 壁纸：缩略图
+    add_text(L, 28, 176, 200, 22, "壁纸", 13, THEME.sub, "l");
+    var g = add_rect(L, 28, 200, VW - 56, 118, "#00000000");
+    g.tid = "settings-wallpaper";
+    var wx = 28;
+    for (var w in WALLS) {
+        var on = cfg.wallpaper == w[0];
+        var card = add_frame(L, wx, 200, 176, 118, "#ffffff", on ? accent_color(cfg.accent) : THEME.line, 12);
+        card.hv = true;
+        card.cur = "pointer";
+        card.da = {value: w[0]};
+        card.tid = "settings-wallpaper-option";
+        var thumb = add_img(L, wx + 8, 208, 160, 78, "assets/wallpaper/" + w[0] + ".svg");
+        thumb.da = {value: w[0]};
+        thumb.r = 8;
+        add_text(L, wx + 8, 288, 160, 22, w[1], 12, THEME.text, "c");
+        wx = wx + 186;
+    }
+
+    // 强调色
+    add_text(L, 28, 346, 200, 22, "强调色", 13, THEME.sub, "l");
+    var ax = 28;
+    var ag = add_rect(L, 28, 370, 340, 40, "#00000000");
+    ag.tid = "settings-accent";
+    for (var a in ACC) {
+        var on2 = cfg.accent == a[0];
+        var dot = add_rect(L, ax, 374, 56, 32, accent_color(a[0]));
+        dot.r = 16;
+        dot.hv = true;
+        dot.cur = "pointer";
+        dot.da = {value: a[0]};
+        dot.tid = "settings-accent-option";
+        if (on2) { dot.s = "#1d2233"; dot.sw = 2; }
+        ax = ax + 64;
+    }
+
+    // 界面缩放
+    add_text(L, 380, 346, 200, 22, "界面缩放", 13, THEME.sub, "l");
+    var sx = 380;
+    var sg = add_rect(L, 380, 370, 240, 40, "#00000000");
+    sg.tid = "settings-scale";
+    for (var s in SCALES) {
+        var on3 = cfg.scale == s;
+        var sb = add_btn(L, sx, 370, 54, 34, str(s) + "%", "settings-scale-option", on3 ? accent_color(cfg.accent) : "#f0f1f6", on3 ? "#ffffff" : THEME.text);
+        sb.da = {value: str(s)};
+        sx = sx + 58;
+    }
+
+    // 勿扰
+    add_text(L, 28, 430, 300, 22, "勿扰模式（不弹出通知横幅）", 13, THEME.text, "l");
+    var dnd = add_btn(L, VW - 120, 426, 92, 30, cfg.dnd ? "已开启" : "已关闭", "settings-dnd", cfg.dnd ? accent_color(cfg.accent) : "#f0f1f6", cfg.dnd ? "#ffffff" : THEME.text);
+    dnd.tid = "settings-dnd";
+
+    sys_submit("win-" + str(WID), L);
+}
+
+func on_pointer(m) {
+    if (m.kind != "down") { return; }
+    var x = m.x;
+    var y = m.y;
+    if (inside(x, y, 28, 118, 300, 36)) { editName = true; paint(); return; }
+    editName = false;
+    if (y >= 200 && y < 318) {
+        var wx = 28;
+        for (var w in WALLS) {
+            if (inside(x, y, wx, 200, 176, 118)) { apply("wallpaper", w[0]); }
+            wx = wx + 186;
+        }
+    }
+    if (y >= 370 && y < 410 && x >= 28 && x < 368) {
+        var ax = 28;
+        for (var a in ACC) {
+            if (inside(x, y, ax, 374, 56, 32)) { apply("accent", a[0]); }
+            ax = ax + 64;
+        }
+    }
+    if (y >= 370 && y < 404 && x >= 380) {
+        var sx = 380;
+        for (var s in SCALES) {
+            if (inside(x, y, sx, 370, 54, 34)) { apply("scale", s); }
+            sx = sx + 58;
+        }
+    }
+    if (inside(x, y, VW - 120, 426, 92, 30)) {
+        apply("dnd", !cfg.dnd);
+    }
+    paint();
+}
+
+func on_key(m) {
+    if (!editName) { return; }
+    if (m.key == "Enter" || m.key == "Escape") { editName = false; }
+    else if (m.key == "Backspace") { if (len(nameText) > 0) { nameText = substr(nameText, 0, len(nameText) - 1); } }
+    else if (m.text != nil && m.text != "") { nameText = nameText + m.text; }
+    if (!editName && trim(nameText) != "") { apply("name", trim(nameText)); }
+}
+
+func main(args) {
+    WID = args[0];
+    load_cfg();
+    paint();
+    while (true) {
+        var m = sys_recv();
+        if (m.type == "view") {
+            VW = m.w;
+            VH = m.h;
+            paint();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+        } else if (m.type == "key") {
+            on_key(m);
+            paint();
+        } else if (m.type == "close-req") {
+            sys_send("wm", {type: "close", win: WID});
+            return 0;
+        }
+    }
+    return 0;
+}

@@ -1,0 +1,25 @@
+{
+  "problem": "11",
+  "parts": [
+    {
+      "name": "1",
+      "title": "三腔分层伺服分配箱",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 218, 140]}], "depth": 12, "name": "底板218x140x12"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 6]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[100, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "plane": "ZX", "origin": [0, 12, 0], "loops": [{"path": [[12, 8], [107, 8], [107, 162], [50, 206], [12, 206]]}], "depth": 118, "name": "箱体 顶面Z107 右端45度斜面"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 61], "loops": [{"rect": [21, 16, 62, 124]}], "depth": 38, "name": "上层腔"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 23], "loops": [{"rect": [21, 16, 62, 124]}], "depth": 30, "name": "下层腔"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 23], "loops": [{"rect": [147, 16, 186, 124]}], "depth": 40, "name": "右腔"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[74, 44]], "d": 30, "depth": 118, "name": "孔Φ30"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[67, 111]], "d": 18, "depth": 118, "name": "孔Φ18"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[31, 111]], "d": 26, "depth": 118, "name": "孔Φ26"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[34, 166]], "d": 30, "depth": 118, "name": "孔Φ30"},
+        {"type": "hole", "plane": {"origin": [111, 60, 107], "normal": [0.7071, 0, 0.7071], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 18, "depth": 72, "name": "斜孔Φ18 深72 倾角45 方位0"},
+        {"type": "hole", "plane": {"origin": [140, 100, 107], "normal": [0, 0.5, 0.866], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 10, "depth": 44, "name": "斜孔Φ10 深44 倾角30 方位90"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[12, 12], [206, 12], [12, 128], [206, 128]], "d": 9, "through": true, "name": "底板角孔Φ9"}
+      ]
+    }
+  ]
+}

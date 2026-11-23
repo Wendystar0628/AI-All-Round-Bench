@@ -1,0 +1,130 @@
+// =====================================================================
+// 公共界面库（/System/lib/ui.ns）：显示节点的构造与常用控件。
+// 节点格式见《程序格式与系统接口》的“显示节点”一节。
+// =====================================================================
+
+var THEME = {
+    bg: "#f4f5fa", panel: "#ffffff", line: "#e3e6ef", text: "#1d2233", sub: "#6b7388",
+    hint: "#9aa2b5", hover: "#eef0f7", select: "#e6e1ff", danger: "#e5484d", ok: "#2fb171",
+    warn: "#f5a524", accent: "#7c5cff", accentSoft: "#ece8ff", accentText: "#ffffff"
+};
+
+var ACCENTS = {
+    violet: "#7c5cff", blue: "#2f7bff", teal: "#14a79a", orange: "#ff8a3d", pink: "#f0558c"
+};
+
+func accent_color(name) {
+    if (has(ACCENTS, name)) { return ACCENTS[name]; }
+    return ACCENTS["violet"];
+}
+
+// 条件取值（程序语言没有三元运算符）
+func pick(c, a, b) {
+    if (c) { return a; }
+    return b;
+}
+
+// 文件扩展名（小写，不含点）
+func ext_of(name) {
+    var i = len(name) - 1;
+    while (i >= 0 && substr(name, i, 1) != ".") { i = i - 1; }
+    if (i < 0) { return ""; }
+    return lower(substr(name, i + 1, len(name) - i - 1));
+}
+
+func nd(t, x, y, w, h) {
+    return {t: t, x: x, y: y, w: w, h: h};
+}
+
+func add_rect(L, x, y, w, h, fill) {
+    var n = nd("r", x, y, w, h);
+    n.f = fill;
+    push(L, n);
+    return n;
+}
+
+func add_frame(L, x, y, w, h, fill, line, radius) {
+    var n = add_rect(L, x, y, w, h, fill);
+    n.s = line;
+    n.sw = 1;
+    n.r = radius;
+    return n;
+}
+
+func add_text(L, x, y, w, h, s, size, color, align) {
+    var n = nd("t", x, y, w, h);
+    n.s = s;
+    n.z = size;
+    n.c = color;
+    n.a = align;
+    push(L, n);
+    return n;
+}
+
+func add_bold(L, x, y, w, h, s, size, color, align) {
+    var n = add_text(L, x, y, w, h, s, size, color, align);
+    n.b = 1;
+    return n;
+}
+
+// 带标识的按钮：圆角底 + 居中文字。tid 为自动化标识。
+func add_btn(L, x, y, w, h, label, tid, fill, color) {
+    var r = add_rect(L, x, y, w, h, fill);
+    r.r = 8;
+    r.hv = true;
+    r.cur = "pointer";
+    r.tid = tid;
+    r.lbl = label;
+    add_text(L, x, y, w, h, label, 13, color, "c");
+    return r;
+}
+
+func add_surf(L, sys, sid, x, y, w, h, key) {
+    var n = nd("surf", x, y, w, h);
+    n.sys = sys;
+    n.id = sid;
+    n.k = key;
+    push(L, n);
+    return n;
+}
+
+func add_img(L, x, y, w, h, src) {
+    var n = nd("img", x, y, w, h);
+    n.src = src;
+    push(L, n);
+    return n;
+}
+
+func inside(px, py, x, y, w, h) {
+    return px >= x && px < x + w && py >= y && py < y + h;
+}
+
+// 按宽度截断文字（按测量结果，超出时以省略号结尾）。
+func fit_text(s, size, maxw) {
+    if (measure(s, size) <= maxw) { return s; }
+    var out = s;
+    while (len(out) > 1 && measure(out + "…", size) > maxw) {
+        out = substr(out, 0, len(out) - 1);
+    }
+    return out + "…";
+}
+
+// 文件大小的可读文本
+func size_text(n) {
+    if (n < 1024) { return str(n) + " B"; }
+    if (n < 1048576) { return fmt(n / 1024, 1) + " KB"; }
+    return fmt(n / 1048576, 1) + " MB";
+}
+
+// 两位数补零
+func two(n) {
+    if (n < 10) { return "0" + str(floor(n)); }
+    return str(floor(n));
+}
+
+// 秒数 -> "mm:ss.t" 文本
+func clock_text(sec) {
+    var m = floor(sec / 60);
+    var s = sec - m * 60;
+    return two(m) + ":" + two(floor(s)) + "." + str(floor((s - floor(s)) * 10));
+}

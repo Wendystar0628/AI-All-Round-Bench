@@ -1,0 +1,15 @@
+{
+  "problem": "01",
+  "parts": [
+    {"name":"1","title":"滑阀驱动底座","features":[{"type":"extrude","plane":"XY","loops":[{"rect":[0,0,140,120]}],"depth":16},{"type":"hole","plane":"XY","origin":[0,0,16],"at":[[8,8],[132,8],[8,112],[132,112]],"d":9,"through":true},{"type":"extrude","plane":"XY","origin":[0,0,16],"loops":[{"rect":[18,12,94,108]}],"depth":8}]},
+    {"name":"2","title":"前轴承架","placement":{"translate":[24,16,24]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-18,-18,18,18]}],"depth":54},{"type":"extrude","plane":"XZ","origin":[0,18,0],"loops":[{"rect":[-18,0,18,48]}],"depth":36},{"type":"hole","plane":"XZ","origin":[0,18,0],"at":[[0,30]],"d":26,"through":true,"reverse":true},{"type":"hole","plane":"XZ","origin":[0,18,0],"at":[[0,30]],"d":34,"depth":6,"reverse":true}]},
+    {"name":"3","title":"后轴承架","placement":{"translate":[24,104,24]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-18,-18,18,18]}],"depth":54},{"type":"extrude","plane":"XZ","origin":[0,18,0],"loops":[{"rect":[-18,0,18,48]}],"depth":36},{"type":"hole","plane":"XZ","origin":[0,18,0],"at":[[0,30]],"d":26,"through":true,"reverse":true},{"type":"hole","plane":"XZ","origin":[0,18,0],"at":[[0,30]],"d":34,"depth":6,"reverse":true}]},
+    {"name":"4","title":"前法兰轴套","placement":{"translate":[24,22,54]},"features":[{"type":"extrude","plane":"XZ","loops":[{"circle":[0,0],"d":34},{"circle":[0,0],"d":16}],"depth":8}]},
+    {"name":"5","title":"后法兰轴套","placement":{"translate":[24,98,54]},"features":[{"type":"extrude","plane":"XZ","loops":[{"circle":[0,0],"d":34},{"circle":[0,0],"d":16}],"depth":8}]},
+    {"name":"6","title":"偏心轴","placement":{"translate":[24,104,54]},"features":[{"type":"extrude","plane":"XZ","loops":[{"circle":[0,0],"d":16}],"depth":88},{"type":"extrude","plane":"XZ","origin":[0,-26,0],"loops":[{"circle":[8,0],"d":44}],"depth":36},{"type":"extrude","plane":"XZ","origin":[0,-78,0],"loops":[{"circle":[0,0],"d":24}],"depth":14}]},
+    {"name":"7","title":"槽形从动框","placement":{"translate":[72,40,48]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-30,-12,30,12]},{"rect":[-22,-5,22,5]}],"depth":20}]},
+    {"name":"8","title":"滑阀阀芯","placement":{"translate":[96,40,54],"rotate":[{"axis":"Y","angle":90}]},"features":[{"type":"extrude","plane":"XY","loops":[{"circle":[0,0],"d":16}],"depth":44},{"type":"extrude","plane":"XY","origin":[0,0,8],"loops":[{"circle":[0,0],"d":24}],"depth":6},{"type":"extrude","plane":"XY","origin":[0,0,30],"loops":[{"circle":[0,0],"d":24}],"depth":6}]},
+    {"name":"9","title":"连接销","placement":{"translate":[86,40,64],"rotate":[{"axis":"Y","angle":90}]},"features":[{"type":"extrude","plane":"XY","loops":[{"circle":[0,0],"d":8}],"depth":36}]},
+    {"name":"10","title":"导轨压板","placement":{"translate":[86,40,42]},"features":[{"type":"extrude","plane":"XY","loops":[{"rect":[-24,-8,24,8]}],"depth":4},{"type":"hole","plane":"XY","origin":[0,0,4],"at":[[-16,0],[16,0]],"d":5,"through":true}]}
+  ]
+}

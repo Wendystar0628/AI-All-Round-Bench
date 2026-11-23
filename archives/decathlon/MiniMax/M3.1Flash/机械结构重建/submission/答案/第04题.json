@@ -1,0 +1,20 @@
+{
+  "problem": "04",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏心双级迷宫泵盖",
+      "features": [
+        {"type": "revolve", "plane": "XZ", "axis": "y", "loops": [{"path": [[0, 0], [72, 0], [72, 14], [45, 14], [45, 35], [34, 35], [34, 49], [0, 49]]}], "name": "主体 外形Φ144/Φ90/Φ68"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 45], "at": [[0, 0]], "d": 58, "depth": 31, "name": "内腔Φ58"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 0], "at": [[0, 0]], "d": 30, "depth": 14, "name": "中心通孔Φ30"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 49], "at": [[0, 0]], "d": 50, "depth": 4, "name": "顶部沉孔Φ50"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[58, 0], [29, 50], [-29, 50], [-58, 0], [-29, -50], [29, -50]], "d": 9, "depth": 14, "name": "法兰螺栓孔Φ9"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 49], "at": [[0, 29], [25, -15]], "d": 6, "depth": 20, "name": "顶部小孔Φ6"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 49], "at": [[0, -29]], "d": 12, "depth": 8, "name": "Φ12孔"},
+        {"type": "hole", "plane": {"origin": [0, 0, 49], "normal": [0.5, 0, 0.866], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 6, "depth": 28, "name": "斜孔Φ6 深28 倾角30 方位0"},
+        {"type": "chamfer", "distance": 1, "edges": [[70, 0, 0]], "name": "大法兰下外圆棱C1"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "problem": "12",
+  "parts": [
+    {"name": "1", "title": "偏轴阶梯双腔泵座", "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0], "loops": [{"rect": [0, 0, 180, 125]}], "depth": 14},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 7]], "name": "左前竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[60, 0, 0]], "name": "前下直棱C1"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[8, 7], [173, 7], [8, 118], [173, 118]], "d": 9, "through": true, "cbore": {"d": 15, "depth": 4}},
+      {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 113, 0], "loops": [{"path": [[16, 14], [165, 14], [165, 57], [126, 97], [56, 97], [16, 57]]}], "depth": 101, "name": "泵座本体"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 12, 0], "at": [[82, 59]], "d": 76, "depth": 10, "name": "前沉孔Φ76"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 12, 0], "at": [[82, 58]], "d": 54, "through": true},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 21], "loops": [{"rect": [31, 20, 92, 105]}], "depth": 64, "name": "腔L"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 21], "loops": [{"rect": [102, 20, 152, 105]}], "depth": 34, "name": "腔R"},
+      {"type": "hole", "plane": "YZ", "origin": [-1, 0, 0], "at": [[62, 25]], "d": 12, "through": true, "reverse": true},
+      {"type": "hole", "plane": {"origin": [146, 64, 77], "normal": [0.7071, 0, 0.7071], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 22, "depth": 46, "name": "45°斜孔Φ22"}
+    ]}
+  ]
+}

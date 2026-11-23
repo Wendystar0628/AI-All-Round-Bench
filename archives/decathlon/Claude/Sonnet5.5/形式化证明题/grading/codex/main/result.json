@@ -1,0 +1,61 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "主定理 problem1 存在；单独编译退出码为 0，且无 sorry 警告。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "主定理 problem2 存在；单独编译退出码为 0，且无 sorry 警告。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem3.lean，也未发现其他对应文件。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem4.lean，也未发现其他对应文件。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem5.lean，也未发现其他对应文件。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "主定理 problem6 存在；单独编译退出码为 0，且无 sorry 警告。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "主定理 problem7 存在；单独编译退出码为 0，且无 sorry 警告。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "未提交 Problem8.lean，也未发现其他对应文件。"
+    }
+  ],
+  "metrics": {
+    "总分": 50.0,
+    "满分": 100,
+    "编译通过题数": 4
+  },
+  "notes": "评分版本：提交目录的工作目录；四个 Lean 文件与最新提交 0ebfff7ea8213aed8b820cd3da7a8fbffc18fc74 的对应文件逐字节一致。按要求仅检查主定理是否存在及单文件编译结果，未另查公理或逐字核对命题。"
+}

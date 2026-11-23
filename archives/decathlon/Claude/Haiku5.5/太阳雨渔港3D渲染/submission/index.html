@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>太阳雨中的小渔港堤岸</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #e6f7f8; }
+    #stage { position: fixed; inset: 0; }
+    #stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+    #stage canvas:active { cursor: grabbing; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <!-- 经 esbuild 打包的经典脚本（IIFE），可在 file:// 下直接运行 -->
+  <script src="dist/app.js"></script>
+</body>
+</html>

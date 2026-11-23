@@ -1,0 +1,10 @@
+import fs from 'fs';
+let s = fs.readFileSync('js/shell.js', 'utf8');
+function rep(a, b) { if (!s.includes(a)) { console.log('MISS', a.slice(0, 50)); return; } s = s.replace(a, b); }
+rep("  FIXTURE_MANIFEST, APP_ORDER_ROOT, APP_ORDER_INNER\n} from './data.js';", "  FIXTURE_MANIFEST, APP_ORDER_ROOT, APP_ORDER_INNER, PLAYER_TEMPLATE, CHARTS_TEMPLATE, FLIGHT_TEMPLATE\n} from './data.js';");
+rep("    root.apps = { workbooks: [], settings: root.settings };\n    root.syncStorage();\n    return root;", "    root.apps = { workbooks: [], settings: root.settings };\n    root.spawn('player', PLAYER_TEMPLATE, { type: 'service', quota: 500 });\n    root.spawn('charts', CHARTS_TEMPLATE, { type: 'service', quota: 500 });\n    root.spawn('flight', FLIGHT_TEMPLATE, { type: 'service', quota: 400 });\n    root.syncStorage();\n    return root;");
+rep("    // 打开根桌面窗口\n    const pd = this.desktops.get(rootSys.id);\n    if (pd) {\n      pd.el.style.position = 'absolute';\n      pd.el.style.inset = '0';\n      if (parent.desktop) parent.desktop.el.appendChild(pd.el);\n      pd.updateZoom();\n    }", "    // 在父桌面上重新打开该子树的系统窗口\n    const pd = this.desktops.get(rootSys.id);\n    if (pd) {\n      pd.el.style.position = 'absolute';\n      pd.el.style.inset = '0';\n      this.openApp(parent, 'system', { systemId: rootSys.id });\n    }");
+rep("    this.notify(sys, '系统已重启', `重新载入 ${basename(kernelPath)}，保留文件系统`, 'ok', true);", "    const existingWin = [...this.windows.values()].find(w => w.appId === 'system' && w.state?.systemId === sys.id && w.systemId === sys.parent.id);\n    if (!existingWin) this.openSystemWindow(sys.parent, sys);\n    this.notify(sys, '系统已重启', `重新载入 ${basename(kernelPath)}，保留文件系统`, 'ok', true);");
+rep("  tick(dt) {\n    if (this.chart.transition < 1) {", "  tick(dt, sys) {\n    if (!sys) return;\n    if (this.chart.transition < 1) {");
+fs.writeFileSync('js/shell.js', s);
+console.log('done');

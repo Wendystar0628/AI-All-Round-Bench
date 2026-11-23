@@ -1,0 +1,24 @@
+{
+  "problem": "09",
+  "parts": [
+    {"name": "1", "title": "跨腔三向斜流道歧管", "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0], "loops": [{"rect": [-10, -10, 185, 126]}], "depth": 12},
+      {"type": "fillet", "radius": 2, "edges": [[-10, -10, 6]], "name": "左前竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[60, -10, 0]], "name": "前下直棱C1"},
+      {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 116, 0], "loops": [{"path": [[0, 12], [175, 12], [175, 44], [133, 86], [0, 86]]}], "depth": 116, "name": "本体"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 20], "loops": [{"rect": [175, 30, 183, 86]}], "depth": 46, "name": "右侧凸台"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [[44, 64]], "d": 34, "depth": 10, "name": "前沉孔Φ34"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [[44, 64]], "d": 22, "through": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [[118, 26]], "d": 26, "through": true},
+      {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [[84, 67]], "d": 8, "through": true},
+      {"type": "hole", "plane": "YZ", "origin": [-1, 0, 0], "at": [[58, 44]], "d": 28, "depth": 10, "reverse": true, "name": "X向沉孔Φ28"},
+      {"type": "hole", "plane": "YZ", "origin": [-1, 0, 0], "at": [[58, 44]], "d": 18, "through": true, "reverse": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 86], "at": [[80, 58]], "d": 30, "depth": 8, "name": "顶沉孔Φ30"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 86], "at": [[80, 58]], "d": 16, "through": true},
+      {"type": "hole", "plane": {"origin": [153, 58, 66], "normal": [0.7071, 0, 0.7071], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 14, "depth": 64, "name": "斜孔Φ14"},
+      {"type": "hole", "plane": {"origin": [84, 58, 86], "normal": [0, 0.5, 0.866], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 10, "depth": 40, "name": "30°斜孔Φ10"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 86], "at": [[20, 59]], "d": 10, "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[-5, -5], [180, -5], [-5, 121], [180, 121]], "d": 7, "through": true}
+    ]}
+  ]
+}

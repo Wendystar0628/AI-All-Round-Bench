@@ -1,0 +1,62 @@
+// flightctl.ns — 默认飞控程序（普通程序文件，可以在编辑器里查看和修改；改动会改变飞行）。
+// 接口：由飞行场景进程每个控制周期发来 {t:"sensor", s:{...}}，本程序算出控制量，用 send 写回：
+//    send(flight, {t:"ctl", c: 总距 0..1, cp: 纵向周期变距 -1..1（正=低头）, cr: 横向周期变距 -1..1（正=向右滚）, ped: 脚蹬 -1..1（正=增大偏航角）})
+// 传感器 s：ts, x,y,z, vx,vy,vz, roll,pitch,yaw, p,q,r（角速度）, agl（离地高度）, om（旋翼转速）, landed, go（是否开始）,
+//          tgt_h（目标航向，度，0=北，顺时针）, tgt_pad（目标停机坪名）, wind:[wx,wz], g, hoverC
+// 控制量保持到下一次写入；错过周期的控制不会补发。调度、预算、时间速率变化会让本程序的周期变长，机体就会抖动、发散直到坠毁。
+let A = args();
+let FL = A.flight;
+let PADS = A.pads;
+let PHASE = "idle"; let IX = 0; let IZ = 0; let LAST_TS = -1; let HOLD_ALT = 12;
+fn clampv(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+fn wrap(a) { while (a > 3.14159265) { a = a - 6.2831853; } while (a < -3.14159265) { a = a + 6.2831853; } return a; }
+fn pad_pos(name) { for (let p of PADS) { if (p.name == name) { return p.pos; } } return PADS[0].pos; }
+fn control(s) {
+  let dt = LAST_TS < 0 ? 0.033 : clampv(s.ts - LAST_TS, 0.005, 0.25); LAST_TS = s.ts;
+  if (!s.go) { return {c: 0.0, cp: 0, cr: 0, ped: 0}; }
+  let tyaw = 3.14159265 - s.tgt_h * 0.0174533;       // 罗盘航向 → 机体偏航角
+  let pp = pad_pos(s.tgt_pad); let dx = pp[0] - s.x; let dz = pp[1] - s.z; let dist = sqrt(dx * dx + dz * dz);
+  // 阶段机：起飞 → 平飞到目标停机坪 → 悬停对准 → 下降着陆
+  if (PHASE == "idle") { PHASE = "takeoff"; }
+  let alt_t = HOLD_ALT; let vxt = 0; let vzt = 0; let vmax = 10;
+  if (PHASE == "takeoff") { if (s.agl > HOLD_ALT - 1.5) { PHASE = "cruise"; } }
+  else if (PHASE == "cruise") {
+    let sp = clampv(dist * 0.5, 0, vmax);
+    if (dist > 0.01) { vxt = dx / dist * sp; vzt = dz / dist * sp; }
+    if (dist < 2.2 && sqrt(s.vx * s.vx + s.vz * s.vz) < 1.6) { PHASE = "descend"; }
+  } else if (PHASE == "descend") {
+    let sp = clampv(dist * 0.6, 0, 2.5);
+    if (dist > 0.01) { vxt = dx / dist * sp; vzt = dz / dist * sp; }
+    alt_t = -9;      // 目标高度很低 → 以限幅的下降率降落
+    if (dist > 4.5) { PHASE = "cruise"; }
+    if (s.landed) { PHASE = "done"; }
+  } else if (PHASE == "done") { return {c: 0.12, cp: 0, cr: 0, ped: clampv(1.2 * wrap(tyaw - s.yaw) - 0.7 * s.r, -1, 1)}; }
+  // 垂直：高度误差 → 期望升降速度 → 总距
+  let vyt = clampv((alt_t - s.agl) * 0.8, -1.3, 3.2);
+  if (PHASE == "descend" && s.agl < 2.0) { vyt = clampv(-s.agl * 0.9 - 0.25, -1.1, -0.25); }
+  let c = s.hoverC + 0.075 * (vyt - s.vy);
+  c = c / max(0.6, cos(s.roll) * cos(s.pitch));
+  if (PHASE == "descend" && s.agl < 0.35) { c = 0.18; }
+  // 水平：速度误差 → 期望加速度 → 期望俯仰/横滚角（带积分抵消风）
+  if (PHASE != "cruise" || dist < 6) { IX = clampv(IX + (dx * 0.02) * dt, -0.6, 0.6); IZ = clampv(IZ + (dz * 0.02) * dt, -0.6, 0.6); }
+  let ax = 0.7 * (vxt - s.vx) + IX; let az = 0.7 * (vzt - s.vz) + IZ;
+  let cy = cos(s.yaw); let sy = sin(s.yaw);
+  let a_f = ax * sy + az * cy; let a_r = 0 - ax * cy + az * sy;
+  let th_d = clampv(0 - a_f / s.g, -0.4, 0.4); let ph_d = clampv(a_r / s.g, -0.4, 0.4);
+  let cp = clampv(0.9 * (s.pitch - th_d) + 0.25 * s.q, -1, 1);
+  let cr = clampv(0.9 * (ph_d - s.roll) - 0.25 * s.p, -1, 1);
+  let ped = clampv(1.3 * wrap(tyaw - s.yaw) - 0.75 * s.r, -1, 1);
+  return {c: clampv(c, 0.04, 1), cp: cp, cr: cr, ped: ped};
+}
+print("飞控已启动：控制周期由飞行场景发来的传感器消息驱动");
+while (true) {
+  let e = recv();
+  let m = e.msg;
+  if (typeof(m) == "map" && m.t == "sensor") {
+    // 积压时只用最新的传感器值：错过周期的控制不补发
+    let nx = poll_msg();
+    while (nx != nil) { if (typeof(nx.msg) == "map" && nx.msg.t == "sensor") { m = nx.msg; } nx = poll_msg(); }
+    let u = control(m.s);
+    send(FL, {t: "ctl", ts: m.s.ts, c: u.c, cp: u.cp, cr: u.cr, ped: u.ped});
+  }
+}

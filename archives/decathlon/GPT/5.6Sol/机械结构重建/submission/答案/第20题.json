@@ -1,0 +1,14 @@
+{
+  "problem":"20","parts":[{"name":"1","title":"双级迷宫旋流分离壳","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,230,190],"r":6}],"depth":12},
+    {"type":"extrude","plane":"XY","origin":[0,0,12],"loops":[{"circle":[115,95],"d":184}],"depth":108},
+    {"type":"extrude","plane":"XY","origin":[0,0,120],"loops":[{"circle":[115,95],"d":196},{"circle":[115,95],"d":150}],"depth":12},
+    {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,132],"loops":[{"circle":[115,95],"d":136}],"depth":-96},
+    {"type":"revolve","plane":"XZ","origin":[115,95,0],"axis":"y","loops":[{"path":[[29,128],[78,128],[46,136],[29,136]]}]},
+    {"type":"extrude","plane":"XY","origin":[0,0,132],"loops":[{"circle":[115,95],"d":92},{"circle":[115,95],"d":58}],"depth":46},
+    {"type":"extrude","plane":{"origin":[38,95,78],"normal":[-1,0,0.15],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":42},{"circle":[0,0],"d":25}],"depth":44},
+    {"type":"extrude","plane":{"origin":[192,95,78],"normal":[1,0,0.15],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":42},{"circle":[0,0],"d":25}],"depth":44},
+    {"type":"extrude","plane":{"origin":[115,24,96],"normal":[0,-1,0.25],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":38},{"circle":[0,0],"d":22}],"depth":40},
+    {"type":"extrude","plane":{"origin":[115,166,96],"normal":[0,1,0.25],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":38},{"circle":[0,0],"d":22}],"depth":40},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[15,15],[215,15],[15,175],[215,175]],"d":11,"through":true,"reverse":true,"cbore":{"d":19,"depth":3}}
+  ]}]}

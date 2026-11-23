@@ -1,0 +1,2663 @@
+{
+  "schema": 1,
+  "model": "Claude/Haiku5.5",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 507,
+      "sha256": "5a6bd0b1bf22d50fab3b786d1a1b33b6003cd663dfc3459fcc0287c497479f14"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\claude\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/claude/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6982,
+      "sha256": "c5e399d936d030c03492e74c58bf8b9c083a3f4fe736189ed0abd5c1bc0f2307"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8501,
+      "sha256": "408ba590ca8ef13c43fe62114980b96d867a1ad8c148b5eee4f2537519b36887"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6117,
+      "sha256": "25b40c45c641ef96fdd73708c60ef49b6235c25995d7c88435433706dca59a7f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\评分表_Opus5.5.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6121,
+      "sha256": "699e9595ccfd9e8edc53e2b4af1b3d48ed05ff562b93d1730f80ded5060ec5f3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\README.md",
+      "path": "AE风味动效设计编辑器/submission/README.md",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9383,
+      "sha256": "bda6993c1e6cbc88253a503b35757adcabb3c0449261c3641d8c1627c954f0f5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\css\\app.css",
+      "path": "AE风味动效设计编辑器/submission/css/app.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 17709,
+      "sha256": "8b2f3e503101448b8ae567f8bcc5b203e2713aaac59b7e3b7cc67736cfe45e73"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3453,
+      "sha256": "cab858507d7c7fa339dfb94b26a0aff56a4f06380ebd2ef53c819e3b52686b49"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\app.js",
+      "path": "AE风味动效设计编辑器/submission/js/app.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 11800,
+      "sha256": "21adbefcc220fd678f4588d3810a739274d2c0e9ab8227f4cfccd55cead6999d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\audio\\synth.js",
+      "path": "AE风味动效设计编辑器/submission/js/audio/synth.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 5146,
+      "sha256": "ab4d1262e07ee301f311d2aa74efbfa770b570e8c67a5b9488f8e7a52bf7757b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\core\\anim.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/anim.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10346,
+      "sha256": "fc6db82df6ba8957c6c0820d33e117789ca15c155036fecf66fb0f77f9ddec8d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\core\\expr.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/expr.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7016,
+      "sha256": "f6af86256bb4bdebbf18e900ed82defd42f9dd480b5081d4c9c872ba859b03d9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\core\\model.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/model.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10251,
+      "sha256": "dbdd98d7ef273a48fc1bf5bf576ea09f4a05de10803e00a1262579829294a89c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\core\\util.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/util.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7667,
+      "sha256": "68ec2321efc4d2687aeacdc5de248d527344901212185b2cebdc3327f8d30bbc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\demo\\forge.js",
+      "path": "AE风味动效设计编辑器/submission/js/demo/forge.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 14657,
+      "sha256": "fa1f70a844ec9b1b1feaef9afa2c1ac22eaa3851dac78e794be4592d8b30a12c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\fonts\\LICENSE-NotoSansHans.txt",
+      "path": "AE风味动效设计编辑器/submission/js/fonts/LICENSE-NotoSansHans.txt",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 439,
+      "sha256": "bdad144db39957a8d21cb9b2eb65af9c4b9232d6841d76b0642128218d70a22f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\fonts\\hans-bold.js",
+      "path": "AE风味动效设计编辑器/submission/js/fonts/hans-bold.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2314631,
+      "sha256": "0bf9e7a3d8ca5c0228f7e63fa17882ab43677b014b91a7cb6ecb983244e2605e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\fonts\\hans-regular.js",
+      "path": "AE风味动效设计编辑器/submission/js/fonts/hans-regular.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2308338,
+      "sha256": "5174ff1b22b6d8f7b3d18468247a6e84190051ccdb5536ee3a75f317b00b10ea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\geom\\mesh.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/mesh.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7095,
+      "sha256": "966ad3ebcb2bf0ba51eb2a390d9b7d88aeb8b22b64c1794b0d6bf927a8e3c3ff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\geom\\path.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/path.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 11639,
+      "sha256": "4714d1aee0dc2c1b7510355d058998588d22f6e591844e03cce24ee242f6eefe"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\geom\\shapes.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/shapes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9530,
+      "sha256": "b2de18371217b34a8aa010350c5ce6849776d08a9931fec906a07653eee2051b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\geom\\text.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/text.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 5849,
+      "sha256": "aab32ba435b53a34c483fba23f5d7857288cf265fda1af9b4805b4a2039441cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\lib\\LICENSE-earcut.txt",
+      "path": "AE风味动效设计编辑器/submission/js/lib/LICENSE-earcut.txt",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 738,
+      "sha256": "0b348fff56384b43dbb37593906904e56d0f9deb51eae590d4dc6d427fbf1808"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\lib\\LICENSE-opentype.txt",
+      "path": "AE风味动效设计编辑器/submission/js/lib/LICENSE-opentype.txt",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1085,
+      "sha256": "a5b87c9bc191e7f9c06b07bd7cbbed3ed846dfdb50e859484b2c245aa1ab2e61"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\lib\\LICENSE-polybool.txt",
+      "path": "AE风味动效设计编辑器/submission/js/lib/LICENSE-polybool.txt",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1108,
+      "sha256": "6a3969e97bc3b992c17bfdcd6fcabd9b5688650cc0078235d512c014e86b716e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\lib\\earcut.min.js",
+      "path": "AE风味动效设计编辑器/submission/js/lib/earcut.min.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9749,
+      "sha256": "29df76691215df89bf904051f35eb7aae1831011093d9783e843c3421931a334"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\lib\\opentype.min.js",
+      "path": "AE风味动效设计编辑器/submission/js/lib/opentype.min.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 245563,
+      "sha256": "b39d7bf9661481cec5c118a0d92b02951171d99c30d4d11252a72ecb0285439e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\lib\\polybool.min.js",
+      "path": "AE风味动效设计编辑器/submission/js/lib/polybool.min.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22336,
+      "sha256": "4ce13e7525afd6aa27654340f5469899e1d43efa9d1fbdc4baa415761bb75db0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\nodes\\graph.js",
+      "path": "AE风味动效设计编辑器/submission/js/nodes/graph.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 23850,
+      "sha256": "44c83e604316d0bc5c48af2166dbaae3bb35ee62810c35645a5cd1d6d7de46d3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\render\\gl.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/gl.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10396,
+      "sha256": "5e4db2920a50a87ec003b92a8178f6d006896c0ed8ac73ff0b0bb6a4fccef90e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\render\\renderer.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/renderer.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 35155,
+      "sha256": "3f50f8cc1bb404d378e7e4c9df60fb1fd0a821b8f38f9099bfffad4a9ef3d7dc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\render\\shaders.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/shaders.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12063,
+      "sha256": "76a34faf68e20cb52262508a76977741cb1566afdaa3ef0fec95d71c5d08db0b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\sim\\particles.js",
+      "path": "AE风味动效设计编辑器/submission/js/sim/particles.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 17401,
+      "sha256": "c86c88ce156e7a11eb8b47fe0c67e4557605a2727caa46e5815d67de565e1d4a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\common.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/common.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3523,
+      "sha256": "f92717e6eceb0e07ccc92bc01eb05d3d1e7ba95d461cc110bfec8898cc3d5fe8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\graph.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/graph.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 14031,
+      "sha256": "8f9994aac540bd4b679743c4abb977f7acf3b5051cccd6e1678e8ccbb6198417"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\menus.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/menus.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 24987,
+      "sha256": "59d1ab6497c2992eb2d7758cab0c57946b5c7bb70401b49cf9bf7bf3fe1c6065"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\nodes.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/nodes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21008,
+      "sha256": "a5dfbe86a555f9124adaef9ae067fa83ee8a60657e13196f2a856b9a97783960"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\props.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/props.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 46749,
+      "sha256": "ea3562d0780b5e749ad6f928a8af65abd0ffa007581e37b90529cdd6949b30a3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\timeline.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/timeline.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 23713,
+      "sha256": "e9c57c67ed24ff569095e146a70e1a84badd9a29418ee45c95074d2c61337e3c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\viewer.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/viewer.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 43291,
+      "sha256": "f40153d38d2b9c432fda8a84ea8f6d80522d151b7a8d6742763d9f0d3aeb0eea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\js\\ui\\widgets.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/widgets.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13454,
+      "sha256": "dda5d910cbd79126c23857a46d115c874e642fbbc65d82444d6d810e7247b533"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 468,
+      "sha256": "0b582e2d2e1121b7e014ab4a4e56618a59b4e296969c33f12b8e2c536ea365e3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 4424,
+      "sha256": "2aa4c3111163c1fa36fb7035312b2a52bcbe70c76ce7f66d8564a7cfd1f31022"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2092,
+      "sha256": "3a278cd6b53833842e8d7b42db90e209e02d7c808896e5fe6219f461f9ee9b97"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 39663,
+      "sha256": "718a1febb48ed5ca6279f167d0d1f8b7765c9ff0c0a44149a3e265501f91574c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 437,
+      "sha256": "9eb1c21056931cc77ed65fefcf9379fda936e8254b4af72a0aa25d52526b644f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\claude\\main\\result.json",
+      "path": "动态路由塔防/grading/claude/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 5472,
+      "sha256": "631d84f06679b0fe6a01dafc6a10b885d13c86a282c3b2711944d549fd378fb4"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 6886,
+      "sha256": "32361c13990cd20454c2c0d9086d53e39b72c32ea1af4e9956e01509d765bae4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4075,
+      "sha256": "524805811dd75e07abcbad397301933a644312d72a7fc6430cf2371adb3d019a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\评分表_Opus5.5.md",
+      "path": "动态路由塔防/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4034,
+      "sha256": "ef58c1c53fc50f8b7ba788960f888b3ebbfb668eb904e0ea6ac55e52e412690a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\README.md",
+      "path": "动态路由塔防/submission/README.md",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4237,
+      "sha256": "039d432cde89da6b277365b823789a9b31ebdd72358fd7e7fee7134c6175bf38"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\css\\app.css",
+      "path": "动态路由塔防/submission/css/app.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 22117,
+      "sha256": "c83f441d323f12e224c1acab44e6d5c8bc0bac287e183a2b90a793c0b64c5fe3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 14120,
+      "sha256": "a66b01330a0ab84d9be92b36f48d83dd7ef5f5847c14c770d33f2c9cb8d1aee3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\app.js",
+      "path": "动态路由塔防/submission/js/app.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 41677,
+      "sha256": "582f7bed49e1f0c61c808452af21ab8584447834f6d806cc7fcde7f511c74ed0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\audio.js",
+      "path": "动态路由塔防/submission/js/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 13927,
+      "sha256": "fe08de0c9bac2b0f1d3acb9470fc68bf9bec5dc1e5e52a8dc9ed69332cdbbe05"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\data.js",
+      "path": "动态路由塔防/submission/js/data.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 16578,
+      "sha256": "cf7af62367667ca40ca7c33678eaad60881454225a160e2a39b84a0c5755e287"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\demo.js",
+      "path": "动态路由塔防/submission/js/demo.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 14185,
+      "sha256": "d39dc09a73aeb89154b515f884427c8e27e711c0c6074232ea8366d8c3dd156b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\grid.js",
+      "path": "动态路由塔防/submission/js/grid.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4407,
+      "sha256": "74acd2ee389fd728595fb6956f8d63f08f30e555f6cae897a021f3ff16b84a01"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\maps.js",
+      "path": "动态路由塔防/submission/js/maps.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3987,
+      "sha256": "dd9b50b538ad1d3c2cbc5cc060220a049490cae6af2e56b48dd301046e33284c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\models.js",
+      "path": "动态路由塔防/submission/js/models.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 27725,
+      "sha256": "fb161d4e078cde6129609d38c990b3028db5fdb798dc25deaa81f00a40df8aa8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\sim.js",
+      "path": "动态路由塔防/submission/js/sim.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 52584,
+      "sha256": "1654844900f6fb5e5b0ac0c1bf20848d0c2cad73a267de5d13b7fbcd095692d7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\ui.js",
+      "path": "动态路由塔防/submission/js/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 29145,
+      "sha256": "310ee98f8feb9306b69881f573d3f7ced7c009f9e07dd27698f644d8fa05907d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\js\\view3d.js",
+      "path": "动态路由塔防/submission/js/view3d.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 74744,
+      "sha256": "5b291f823c8dbf9a1c48772acb5c65ca6569e188906c33d0882885f6586dd25f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 447,
+      "sha256": "9128c147f43e26a50b3fd578f5766da1e48dd524739b7f33bcee3943377d6bc3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\claude\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/claude/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5462,
+      "sha256": "ba7054500e994c4ee65a852dd0df397607b5b28dcaa3deea438761a8e9c1911d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6309,
+      "sha256": "9a26b3d9c3de049b6e85ed8366d1b86db1a748fa53a7b0d4c052a4b3a6166cc8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4051,
+      "sha256": "d5c0b5b6d07bf515a14e9846d9898740d10b323bc644b837822c4cdbe2c6c733"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\评分表_Opus5.5.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4117,
+      "sha256": "2f7f9be5b59d356e8b5467d5e9cf85d89f42884a47a271adbc218c68ca38ee38"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\.gitignore",
+      "path": "太阳雨渔港3D渲染/submission/.gitignore.txt",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 14,
+      "sha256": "4d56952b0fb13bf8f9b6c13a6d4c34a075bac3af447636a1df4335d7576e2f97"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\README.md",
+      "path": "太阳雨渔港3D渲染/submission/README.md",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 2231,
+      "sha256": "c7ac25db58881d194857193f636f485b117bfc8b92102f66337cab6ef2e5aea9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 641,
+      "sha256": "db7fc7a93c5b875da97aee633e1988ae346fb10e355bf7f054f74d52743cb15d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\package-lock.json",
+      "path": "太阳雨渔港3D渲染/submission/package-lock.json",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 14828,
+      "sha256": "f793940cc45518ea1af369fe10deb3432e48813bfa7f2706f4252105104a6522"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\package.json",
+      "path": "太阳雨渔港3D渲染/submission/package.json",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 365,
+      "sha256": "8b25e7e903b4e5dbae6c6468a70c58588b99665ba279525ac43fd8bb25a23e7b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\camera.js",
+      "path": "太阳雨渔港3D渲染/submission/src/camera.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1978,
+      "sha256": "c3624fd8cd1afb932846e09d890d4dfab33e59ccb09a87b7282a74c49014acf8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\core\\builder.js",
+      "path": "太阳雨渔港3D渲染/submission/src/core/builder.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4056,
+      "sha256": "ba1b945a252c8b2aee19c557eacc9289e3c528316562be7c54991cab915a42ba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\core\\clock.js",
+      "path": "太阳雨渔港3D渲染/submission/src/core/clock.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 666,
+      "sha256": "ba898507342523b24784006605d58dc44bc1c3fe42daea8712898191a8a771e3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\core\\materials.js",
+      "path": "太阳雨渔港3D渲染/submission/src/core/materials.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 7320,
+      "sha256": "f92799d1c26fa72e796f862a78080d90d80d9944b78ed879168549d74db1d5ff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\core\\palette.js",
+      "path": "太阳雨渔港3D渲染/submission/src/core/palette.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1405,
+      "sha256": "9a0db32760068ab33f361823866a0a1033f438a21864c47c9f5cf3cb096686e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\core\\wave.js",
+      "path": "太阳雨渔港3D渲染/submission/src/core/wave.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1814,
+      "sha256": "e27591abd7ab4a6826eb1cbbf5f2234241afb13a7a8baae42fb6bf4828679a48"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\main.js",
+      "path": "太阳雨渔港3D渲染/submission/src/main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4292,
+      "sha256": "0b33cbdb08aa0f4f9acd9063dfd3eeca1da1da53d26eefa76f481d9f6dc0dc62"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\base.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/base.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6794,
+      "sha256": "f6dd2a539da8b7a7402ac33fb780c200a23e3a043d085a2ec4376073102f84eb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\boats.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 18531,
+      "sha256": "663c0677435da59d9640db70c599d86812848321b17b8bc8a1f67b0f5a00c9a3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 17456,
+      "sha256": "bde086293d299a864a055b377075d20d4ba515cce82493e64a5ab2eff65e57b4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\hill.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/hill.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5554,
+      "sha256": "8be2a6d109ff3767de9cb505de61fdb9a5c1b12ef84e9fb0da5db44890bc5f0c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\layout.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/layout.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1334,
+      "sha256": "0fe9d1842d85b8b224f73a6f7eddcbcdcc16bb46d56d75afbfce330fec1aa281"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\life.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/life.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 18571,
+      "sha256": "9c5213d27c4342c573dc7e2941a524cda36e6e785943491862b5f84d0b99a4d4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\quay.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/quay.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 19703,
+      "sha256": "2bdd71ec0442ac2ea07400f8926977737ac8270137e664117994e74381d260d0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\ropes.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/ropes.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 3313,
+      "sha256": "645eb7b3d9cd83d58631dd2aa26be9b4e7fe2b3351100fe9befd04be4b65eacd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\route.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/route.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 2966,
+      "sha256": "5b6335200d12631ac490a2ee5e771895c855bf2cdc9f0320dd46b43c9bbf7d6d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\sky.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/sky.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5625,
+      "sha256": "c56914c5fc874caf45d95c17dee6e210c83cb8ec5e8fb8d311b75ceff3a2297b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\scene\\water.js",
+      "path": "太阳雨渔港3D渲染/submission/src/scene/water.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 16003,
+      "sha256": "ee5e8f7ede9742beeef301989fa7e4ab54dcb7b9dd174965f90f73a19c458b87"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\tour.js",
+      "path": "太阳雨渔港3D渲染/submission/src/tour.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6363,
+      "sha256": "afe80ccec27d51c3e52afaf3c48b69db53a5fc33c206f7edfd008e6af0a88095"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\src\\world.js",
+      "path": "太阳雨渔港3D渲染/submission/src/world.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4951,
+      "sha256": "41f1fdec89e8b8bdb3c6456cc2c3f74754ab09ade7a97c068f3a2f5396cb499b"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 461,
+      "sha256": "32125835c2bce7ad430c47b0215f4322dd0ea421240df2fbffd1445738c2fd09"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 2092,
+      "sha256": "33e52a3c65ed998874f19d8ea7979d12227162b7d57694686ee03a0b70c9ff7d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1110,
+      "sha256": "fed460dc16b5d0232131eff7d86d66065f81697e43a16d458c138e3d2b175523"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 14313,
+      "sha256": "1b44d271f4e647bc63ea6f671949521ed9a87c6945113322dad1fe1ad9b69443"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\形式化证明题\\Problem6.lean",
+      "path": "形式化证明题/submission/Problem6.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 12970,
+      "sha256": "2fb7a3495730e0c59000b6524efe2780dc96fc35db692b878ac5def901967290"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 457,
+      "sha256": "9c2846e13f823fffb363735ed6a7fc361ffde4709119e78126c06e8e1257878c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\claude\\main\\result.json",
+      "path": "操作系统嵌套/grading/claude/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 7812,
+      "sha256": "2354c5448fb067290e5831c578a3e9db18fa82f6fe6574d22ffeb3e247242142"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 11082,
+      "sha256": "0ddab751888623663787daf304cc82650f24861afafadd0cd2304dfb4bcdb624"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10527,
+      "sha256": "2bb7370b7cfc12cff3406c88db37a78f88e4eb383979cb31b199f9962e12dca8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\评分表_Opus5.5.md",
+      "path": "操作系统嵌套/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10650,
+      "sha256": "a8ba0b2c8b6a76f405a72ee6377c90848c24a93a2e0a13588d0c9cff88353176"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\.gitignore",
+      "path": "操作系统嵌套/submission/.gitignore.txt",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 20,
+      "sha256": "295aa1f18923880afebb2e08aa70a8c4f285cc52baea238b8d2864d10e45d825"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\README.md",
+      "path": "操作系统嵌套/submission/README.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2517,
+      "sha256": "17a48b1e02c0e28d32fecee705a57ef90a2331476c78b4db2ebfb4a18dba0a5c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\demo\\helicopter-24.scene",
+      "path": "操作系统嵌套/submission/assets/demo/helicopter-24.scene",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 99956,
+      "sha256": "88b515485cddd435c2e9a16fde7b1e66330f215671da9939e4fa3150b3384ebc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\demo\\sample.sheet",
+      "path": "操作系统嵌套/submission/assets/demo/sample.sheet",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 320,
+      "sha256": "f518acf73acd246788f67f5fea1054319993fa1f0b5c85bc82725daede477f94"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\documents\\welcome.txt",
+      "path": "操作系统嵌套/submission/assets/documents/welcome.txt",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 973,
+      "sha256": "84551a19285a2897082967d82f109f0a5ff3872ce92e854f164a2160248dd9be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\documents\\使用说明.txt",
+      "path": "操作系统嵌套/submission/assets/documents/使用说明.txt",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8613,
+      "sha256": "9844d6507b7a15f33e13d0ecfccf6b0f5235ec228debc46f872a1594220ab494"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\flight\\controller.ns",
+      "path": "操作系统嵌套/submission/assets/flight/controller.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3244,
+      "sha256": "90d995d04d1890eda0438135bfcfc7d5c6329420cb1d1c0e75ae8bd40d3c67c9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\programs\\hello.ns",
+      "path": "操作系统嵌套/submission/assets/programs/hello.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 364,
+      "sha256": "2a2ded352d4015b227aab84fe03c394c53d8ed8baa207f817e30416df130549e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\programs\\loops.ns",
+      "path": "操作系统嵌套/submission/assets/programs/loops.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 324,
+      "sha256": "99b0969fc0b71639725b7f58fb7703b29e77533d76e95cfb9f28b1c262978c9c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\browser.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/browser.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7170,
+      "sha256": "cce8fba7068eaf45e7dff8c0b485d9eb07d48ca84955ebcbf773be05650ce7c1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\charts.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/charts.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13204,
+      "sha256": "158410817b4a9f0103dcbf5b51f7f156b0460ca09f152182c91bb21bf8f15634"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\editor.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/editor.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10940,
+      "sha256": "f724f97c305358bd42045c82f09b198641564527d76f3ea809a0278e1112f1c8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\files.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/files.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18840,
+      "sha256": "3ede37e592c8b6827cae2a9ac25cfe6567e0ea06d8465e9f00e20608f37365fe"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\fx.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/fx.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3733,
+      "sha256": "ff3378faa94d5f8d56b707d7809ba4953373d17e0db5ae4d52b92a0aea7ba9dc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\player.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/player.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 16453,
+      "sha256": "d0a7bf0e4756df30f3651811dcb436821453e7777862c61067d2326bc92945f7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\scene.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/scene.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5118,
+      "sha256": "53baf1b3e22ded3deef92685c7a4a14a69152264b9d27be8984a14ea4a3b0ce7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\settings.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/settings.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5583,
+      "sha256": "17d8ff3d2c3462fcc95b65e3cb840f13d17a68357cae1b8433f842a15b18b574"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\sheet.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/sheet.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 24429,
+      "sha256": "31a562b446269d8d6edaedbd60aea3a2b4a1c2ab05812e21334aa8038d004110"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\sim.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/sim.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2275,
+      "sha256": "84b354add3de3fa56530257fafc256ea7651c68ecf29ced15fd53cd6230ad892"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\tasks.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/tasks.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 15640,
+      "sha256": "f40932015a27da36116ec0a2d0e344f8257b3454172eb4066201170da49f146f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\ticker.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/ticker.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 227,
+      "sha256": "17e18e089a68f78e1a569a8dba73cf248addc7b25df6c94363e1d74d0924176c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\apps\\widgets.ns",
+      "path": "操作系统嵌套/submission/assets/system/apps/widgets.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11850,
+      "sha256": "e4ac18053f5be4ad4c9dec8a00d3cb93cf31893ac77d390750e5244791f22eda"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\compiler.nobj",
+      "path": "操作系统嵌套/submission/assets/system/compiler.nobj",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 49543,
+      "sha256": "2bcd97955746bf10ca591fcf6e0179daa4f144ca42d05c2ee7e4dbc13d3dce83"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\compiler.ns",
+      "path": "操作系统嵌套/submission/assets/system/compiler.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 22266,
+      "sha256": "18955098d694d1afd60917b29750afb589111eb36f4edd0ed02c8a640ed20dfa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\kernel.ns",
+      "path": "操作系统嵌套/submission/assets/system/kernel.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 25596,
+      "sha256": "1fa02e29df945c1792b9bf533298c15069d958e21f8dfc02248f3f5775e5eaa8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\lib\\ui.ns",
+      "path": "操作系统嵌套/submission/assets/system/lib/ui.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3384,
+      "sha256": "fa1fd94d4bed4894dc57ef05b338134db5fb2f2231a7b7abaa5dbfb53ab635df"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\system\\wm.ns",
+      "path": "操作系统嵌套/submission/assets/system/wm.ns",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 37715,
+      "sha256": "01813b9f125a619d664302bbf74a36db08a951fd87ba9ac9856cc885bd8cd7cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\wallpaper\\dusk.svg",
+      "path": "操作系统嵌套/submission/assets/wallpaper/dusk.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 20330,
+      "sha256": "d07449883b6801e805c28e3045fc77e61940a1a661d7a34babd493e47581015c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\wallpaper\\landscape.svg",
+      "path": "操作系统嵌套/submission/assets/wallpaper/landscape.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 20329,
+      "sha256": "2df570626979d15a0c40be9501ed6446f69c95fa218ff560ed6bb788a1caf969"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\assets\\wallpaper\\night.svg",
+      "path": "操作系统嵌套/submission/assets/wallpaper/night.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30922,
+      "sha256": "f03643f6f8252852aaea65fb0a46272d6f71cc86231f544bb0275419e126c36b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\automation.json",
+      "path": "操作系统嵌套/submission/automation.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1562,
+      "sha256": "b10aa8caad71a130cf3850599d872642737f4b520d83f2fd79b2db67f136f24b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\docs\\DESIGN.md",
+      "path": "操作系统嵌套/submission/docs/DESIGN.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6998,
+      "sha256": "5dada6b5a8bb717745505286b7a3e4c0c55f6c76b0d85ab38eb1a4b3cb0d5389"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5802,
+      "sha256": "add2fe9d57fc65f4b27cdca10aba3df4706e15cb9578691541fd1cfdd4a6fdfb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 474,
+      "sha256": "e985051166f3bc3a69ca2a8865810cceeed99f63d059d9cf66f6865147f20644"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\main\\main.js",
+      "path": "操作系统嵌套/submission/src/main/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6722,
+      "sha256": "d9a91d8f69b7d98668a0adc2b9b10f7ca0fec958f002ebe03d2f6b2b884f545c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\main\\preload.js",
+      "path": "操作系统嵌套/submission/src/main/preload.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 742,
+      "sha256": "14f8706552405a9696cf336a86c56aaa8045685a4148933eb63f9a6770d935d6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\display.js",
+      "path": "操作系统嵌套/submission/src/renderer/display.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10148,
+      "sha256": "b2e0db5920dffbbd0c7ba0d069a8e86457b74a66e5e85cd73ecd96397e9b8f02"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\host.js",
+      "path": "操作系统嵌套/submission/src/renderer/host.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9090,
+      "sha256": "8d777f680d353905ff871ee5df05fd9dce3145fbb4819f505965dbf6b1b7168a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\images.js",
+      "path": "操作系统嵌套/submission/src/renderer/images.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 615881,
+      "sha256": "a3185a942f98fed5e3ee7e9482c33cbd3b2361718c77cd2a44ee2f55ae737124"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\index.html",
+      "path": "操作系统嵌套/submission/src/renderer/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 753,
+      "sha256": "245177fa56314fbd1da771528422318d2ba415a4a2ce2ce21b7fb2cd6bebda42"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\input.js",
+      "path": "操作系统嵌套/submission/src/renderer/input.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2863,
+      "sha256": "e92de16a18a307ab5d53eed28d43fda2ac1f5c164038ece40cc3be02a4c221d4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\runtime.js",
+      "path": "操作系统嵌套/submission/src/renderer/runtime.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 61147,
+      "sha256": "23d766988513c23685c1bc6b45eee3582c0a908a376db2c4ff2661bf2da10543"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\scene3d.js",
+      "path": "操作系统嵌套/submission/src/renderer/scene3d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17173,
+      "sha256": "0ed6caac1b3a574bd3dfb061d1ec2f03b13c1ceea9892319344e1c7b084c799c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\style.css",
+      "path": "操作系统嵌套/submission/src/renderer/style.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2134,
+      "sha256": "681555ab3430c89b3e22d02c77a3059bd213f689f53aad6a64c7aed9b3b43dbd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\runtime\\nos-stdlib.js",
+      "path": "操作系统嵌套/submission/src/runtime/nos-stdlib.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8729,
+      "sha256": "cc48482b35fa3f0f115eacc2e39ec4b00cc42111e63073d83c44501df42320f3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\runtime\\nos-vm.js",
+      "path": "操作系统嵌套/submission/src/runtime/nos-vm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13823,
+      "sha256": "4cc5e9fd2930873bdc29515f7207103bf895c73815a631d02817a218230c68b6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\runtime\\sim-natives.js",
+      "path": "操作系统嵌套/submission/src/runtime/sim-natives.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13544,
+      "sha256": "3e09577b856662c18682f67b477294263c4951bdc2013997df2da75eab949da7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\runtime\\universe.js",
+      "path": "操作系统嵌套/submission/src/runtime/universe.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 24339,
+      "sha256": "ccf422ad3214cdd94d9af94ac841b68ac6344146fc90d586d3c3702ec11c056b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tests\\bench-player.js",
+      "path": "操作系统嵌套/submission/tests/bench-player.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3320,
+      "sha256": "8b33eeb714c287418c43d8c530562415e74402478ad2308651f0682630bbf58d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tests\\kernel-e2e.test.js",
+      "path": "操作系统嵌套/submission/tests/kernel-e2e.test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2671,
+      "sha256": "cdf5fc2b809449ff41fa37faecb0a0aa15386557237d370006b3b29f8cf27b2f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tests\\kernel.test.js",
+      "path": "操作系统嵌套/submission/tests/kernel.test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5758,
+      "sha256": "9ee2dff08d11cb326c4a8732d0e400e9c7d47c54bd4d1d8c50f7138fe051e05d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tests\\vm.test.js",
+      "path": "操作系统嵌套/submission/tests/vm.test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3964,
+      "sha256": "3483162c26e8267a69441617ca6a01ba6c4b7336cecaa01cabaaecfba7e3fc0e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\bootstrap-check.js",
+      "path": "操作系统嵌套/submission/tools/bootstrap-check.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1972,
+      "sha256": "dcdd7e3cb83b91eb46ad40abbef4f788120af1a8781238dab6f15bc7ae31f65c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\build-images.js",
+      "path": "操作系统嵌套/submission/tools/build-images.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2711,
+      "sha256": "bc6edc144cef1fed2256e927b5873d13bd435995e7bf5bd1a508c59e9aae0380"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\bundle-runtime.js",
+      "path": "操作系统嵌套/submission/tools/bundle-runtime.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1381,
+      "sha256": "3b13c4490ad049588b621c3dd905d0ecefe8bc28dd3dd539647eeb41ad654b1c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\cdp.js",
+      "path": "操作系统嵌套/submission/tools/cdp.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7988,
+      "sha256": "3c4a3da46cdea6752cdcb54644ef6044fad6b6f39dc6c25bd0026311e02821b0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\make-scene.js",
+      "path": "操作系统嵌套/submission/tools/make-scene.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7954,
+      "sha256": "a2d72c386ef4be14b72dd2ab81255938af9fe74ccf68562f8535f90532b2e4d6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\make-wallpapers.js",
+      "path": "操作系统嵌套/submission/tools/make-wallpapers.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4218,
+      "sha256": "65cac351cce13c41b7e9917521b22c3ad5bc2c85ce7c5670d136588e1f467929"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\nosc.js",
+      "path": "操作系统嵌套/submission/tools/nosc.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 21049,
+      "sha256": "0d4d757f4ed0368d96fe8085bed170cd31dec3d7229afe8162ae339e8eb4e3a8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-charts.js",
+      "path": "操作系统嵌套/submission/tools/patch-charts.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1318,
+      "sha256": "89a27dde44ef1d4a5ec9c14a1203c8c796f7073f575e3070dee030de657f425c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-display.js",
+      "path": "操作系统嵌套/submission/tools/patch-display.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1862,
+      "sha256": "e6ee2d55babbfd6e69d375d1348c2ad62e5a3bdd63b8b83ad5943f7935f574e8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-files.js",
+      "path": "操作系统嵌套/submission/tools/patch-files.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4379,
+      "sha256": "e843d3ebcb578859d43cab43b065dc16b02a6a1cbc466ae5005bed11a2de5038"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-host-template.js",
+      "path": "操作系统嵌套/submission/tools/patch-host-template.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2583,
+      "sha256": "7133cac4ba900e14599fd11abd620ed9383a79de4e91ddeb5277886061c6e501"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-kernel2.js",
+      "path": "操作系统嵌套/submission/tools/patch-kernel2.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5356,
+      "sha256": "da9a64ab701af234b6f99a0add06627b3211962e301d598c487dfb8c2acbfeb5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-scene3d.js",
+      "path": "操作系统嵌套/submission/tools/patch-scene3d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3886,
+      "sha256": "009d63577390b0a5aa3bd46f3d3138361ad99bf032645bb0016c084d7aeae2c5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-ternary.js",
+      "path": "操作系统嵌套/submission/tools/patch-ternary.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3082,
+      "sha256": "2a2d709996b95c7893d823b5920501346f84ecc0a1ecdd9d1e8debfc87cc86e7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-wm.js",
+      "path": "操作系统嵌套/submission/tools/patch-wm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7552,
+      "sha256": "4b34017f65106eca3dafd4f51938ddc13c9c147ccf10c292e2d523530aa10af4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\patch-wm2.js",
+      "path": "操作系统嵌套/submission/tools/patch-wm2.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2950,
+      "sha256": "4aa564df1793b3f5ccca14359c1513969e0dbda2790c01bb281c7690a404eee4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\scenario-player.sh",
+      "path": "操作系统嵌套/submission/tools/scenario-player.sh",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 624,
+      "sha256": "2ebc98350fa4916709a11d4aef24287837b1b42f5702697cc0815147b87f7980"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\scenario-projection.sh",
+      "path": "操作系统嵌套/submission/tools/scenario-projection.sh",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 799,
+      "sha256": "070ba98d975530b8606ae433e2be960992d86be1e6f7cef2be87f975b2ea1c3c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\tools\\tune-flight.js",
+      "path": "操作系统嵌套/submission/tools/tune-flight.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2871,
+      "sha256": "0eed172df4046573f69e23f5812f901e201110e18ede377a9b511f04104b9ee5"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 471,
+      "sha256": "4e0c3b8143a2879dbe66a6fe247d6f67b7b95b6587ec86daffc03726fe6d2bd3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 4398,
+      "sha256": "dca4bd77f6aa08c083600794d7802f3550f86d1b4f8f9d2bc4fe86d193ec98cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1689,
+      "sha256": "76c4d8b2beeeeceb4c869e8817f85aff1ed2b860344f7b41688a96aa8afde58a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 18648,
+      "sha256": "6bdc4397da8fb197847782e998320eca0a51e83829cdef6c3ac5b8c2a9b24cba"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 474,
+      "sha256": "afc62dff289f73151ec22aa883ebd6d43a5df632b1c247b3c45a436051dc90e2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 6132,
+      "sha256": "d1f7d599650fec30cded1e2eb9e8aab189c4ad1a29b75d9ad7f3c181cbdc01f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 1957,
+      "sha256": "cddabb98b34d36d965bfaff065e344e42d39b115722716ceaaf040daa5f46913"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 27525,
+      "sha256": "5ebc233bf2f28d640dda6234714eb897b2cb2f5a9f7f7be4a7db8019bcc4407d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 494,
+      "sha256": "3159c12eff48e68b3572f8f9b7e419ae92ede6edebfcc231a4b86f7568348ed2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 6384,
+      "sha256": "9ff2044b54b629c55b13543c6779ab5586769e8bb17f1923a888261a061babc0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3377,
+      "sha256": "c2c2e48a7c3df7fb99e257158e5ce6aa0cc90da40337431f5f168463aa97ef74"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第01题.md",
+      "path": "数学竞赛原创试题/submission/答案/第01题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 110,
+      "sha256": "4716a3dfd150a4312da15223898e31897988a81b2dd4590e8d4f909c4181c4c4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第02题.md",
+      "path": "数学竞赛原创试题/submission/答案/第02题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 116,
+      "sha256": "5c8d0fabd82a9cc57aa8bc3e7238c2a4be73972510f34e271da4c138f5c41cac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第03题.md",
+      "path": "数学竞赛原创试题/submission/答案/第03题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 101,
+      "sha256": "e372720612c592fab74c3f4c5174b1dafb2afddbfe4cd2b5bcbc75bf3470653c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第04题.md",
+      "path": "数学竞赛原创试题/submission/答案/第04题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 557,
+      "sha256": "5d3b813c855679712762fa9aac1ad81fa4bb4ac03ba9f464aba622aa184eee6e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3331,
+      "sha256": "8dae8887e71b9122fd33cbf59821935456b3b823a602acb8b621b50d90dffa10"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第06题.md",
+      "path": "数学竞赛原创试题/submission/答案/第06题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 107,
+      "sha256": "4fbe60893d27ed43970a20f70cb82e56bcc81380888faeaa09ff427ce688ec21"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第07题.md",
+      "path": "数学竞赛原创试题/submission/答案/第07题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 135,
+      "sha256": "32a11ab946c031ff6d542455ecb212e5fb745b305e1947cd60c3a3a72fae3aaf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第08题.md",
+      "path": "数学竞赛原创试题/submission/答案/第08题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 495,
+      "sha256": "773d6593dc60324576f0046c9f2e4567ff2162acc19aa6ea052900ce494dcb49"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第09题.md",
+      "path": "数学竞赛原创试题/submission/答案/第09题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 407,
+      "sha256": "cd978244c1cbb62a147890f803e21dbef1ae752fbea8e3c49d5e0f3efd38f433"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第10题.md",
+      "path": "数学竞赛原创试题/submission/答案/第10题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 91,
+      "sha256": "278d8e23d30d7b1b2636dc36370f6e9ecb023a3dd1a33fab81ce832be9b19405"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3962,
+      "sha256": "029ccc7e8fd7b27e84c2fce0d305e22a645932d01939b17cad8a0ab88c3de2ed"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第12题.md",
+      "path": "数学竞赛原创试题/submission/答案/第12题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2648,
+      "sha256": "a1f29e8bc9c0a578db101177f525187c38e550417f878d1fb39fd6794e282e1c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第13题.md",
+      "path": "数学竞赛原创试题/submission/答案/第13题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5910,
+      "sha256": "911df8f55b340ec201e47806069c9d23cbb43811f2028636b9278d8be7bf2b86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第14题.md",
+      "path": "数学竞赛原创试题/submission/答案/第14题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3936,
+      "sha256": "e54a4dd62ca38faaf81beea6637f2e1618640dad5c783d9cfd2c1852d887b323"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第15题.md",
+      "path": "数学竞赛原创试题/submission/答案/第15题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3820,
+      "sha256": "0875e45cb1e48c04822daf517f4b9076d32653611488073ca0e67c7d08bfa9ae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第16题.md",
+      "path": "数学竞赛原创试题/submission/答案/第16题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 117,
+      "sha256": "70adac2bbbddc5bb245a763b4f1740d3d92bf9d4136b064fb6da5d2ab19be8a8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第17题.md",
+      "path": "数学竞赛原创试题/submission/答案/第17题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 406,
+      "sha256": "4fe9e9735532fb1c7617c10624d5903e8484f6d119372b001735fb7bf663401d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第18题.md",
+      "path": "数学竞赛原创试题/submission/答案/第18题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 727,
+      "sha256": "81a36152dee9da61d046f51f155c86f9b66f1e48085d5db8e307355e7ae37ccc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第19题.md",
+      "path": "数学竞赛原创试题/submission/答案/第19题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 730,
+      "sha256": "193cee2bba17f81e0e31aa2c9c8f82886601692da96505350f471a4e3fb33b7a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第20题.md",
+      "path": "数学竞赛原创试题/submission/答案/第20题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 815,
+      "sha256": "520d96144cd61b6bd522bf6d384cb71e56a4d0732b14db01d031c10cacc86cb0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第21题.md",
+      "path": "数学竞赛原创试题/submission/答案/第21题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 84,
+      "sha256": "948dde96569ae19fb38d246ff3cb83ce1c9b88ba0a8cbe512371a9c4bbd41e2a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第22题.md",
+      "path": "数学竞赛原创试题/submission/答案/第22题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 353,
+      "sha256": "b3017a2829853c52fdd37161c17f5d75c56c1c858a6cf0f676ec572b9b4f10b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第23题.md",
+      "path": "数学竞赛原创试题/submission/答案/第23题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1178,
+      "sha256": "70d90fc1489dbbfc58090cb08fc035bd04b476ed2cc9ff6f435ebaa11c228d9f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\答案\\第24题.md",
+      "path": "数学竞赛原创试题/submission/答案/第24题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 607,
+      "sha256": "d7a6d7428d35f97aefce8693a5a1b3815a9e0bea70350c3d528fed8890396027"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 485,
+      "sha256": "8a5cb29e687ebe5067ac55aa08c0c59694d24fe045d98a7657ce815fb6be6218"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\claude\\main\\result.json",
+      "path": "星际战舰编队/grading/claude/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 6395,
+      "sha256": "f07cb88f774095816f23f070fcfa2618c4674d9538614ad2b85d3e5f1be932c9"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 7242,
+      "sha256": "dd6bb5555620c49aaca5d025d3f9e1bce5994bd297c6f2981c0a05a3284d65b8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7215,
+      "sha256": "e2a9697b184b650c10be2a50bed5a94440119b4e993f5d11b7aadcba92d8acf6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\评分表_Opus5.5.md",
+      "path": "星际战舰编队/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7349,
+      "sha256": "d2e5c22e8434733e2d9d8f621e3bdc86d80b8c656c725ef844496e3bf6cd82ac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 758,
+      "sha256": "5cc9f6472771188890d320044e2c5038bcd9cdd9e7b993fe80b31b2e6ff7fb0b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\core.js",
+      "path": "星际战舰编队/submission/js/core.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 19441,
+      "sha256": "a09815a9a6c9154772eda341355a42c4b13623766247183929d523581c013f1f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\fleet.js",
+      "path": "星际战舰编队/submission/js/fleet.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 12365,
+      "sha256": "26db28717847fd88e473b76469c85404b9dda12b1980cf03504e01d49c2e59f8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\fx.js",
+      "path": "星际战舰编队/submission/js/fx.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 16063,
+      "sha256": "134e4168a09848db3d77aa66476bd32ef81d892935ebf1f2ac8ed1b5d97a90db"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\gl.js",
+      "path": "星际战舰编队/submission/js/gl.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 37054,
+      "sha256": "20806ded700aa747cf1b133f3056509d580ef078b20e9ee76cb18c6c1f482845"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\interior.js",
+      "path": "星际战舰编队/submission/js/interior.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 19293,
+      "sha256": "666ae88816c3f972b63f99385323a5ebc9d8ee6e737f7ad5485ecece3cdff965"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 3783,
+      "sha256": "424176c28c10bb2f76e3ff905365be0868310bf7fb3d7d04773b3a5a614a045b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\rocks.js",
+      "path": "星际战舰编队/submission/js/rocks.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4456,
+      "sha256": "de7e19b0d1bcb52fd4b682343f749716ae5345cf78f562822508271b7fd6114a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\scene.js",
+      "path": "星际战舰编队/submission/js/scene.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 11363,
+      "sha256": "9ba3bef7d7f1dcf1d128a63dea3ce309ecc3b563ce4694dc6f059a9b696f44ba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\ships.js",
+      "path": "星际战舰编队/submission/js/ships.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 14766,
+      "sha256": "b02a642e415d8c172988c981a302cb294720ee665b8b82b99a091527cb3c60c6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\js\\shots.js",
+      "path": "星际战舰编队/submission/js/shots.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4739,
+      "sha256": "506af4a244c08075fe1984d3e28231344a7519ce99ffe44f717f8eb04a352580"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 2925,
+      "sha256": "cf73f4c8d3eade95d6fb2b6a27db0ff95f244bc437087df1a506ffec76cae5e6"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 482,
+      "sha256": "daf07085168e26d0f26aaf66aeb43ffeaba504cd824c1cfcc02ba6aa40c119bb"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 16173,
+      "sha256": "43594f4e88ceff95ebdda396c938695b371608b4ca75ca2cabeb37fa3f0dca9d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 3240,
+      "sha256": "7103af35422470c055d12c04d35f232e6fe74b2618f7d25f95ee8019e800e2ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 6209,
+      "sha256": "e3932cf13279bd664541cd5eb632feacdaa262cc6397071ba0ef4c59e31eb999"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4739,
+      "sha256": "abc3a23e778c1f1dd8fb3e9185a3ebc28e9af31b8bfd63033e022e15960904b8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1673,
+      "sha256": "dd4142597770bf283e59f9a464c137470fe11dbdfd3ebbd9aea2b7bdaeba58e0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1981,
+      "sha256": "b2dd48350e51cf2b80b171289467dbfcd7b6123a4fbb97463172e8cb3b6867fa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2317,
+      "sha256": "d73ea90a09fa12273ec344c72102cee4cf2698d8bb84b12db7780f6fd9ffa9e7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2197,
+      "sha256": "bbd6ac11e75b3ffa0f2805dade0d2ee7a6f9756e437bbddf8131241c5a310242"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1866,
+      "sha256": "222c9eaa398bcac7b12ff04488412325deaf3a4841e67167356f6674e59dee6f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2300,
+      "sha256": "d86fbb8e53e0e377e24277b8eb00e16b60990a41b60e820d6fe41d6ac605e83f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2290,
+      "sha256": "1e7d10acda5f6006f05b2f7fb0b85b64dcd6477567d68570b9dd07f7694ad19d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1778,
+      "sha256": "8506fae2650ffbf5b3be390f8b1131bcfe59d14bae1de1c102cdd029aa5a129a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2724,
+      "sha256": "20f7198cfc335b361330d149708aa2d60aa85b5af5f6cd4292f2ace6eb0eda78"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1611,
+      "sha256": "b5a4d1450991c2fa901d9b28349175043bc8a404e5ce42485e8c142b5db8473c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1810,
+      "sha256": "4d275d40eca5326dd6dc98c8ee33c76a9b8a4300a421fb1871723e80430e99ae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1518,
+      "sha256": "19f7cdbae805d35fbb0eb1997183ab2cbacd28159c6a1ffb2fd2f5e27a3a8094"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1786,
+      "sha256": "79fe192b531f6fc116322685a8049907ae54d649391da94eed011d9e8c8d4bf8"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 474,
+      "sha256": "addfc45389c126b5c3377ace37b4e303ae03dcf0f65a7099828e5c0d3e7bff77"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\claude\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/claude/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5937,
+      "sha256": "8e25827aa1e895584c6af76bd85f5dcce36e8fa04ab9267f22512bfa3d3ac197"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6486,
+      "sha256": "2fb1d1b63a94459dd195c8689b3f5efaa2f87d798a6c7a758cf897d66491e2c0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4807,
+      "sha256": "b2cb35a62c06a2ec41d184e670243231ab61818fb43890221bb6747a786b4506"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\评分表_Opus5.5.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4904,
+      "sha256": "dae3292e0268fbf8fab70e7e6a19055e3aa30afdde67384e744841f11af01eca"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\css\\style.css",
+      "path": "果冻冲击与造浪水槽/submission/css/style.css",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4306,
+      "sha256": "6c1d98054a3236670bc6123f93c35d2565c31dfda775aec7f7bcd4c2ab2a398f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5380,
+      "sha256": "44ad4a73361215dd3d71b271c125d5ac0a37de9da19b1ef1969ffb87e6f07483"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\app.js",
+      "path": "果冻冲击与造浪水槽/submission/js/app.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 13782,
+      "sha256": "1546da7b62ae8e1db751804809af78f53e2db20952e65fece2b84d59d63dbdcb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\core\\audio.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core/audio.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4251,
+      "sha256": "b7398240200919f2fec6bb097b931befd6e713fedac2c95952c186dd6e771175"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\core\\gpu.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core/gpu.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 7190,
+      "sha256": "7037bf737da6974bd01a0f1dfd7b8c4304abdcfbef734c3eef60d2e5aeeb542b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\core\\math.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core/math.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 3581,
+      "sha256": "ba31ee47ac5303de397ed24e8f9ac544bf6eb273d4d26c4739410d62c846e010"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\core\\post.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core/post.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2765,
+      "sha256": "563ecc03db342ed80fe0a0c4617d02f5eaa44c5f353f73d3277cad7d00287d3e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\core\\timeline.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core/timeline.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 829,
+      "sha256": "514bab40c772d23830acb913778e42b4feaf20b2e8de848b835f32c0ac652c5a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\scenes\\jelly-demos.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scenes/jelly-demos.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 3682,
+      "sha256": "d83324c0b811e425fab803e901bf56e26a49dc94a3d69323486f59ec189513ef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\scenes\\jelly-mesh.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scenes/jelly-mesh.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10295,
+      "sha256": "6e7a5956c44f7903072b9205e21cbaea65a93a49b06351c12a75dc57374cfbe1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\scenes\\jelly-shaders.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scenes/jelly-shaders.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 22306,
+      "sha256": "7641c292732662242f0e686f1ca14d8d36b8f2509a4fef7127903b47310777d3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\scenes\\jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scenes/jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 21961,
+      "sha256": "f98f8f722a750f19a1ced88817de0451d000ab35ee77110d2963f3363497e341"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\scenes\\tank-demos.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scenes/tank-demos.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 3449,
+      "sha256": "fdf3e8ffbab1b71ed035c0831e3d777be36715f68b4cc59c9f738e0a984f6273"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\scenes\\tank-shaders.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scenes/tank-shaders.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 24155,
+      "sha256": "c4111b6e563485f0edb635c7e98a7aa3051febb30799599c34a5b3f37cccf8be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\js\\scenes\\tank.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scenes/tank.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 28412,
+      "sha256": "790210882fcca5cc0eb37dbd5559aa94581bc48bcac3a9504b9d67d66dc68b45"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 526,
+      "sha256": "3cb21176f58e4362c01ea894b97ad22623803eb27e3d9e320a76346e78564530"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Haiku5.5\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 3088,
+      "sha256": "e6b49edfde9adc4ed6bd77753e2ac93f66c4eaa5cd08490da93c5fd661e70f03"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 1295,
+      "sha256": "cba2c2ce3459ebcb23b21daf9ec9c5ba5cb2c3893def000125dfc429db093d9a"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\ab_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_base.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_base.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_ao.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_ao.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_ao_no_shadow.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_ao_no_shadow.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_shadow.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_shadow.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_tri.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\abl_no_tri.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\ablate.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b128_10.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b128_10.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b128_12.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b128_12.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b128_8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b128_8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b32.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b32.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b64.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\b64.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\base2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\base2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_b32.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_b32.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_b64.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_b64.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_nopop.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_nopop.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cnt_out2.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cur.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\cur.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\desc.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\desc.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\grader.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb5.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb5.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb6.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb7.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb7.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\lb8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\ldg.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\ldg.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\mono.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\mono.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\ncu_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\nopop.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\nopop.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\p_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\prev5.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\prev5.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\prof.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\prof.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\ref_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\regress",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\regress_gen.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\sol_b128_10.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\sol_b128_12.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\sol_b128_8.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\sol_lb5.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\sol_lb6.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\sol_lb8.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_32byte.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_bvh2_ordered.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_bvh4.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_descent.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_float_anyhit.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_mono_v1.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_pre_bvh4.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_quant_v2.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\solution_restrict_try.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\sweep.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct05_l8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct05_l8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct1_l8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct1_l8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct2_l16.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct2_l16.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct2_l4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct2_l4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct2_l8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct2_l8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct4_l8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\v_ct4_l8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\dist",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\形式化证明题\\形式化证明题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\src\\renderer\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\.claude",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\dev",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数字电路仿真器加速\\dev",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数字电路仿真器加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\机械结构重建.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\笔记",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\机械结构重建\\预览",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Haiku5.5\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": [
+    "鲁班锁拆解"
+  ]
+}

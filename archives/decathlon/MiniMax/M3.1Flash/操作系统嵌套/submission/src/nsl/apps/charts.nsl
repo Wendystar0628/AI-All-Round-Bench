@@ -1,0 +1,258 @@
+/*
+ * 子系统应用：图表工作台（NSL 程序）
+ * 从根系统电子表格显式建立实时数据连接，生成柱状图或折线图。
+ * 数据以副本跨层传递，子系统独立保存自己的数据与已处理版本。
+ */
+var WIN = 0;
+var DOCID = "";
+var DOCTITLE = "";
+var RANGE = "A1:D4";
+var LABELCOL = "A";
+var SERIES = "D";
+var CHARTYPE = "bar";
+var CONNECTED = 0;
+var VERSION = 0;
+var ROWS = [];
+var STATUS = "未连接";
+var DOCS = [];
+var SELROW = 0;
+var CONNID = 0;
+var SERIES_COLORS = ["#7c5cff", "#f5c518", "#4fd1c5", "#ff7a9c", "#8ed081"];
+
+function A(o, k) { return obj.get(o, k); }
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function wid(id, type, x, y, ww, wh, value, data, testid) {
+  return [id, type, x, y, ww, wh, value, data, testid];
+}
+function colIndex(letter) {
+  var c = 0;
+  for (var i = 0; i < str.len(letter); i = i + 1) {
+    c = c * 26 + (str.codeOf(str.at(letter, i)) - 64);
+  }
+  return c - 1;
+}
+function sOf(v) {
+  if (v == null) { return ""; }
+  return str.concat(v);
+}
+function numOf(v) {
+  var s = sOf(v);
+  if (str.len(s) == 0) { return 0; }
+  return str.toNum(s);
+}
+
+/* ---------- 绘图 ---------- */
+function buildOps() {
+  var ops = [];
+  var W = 560; var H = 300;
+  var L = 56; var T = 26; var B = 46; var R = 18;
+  var pw = W - L - R; var ph = H - T - B;
+  arr.push(ops, ["rect", "#171a2e", 0, 0, W, H]);
+  arr.push(ops, ["rect", "#20243c", L, T, pw, ph]);
+  if (arr.len(ROWS) < 2) {
+    arr.push(ops, ["text", CONNECTED == 1 ? "等待数据…" : "尚未连接工作簿", "#8d93b8", 16, "center", L + pw / 2, T + ph / 2]);
+    return ops;
+  }
+  var li = colIndex(LABELCOL);
+  var seriesCols = [];
+  var parts = str.split(SERIES, ",");
+  for (var i = 0; i < arr.len(parts); i = i + 1) {
+    var t = str.trim(parts[i]);
+    if (str.len(t) > 0) { arr.push(seriesCols, colIndex(t)); }
+  }
+  if (arr.len(seriesCols) == 0) { arr.push(seriesCols, arr.len(arr.get(ROWS, 0)) - 1); }
+  var n = arr.len(ROWS) - 1;
+  var maxv = 0;
+  for (var r = 1; r <= n; r = r + 1) {
+    var row = arr.get(ROWS, r);
+    for (var s = 0; s < arr.len(seriesCols); s = s + 1) {
+      var v = numOf(arr.get(row, arr.get(seriesCols, s)));
+      if (v > maxv) { maxv = v; }
+    }
+  }
+  if (maxv <= 0) { maxv = 1; }
+  /* 网格与刻度 */
+  for (var g = 0; g <= 4; g = g + 1) {
+    var gy = T + ph - math.floor(ph * g / 4);
+    arr.push(ops, ["line", "#2c3352", 1, L, gy, L + pw, gy]);
+    arr.push(ops, ["text", "#8d93b8", 11, "right", L - 8, gy + 4, num.toStr(num.fixed(maxv * g / 4, 1))]);
+  }
+  arr.push(ops, ["line", "#4a5478", 2, L, T, L, T + ph]);
+  arr.push(ops, ["line", "#4a5478", 2, L, T + ph, L + pw, T + ph]);
+  /* 图例 */
+  for (var lg = 0; lg < arr.len(seriesCols); lg = lg + 1) {
+    var lx = L + lg * 96;
+    arr.push(ops, ["rect", SERIES_COLORS[lg % SERIES_COLORS.length], lx, 6, 12, 12]);
+    var head = arr.get(arr.get(ROWS, 0), arr.get(seriesCols, lg));
+    arr.push(ops, ["text", "#cfd4ec", 12, "left", lx + 18, 16, sOf(head)]);
+  }
+  /* 数据 */
+  var groupW = pw / (n > 0 ? n : 1);
+  for (var rr = 1; rr <= n; rr = rr + 1) {
+    var row2 = arr.get(ROWS, rr);
+    var label = sOf(arr.get(row2, li));
+    var lxx = L + groupW * (rr - 1) + groupW / 2;
+    arr.push(ops, ["text", "#cfd4ec", 12, "center", lxx, T + ph + 18, label]);
+    for (var sc = 0; sc < arr.len(seriesCols); sc = sc + 1) {
+      var val = numOf(arr.get(row2, arr.get(seriesCols, sc)));
+      var bh = math.floor(ph * val / maxv);
+      var bw = math.floor(groupW * 0.62 / arr.len(seriesCols));
+      var bx = L + groupW * (rr - 1) + groupW * 0.19 + bw * sc;
+      var by = T + ph - bh;
+      if (CHARTYPE == "line") {
+        arr.push(ops, ["line", SERIES_COLORS[sc % SERIES_COLORS.length], 3, lxx, by, lxx, T + ph]);
+        arr.push(ops, ["circle", SERIES_COLORS[sc % SERIES_COLORS.length], lxx, by, 4]);
+      } else {
+        arr.push(ops, ["rect", SERIES_COLORS[sc % SERIES_COLORS.length], bx, by, bw, bh]);
+      }
+      arr.push(ops, ["text", "#e7eaff", 11, "center", bx + bw / 2, by - 4, num.toStr(num.fixed(val, 1))]);
+    }
+  }
+  return ops;
+}
+function i2(v) { return v + 1; }
+
+/* ---------- 数据与连接 ---------- */
+function applyPayload(p) {
+  VERSION = num.toInt(A(p, "version"));
+  ROWS = [];
+  var rs = A(p, "rows");
+  for (var i = 0; i < arr.len(rs); i = i + 1) {
+    var row = arr.get(rs, i);
+    var out = [];
+    for (var j = 0; j < arr.len(row); j = j + 1) { arr.push(out, arr.get(row, j)); }
+    arr.push(ROWS, out);
+  }
+  STATUS = "已更新版本 " + num.toStr(VERSION) + " · " + num.toStr(arr.len(ROWS)) + " 行";
+  submit();
+  draw();
+}
+
+function submit() {
+  var ops = buildOps();
+  var st = [];
+  oput(st, "ops", ops);
+  var ai = [];
+  oput(ai, "kind", "chart");
+  oput(ai, "sourceTitle", DOCTITLE);
+  oput(ai, "range", RANGE);
+  oput(ai, "chartType", CHARTYPE);
+  oput(ai, "connectionState", CONNECTED == 1 ? "connected" : "disconnected");
+  oput(ai, "version", VERSION);
+  oput(st, "app", ai);
+  var data = [];
+  oput(data, "state", st);
+  call("scene.submit", { key: "k" + num.toStr(WIN), windowId: WIN, data: data });
+}
+
+function connect() {
+  if (DOCID == "") { STATUS = "请先选择工作簿"; draw(); return; }
+  var res = call("chart.connect", { docId: DOCID, range: RANGE, labelCol: LABELCOL, series: SERIES });
+  if (A(res, "ok")) {
+    CONNECTED = 1;
+    CONNID = num.toInt(A(res, "id"));
+    STATUS = "已连接 " + DOCTITLE + " · " + RANGE;
+    var init = A(res, "initial");
+    if (init != null && str.len(init) > 0) {
+      var p = json.parse(init);
+      if (A(p, "rows") != null) { applyPayload(p); return; }
+    }
+  } else {
+    STATUS = "连接失败";
+  }
+  draw();
+}
+
+function disconnect() {
+  if (CONNID > 0) { call("chart.disconnect", { id: CONNID }); CONNID = 0; }
+  CONNECTED = 0;
+  STATUS = "已断开连接（保留最后图表）";
+  draw();
+}
+
+function loadDocs() {
+  DOCS = [];
+  var res = call("chart.docs", {});
+  for (var i = 0; i < arr.len(res); i = i + 1) {
+    var d = arr.get(res, i);
+    arr.push(DOCS, [A(d, "id"), A(d, "title") + "（" + A(d, "range") + "）", "chart-doc-item"]);
+  }
+}
+
+function draw() {
+  var ws = [];
+  arr.push(ws, wid("docs", "list", 12, 8, 250, 150, "", DOCS, "chart-docs"));
+  arr.push(ws, wid("src", "input", 270, 8, 160, 26, DOCID, null, "chart-source"));
+  arr.push(ws, wid("rng", "input", 438, 8, 96, 26, RANGE, null, "chart-range"));
+  arr.push(ws, wid("lbl", "input", 12, 166, 96, 26, LABELCOL, null, "chart-label-column"));
+  arr.push(ws, wid("ser", "input", 114, 166, 110, 26, SERIES, null, "chart-series"));
+  arr.push(ws, wid("conn", "button", 230, 166, 76, 26, "连接", null, "chart-connect"));
+  arr.push(ws, wid("disc", "button", 312, 166, 76, 26, "断开", null, "chart-disconnect"));
+  arr.push(ws, wid("type", "button", 394, 166, 96, 26, CHARTYPE == "bar" ? "柱状图" : "折线图", null, "chart-type"));
+  arr.push(ws, wid("plot", "canvas2d", 12, 200, 560, 300, "", { ops: buildOps() }, "chart-canvas"));
+  arr.push(ws, wid("stat", "text", 12, 506, 560, 22, STATUS + " · 版本 " + num.toStr(VERSION), null, "chart-status"));
+  call("ui.declare", { windowId: WIN, widgets: ws });
+}
+
+function onEvent(ev) {
+  var type = A(ev, "type");
+  var w = A(ev, "widget");
+  var ly = num.toInt(A(ev, "ly"));
+  if (type == "value") {
+    if (w == "src") { DOCID = A(ev, "value"); draw(); return; }
+    if (w == "rng") { RANGE = A(ev, "value"); draw(); return; }
+    if (w == "lbl") { LABELCOL = str.upper(A(ev, "value")); draw(); return; }
+    if (w == "ser") { SERIES = str.upper(A(ev, "value")); draw(); return; }
+  }
+  if (type != "click") { return; }
+  if (w == "docs") {
+    var row = math.floor(ly / 22);
+    if (row >= 0 && row < arr.len(DOCS)) {
+      var d = arr.get(DOCS, row);
+      DOCID = arr.get(d, 0); DOCTITLE = arr.get(d, 1);
+      STATUS = "已选择 " + DOCTITLE;
+    }
+    draw(); return;
+  }
+  if (w == "conn") { connect(); return; }
+  if (w == "disc") { disconnect(); return; }
+  if (w == "type") {
+    CHARTYPE = CHARTYPE == "bar" ? "line" : "bar";
+    submit(); draw(); return;
+  }
+}
+
+function main() {
+  var r = call("win.open", { app: "charts", title: "图表工作台", w: 620, h: 560 });
+  WIN = num.toInt(A(r, "id"));
+  loadDocs();
+  if (arr.len(DOCS) > 0) {
+    DOCID = arr.get(arr.get(DOCS, 0), 0);
+    DOCTITLE = arr.get(arr.get(DOCS, 0), 1);
+  }
+  draw();
+  while (true) {
+    var guard = 0;
+    var got = 0;
+    while (guard < 32) {
+      guard = guard + 1;
+      var raw = sys.takeMsg();
+      if (raw == null || str.len(raw) == 0) { break; }
+      got = got + 1;
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        var et = A(ev, "type");
+        if (et == "chart") { applyPayload(ev); continue; }
+        if (et == "click" || et == "value") { onEvent(ev); }
+      }
+    }
+    if (got == 0) { nap(12); }
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

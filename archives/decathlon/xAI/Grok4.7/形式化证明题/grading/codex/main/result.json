@@ -1,0 +1,62 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原文件单独编译及追加 #print axioms problem1、#check @problem1 的副本编译均退出 0，无 sorry 警告；主定理命题与题面一致，只依赖 propext、Classical.choice、Quot.sound，源码未见跳过检查或篡改命题。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时的工作目录中未提交第 2 题文件，也无对应主定理 problem2。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时的工作目录中未提交第 3 题文件，也无对应主定理 problem3。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时的工作目录中未提交第 4 题文件，也无对应主定理 problem4。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时的工作目录中未提交第 5 题文件，也无对应主定理 problem5。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时的工作目录中未提交第 6 题文件，也无对应主定理 problem6。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时的工作目录中未提交第 7 题文件，也无对应主定理 problem7。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时的工作目录中未提交第 8 题文件，也无对应主定理 problem8。"
+    }
+  ],
+  "metrics": {
+    "total_score": 12.5,
+    "passed_problems": 1,
+    "submitted_problem_files": 1,
+    "total_problems": 8
+  },
+  "notes": "评分版本：评的是作答结束时工作目录的内容，已复制到评分工作目录的 submission 子目录；未看 Git 提交。原目录除本人的评分表外未修改或生成文件。第 1 题原文件和核验副本均编译通过；只有普通 lint/弃用警告，不影响得分。#check 打印的主定理与题面一致。源码及文件清单核验记录见 work/source-review.json，编译输出见 work/Problem1.baseline.log、work/Problem1.audit.log。第 2–8 题缺交。未运行性能基准或采集性能数据；本次启动的编译进程均已正常退出。"
+}

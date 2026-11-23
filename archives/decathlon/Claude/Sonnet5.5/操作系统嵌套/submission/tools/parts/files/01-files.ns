@@ -1,0 +1,577 @@
+// files.ns — 文件管理器。目录导航、路径与文件列表、新建/重命名/复制/移动/删除/打开、回收站、
+// 多选、右键菜单，以及在各层文件管理器之间拖放文件。所有文件操作经系统调用交给所在系统的内核。
+include "/System/lib/ui.ns";
+
+let S = {cwd: "/Documents", entries: [], sel: {}, anchor: "", clip: nil, hist: [], hi: -1, rename: nil, menu: nil, msg: "", msg_t: 0, press: nil,
+  sort_key: "name", sort_asc: true, fs_rev: -1, trash: false, dragging: false, hover_dir: "", conflict: nil, import_dlg: nil, usage: nil, restore_map: {}, drop_hint: ""};
+let SIDE = [["文档", "/Documents", "doc"], ["下载", "/Downloads", "download"], ["桌面", "/Desktop", "home"], ["示例", "/Demo", "star"], ["程序", "/Programs", "code"], ["系统", "/System", "gear"], ["快照", "/Snapshots", "snapshot"]];
+let LH = 28;
+
+// ---- 排序规则（可改写）：目录在前，其余按名称（忽略大小写）升序；点击列标题可切换 ----
+fn sort_entries(list) {
+  let key = S.sort_key; let asc = S.sort_asc;
+  let dirs = []; let files = [];
+  for (let e of list) { if (e.dir) { push(dirs, e); } else { push(files, e); } }
+  let cmp = fn(a, b) { return 0; };
+  dirs = sort_group(dirs, key, asc); files = sort_group(files, key, asc);
+  return concat(dirs, files);
+}
+fn sort_group(list, key, asc) {
+  let tmp = [];
+  for (let e of list) {
+    let k = e.name;
+    if (key == "size") { k = e.size; } else if (key == "mtime") { k = e.mtime; } else if (key == "type") { k = file_type(e) + "\t" + lower(e.name); } else { k = lower(e.name); }
+    push(tmp, {k: k, e: e});
+  }
+  sort_by(tmp, "k", !asc);
+  let out = [];
+  for (let t of tmp) { push(out, t.e); }
+  return out;
+}
+fn file_type(e) {
+  if (e.dir) { return "文件夹"; }
+  let parts = split(e.name, ".");
+  if (len(parts) < 2) { return "文件"; }
+  let ext = lower(parts[len(parts) - 1]);
+  if (ext == "ns") { return "程序"; } if (ext == "nsx") { return "可执行"; } if (ext == "sheet") { return "工作簿"; } if (ext == "scene") { return "场景"; }
+  if (ext == "rec") { return "排演记录"; } if (ext == "snap") { return "快照"; } if (ext == "txt" || ext == "md") { return "文本"; } if (ext == "json") { return "JSON"; }
+  return upper(ext) + " 文件";
+}
+fn ent_icon(e) {
+  if (e.dir) { return "folder"; }
+  let t = file_type(e);
+  if (t == "程序" || t == "可执行") { return "code"; } if (t == "工作簿") { return "sheet"; } if (t == "场景" || t == "排演记录") { return "scene"; }
+  if (t == "快照") { return "snapshot"; } if (t == "文本" || t == "JSON") { return "doc"; }
+  return "file";
+}
+
+// ---- 目录与选择 ----
+fn say(msg) { S.msg = msg; S.msg_t = time(); }
+fn refresh() {
+  S.trash = S.cwd == "/Recycle";
+  let r = sys("fs_list", S.cwd);
+  if (typeof(r) != "arr") { S.entries = []; say("无法读取目录：" + (r == nil ? "" : r.err)); return nil; }
+  let list = [];
+  for (let e of r) { if (substr(e.name, 0, 1) != ".") { push(list, e); } }
+  if (S.trash) {
+    let it = sys("fs_read", "/Recycle/.index");
+    let idx = typeof(it) == "str" ? json_parse(it) : nil;
+    S.restore_map = idx == nil ? {} : idx;
+  }
+  S.entries = sort_entries(list);
+  S.fs_rev = sys("fs_rev");
+  S.usage = sys("fs_usage");
+  // 清理已不存在的选择
+  let keep = {};
+  for (let e of S.entries) { if (S.sel[e.path] != nil) { keep[e.path] = true; } }
+  S.sel = keep;
+}
+fn goto_dir(path, record) {
+  let st = sys("fs_stat", path);
+  if (st == nil || st.err != nil || !st.dir) { say("目录不存在：" + path); return nil; }
+  if (record != false) {
+    S.hist = slice(S.hist, 0, S.hi + 1); push(S.hist, path); S.hi = len(S.hist) - 1;
+  }
+  S.cwd = st.path; S.sel = {}; S.anchor = ""; S.rename = nil; S.menu = nil;
+  ui_set("files-path", S.cwd);
+  ui.scroll["files-list"] = 0;
+  refresh();
+}
+fn sel_list() {
+  let out = [];
+  for (let e of S.entries) { if (S.sel[e.path] != nil) { push(out, e); } }
+  return out;
+}
+fn sel_paths() { let out = []; for (let e of sel_list()) { push(out, e.path); } return out; }
+fn parent_of(p) { let parts = split(p, "/"); pop(parts); let r = join(parts, "/"); return r == "" ? "/" : r; }
+fn base_of(p) { let parts = split(p, "/"); return parts[len(parts) - 1]; }
+fn join_path(d, n) { return d == "/" ? "/" + n : d + "/" + n; }
+fn unique_name(dir, name) {
+  let st = sys("fs_stat", join_path(dir, name));
+  if (st.err != nil) { return name; }
+  let parts = split(name, "."); let stem = name; let ext = "";
+  if (len(parts) > 1) { ext = "." + parts[len(parts) - 1]; stem = slice(name, 0, len(name) - len(ext)); }
+  for (let i = 2; i < 200; i++) {
+    let n = stem + " (" + i + ")" + ext;
+    if (sys("fs_stat", join_path(dir, n)).err != nil) { return n; }
+  }
+  return name + "_" + floor(time());
+}
+
+// ---- 文件操作 ----
+fn notify_op(title, text) { sys("notify", title, text); }
+fn op_new_file() {
+  let n = unique_name(S.cwd, "新建文本文档.txt");
+  let r = sys("fs_write", join_path(S.cwd, n), "");
+  if (r.err != nil) { say("新建失败：" + r.err); return nil; }
+  notify_op("已新建文件", join_path(S.cwd, n));
+  refresh(); S.sel = {}; S.sel[join_path(S.cwd, n)] = true; start_rename(join_path(S.cwd, n));
+}
+fn op_new_folder() {
+  let n = unique_name(S.cwd, "新建文件夹");
+  let r = sys("fs_mkdir", join_path(S.cwd, n));
+  if (r.err != nil) { say("新建失败：" + r.err); return nil; }
+  notify_op("已新建文件夹", join_path(S.cwd, n));
+  refresh(); S.sel = {}; S.sel[join_path(S.cwd, n)] = true; start_rename(join_path(S.cwd, n));
+}
+fn start_rename(path) {
+  S.rename = {path: path, name: base_of(path)};
+  ui_set("files-rename", base_of(path)); ui_focus("files-rename");
+}
+fn commit_rename() {
+  let r = S.rename; S.rename = nil;
+  if (r == nil) { return nil; }
+  let nn = trim(ui_val("files-rename"));
+  if (nn == "" || nn == r.name || contains(nn, "/")) { return nil; }
+  let dest = join_path(parent_of(r.path), nn);
+  if (sys("fs_stat", dest).err == nil) { say("已存在同名项目：" + nn); return nil; }
+  let res = sys("fs_move", r.path, dest);
+  if (res.err != nil) { say("重命名失败：" + res.err); return nil; }
+  notify_op("已重命名", r.name + " → " + nn);
+  refresh(); S.sel = {}; S.sel[dest] = true;
+}
+fn op_copy(cut) {
+  let ps = sel_paths();
+  if (len(ps) == 0) { say("请先选择文件"); return nil; }
+  S.clip = {mode: cut ? "cut" : "copy", paths: ps};
+  say((cut ? "已剪切 " : "已复制 ") + len(ps) + " 项");
+  sys("dev", "clip", "push", join(ps, "\n"), "files");
+}
+fn op_paste() {
+  if (S.clip == nil) { say("剪贴板里没有文件"); return nil; }
+  let n = 0; let err = nil;
+  for (let p of S.clip.paths) {
+    let name = base_of(p);
+    let dest = join_path(S.cwd, name);
+    if (parent_of(p) == S.cwd) { if (S.clip.mode == "cut") { continue; } dest = join_path(S.cwd, unique_name(S.cwd, name)); }
+    else if (sys("fs_stat", dest).err == nil) { dest = join_path(S.cwd, unique_name(S.cwd, name)); }
+    let r = S.clip.mode == "cut" ? sys("fs_move", p, dest) : sys("fs_copy", p, dest);
+    if (r.err != nil) { err = r.err; break; }
+    n++;
+  }
+  if (S.clip.mode == "cut") { S.clip = nil; }
+  if (err != nil) { say("粘贴失败：" + err); notify_op("文件操作失败", err); }
+  else { say("已粘贴 " + n + " 项"); notify_op(S.clip == nil ? "已移动文件" : "已复制文件", n + " 项 → " + S.cwd); }
+  refresh();
+}
+fn op_delete() {
+  let ps = sel_list();
+  if (len(ps) == 0) { say("请先选择文件"); return nil; }
+  let n = 0;
+  for (let e of ps) {
+    if (S.trash) { let r = sys("fs_remove", e.path); if (r.err == nil) { n++; } }
+    else {
+      let r = sys("fs_trash", e.path);
+      if (r.err != nil) { r = sys("fs_remove", e.path); }
+      if (r.err == nil) { n++; }
+    }
+  }
+  say((S.trash ? "已永久删除 " : "已删除 ") + n + " 项");
+  notify_op(S.trash ? "已永久删除" : "已移到回收站", n + " 项");
+  S.sel = {};
+  refresh();
+}
+fn op_restore() {
+  let ps = sel_list();
+  if (len(ps) == 0) { say("请先在回收站中选择文件"); return nil; }
+  let n = 0;
+  for (let e of ps) { let r = sys("fs_restore", e.name); if (r.err == nil) { n++; } else { say("还原失败：" + r.err); } }
+  if (n > 0) { say("已还原 " + n + " 项"); notify_op("已还原文件", n + " 项"); }
+  S.sel = {}; refresh();
+}
+fn op_empty_trash() {
+  for (let e of S.entries) { sys("fs_remove", e.path); }
+  sys("fs_remove", "/Recycle/.index");
+  say("回收站已清空"); refresh();
+}
+fn op_open(e) {
+  if (e.dir) { goto_dir(e.path, true); return nil; }
+  if (S.trash) { say("请先还原再打开"); return nil; }
+  send(APP.args.wm, {t: "open_file", path: e.path});
+}
+fn op_export() {
+  let ps = sel_list(); let n = 0;
+  for (let e of ps) {
+    if (e.dir) { continue; }
+    let data = sys("fs_read", e.path);
+    if (typeof(data) == "str") { sys("dev", "fsx", "export", e.name, data); n++; }
+  }
+  if (n == 0) { say("请选择要保存到本机的文件（不含文件夹）"); } else { say("已把 " + n + " 个文件保存到本机导出目录"); notify_op("已保存到本机", n + " 个文件"); }
+}
+
+// ---- 拖放：把选中的文件打包交给宿主，目标系统的文件管理器取走副本 ----
+fn read_tree(path, rel, out, budget) {
+  let st = sys("fs_stat", path);
+  if (st.err != nil) { return budget; }
+  if (st.dir) {
+    push(out, {rel: rel, dir: true});
+    for (let e of sys("fs_list", path)) { budget = read_tree(e.path, rel + "/" + e.name, out, budget); }
+  } else {
+    let d = sys("fs_read", path);
+    if (typeof(d) == "str") { push(out, {rel: rel, dir: false, data: d}); budget = budget - len(d); }
+  }
+  return budget;
+}
+fn drag_begin() {
+  let items = [];
+  for (let e of sel_list()) { read_tree(e.path, "/" + e.name, items, 4000000); }
+  if (len(items) == 0) { return nil; }
+  let r = sys("dev", "drag", "begin", {items: items, from: APP.args.sysid, label: len(sel_list()) + " 个项目"});
+  S.dragging = true;
+}
+fn drop_target(x, y) { // 返回 {dir, label} 或 nil：x,y 是本应用显示区域内的坐标
+  let h = APP.size[0].h; let w = APP.size[0].w;
+  let side_w = 150;
+  if (x < 0 || y < 0 || x >= w || y >= h) { return nil; }
+  if (x < side_w && y >= 78) {
+    let i = floor((y - 84) / 32);
+    let items = side_items();
+    if (i >= 0 && i < len(items)) { return {dir: items[i][1]}; }
+    return nil;
+  }
+  if (x >= side_w && y >= 78 + 26) {
+    let off = ui.scroll["files-list"] == nil ? 0 : ui.scroll["files-list"];
+    let i = floor((y - 78 - 26 + off) / LH);
+    if (i >= 0 && i < len(S.entries) && S.entries[i].dir && !S.trash) { return {dir: S.entries[i].path}; }
+    if (S.trash) { return nil; }
+    return {dir: S.cwd};
+  }
+  return nil;
+}
+fn on_drag(m) {
+  if (m.phase == "move") {
+    let t = drop_target(m.x, m.y);
+    if (t == nil) { S.hover_dir = ""; sys("dev", "drag", "hover", {ok: false, label: ""}); }
+    else { S.hover_dir = t.dir; sys("dev", "drag", "hover", {ok: true, label: APP.args.sysid + "：" + t.dir}); }
+  } else if (m.phase == "drop") {
+    let t = drop_target(m.x, m.y);
+    S.hover_dir = "";
+    if (t == nil) { sys("dev", "drag", "end", true); return nil; }
+    let pl = sys("dev", "drag", "take");
+    if (pl == nil || pl.err != nil || pl.items == nil) { say("没有可投放的内容"); return nil; }
+    do_drop(pl, t.dir);
+  } else if (m.phase == "end") { S.hover_dir = ""; S.dragging = false; }
+}
+fn do_drop(pl, dir) {
+  // 同名冲突：取消或确认覆盖
+  let clash = [];
+  for (let it of pl.items) { if (!it.dir && sys("fs_stat", dir + it.rel).err == nil) { push(clash, it.rel); } }
+  if (len(clash) > 0) { S.conflict = {pl: pl, dir: dir, clash: clash}; return nil; }
+  finish_drop(pl, dir);
+}
+fn finish_drop(pl, dir) {
+  let n = 0;
+  for (let it of pl.items) {
+    let dest = dir == "/" ? it.rel : dir + it.rel;
+    if (it.dir) { let r = sys("fs_mkdir", dest); if (r.err != nil) { fail_drop(r.err); return nil; } }
+    else {
+      let r = sys("fs_write", dest, it.data);
+      if (r.err != nil) { fail_drop(r.err); return nil; }
+      n++;
+    }
+  }
+  say("已从 " + pl.from + " 传入 " + n + " 个文件 → " + dir);
+  notify_op("文件已传入", pl.from + " → " + APP.args.sysid + ":" + dir + "（" + n + " 个文件）");
+  S.conflict = nil; refresh();
+}
+fn fail_drop(msg) {
+  say("传入失败：" + msg);
+  notify_op("文件传递失败", msg);
+  S.conflict = nil; refresh();
+}
+
+// ---- 界面 ----
+fn side_items() {
+  let items = [];
+  for (let s of SIDE) { push(items, s); }
+  let st = sys("fs_stat", "/Recycle");
+  if (st != nil && st.err == nil) { push(items, ["回收站", "/Recycle", "trash"]); }
+  return items;
+}
+fn toolbar_btn(id, x, y, icon, tip, label) {
+  return ui_button(id, x, y, label == nil ? 30 : 30 + text_w(label, 12) + 8, 30, label, {icon: icon, fill: "rgba(0,0,0,0)", hf: TH.bg3, tip: tip, size: 12, aria: tip});
+}
+fn files_frame(U, w, h) {
+  if (ui_ev_is("up", nil)) { S.dragging = false; S.press = nil; }
+  ui_rect(0, 0, w, h, TH.bg1, 0);
+  let modal = S.menu != nil || S.conflict != nil || S.import_dlg != nil;
+  // 工具栏
+  ui_rect(0, 0, w, 44, TH.bg2, 0);
+  ui.enabled = !modal;
+  if (toolbar_btn("files-back", 6, 7, "back", "后退", nil) && S.hi > 0) { S.hi--; goto_dir(S.hist[S.hi], false); }
+  if (toolbar_btn("files-forward", 38, 7, "forward", "前进", nil) && S.hi < len(S.hist) - 1) { S.hi++; goto_dir(S.hist[S.hi], false); }
+  if (toolbar_btn("files-up", 70, 7, "up", "上一级", nil) && S.cwd != "/") { goto_dir(parent_of(S.cwd), true); }
+  ui_input("files-path", 106, 7, max(120, w - 106 - 270), 30, {size: 13, pad: 8, r: 15, ph: "输入路径后回车"});
+  let bx = w - 156;
+  if (toolbar_btn("files-refresh", bx, 7, "reload", "刷新", nil)) { refresh(); }
+  if (toolbar_btn("files-export", bx + 32, 7, "download", "保存到本机", nil)) { op_export(); }
+  if (toolbar_btn("files-import", bx + 64, 7, "upload", "从本机导入", nil)) { S.import_dlg = {list: nil, job: nil}; start_import_list(); }
+  if (toolbar_btn("files-layout", bx + 96, 7, "list", "详细信息", nil)) { say("详细信息视图"); }
+  // 命令栏
+  ui_rect(0, 44, w, 34, TH.bg1, 0);
+  ui_rect(0, 77, w, 1, TH.border, 0);
+  let cx = 10;
+  if (!S.trash) {
+    if (ui_button("files-new-file", cx, 48, 84, 26, "新建文件", {icon: "doc", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { op_new_file(); } cx = cx + 88;
+    if (ui_button("files-new-folder", cx, 48, 96, 26, "新建文件夹", {icon: "folder", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { op_new_folder(); } cx = cx + 100;
+  } else {
+    if (ui_button("files-restore", cx, 48, 72, 26, "还原", {icon: "reload", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { op_restore(); } cx = cx + 76;
+    if (ui_button("files-empty", cx, 48, 96, 26, "清空回收站", {icon: "trash", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { op_empty_trash(); } cx = cx + 100;
+  }
+  let sl = sel_list();
+  if (ui_button("files-open", cx, 48, 64, 26, "打开", {icon: "play", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { if (len(sl) > 0) { op_open(sl[0]); } else { say("请先选择文件"); } } cx = cx + 68;
+  if (ui_button("files-copy", cx, 48, 64, 26, "复制", {icon: "copy", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { op_copy(false); } cx = cx + 68;
+  if (ui_button("files-cut", cx, 48, 64, 26, "剪切", {icon: "cut", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { op_copy(true); } cx = cx + 68;
+  if (ui_button("files-paste", cx, 48, 64, 26, "粘贴", {icon: "paste", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3, color: S.clip == nil ? TH.faint : TH.text})) { op_paste(); } cx = cx + 68;
+  if (ui_button("files-rename-btn", cx, 48, 76, 26, "重命名", {icon: "edit", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3})) { if (len(sl) == 1) { start_rename(sl[0].path); } else { say("请选择一个项目"); } } cx = cx + 80;
+  if (ui_button("files-delete", cx, 48, 64, 26, "删除", {icon: "trash", size: 12, fill: "rgba(0,0,0,0)", hf: TH.bg3, color: TH.danger})) { op_delete(); }
+  // 侧栏
+  ui_rect(0, 78, 150, h - 78 - 26, TH.bg0, 0);
+  let sy = 84;
+  for (let it of side_items()) {
+    let active = S.cwd == it[1] || (S.hover_dir == it[1]);
+    let b = ui_rect(8, sy, 134, 30, active ? "rgba(139,108,255,.28)" : "rgba(0,0,0,0)", 8);
+    b.hf = "rgba(255,255,255,.08)"; b.tid = "files-nav"; b.aria = it[0]; b.d = {"file-path": it[1]}; b.cur = "pointer"; b.key = "nav" + it[1];
+    if (S.hover_dir == it[1]) { b.stroke = TH.acc2; }
+    if (ui_in(8, sy, 134, 30) && ui_ev_is("down", 0)) { ui.active = "nav" + it[1]; }
+    if (ui_in(8, sy, 134, 30) && ui_ev_is("up", 0) && ui.active == "nav" + it[1]) { goto_dir(it[1], true); }
+    ui_icon(18, sy + 6, it[2], 18, active ? TH.acc : TH.muted);
+    ui_text(44, sy + 6, it[0], 13, active ? TH.text : TH.muted);
+    sy = sy + 32;
+  }
+  // 列表头
+  let lx = 150; let lw = w - 150;
+  ui_rect(lx, 78, lw, 26, TH.bg2, 0);
+  let cols = [["name", "名称", 14, lw - 14 - 150 - 90 - 90], ["mtime", "修改时间", lw - 330 + 0, 150], ["type", "类型", lw - 180, 90], ["size", "大小", lw - 90, 90]];
+  if (S.trash) { cols = [["name", "名称", 14, lw - 14 - 240 - 90], ["mtime", "原位置", lw - 330, 240], ["size", "大小", lw - 90, 90]]; }
+  for (let c of cols) {
+    let arrow = S.sort_key == c[0] ? (S.sort_asc ? " ▲" : " ▼") : "";
+    let hb = ui_rect(lx + c[2] - 4, 78, c[3], 26, "rgba(0,0,0,0)", 0); hb.hf = "rgba(255,255,255,.07)"; hb.tid = "files-sort-" + c[0]; hb.aria = "按" + c[1] + "排序"; hb.cur = "pointer";
+    if (ui_in(lx + c[2] - 4, 78, c[3], 26) && ui_ev_is("up", 0)) { if (S.sort_key == c[0]) { S.sort_asc = !S.sort_asc; } else { S.sort_key = c[0]; S.sort_asc = true; } S.entries = sort_entries(S.entries); }
+    ui_text(lx + c[2], 83, c[1] + arrow, 12, TH.muted, {b: true});
+  }
+  // 文件列表
+  let ly = 104; let lh = h - 104 - 26;
+  let list_bg = ui_rect(lx, ly, lw, lh, TH.bg1, 0); list_bg.tid = "files-list"; list_bg.aria = "文件列表"; list_bg.d = {"file-path": S.cwd};
+  let n = len(S.entries);
+  let off = ui_scroll_begin("files-list", lx, ly, lw, lh, n * LH + 8);
+  if (n == 0) { ui_text(24, 20, S.trash ? "回收站是空的" : "此文件夹为空", 13, TH.faint); }
+  for (let i = 0; i < n; i++) {
+    let e = S.entries[i];
+    let y = i * LH + 2;
+    if (y + LH < off || y > off + lh) { continue; }
+    let selected = S.sel[e.path] != nil;
+    let hover_drop = S.hover_dir == e.path && e.dir;
+    let row = ui_rect(4, y, lw - 12, LH - 2, selected ? "rgba(139,108,255,.30)" : (i % 2 == 1 ? "rgba(255,255,255,.025)" : "rgba(0,0,0,0)"), 6);
+    row.hf = selected ? "rgba(139,108,255,.38)" : "rgba(255,255,255,.07)"; row.tid = "files-item"; row.aria = e.name; row.d = {"file-path": e.path, "type": e.dir ? "dir" : "file"}; row.key = "it" + e.path; row.cur = "default";
+    if (selected) { row.stroke = "rgba(170,150,255,.5)"; }
+    if (hover_dir_active(e)) { row.stroke = TH.acc2; }
+    if (ui_in(4, y, lw - 12, LH - 2)) { handle_row_event(e, i); }
+    ui_icon(12, y + 5, ent_icon(e), 18, e.dir ? TH.acc2 : TH.acc);
+    if (S.rename != nil && S.rename.path == e.path) {
+      ui_input("files-rename", 36, y + 1, lw - 14 - 150 - 100 - 36, LH - 4, {size: 13, pad: 4, r: 5, sel: true});
+    } else {
+      ui_textw(38, y + 5, cols[0][3] - 30, e.name, 13, TH.text);
+    }
+    if (S.trash) {
+      let orig = S.restore_map[e.name];
+      ui_textw(cols[1][2], y + 6, cols[1][3] - 10, orig == nil ? "—" : orig.orig, 12, TH.muted);
+      ui_text(cols[2][2], y + 6, e.dir ? "" : fmt_size(e.size), 12, TH.muted);
+    } else {
+      ui_text(cols[1][2], y + 6, fmt_mtime(e.mtime), 12, TH.muted);
+      ui_text(cols[2][2], y + 6, file_type(e), 12, TH.muted);
+      ui_text(cols[3][2], y + 6, e.dir ? "" : fmt_size(e.size), 12, TH.muted);
+    }
+  }
+  // 空白处点击：取消选择 / 右键菜单
+  if (ui_in(0, 0, lw, max(lh, n * LH + 8)) && !row_hit_any()) {
+    if (ui_ev_is("down", 0) && n * LH + 4 < ui.my - ui.oy) { }
+  }
+  ui_scroll_end();
+  ui_scrollbar(lx + lw - 8, ly + 2, 6, lh - 4, n * LH + 8, off);
+  // 空白右键 / 取消选择
+  if (ui_in(lx, ly, lw, lh) && ui.ev != nil && ui.ev.k == "down" && !S.row_clicked) {
+    if (ui.ev.b == 2) { S.menu = {x: ui.mx, y: ui.my, kind: "blank"}; }
+    else if (ui.ev.b == 0) { S.sel = {}; S.rename = nil; }
+  }
+  S.row_clicked = false;
+  // 状态栏
+  ui_rect(0, h - 26, w, 26, TH.bg2, 0);
+  let st = S.cwd + "  ·  " + n + " 个项目" + (len(sl) > 0 ? "，已选 " + len(sl) + " 项" : "");
+  ui_textw(12, h - 20, w - 300, st, 12, TH.muted);
+  if (S.msg != "" && time() - S.msg_t < 6) { ui_textr(w - 380, h - 20, 366, S.msg, 12, TH.acc2); }
+  else if (S.usage != nil && S.usage.err == nil) { ui_textr(w - 380, h - 20, 366, "存储：" + fmt_size(S.usage.tree) + (S.usage.quota > 0 ? " / " + fmt_size(S.usage.quota) : "") + " · " + APP.args.sysid, 12, TH.faint); }
+  ui.enabled = true;
+  // 重命名：Enter 提交，Esc 取消，点击别处也提交
+  if (S.rename != nil) {
+    if (ui_key_in("Enter", "files-rename") != nil) { commit_rename(); }
+    else if (ui_key_in("Escape", "files-rename") != nil) { S.rename = nil; }
+  }
+  draw_menu_conflict(w, h);
+  handle_keys(w, h);
+  // 路径框回车导航
+  if (ui_key_in("Enter", "files-path") != nil && S.rename == nil && S.menu == nil && S.conflict == nil && S.import_dlg == nil) {
+    let p = trim(ui_val("files-path"));
+    if (p != "" && p != S.cwd) { goto_dir(fs_norm_path(p), true); }
+  }
+}
+fn fs_norm_path(p) {
+  let parts = split(p, "/"); let out = [];
+  for (let s of parts) { if (s == "" || s == ".") { continue; } if (s == "..") { if (len(out) > 0) { pop(out); } continue; } push(out, s); }
+  return "/" + join(out, "/");
+}
+fn hover_dir_active(e) { return S.hover_dir == e.path && e.dir; }
+fn row_hit_any() { return false; }
+fn handle_row_event(e, i) {
+  if (ui.ev == nil) { return nil; }
+  let k = ui.ev.k;
+  if (k == "down") {
+    S.row_clicked = true;
+    if (ui.ev.b == 2) {
+      if (S.sel[e.path] == nil) { S.sel = {}; S.sel[e.path] = true; }
+      S.menu = {x: ui.mx, y: ui.my, kind: "item", e: e};
+      return nil;
+    }
+    if (ui.ev.b == 0) {
+      if (S.rename != nil && S.rename.path != e.path) { commit_rename(); }
+      if (ui.shift && S.anchor != "") {
+        let a = -1; for (let j = 0; j < len(S.entries); j++) { if (S.entries[j].path == S.anchor) { a = j; } }
+        if (a >= 0) { S.sel = {}; for (let j = min(a, i); j <= max(a, i); j++) { S.sel[S.entries[j].path] = true; } }
+      } else if (ui.ctrl) {
+        if (S.sel[e.path] != nil) { del(S.sel, e.path); } else { S.sel[e.path] = true; }
+        S.anchor = e.path;
+      } else {
+        if (S.sel[e.path] == nil) { S.sel = {}; S.sel[e.path] = true; }
+        S.anchor = e.path;
+      }
+      S.press = {x: ui.mx, y: ui.my, path: e.path};
+    }
+  } else if (k == "up") {
+    if (S.press != nil && ui.ev.b == 0 && !ui.ctrl && !ui.shift && S.sel[e.path] != nil && len(sel_list()) > 1 && S.press.path == e.path) { S.sel = {}; S.sel[e.path] = true; }
+    S.press = nil;
+  } else if (k == "dbl" && ui.ev.b == 0) {
+    S.sel = {}; S.sel[e.path] = true; S.press = nil; op_open(e);
+  } else if (k == "move" && S.press != nil && ui.down) {
+    if (abs(ui.mx - S.press.x) + abs(ui.my - S.press.y) > 8 && !S.dragging && !S.trash) { S.press = nil; drag_begin(); }
+  }
+}
+fn handle_keys(w, h) {
+  if (S.rename != nil || S.menu != nil || S.conflict != nil || S.import_dlg != nil) { return nil; }
+  for (let k of ui.keys) {
+    if (k.ed) { continue; }
+    if (k.ctrl && k.key == "c") { op_copy(false); }
+    else if (k.ctrl && k.key == "x") { op_copy(true); }
+    else if (k.ctrl && k.key == "v") { op_paste(); }
+    else if (k.ctrl && k.key == "a") { S.sel = {}; for (let e of S.entries) { S.sel[e.path] = true; } }
+    else if (k.key == "Delete") { op_delete(); }
+    else if (k.key == "F2") { let sl = sel_list(); if (len(sl) == 1) { start_rename(sl[0].path); } }
+    else if (k.key == "Enter") { let sl = sel_list(); if (len(sl) > 0) { op_open(sl[0]); } }
+    else if (k.key == "Backspace") { if (S.cwd != "/") { goto_dir(parent_of(S.cwd), true); } }
+    else if (k.key == "F5") { refresh(); }
+    else if (k.key == "ArrowDown" || k.key == "ArrowUp") {
+      let cur = -1; for (let j = 0; j < len(S.entries); j++) { if (S.entries[j].path == S.anchor) { cur = j; } }
+      let nx = k.key == "ArrowDown" ? cur + 1 : cur - 1;
+      if (nx >= 0 && nx < len(S.entries)) { S.sel = {}; S.sel[S.entries[nx].path] = true; S.anchor = S.entries[nx].path; }
+      else if (cur < 0 && len(S.entries) > 0) { S.sel = {}; S.sel[S.entries[0].path] = true; S.anchor = S.entries[0].path; }
+    }
+  }
+}
+fn draw_menu_conflict(w, h) {
+  if (S.menu != nil) {
+    let m = S.menu; let items = [];
+    if (m.kind == "item") {
+      items = [{id: "m-open", label: "打开", icon: "play"}, {id: "m-copy", label: "复制", icon: "copy"}, {id: "m-cut", label: "剪切", icon: "cut"}];
+      if (!S.trash) { push(items, {id: "m-rename", label: "重命名", icon: "edit"}); }
+      if (S.trash) { push(items, {id: "m-restore", label: "还原", icon: "reload"}); }
+      push(items, {sep: true}); push(items, {id: "m-delete", label: S.trash ? "永久删除" : "删除", icon: "trash", danger: true});
+    } else {
+      items = [{id: "m-newfile", label: "新建文本文档", icon: "doc"}, {id: "m-newfolder", label: "新建文件夹", icon: "folder"}, {id: "m-paste", label: "粘贴", icon: "paste", disabled: S.clip == nil}, {sep: true}, {id: "m-refresh", label: "刷新", icon: "reload"}];
+    }
+    let r = ui_menu("files-menu", m.x, m.y, 200, items, 30);
+    if (r != nil) {
+      S.menu = nil;
+      if (r == "m-open") { let sl = sel_list(); if (len(sl) > 0) { op_open(sl[0]); } }
+      else if (r == "m-copy") { op_copy(false); } else if (r == "m-cut") { op_copy(true); }
+      else if (r == "m-rename") { let sl = sel_list(); if (len(sl) == 1) { start_rename(sl[0].path); } }
+      else if (r == "m-restore") { op_restore(); } else if (r == "m-delete") { op_delete(); }
+      else if (r == "m-newfile") { op_new_file(); } else if (r == "m-newfolder") { op_new_folder(); }
+      else if (r == "m-paste") { op_paste(); } else if (r == "m-refresh") { refresh(); }
+    }
+  }
+  if (S.conflict != nil) {
+    let c = S.conflict;
+    ui_rect(0, 0, w, h, "rgba(6,4,16,.55)", 0);
+    let bw = min(460, w - 40); let bh = 200; let bx = (w - bw) / 2; let by = (h - bh) / 2;
+    let box = ui_rect(bx, by, bw, bh, TH.bg2, 14); box.stroke = TH.warn; box.sh = "s4"; box.tid = "files-conflict"; box.aria = "同名文件冲突";
+    ui_icon(bx + 20, by + 20, "warn", 24, TH.warn);
+    ui_text(bx + 54, by + 20, "目标目录已有同名文件", 15, TH.text, {b: true});
+    ui_text(bx + 22, by + 58, c.dir + " 中已存在：" + join(slice(c.clash, 0, 3), "、") + (len(c.clash) > 3 ? " 等 " + len(c.clash) + " 个" : ""), 13, TH.muted, {wrap: true, w: bw - 44, lh: 19});
+    if (ui_button("files-overwrite", bx + bw - 22 - 100 - 96, by + bh - 54, 100, 34, "覆盖", {fill: TH.danger, b: true})) { let pl = c.pl; let d = c.dir; S.conflict = nil; finish_drop(pl, d); }
+    if (ui_button("files-cancel-drop", bx + bw - 22 - 90, by + bh - 54, 90, 34, "取消", {})) { S.conflict = nil; say("已取消传入"); }
+  }
+  if (S.import_dlg != nil) { draw_import(w, h); }
+}
+fn start_import_list() {
+  let r = sys("dev", "fsx", "list");
+  if (r != nil && r.job != nil) { S.import_dlg.job = r.job; }
+}
+fn draw_import(w, h) {
+  let d = S.import_dlg;
+  ui_rect(0, 0, w, h, "rgba(6,4,16,.55)", 0);
+  let bw = min(520, w - 40); let bh = min(380, h - 40); let bx = (w - bw) / 2; let by = (h - bh) / 2;
+  let box = ui_rect(bx, by, bw, bh, TH.bg2, 14); box.stroke = TH.acc; box.sh = "s4"; box.tid = "files-import-dialog"; box.aria = "从本机导入";
+  ui_icon(bx + 20, by + 18, "upload", 22, TH.acc);
+  ui_text(bx + 52, by + 18, "从本机导入文件", 15, TH.text, {b: true});
+  ui_text(bx + 22, by + 52, "选择本机数据目录（imports / exports）中的文本文件，导入到当前目录：" + S.cwd, 12, TH.muted, {wrap: true, w: bw - 44, lh: 17});
+  if (d.job != nil) {
+    let r = sys("dev", "fsx", "poll", d.job);
+    if (r != nil && r.done == true) { d.list = r.list == nil ? [] : r.list; d.job = nil; }
+  }
+  if (d.list == nil) { ui_text(bx + 22, by + 100, "读取中…", 13, TH.faint); }
+  else if (len(d.list) == 0) { ui_text(bx + 22, by + 100, "本机导入目录里还没有文件", 13, TH.faint); }
+  else {
+    let y = by + 92;
+    for (let nm of d.list) {
+      if (y + 30 > by + bh - 60) { break; }
+      if (ui_button("files-import-item", bx + 18, y, bw - 36, 28, nm, {fill: TH.bg1, hf: TH.bg3, size: 12, d: {"file-path": nm}, key: "imp" + nm})) {
+        let r = sys("dev", "fsx", "import", nm);
+        if (r != nil && r.job != nil) { d.pending = {job: r.job, name: base_of(nm)}; }
+      }
+      y = y + 32;
+    }
+  }
+  if (d.pending != nil) {
+    let r = sys("dev", "fsx", "poll", d.pending.job);
+    if (r != nil && r.done == true) {
+      if (r.err != nil) { say("导入失败：" + r.err); }
+      else {
+        let name = unique_name(S.cwd, d.pending.name);
+        let wr = sys("fs_write", join_path(S.cwd, name), r.text);
+        if (wr.err != nil) { say("导入失败：" + wr.err); } else { say("已导入 " + name); notify_op("已从本机导入", name); }
+      }
+      d.pending = nil; S.import_dlg = nil; refresh();
+    }
+  }
+  if (ui_button("files-import-close", bx + bw - 22 - 90, by + bh - 52, 90, 32, "关闭", {})) { S.import_dlg = nil; }
+}
+
+fn files_idle() {
+  let rev = sys("fs_rev");
+  if (rev != S.fs_rev && S.rename == nil) { refresh(); return true; }
+  if (S.import_dlg != nil && (S.import_dlg.job != nil || S.import_dlg.pending != nil)) { return true; }
+  if (S.msg != "" && time() - S.msg_t < 7) { return true; }
+  return false;
+}
+fn files_msg(m) {
+  if (m.t == "drag") { on_drag(m); }
+  else if (m.t == "open") { let a = m.args; if (a != nil && a.path != nil) { goto_dir(a.path, true); } }
+}
+
+app_init(&files_frame, &files_msg, 0);
+APP.on_idle = &files_idle;
+let start = (APP.args != nil && APP.args.path != nil) ? APP.args.path : "/Documents";
+S.hist = [start]; S.hi = 0;
+ui = app_view(0);
+S.cwd = start; ui_set("files-path", start);
+refresh();
+app_run();

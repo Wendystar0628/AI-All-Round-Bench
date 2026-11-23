@@ -1,0 +1,24 @@
+{
+  "problem": "15",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层传动箱体",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 210, 139]}], "depth": 12, "name": "底板210x139x12"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 6]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[100, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "plane": "ZX", "origin": [0, 0, 0], "loops": [{"path": [[12, 20], [41, 20], [62, 28], [92, 45], [111, 56], [112, 148], [72, 190], [12, 190]]}], "depth": 130, "name": "箱体 左圆弧肩"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[76.5, 55.5]], "d": 70, "depth": 12, "name": "上轴口Φ70"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[76.5, 55.5]], "d": 52, "depth": 32, "name": "上轴孔Φ52"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[76.5, 55.5]], "d": 38, "depth": 130, "name": "上轴通孔Φ38"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[49, 133]], "d": 70, "depth": 12, "name": "下轴口Φ70"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[49, 133]], "d": 44, "depth": 32, "name": "下轴孔Φ44"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 130, 0], "at": [[49, 133]], "d": 32, "depth": 130, "name": "下轴通孔Φ32"},
+        {"type": "hole", "plane": {"origin": [120, 60, 112], "normal": [0.7071, 0, 0.7071], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 30, "depth": 58, "name": "斜孔Φ30 深58 倾角45 方位0"},
+        {"type": "hole", "plane": {"origin": [60, 100, 112], "normal": [0, 0.4226, 0.9063], "x_dir": [1, 0, 0]}, "at": [[0, 0]], "d": 10, "depth": 62, "name": "斜孔Φ10 深62 倾角25 方位90"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[10, 10], [200, 10], [10, 129], [200, 129]], "d": 10, "through": true, "cbore": {"d": 16, "depth": 3}, "name": "底板孔Φ10 沉孔Φ16"}
+      ]
+    }
+  ]
+}

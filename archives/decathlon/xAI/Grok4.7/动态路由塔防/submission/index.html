@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>网络安全攻防战</title>
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body data-screen="title" data-map="intranet">
+<div id="app">
+  <canvas id="view"></canvas>
+  <div id="hud">
+    <header id="topbar">
+      <div class="brand"><b id="brand-name">汐域</b><span id="brand-sub">守护进程</span></div>
+      <div class="stat"><em>算力</em><strong id="stat-c">0</strong></div>
+      <div class="stat intel"><em>情报</em><strong id="stat-i">0</strong></div>
+      <div class="stat integ" id="stat-integ"><em>中枢完整度</em><strong id="stat-h">100</strong></div>
+      <div class="stat"><em>波次</em><strong id="stat-w">1</strong></div>
+      <div class="spacer"></div>
+      <div class="barbtns">
+        <button type="button" id="spd-1">1×</button>
+        <button type="button" id="spd-2">2×</button>
+        <button type="button" id="spd-3">3×</button>
+        <button type="button" id="btn-pause">暂停</button>
+        <button type="button" id="btn-cam">复位视角</button>
+        <button type="button" id="btn-codex">图鉴</button>
+        <button type="button" id="btn-mute">声音</button>
+        <input id="vol" type="range" min="0" max="100" value="80">
+      </div>
+    </header>
+    <section id="forecast" class="panel">
+      <h2 id="fc-title">流量预报</h2>
+      <p id="fc-phase"></p>
+      <div id="fc-routes"></div>
+      <div id="fc-wave"></div>
+      <button type="button" id="btn-skip">提前接入</button>
+    </section>
+    <aside id="inspect" class="panel">
+      <h2 id="ins-title">未选择</h2>
+      <p id="ins-sub"></p>
+      <div id="ins-meters"></div>
+      <div id="ins-actions">
+        <button type="button" id="upgrade-btn">升级</button>
+        <button type="button" id="skill-btn">技能</button>
+        <button type="button" id="sell-btn">撤下</button>
+      </div>
+      <p id="ins-body"></p>
+    </aside>
+    <section id="log" class="panel"></section>
+    <div id="toast"></div>
+    <div id="subtitle"></div>
+    <div id="cards"></div>
+    <div id="aim-hint">移动指针设定射界，单击确认，右键取消</div>
+    <button type="button" id="demo-exit">跳过演示</button>
+    <div id="demo-cursor"></div>
+    <div id="drag-ghost"></div>
+    <div id="floats"></div>
+  </div>
+
+  <section id="screen-title" class="screen">
+    <div class="sheet">
+      <h1>网络安全攻防战</h1>
+      <p class="lede">你是域名「汐域」的守护进程。蛰影正从门户、专线和气隙另一侧挤进来。<br>中键旋转，Shift+中键平移，滚轮缩放。把设备拖到链路和平台上。</p>
+      <div class="row">
+        <button type="button" class="big" id="btn-enter">进入选关</button>
+        <button type="button" class="big ghost" id="btn-codex-title">图鉴</button>
+        <button type="button" class="big ghost" id="btn-play-demos">三段演示</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-select" class="screen">
+    <div class="sheet">
+      <h1 style="font-size:2rem">选择战场</h1>
+      <div class="levels" id="level-list"></div>
+      <p class="howto">拖拽底栏卡片部署。交换节点上的防火墙和网闸会改变路线，预览确认后才会消耗资源。封死入口或场上敌人的操作会被拒绝。</p>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="big ghost" id="btn-back-title">返回标题</button>
+        <button type="button" class="big ghost" id="demo-open-1">演示 · 分段取舍</button>
+        <button type="button" class="big ghost" id="demo-open-2">演示 · 旁路直通</button>
+        <button type="button" class="big ghost" id="demo-open-3">演示 · 蛰影现身</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="modal-pause" class="modal">
+    <div class="sheet">
+      <h2>已暂停</h2>
+      <p class="lede">暂停和倍速作用于整场战斗。中键旋转视角，Shift+中键平移，滚轮缩放，左键只负责选择和部署。</p>
+      <div class="row">
+        <button type="button" class="big" id="btn-resume">继续</button>
+        <button type="button" class="big ghost" id="btn-restart">重开本图</button>
+        <button type="button" class="big ghost" id="btn-codex-pause">图鉴</button>
+        <button type="button" class="big ghost" id="btn-quit">返回选关</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-codex" class="modal">
+    <div class="sheet">
+      <h2>守护手册</h2>
+      <div class="tabs" id="codex-tabs"></div>
+      <div id="codex-body"></div>
+      <div class="row" style="margin-top:12px"><button type="button" class="big" id="btn-codex-close">关闭</button></div>
+    </div>
+  </div>
+
+  <div id="modal-branch" class="modal">
+    <div class="sheet">
+      <h2 id="branch-title">选择二级分支</h2>
+      <div class="choices" id="branch-choices"></div>
+      <div class="row" style="margin-top:12px"><button type="button" class="big ghost" id="btn-branch-cancel">取消</button></div>
+    </div>
+  </div>
+
+  <div id="modal-report" class="modal">
+    <div class="sheet">
+      <h2 id="report-title">事件报告</h2>
+      <div id="report-body"></div>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="big" id="btn-again">再战本图</button>
+        <button type="button" class="big ghost" id="btn-report-quit">返回选关</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/three.min.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/content.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/models.js"></script>
+<script src="js/view.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

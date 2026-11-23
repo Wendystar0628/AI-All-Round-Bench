@@ -1,0 +1,24 @@
+import puppeteer from 'puppeteer-core';
+const browser = await puppeteer.connect({ browserURL: 'http://127.0.0.1:19106', defaultViewport: null });
+const page = (await browser.pages()).find(p => p.url().includes('18106'));
+page.on('pageerror', err => console.log('PAGEERROR', err.message));
+await page.reload({ waitUntil: 'load' });
+await new Promise(r => setTimeout(r, 800));
+await page.evaluate(() => window.bench.reset());
+await new Promise(r => setTimeout(r, 300));
+const out = await page.evaluate(async () => {
+  const os = window.__os;
+  const child = os.createChild(os.root);
+  await new Promise(r => setTimeout(r, 400));
+  const player = await os.openApp(child, 'player');
+  await new Promise(r => setTimeout(r, 500));
+  os.root.budget = 6000;
+  os.setGrant(child, 0.03);
+  player.app.setMode('rehearsal');
+  player.app.startRehearsal();
+  await new Promise(r => setTimeout(r, 12000));
+  const s = player.app.sim?.state;
+  return { t: s?.t, alive: s?.alive, reason: s?.reason, rotor: s?.rotor, dist: s?.distance, grant: child.grantRatio, childBudget: child.lastGrant, procs: child.processes.map(p => [p.name, p.state, p.usedTotal, p.quota]) };
+});
+console.log(JSON.stringify(out, null, 2));
+await browser.disconnect();

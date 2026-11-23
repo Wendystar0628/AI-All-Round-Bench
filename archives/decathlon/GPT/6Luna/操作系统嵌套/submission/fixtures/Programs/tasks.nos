@@ -1,0 +1,5 @@
+let taskTicks = 0
+while true {
+  syscall("tasks.sample")
+  taskTicks = taskTicks + 1
+}

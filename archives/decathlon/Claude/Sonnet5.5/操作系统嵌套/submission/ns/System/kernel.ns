@@ -1,0 +1,1083 @@
+// kernel.ns — 子系统内核程序。进程表、调度、等待与唤醒、消息投递、文件系统、系统调用分发、
+// 子系统（承载进程）管理都写在这个文件里。每个子系统在父系统的 /System/Kernels/<id>/kernel.ns 有一份
+// 自己的拷贝；修改后在父系统里“重启”该子系统即可按新规则运行，其他子系统不受影响。
+// #noprelude
+fn print(x) { return sys("print", x); }
+fn exit(code) { return sys("exit", code); }
+
+// ============================== 配置（可以直接改这些参数） ==============================
+let CFG = {
+  slice_user: 400,        // 普通进程每次被调度时最多执行的逻辑单位
+  slice_sys: 4000,        // 子系统承载进程每次的时间片
+  slice_wm: 1500,         // 窗口管理进程的时间片
+  poll_work: 2500,        // 内核累计这么多工作量后向父系统轮询一次
+  child_budget: 120000,   // 新建子系统的默认总预算（每逻辑步）
+  step_dt: 0.0166667,     // 父系统发起“单步”时子系统前进的虚拟时间（秒）= 1 个逻辑步
+  mailbox_max: 400,       // 每个进程邮箱容量
+  out_lines: 80,          // 每个进程保留的输出行数
+  zombies: 16             // 保留的已结束进程条目
+};
+
+// ============================== 内核状态 ==============================
+let BLOCK = {blocked: true};
+let K = {
+  procs: {}, order: [], rr: 0, next_pid: 1, now: 0, last_now: 0, step: 0, since_poll: 0, zombies: [],
+  wm: 0, jobs: {}, notes: [], note_seq: 1, dnd: false, fs_rev: 0, self_h: nil, depth: 0, screen: {w: 1280, h: 720},
+  screen_ref: nil, wall0: 0, budget: {total: 0, granted: 0, used: 0, svc: 0}, step_used: 0, booted: false, current: 0,
+  subs: {}, views: {}, last_mem: 0, drag: nil, timer: {state: "idle", total: 0, left: 0, due: 0, label: ""}
+};
+let SYSCALLS = {};
+
+fn E(msg) { return {err: msg}; }
+
+// ============================== 机器接口（向父系统要服务） ==============================
+fn mi(dev, op, a, b, c, d) { return sysv("mi_dev", [nil, dev, op, a, b, c, d]); }
+
+// ============================== 文件系统（运行在磁盘设备之上） ==============================
+fn fs_norm(path) {
+  if (typeof(path) != "str") { return nil; }
+  let parts = split(path, "/"); let out = [];
+  for (let s of parts) {
+    if (s == "" || s == ".") { continue; }
+    if (s == "..") { if (len(out) > 0) { pop(out); } continue; }
+    push(out, s);
+  }
+  return "/" + join(out, "/");
+}
+fn fs_parent(path) {
+  let parts = split(path, "/"); pop(parts);
+  let p = join(parts, "/");
+  return p == "" ? "/" : p;
+}
+fn fs_base(path) { let parts = split(path, "/"); return parts[len(parts) - 1]; }
+fn fs_join(dir, name) { return dir == "/" ? "/" + name : dir + "/" + name; }
+fn fs_stat_(path) {
+  path = fs_norm(path);
+  if (path == nil) { return E("路径无效"); }
+  if (path == "/") { return {path: "/", name: "", dir: true, size: 0, mtime: 0, sig: ""}; }
+  let r = mi("disk", "stat", path);
+  if (r == nil) { return E("文件不存在：" + path); }
+  r.path = path; r.name = fs_base(path);
+  return r;
+}
+fn fs_isdir(path) { let s = fs_stat_(path); return s.err == nil && s.dir; }
+fn fs_read_(path) {
+  path = fs_norm(path);
+  if (path == nil) { return E("路径无效"); }
+  let r = mi("disk", "get", path);
+  if (r == nil) { return E("文件不存在：" + path); }
+  if (r.dir) { return E("是目录：" + path); }
+  burn(len(r.data) / 32);
+  return r.data;
+}
+fn fs_write_(path, data) {
+  path = fs_norm(path);
+  if (path == nil || path == "/") { return E("路径无效"); }
+  let parent = fs_parent(path);
+  if (!fs_isdir(parent)) { return E("目录不存在：" + parent); }
+  let st = fs_stat_(path);
+  if (st.err == nil && st.dir) { return E("同名目录已存在：" + path); }
+  if (typeof(data) != "str") { data = str(data); }
+  burn(len(data) / 32);
+  let r = mi("disk", "put", path, data, false, K.now);
+  if (r.err == nil) { K.fs_rev++; }
+  return r;
+}
+fn fs_mkdir_(path) {
+  path = fs_norm(path);
+  if (path == nil || path == "/") { return E("路径无效"); }
+  let st = fs_stat_(path);
+  if (st.err == nil) { return st.dir ? {ok: true} : E("同名文件已存在"); }
+  let parent = fs_parent(path);
+  if (!fs_isdir(parent)) { let r = fs_mkdir_(parent); if (r.err != nil) { return r; } }
+  let r = mi("disk", "put", path, "", true, K.now);
+  if (r.err == nil) { K.fs_rev++; }
+  return r;
+}
+fn fs_list_(dir) {
+  dir = fs_norm(dir);
+  if (dir == nil) { return E("路径无效"); }
+  if (!fs_isdir(dir)) { return E("目录不存在：" + dir); }
+  let es = mi("disk", "list", dir);
+  burn(len(es) / 4);
+  for (let e of es) { e.path = e.key; }
+  return es;
+}
+fn fs_remove_(path) {
+  path = fs_norm(path);
+  if (path == nil || path == "/") { return E("路径无效"); }
+  let st = fs_stat_(path);
+  if (st.err != nil) { return st; }
+  if (st.dir) {
+    for (let e of mi("disk", "list", path)) { let r = fs_remove_(e.key); if (r.err != nil) { return r; } }
+  }
+  mi("disk", "del", path);
+  K.fs_rev++;
+  return {ok: true};
+}
+fn fs_copy_(from, to) {
+  from = fs_norm(from); to = fs_norm(to);
+  if (from == nil || to == nil) { return E("路径无效"); }
+  if (from == to) { return E("源与目标相同"); }
+  if (substr(to, 0, len(from) + 1) == from + "/") { return E("不能把目录复制到自身内部"); }
+  let st = fs_stat_(from);
+  if (st.err != nil) { return st; }
+  if (st.dir) {
+    let r = fs_mkdir_(to); if (r.err != nil) { return r; }
+    for (let e of mi("disk", "list", from)) { let r2 = fs_copy_(e.key, fs_join(to, e.name)); if (r2.err != nil) { return r2; } }
+    return {ok: true};
+  }
+  let data = fs_read_(from);
+  if (typeof(data) != "str") { return data; }
+  return fs_write_(to, data);
+}
+fn fs_move_(from, to) {
+  from = fs_norm(from); to = fs_norm(to);
+  let r = fs_copy_(from, to);
+  if (r.err != nil) { return r; }
+  return fs_remove_(from);
+}
+// 回收站：根系统默认有 /Recycle；删除时记录原路径以便还原
+fn trash_index() {
+  let t = fs_read_("/Recycle/.index");
+  if (typeof(t) != "str") { return {}; }
+  let m = json_parse(t);
+  return m == nil ? {} : m;
+}
+fn fs_trash_(path) {
+  path = fs_norm(path);
+  let st = fs_stat_(path);
+  if (st.err != nil) { return st; }
+  fs_mkdir_("/Recycle");
+  let name = fs_base(path); let target = "/Recycle/" + name; let n = 1;
+  while (fs_stat_(target).err == nil) { n++; target = "/Recycle/" + name + "." + n; }
+  let idx = trash_index();
+  let r = fs_move_(path, target);
+  if (r.err != nil) { return r; }
+  idx[fs_base(target)] = {orig: path, t: K.now};
+  fs_write_("/Recycle/.index", json_stringify(idx));
+  return {ok: true, name: fs_base(target)};
+}
+fn fs_restore_(name) {
+  let idx = trash_index();
+  let info = idx[name];
+  if (info == nil) { return E("回收站中没有 " + name); }
+  let dest = info.orig;
+  fs_mkdir_(fs_parent(dest));
+  if (fs_stat_(dest).err == nil) { dest = fs_join(fs_parent(dest), "恢复的 " + fs_base(dest)); }
+  let r = fs_move_("/Recycle/" + name, dest);
+  if (r.err != nil) { return r; }
+  del(idx, name);
+  fs_write_("/Recycle/.index", json_stringify(idx));
+  return {ok: true, path: dest};
+}
+
+// ============================== 通知 ==============================
+fn notify(title, text, kind) {
+  let n = {id: K.note_seq, title: title, text: text, t: K.now, kind: kind == nil ? "info" : kind, read: false};
+  K.note_seq++;
+  push(K.notes, n);
+  if (len(K.notes) > 60) { shift(K.notes); }
+  if (K.wm > 0) { msg_deliver(0, K.wm, {k: "notify", n: n}); }
+  return n;
+}
+
+// ============================== 进程 ==============================
+fn proc_state_name(p) {
+  if (p.state == "done") { return "结束"; }
+  if (p.state == "error") { return "异常"; }
+  if (p.susp) { return "挂起"; }
+  if (p.state == "waiting") { return "等待"; }
+  if (p.pid == K.current) { return "运行"; }
+  return "就绪";
+}
+fn proc_add(name, path, h, args, kind, parent) {
+  let pid = K.next_pid; K.next_pid++;
+  let slice = CFG.slice_user;
+  if (kind == "system") { slice = CFG.slice_sys; }
+  let p = {pid: pid, name: name, path: path, ctx: h, kind: kind, state: "ready", susp: false, wait: nil, wake_at: 0, mailbox: [],
+    parent: parent, slice: slice, quota: 0, used: 0, used_step: 0, started: K.now, err: nil, out: [], views: {}, idle_at: -1, result: nil, rate: 0, mem: 0, sent: 0, recv: 0, end_t: 0};
+  K.procs[pid] = p;
+  push(K.order, pid);
+  return p;
+}
+fn proc_find(pid) {
+  if (typeof(pid) != "num") { return nil; }
+  return K.procs[pid];
+}
+fn proc_by_ctx(ref) {
+  if (ref == nil) { return nil; }
+  for (let pid of K.order) { let p = K.procs[pid]; if (p.ctx.id == ref.id) { return p; } }
+  return nil;
+}
+fn proc_alive(p) { return p != nil && p.state != "done" && p.state != "error"; }
+
+// 结束进程并释放资源（done / error）
+fn proc_finish(p, state, result, err) {
+  if (!proc_alive(p)) { return nil; }
+  p.state = state; p.result = result; p.err = err; p.wait = nil; p.end_t = K.now; p.mailbox = [];
+  vm_kill(p.ctx);
+  for (let v of keys(p.views)) { mi("gfx", "free", p.ctx, num(v)); }
+  p.views = {};
+  for (let id of keys(K.subs)) { let s = K.subs[id]; if (s.pid == p.pid) { mi("data", "close", s.sub); del(K.subs, id); } }
+  let i = indexOf(K.order, p.pid);
+  if (i >= 0) { remove(K.order, i); if (K.rr > i) { K.rr--; } if (K.rr >= len(K.order)) { K.rr = 0; } }
+  push(K.zombies, p.pid);
+  while (len(K.zombies) > CFG.zombies) { let z = shift(K.zombies); del(K.procs, z); }
+  if (p.kind == "system") { child_gone(p); }
+  // 协作进程（由本进程启动的普通进程）随之结束
+  let kids = [];
+  for (let qid of K.order) { let q = K.procs[qid]; if (q.parent == p.pid && q.kind != "system") { push(kids, qid); } }
+  for (let qid of kids) { proc_kill(qid); }
+  if (K.wm > 0 && K.wm != p.pid) { msg_deliver(0, K.wm, {k: "proc_exit", pid: p.pid, state: state, name: p.name}); }
+  if (K.wm == p.pid) { K.wm = 0; }
+  job_proc_exit(p);
+  if (state == "error") { notify("进程异常：" + p.name, err.msg + "（" + err.fn + " 第 " + err.line + " 行）", "error"); }
+}
+fn proc_kill(pid) {
+  let p = proc_find(pid);
+  if (p == nil) { return E("进程不存在"); }
+  if (!proc_alive(p)) { // 清除已结束的条目
+    del(K.procs, pid);
+    let i = indexOf(K.zombies, pid); if (i >= 0) { remove(K.zombies, i); }
+    return {ok: true};
+  }
+  if (p.kind == "system") { child_stop(p, "stopped"); }
+  proc_finish(p, "done", "killed", nil);
+  return {ok: true};
+}
+
+// ============================== 消息 ==============================
+// 消息投递规则：同一发送者发给同一接收者的消息按发送顺序到达；到达后唤醒等待中的接收者。
+fn msg_deliver(from, to, msg) {
+  let p = proc_find(to);
+  if (p == nil || !proc_alive(p)) { return E("目标进程不存在"); }
+  if (len(p.mailbox) >= CFG.mailbox_max) { return E("目标邮箱已满"); }
+  push(p.mailbox, {from: from, msg: msg, t: K.now});
+  p.recv++;
+  let s = proc_find(from);
+  if (s != nil) { s.sent++; }
+  if (p.state == "waiting" && p.wait == "recv" && !p.susp) { wake_recv(p); }
+  return true;
+}
+fn wake_recv(p) {
+  if (len(p.mailbox) > 0) {
+    let m = shift(p.mailbox);
+    p.state = "ready"; p.wait = nil;
+    vm_ret(p.ctx, m);
+  }
+}
+
+// ============================== 调度 ==============================
+// 调度策略：轮转（round-robin）。改写 sched_runnable / sched_pick / sched_slice 即可改变各进程的实际进展。
+fn sched_runnable(p) {
+  if (p.state != "ready" || p.susp) { return false; }
+  if (p.quota > 0 && p.used_step >= p.quota) { return false; }
+  if (p.kind == "system") { return child_runnable(p); }
+  return true;
+}
+fn sched_pick() {
+  let n = len(K.order);
+  for (let i = 0; i < n; i++) {
+    let idx = (K.rr + i) % n;
+    let p = K.procs[K.order[idx]];
+    if (sched_runnable(p)) { K.rr = (idx + 1) % n; return p; }
+  }
+  return nil;
+}
+fn sched_slice(p) {
+  let s = p.slice;
+  if (p.pid == K.wm) { s = CFG.slice_wm; }
+  if (p.quota > 0 && s > p.quota - p.used_step) { s = p.quota - p.used_step; }
+  if (p.kind == "system") { s = child_slice(p, s); }
+  return s < 1 ? 1 : s;
+}
+
+fn wake_sleepers() {
+  // 倒计时由内核按本系统的虚拟时间计时，到点产生通知（与是否打开小组件窗口无关）
+  let tm = K.timer;
+  if (tm.state == "running" && K.now >= tm.due) { tm.state = "done"; tm.left = 0; notify("倒计时结束", tm.label == "" ? "设定的 " + fmt(tm.total, 0) + " 秒已到" : tm.label, "ok"); }
+  for (let pid of K.order) {
+    let p = K.procs[pid];
+    if (p.state == "waiting" && !p.susp) {
+      if (p.wait == "sleep" && K.now >= p.wake_at) { p.state = "ready"; p.wait = nil; vm_ret(p.ctx, nil); }
+      else if (p.wait == "recv" && p.wake_at > 0 && K.now >= p.wake_at) { p.state = "ready"; p.wait = nil; p.wake_at = 0; vm_ret(p.ctx, nil); }
+    }
+  }
+}
+
+fn account(p, used) {
+  p.used += used; p.used_step += used; K.step_used += used; K.since_poll += used;
+  if (p.kind == "system") { p.sys.step_used += used; }
+}
+
+fn run_slice(p) {
+  K.current = p.pid;
+  let lim = sched_slice(p);
+  let r = vm_run(p.ctx, lim);
+  K.current = 0;
+  account(p, r.used);
+  let st = r.status;
+  if (st == "trap") {
+    if (p.kind == "system") { child_trap(p, r); } else { user_trap(p, r); }
+  } else if (st == "done") {
+    if (p.kind == "system") { child_stop(p, "stopped"); }
+    proc_finish(p, "done", r.result, nil);
+  } else if (st == "error") {
+    if (p.kind == "system") { child_kernel_error(p, r); }
+    else { proc_finish(p, "error", nil, {msg: r.err, line: r.line, fn: r.fn, file: r.file}); }
+  }
+}
+
+fn user_trap(p, r) {
+  let f = SYSCALLS[r.name];
+  let v = nil;
+  if (f == nil) { v = E("未知系统调用：" + r.name); }
+  else { v = f(p, r.args); }
+  if (v == BLOCK) { p.state = "waiting"; return nil; }
+  if (p.state == "ready") { vm_ret(p.ctx, v); }
+}
+
+
+// ============================== 程序载入与编译作业 ==============================
+fn nsx_fresh(text, src) {
+  let i = indexOf(text, ",\"k\":");
+  if (i < 0) { return false; }
+  let hdr = json_parse(slice(text, 0, i) + "}");
+  if (hdr == nil || hdr.sig != src.sig) { return false; }
+  for (let d of hdr.deps) {
+    let ds = fs_stat_(d[0]);
+    if (ds.err != nil || ds.sig != d[1]) { return false; }
+  }
+  return true;
+}
+// 返回 {text} 可直接载入；{stale} 需要先编译；{err}
+fn load_nsx(path) {
+  path = fs_norm(path);
+  if (path == nil) { return E("路径无效"); }
+  if (endsWith(path, ".nsx")) { let t = fs_read_(path); if (typeof(t) != "str") { return t; } return {text: t}; }
+  let src = fs_stat_(path);
+  if (src.err != nil) { return src; }
+  if (src.dir) { return E("是目录：" + path); }
+  let x = mi("disk", "get", path + "x");
+  if (x != nil && !x.dir && nsx_fresh(x.data, src)) { burn(len(x.data) / 64); return {text: x.data}; }
+  return {stale: true, path: path};
+}
+fn compile_job(path, job) {
+  let cx = fs_read_("/System/compiler.nsx");
+  if (typeof(cx) != "str") { return E("缺少编译器 /System/compiler.nsx"); }
+  let h = vm_new(cx, {src: path, out: path + "x"}, {name: "compiler"});
+  if (h.err != nil) { return h; }
+  let p = proc_add("编译 " + fs_base(path), "/System/compiler.nsx", h, nil, "user", 0);
+  K.jobs[p.pid] = job;
+  return p;
+}
+fn reply_waiter(pid, v) {
+  let w = proc_find(pid);
+  if (w != nil && proc_alive(w) && w.state == "waiting" && w.wait == "job") { w.state = "ready"; w.wait = nil; vm_ret(w.ctx, v); }
+}
+fn job_proc_exit(p) {
+  let job = K.jobs[p.pid];
+  if (job == nil) { return nil; }
+  del(K.jobs, p.pid);
+  let ok = p.state == "done" && typeof(p.result) == "map" && p.result.ok == true;
+  if (!ok) {
+    let msg = "编译失败";
+    if (typeof(p.result) == "map" && p.result.msg != nil) { msg = p.result.msg; } else if (p.err != nil) { msg = p.err.msg; }
+    if (job.t == "child") { child_boot_failed(job.pid, msg); }
+    else { reply_waiter(job.waiter, E(msg)); }
+    notify("编译失败", msg, "error");
+    return nil;
+  }
+  if (job.t == "spawn") { reply_waiter(job.waiter, spawn_finish(job)); }
+  else if (job.t == "compile") { reply_waiter(job.waiter, {ok: true, out: job.path + "x"}); }
+  else if (job.t == "child") { child_boot_2(job.pid); }
+  else if (job.t == "boot") { spawn_finish(job); }
+}
+fn spawn_finish(job) {
+  let l = load_nsx(job.path);
+  if (l.text == nil) { return l.err == nil ? E("编译后仍无法载入") : l; }
+  let h = vm_new(l.text, job.args, {name: job.path});
+  if (h.err != nil) { return h; }
+  let p = proc_add(job.name == nil ? fs_base(job.path) : job.name, job.path, h, job.args, job.kind == nil ? "user" : job.kind, job.parent == nil ? 0 : job.parent);
+  return {pid: p.pid};
+}
+// 启动程序：可能需要先编译（此时返回 {wait:true}，调用者阻塞到编译结束）
+fn spawn_start(path, args, name, kind, parent, waiter, jt) {
+  let l = load_nsx(path);
+  if (l.err != nil) { return l; }
+  let job = {t: jt == nil ? "spawn" : jt, path: fs_norm(path), args: args, name: name, kind: kind, parent: parent, waiter: waiter};
+  if (l.stale) {
+    let c = compile_job(job.path, job);
+    if (c.err != nil) { return c; }
+    return {wait: true};
+  }
+  return spawn_finish(job);
+}
+
+// ============================== 系统调用（用户 ABI） ==============================
+// 每个 sc_xxx(p, a) 处理一种系统调用：p 是调用进程，a 是参数数组；返回值就是调用结果，
+// 返回 BLOCK 表示调用进程进入等待。新增系统调用：写一个 sc_ 函数并在 syscalls_init 里登记。
+fn sc_print(p, a) {
+  let line = typeof(a[0]) == "str" ? a[0] : str(a[0]);
+  if (len(line) > 400) { line = slice(line, 0, 400) + "…"; }
+  push(p.out, line);
+  if (len(p.out) > CFG.out_lines) { shift(p.out); }
+  return nil;
+}
+fn sc_exit(p, a) { proc_finish(p, "done", a[0], nil); return nil; }
+fn sc_time(p, a) { return K.now; }
+fn sc_sleep(p, a) {
+  let t = typeof(a[0]) == "num" ? a[0] : 0;
+  if (t <= 0) { return nil; }
+  p.wake_at = K.now + t; p.wait = "sleep";
+  return BLOCK;
+}
+fn sc_yield(p, a) { return nil; }
+fn sc_self(p, a) { return p.pid; }
+fn sc_spawn(p, a) {
+  let path = a[0];
+  if (typeof(path) != "str") { return E("需要程序路径"); }
+  let r = spawn_start(path, a[1], a[2], "user", p.pid, p.pid, "spawn");
+  if (r.wait) { p.wait = "job"; return BLOCK; }
+  if (r.err != nil) { return r; }
+  return r.pid;
+}
+fn sc_compile(p, a) {
+  let path = fs_norm(a[0]);
+  if (path == nil) { return E("路径无效"); }
+  let c = compile_job(path, {t: "compile", path: path, waiter: p.pid});
+  if (c.err != nil) { return c; }
+  p.wait = "job";
+  return BLOCK;
+}
+fn sc_kill(p, a) { return proc_kill(a[0]); }
+fn sc_suspend(p, a) {
+  let q = proc_find(a[0]);
+  if (!proc_alive(q)) { return E("进程不存在"); }
+  q.susp = true; return {ok: true};
+}
+fn sc_resume(p, a) {
+  let q = proc_find(a[0]);
+  if (!proc_alive(q)) { return E("进程不存在"); }
+  q.susp = false;
+  if (q.state == "waiting" && q.wait == "recv") { wake_recv(q); }
+  return {ok: true};
+}
+fn sc_setquota(p, a) {
+  let q = proc_find(a[0]);
+  if (!proc_alive(q)) { return E("进程不存在"); }
+  q.quota = max(0, floor(a[1]));
+  return {ok: true};
+}
+fn sc_send(p, a) { return msg_deliver(p.pid, a[0], a[1]); }
+fn sc_recv(p, a) {
+  if (len(p.mailbox) > 0) { return shift(p.mailbox); }
+  p.state = "waiting"; p.wait = "recv"; p.wake_at = 0;
+  return BLOCK;
+}
+fn sc_recv_timeout(p, a) {
+  if (len(p.mailbox) > 0) { return shift(p.mailbox); }
+  if (typeof(a[0]) != "num" || a[0] <= 0) { return nil; }
+  p.state = "waiting"; p.wait = "recv"; p.wake_at = K.now + a[0];
+  return BLOCK;
+}
+fn sc_poll(p, a) { if (len(p.mailbox) > 0) { return shift(p.mailbox); } return nil; }
+
+fn sc_fs_read(p, a) { return fs_read_(a[0]); }
+fn sc_fs_write(p, a) { return fs_write_(a[0], a[1]); }
+fn sc_fs_list(p, a) { return fs_list_(a[0]); }
+fn sc_fs_stat(p, a) { return fs_stat_(a[0]); }
+fn sc_fs_mkdir(p, a) { return fs_mkdir_(a[0]); }
+fn sc_fs_remove(p, a) { return fs_remove_(a[0]); }
+fn sc_fs_copy(p, a) { return fs_copy_(a[0], a[1]); }
+fn sc_fs_move(p, a) { return fs_move_(a[0], a[1]); }
+fn sc_fs_trash(p, a) { return fs_trash_(a[0]); }
+fn sc_fs_restore(p, a) { return fs_restore_(a[0]); }
+fn sc_fs_rev(p, a) { return K.fs_rev; }
+fn sc_fs_usage(p, a) { return mi("disk", "usage"); }
+
+fn proc_info(q) {
+  let o = {pid: q.pid, name: q.name, path: q.path, kind: q.kind, state: proc_state_name(q), raw: q.state, wait: q.wait, susp: q.susp,
+    used: q.used, used_step: q.used_step, quota: q.quota, slice: q.slice, mailbox: len(q.mailbox), sent: q.sent, recv: q.recv,
+    started: q.started, err: q.err, rate: q.rate, out_n: len(q.out), parent: q.parent, own: 0, inner: 0, mem: q.mem, result: q.result};
+  if (proc_alive(q)) {
+    let st = vm_stat(q.ctx);
+    if (st != nil) { o.own = st.own; o.inner = st.inner; o.mem = st.mem; o.fn = st.fn; o.line = st.line; }
+  }
+  if (q.kind == "system") { o.sys = child_info(q); }
+  return o;
+}
+fn sc_ps(p, a) {
+  let out = [];
+  for (let pid of K.order) { push(out, proc_info(K.procs[pid])); }
+  for (let z of K.zombies) { push(out, proc_info(K.procs[z])); }
+  return out;
+}
+fn sc_proc_out(p, a) { let q = proc_find(a[0]); if (q == nil) { return []; } return q.out; }
+fn sc_budget_info(p, a) {
+  let b = {total: K.budget.total, granted: K.budget.granted, used: K.budget.used, svc: K.budget.svc, step_used: K.step_used, step: K.step,
+    kernel_own: 0, kernel_inner: 0, now: K.now};
+  let s = vm_self_stat();
+  b.kernel_own = s.own; b.kernel_inner = s.inner; b.mem = s.mem;
+  let st = mi("sys", "budget");
+  if (st != nil && st.err == nil) { b.mem_quota = st.mem; b.storage_quota = st.storage; }
+  b.nprocs = len(K.order);
+  return b;
+}
+fn sc_cfg_set(p, a) { // 本系统自己的总预算/配额：交给父系统保存并执行
+  return mi("sys", "setself", a[0]);
+}
+
+fn sc_notify(p, a) { return notify(a[0], a[1], a[2]).id; }
+fn sc_notes(p, a) { return K.notes; }
+fn sc_note_ctl(p, a) {
+  if (a[0] == "clear") { K.notes = []; }
+  else if (a[0] == "dnd") { K.dnd = a[1] == true; }
+  else if (a[0] == "read") { for (let n of K.notes) { n.read = true; } }
+  return {dnd: K.dnd, n: len(K.notes)};
+}
+fn sc_depth(p, a) { return K.depth; }
+fn sc_timer(p, a) {
+  let tm = K.timer; let op = a[0];
+  if (op == "start") { let secs = a[1]; if (typeof(secs) != "num" || secs <= 0) { return E("倒计时秒数需要大于 0"); } tm.total = secs; tm.left = secs; tm.due = K.now + secs; tm.state = "running"; tm.label = typeof(a[2]) == "str" ? a[2] : ""; }
+  else if (op == "pause") { if (tm.state == "running") { tm.left = max(0, tm.due - K.now); tm.state = "paused"; } }
+  else if (op == "resume") { if (tm.state == "paused") { tm.due = K.now + tm.left; tm.state = "running"; } }
+  else if (op == "reset") { tm.state = "idle"; tm.left = 0; tm.total = 0; }
+  let left = tm.state == "running" ? max(0, tm.due - K.now) : tm.left;
+  return {state: tm.state, total: tm.total, left: left, label: tm.label};
+}
+fn sc_rename_self(p, a) { if (typeof(a[0]) != "str" || a[0] == "") { return E("名称无效"); } return mi("sys", "rename", nil, a[0]); }
+fn sc_wallclock(p, a) { return K.wall0 + K.now * 1000; }
+fn sc_self_id(p, a) { return K.self_h.id; }
+fn sc_kernel_info(p, a) { return {version: CFG.version, depth: K.depth, id: K.self_h.id, now: K.now, step: K.step, nprocs: len(K.order), cfg: CFG}; }
+
+// ---- 显示：应用经系统调用提交画面，内核校验后转交父系统的显示服务 ----
+fn sc_gfx_submit(p, a) {
+  let v = a[0]; let cmds = a[1];
+  if (typeof(v) != "num") { return E("视图编号无效"); }
+  let sc = gx_scan(cmds);
+  burn(sc.n / 4);
+  for (let r of sc.embeds) { if (!ctx_in(r)) { return E("无效的嵌入目标"); } }
+  p.views[v] = 1;
+  // 窗口管理进程的 0 号视图就是本系统的屏幕（由父系统指定的表面）
+  if (p.pid == K.wm && v == 0) { return mi("gfx", "submit", K.screen_ref.c, K.screen_ref.v, cmds); }
+  return mi("gfx", "submit", p.ctx, v, cmds);
+}
+fn sc_gfx_free(p, a) { del(p.views, a[0]); return mi("gfx", "free", p.ctx, a[0]); }
+fn sc_scene_load(p, a) { burn(sizeof(a[1]) / 8); return mi("scene", "load", p.ctx, a[0], a[1]); }
+fn sc_scene_state(p, a) { burn(sizeof(a[1]) / 16); return mi("scene", "state", p.ctx, a[0], a[1]); }
+fn sc_scene_free(p, a) { return mi("scene", "free", p.ctx, a[0]); }
+fn sc_scene_pick(p, a) { burn(30); return sysv("mi_dev", [nil, "scene", "pick", p.ctx, a[0], a[1], a[2], a[3], a[4], a[5]]); }
+fn sc_input_value(p, a) { return mi("input", "get", p.ctx, a[0], a[1]); }
+fn sc_input_set(p, a) { return mi("input", "set", p.ctx, a[0], a[1], a[2]); }
+fn sc_proc_ref(p, a) { let q = proc_find(a[0]); if (!proc_alive(q)) { return E("进程不存在"); } return {c: q.ctx, pid: q.pid}; }
+fn sc_self_ref(p, a) { return {c: p.ctx, pid: p.pid}; }
+
+// ---- 窗口管理 ----
+fn sys_name() { let i = mi("sys", "info"); return i == nil ? "" : i.name; }
+fn sc_wm_register(p, a) { K.wm = p.pid; return {screen: K.screen, depth: K.depth, id: K.self_h.id}; }
+fn sc_screen_info(p, a) { return {w: K.screen.w, h: K.screen.h, depth: K.depth, id: K.self_h.id, name: sys_name()}; }
+
+fn syscalls_init() {
+  SYSCALLS.print = &sc_print; SYSCALLS.exit = &sc_exit; SYSCALLS.time = &sc_time; SYSCALLS.sleep = &sc_sleep;
+  SYSCALLS.yield = &sc_yield; SYSCALLS.self = &sc_self; SYSCALLS.spawn = &sc_spawn; SYSCALLS.compile = &sc_compile;
+  SYSCALLS.kill = &sc_kill; SYSCALLS.suspend = &sc_suspend; SYSCALLS.resume = &sc_resume; SYSCALLS.setquota = &sc_setquota;
+  SYSCALLS.send = &sc_send; SYSCALLS.recv = &sc_recv; SYSCALLS.recv_timeout = &sc_recv_timeout; SYSCALLS.poll = &sc_poll;
+  SYSCALLS.fs_read = &sc_fs_read; SYSCALLS.fs_write = &sc_fs_write; SYSCALLS.fs_list = &sc_fs_list; SYSCALLS.fs_stat = &sc_fs_stat;
+  SYSCALLS.fs_mkdir = &sc_fs_mkdir; SYSCALLS.fs_remove = &sc_fs_remove; SYSCALLS.fs_copy = &sc_fs_copy; SYSCALLS.fs_move = &sc_fs_move;
+  SYSCALLS.fs_trash = &sc_fs_trash; SYSCALLS.fs_restore = &sc_fs_restore; SYSCALLS.fs_rev = &sc_fs_rev; SYSCALLS.fs_usage = &sc_fs_usage;
+  SYSCALLS.ps = &sc_ps; SYSCALLS.proc_out = &sc_proc_out; SYSCALLS.budget_info = &sc_budget_info; SYSCALLS.cfg_set = &sc_cfg_set;
+  SYSCALLS.notify = &sc_notify; SYSCALLS.notes = &sc_notes; SYSCALLS.note_ctl = &sc_note_ctl; SYSCALLS.depth = &sc_depth;
+  SYSCALLS.self_id = &sc_self_id; SYSCALLS.kernel_info = &sc_kernel_info;
+  SYSCALLS.gfx_submit = &sc_gfx_submit; SYSCALLS.gfx_free = &sc_gfx_free; SYSCALLS.scene_load = &sc_scene_load;
+  SYSCALLS.scene_state = &sc_scene_state; SYSCALLS.scene_free = &sc_scene_free; SYSCALLS.scene_pick = &sc_scene_pick;
+  SYSCALLS.input_value = &sc_input_value; SYSCALLS.input_set = &sc_input_set; SYSCALLS.proc_ref = &sc_proc_ref; SYSCALLS.self_ref = &sc_self_ref;
+  SYSCALLS.wallclock = &sc_wallclock; SYSCALLS.timer = &sc_timer; SYSCALLS.rename_self = &sc_rename_self; SYSCALLS.wm_register = &sc_wm_register; SYSCALLS.screen_info = &sc_screen_info;
+  syscalls_init2();
+}
+
+
+// ============================== 子系统（承载进程） ==============================
+// 每个直属子系统是本系统的一个“承载进程”，执行它的内核程序。子系统的时钟、预算、输入、显示
+// 和磁盘服务都由本内核按下面的规则提供：向它的内核程序提供“机器接口”（mi_poll / mi_idle / mi_dev）。
+fn child_by_h(h) {
+  if (h == nil) { return nil; }
+  for (let pid of K.order) { let q = K.procs[pid]; if (q.kind == "system" && q.sys.h.id == h.id) { return q; } }
+  return nil;
+}
+fn child_limit(p) {
+  let c = p.sys;
+  let l = c.budget;
+  if (c.grant > 0 && c.grant < l) { l = c.grant; }
+  return l;
+}
+fn child_runnable(p) {
+  let c = p.sys;
+  if (p.ctx == nil || c.state == "booting" || c.state == "error" || c.state == "stopped") { return false; }
+  if (c.state == "paused") { return c.step_left > 0; }
+  if (p.idle_at == K.step && len(c.queue) == 0) { return false; }
+  if (c.step_used >= child_limit(p)) { return false; }
+  return true;
+}
+fn child_slice(p, s) {
+  let c = p.sys;
+  let room = child_limit(p) - c.step_used;
+  if (c.state == "paused") { room = c.step_left; }
+  return s < room ? s : room;
+}
+fn eff(a, b) { // 两个上限取较小的非零值
+  if (a > 0 && b > 0) { return a < b ? a : b; }
+  return a > 0 ? a : b;
+}
+fn child_apply_cfg(p) {
+  let c = p.sys;
+  mi("sys", "setcfg", c.h, {mem: eff(c.mem_grant, c.mem_self), storage: eff(c.sto_grant, c.sto_self)});
+}
+fn child_info(q) {
+  let c = q.sys;
+  let o = {id: c.h.id, name: c.name, state: c.state, rate: c.rate, t: c.t, step: c.step, grant: c.grant, budget: c.budget, limit: child_limit(q),
+    mem_grant: c.mem_grant, mem_self: c.mem_self, sto_grant: c.sto_grant, sto_self: c.sto_self, kpath: c.kpath, kerr: c.kerr,
+    step_used: c.step_used, queue_n: len(c.queue), pid: q.pid, stepping: c.stepping};
+  let inf = mi("sys", "info", c.h);
+  if (inf != nil && inf.err == nil) { o.storage_used = inf.tree; o.index = inf.index; }
+  o.mem_used = q.ctx == nil ? 0 : vm_mem(q.ctx);
+  return o;
+}
+fn child_report(q, state) { q.sys.state = state; mi("sys", "state", q.sys.h, state); }
+
+fn child_new_rec(h, name, kpath) {
+  return {h: h, name: name, state: "booting", t: 0, rate: 1, step: 0, queue: [], stepping: false, step_left: 0, grant: 0, budget: CFG.child_budget,
+    mem_grant: 0, mem_self: 0, sto_grant: 0, sto_self: 0, step_used: 0, kpath: kpath, kerr: nil, screen: {w: 0, h: 0}};
+}
+// 创建子系统：向父系统登记新实例 → 复制内核源文件 → 启动
+fn child_create(name) {
+  let r = mi("sys", "create", name);
+  if (r.err != nil) { return r; }
+  let id = r.id;
+  let dir = "/System/Kernels/" + id;
+  fs_mkdir_(dir);
+  let w = fs_copy_("/System/kernel.ns", dir + "/kernel.ns");
+  if (w.err != nil) { mi("sys", "remove", r.h); return w; }
+  fs_copy_("/System/kernel.nsx", dir + "/kernel.nsx");
+  let q = proc_add(name, dir + "/kernel.ns", nil, nil, "system", 0);
+  q.sys = child_new_rec(r.h, name, dir + "/kernel.ns");
+  q.state = "waiting"; q.wait = "boot";
+  child_boot(q);
+  return {ok: true, pid: q.pid, id: id};
+}
+fn child_boot(q) {
+  q.sys.state = "booting"; q.sys.kerr = nil;
+  let l = load_nsx(q.sys.kpath);
+  if (l.err != nil) { child_boot_failed(q.pid, l.err); return nil; }
+  if (l.stale) {
+    let c = compile_job(q.sys.kpath, {t: "child", pid: q.pid});
+    if (c.err != nil) { child_boot_failed(q.pid, c.err); }
+    return nil;
+  }
+  child_boot_2(q.pid);
+}
+fn child_boot_failed(pid, msg) {
+  let q = proc_find(pid);
+  if (q == nil) { return nil; }
+  q.sys.kerr = msg; q.state = "waiting"; q.wait = "boot";
+  child_report(q, "error");
+}
+fn child_boot_2(pid) {
+  let q = proc_find(pid);
+  if (q == nil || q.kind != "system") { return nil; }
+  let l = load_nsx(q.sys.kpath);
+  if (l.text == nil) { child_boot_failed(pid, l.err == nil ? "无法载入内核" : l.err); return nil; }
+  let h = vm_new(l.text, {depth: K.depth + 1}, {kernel: true, name: "kernel@" + q.sys.h.id});
+  if (h.err != nil) { child_boot_failed(pid, h.err); return nil; }
+  q.ctx = h; q.state = "ready"; q.wait = nil; q.idle_at = -1; q.used_step = 0;
+  q.sys.queue = []; q.sys.step_used = 0; q.sys.t = 0; q.sys.step = 0; q.sys.kerr = nil;
+  mi("sys", "bind", q.sys.h, h);
+  child_apply_cfg(q);
+  child_report(q, q.sys.paused_boot == true ? "paused" : "running");
+  q.sys.paused_boot = false;
+  child_post(q, {k: "screen", path: [], w: q.sys.screen.w > 0 ? q.sys.screen.w : 1000, h: q.sys.screen.h > 0 ? q.sys.screen.h : 600});
+}
+fn child_post(q, ev) {
+  let c = q.sys; let n = len(c.queue);
+  if (n > 0 && ev.k == "input" && ev.ev != nil && ev.ev.type == "move") {
+    let last = c.queue[n - 1];
+    if (last.k == "input" && last.ev.type == "move" && len(last.path) == len(ev.path)) { c.queue[n - 1] = ev; q.idle_at = -1; return nil; }
+  }
+  if (n > 300) { shift(c.queue); }
+  push(c.queue, ev);
+  q.idle_at = -1;
+}
+// 停止子系统（子树）：结束内核上下文及其后代
+fn child_stop(q, state) {
+  if (q.ctx != nil && vm_state(q.ctx) != "dead") { vm_kill(q.ctx); }
+  q.ctx = nil; q.sys.queue = [];
+  child_report(q, state);
+  q.state = "waiting"; q.wait = "boot";
+}
+fn child_gone(p) { }
+fn child_kernel_error(p, r) {
+  p.sys.kerr = r.err + "（" + r.fn + " 第 " + r.line + " 行）";
+  vm_kill(p.ctx); p.ctx = nil;
+  p.state = "waiting"; p.wait = "boot";
+  child_report(p, "error");
+  notify("内核错误：" + p.sys.name, p.sys.kerr, "error");
+}
+fn child_restart(q) {
+  if (q.ctx != nil) { vm_kill(q.ctx); q.ctx = nil; }
+  q.state = "waiting"; q.wait = "boot";
+  q.sys.queue = []; q.sys.stepping = false; q.sys.step_left = 0; q.sys.t = 0; q.sys.step = 0;
+  child_boot(q);
+}
+
+// 子系统的机器接口：时钟与事件（poll）、空闲（idle）、设备（dev）
+fn child_poll(q) {
+  let c = q.sys; let evs = c.queue; c.queue = [];
+  return {t: c.t, step: c.step, evs: evs, budget: child_limit(q), granted: child_limit(q), used: c.step_used, svc: 0};
+}
+fn child_trap(q, r) {
+  let name = r.name; let v = nil;
+  if (name == "mi_poll") { v = child_poll(q); }
+  else if (name == "mi_idle") {
+    q.idle_at = K.step;
+    if (q.sys.stepping) { q.sys.step_left = 0; q.sys.stepping = false; }
+  }
+  else if (name == "mi_dev") { v = child_dev(q, r.args); }
+  else { v = E("未知机器调用 " + name); }
+  vm_ret(q.ctx, v);
+}
+fn child_forward(q, a) {
+  let origin = a[0];
+  if (origin == nil) { a[0] = q.ctx; }
+  else if (!ctx_in(origin)) { return E("来源无效"); }
+  return sysv("mi_dev", a);
+}
+fn child_dev(q, a) {
+  let dev = a[1]; let op = a[2]; let c = q.sys;
+  if (dev == "gfx" && op == "screen") { return {c: q.ctx, v: 0}; }
+  if (dev == "sys") {
+    if (op == "self") { return c.h; }
+    if (op == "depth") { return K.depth + 1; }
+    if (op == "budget") { return {total: child_limit(q), granted: child_limit(q), used: c.step_used, svc: 0, step: c.step, mem: eff(c.mem_grant, c.mem_self), storage: eff(c.sto_grant, c.sto_self)}; }
+    if (op == "setself") {
+      let cfg = a[3];
+      if (typeof(cfg.budget) == "num") { c.budget = max(1000, floor(cfg.budget)); }
+      if (typeof(cfg.mem) == "num") { c.mem_self = max(0, floor(cfg.mem)); }
+      if (typeof(cfg.storage) == "num") { c.sto_self = max(0, floor(cfg.storage)); }
+      child_apply_cfg(q);
+      return true;
+    }
+    if (op == "rename" && a[3] == nil) { c.name = a[4]; q.name = a[4]; }
+    if (op == "info" && a[3] == nil) { return sysv("mi_dev", [nil, "sys", "info", c.h]); }
+    if (op == "ancestors") {
+      let list = [{h: K.self_h, id: K.self_h.id, depth: K.depth, name: sys_name()}];
+      if (K.depth > 0) { let up = mi("sys", "ancestors"); if (typeof(up) == "arr") { list = concat(list, up); } }
+      return list;
+    }
+  }
+  if (dev == "proj" && op == "request") { return proj_up(a[3], c.h); }
+  if (dev == "proj" && op == "send") { return proj_send_from_child(a[3], q); }
+  return child_forward(q, a);
+}
+
+// ---- 事件路由：宿主/父系统发来的事件沿系统路径逐级下行 ----
+fn route_event(e) {
+  if (len(e.path) > 0) {
+    let q = child_by_h(e.path[0]);
+    if (q == nil || q.ctx == nil) { return nil; }
+    e.path = slice(e.path, 1);
+    child_post(q, e);
+    return nil;
+  }
+  local_event(e);
+}
+fn wm_push(e) {
+  let w = proc_find(K.wm);
+  if (!proc_alive(w)) { return nil; }
+  let n = len(w.mailbox);
+  if (n > 0 && e.k == "input" && e.ev.type == "move") {
+    let last = w.mailbox[n - 1].msg;
+    if (last.k == "input" && last.ev.type == "move") { w.mailbox[n - 1] = {from: 0, msg: e, t: K.now}; return nil; }
+  }
+  msg_deliver(0, K.wm, e);
+}
+fn local_event(e) {
+  let k = e.k;
+  if (k == "screen") { K.screen = {w: e.w, h: e.h}; wm_push(e); }
+  else if (k == "input" || k == "drag") { wm_push(e); }
+  else if (k == "notify") { notify(e.title, e.text, e.kind); }
+  else if (k == "fsrev") { K.fs_rev++; }
+  else if (k == "data") {
+    let s = K.subs[e.sub.id];
+    if (s != nil) { msg_deliver(0, s.pid, {t: "data", e: e}); }
+  } else if (k == "proj") {
+    let q = proc_by_ctx(e.msg.app);
+    if (q != nil) { msg_deliver(0, q.pid, {t: "proj", m: e.msg}); }
+  }
+}
+
+// ---- 投送：请求逐级上行到目标祖先的窗口管理，输入沿路径下行回源应用 ----
+fn proj_up(req, from_h) {
+  req.via = concat([from_h], req.via == nil ? [] : req.via);
+  if (req.target.id == K.self_h.id) {
+    if (K.wm == 0) { return E("目标桌面没有窗口管理器"); }
+    msg_deliver(0, K.wm, {k: "proj_req", req: req});
+    return {ok: true};
+  }
+  if (K.depth == 0) { return E("目标系统不是祖先"); }
+  return sysv("mi_dev", [nil, "proj", "request", req]);
+}
+fn proj_send_from_child(m, q) { return E("投送输入只能从祖先下发"); }
+fn sc_proj_request(p, a) { // 源窗口管理：请求把应用 a[0] 投送到祖先 a[1]
+  let req = a[0];
+  req.app = proc_ref_of(req.pid);
+  if (req.app == nil) { return E("源应用不存在"); }
+  if (K.depth == 0) { return E("根系统没有祖先可以投送"); }
+  return sysv("mi_dev", [nil, "proj", "request", req]);
+}
+fn proc_ref_of(pid) { let q = proc_find(pid); return proc_alive(q) ? q.ctx : nil; }
+fn sc_proj_send(p, a) { // 目标窗口管理：向源应用下发控制/输入。a[0]=via 路径, a[1]=消息
+  let e = {k: "proj", path: copy(a[0]), msg: a[1]};
+  route_event(e);
+  return true;
+}
+fn sc_proj_alive(p, a) { return sysv("mi_dev", [nil, "proj", "alive", a[0], K.self_h]); }
+fn sc_ancestors(p, a) {
+  let list = [{h: K.self_h, id: K.self_h.id, depth: K.depth, name: sys_name()}];
+  if (K.depth > 0) { let up = mi("sys", "ancestors"); if (typeof(up) == "arr") { list = concat(list, up); } }
+  return list;
+}
+
+// ---- 子系统控制 ----
+fn sc_child_screen(p, a) { let q = proc_find(a[0]); if (q == nil || q.kind != "system" || q.ctx == nil) { return E("子系统未运行"); } return {c: q.ctx, v: 0}; }
+fn sc_child_event(p, a) {
+  let q = proc_find(a[0]);
+  if (q == nil || q.kind != "system" || q.ctx == nil) { return E("子系统未运行"); }
+  let e = a[1]; e.path = [];
+  child_post(q, e);
+  return true;
+}
+fn sc_child_resize(p, a) {
+  let q = proc_find(a[0]);
+  if (q == nil || q.kind != "system") { return E("子系统不存在"); }
+  let w = floor(a[1]); let h = floor(a[2]);
+  if (q.sys.screen.w == w && q.sys.screen.h == h) { return true; }
+  q.sys.screen = {w: w, h: h};
+  if (q.ctx != nil) { child_post(q, {k: "screen", path: [], w: w, h: h}); }
+  return true;
+}
+fn find_child_pid(a) { let q = proc_find(a); return (q != nil && q.kind == "system") ? q : nil; }
+
+fn snap_name(s) { return replace(replace(replace(s, "/", "_"), " ", "_"), ":", "_"); }
+fn child_snapshot(q, name) {
+  if (q.ctx == nil) { return E("子系统未运行，无法快照"); }
+  let blob = vm_snapshot(q.ctx);
+  if (typeof(blob) != "str") { return blob; }
+  let c = q.sys;
+  let meta = {kind: "nested-os-snapshot", v: 1, name: name, sysname: c.name, id: c.h.id, t: c.t, rate: c.rate, state: c.state, step: c.step,
+    grant: c.grant, budget: c.budget, mem_grant: c.mem_grant, mem_self: c.mem_self, sto_grant: c.sto_grant, sto_self: c.sto_self, created: K.now, size: len(blob), depth: K.depth + 1};
+  fs_mkdir_("/Snapshots");
+  let path = "/Snapshots/" + snap_name(name) + ".snap";
+  let w = fs_write_(path, json_stringify(meta) + "\n" + blob);
+  if (w.err != nil) { return w; }
+  notify("快照已保存", c.name + " → " + path, "ok");
+  return {ok: true, path: path, size: len(blob)};
+}
+fn snap_read(path) {
+  let t = fs_read_(path);
+  if (typeof(t) != "str") { return t; }
+  let i = indexOf(t, "\n");
+  if (i < 0) { return E("不是有效的快照文件"); }
+  let meta = json_parse(slice(t, 0, i));
+  if (meta == nil || meta.kind != "nested-os-snapshot") { return E("不是有效的快照文件"); }
+  return {meta: meta, blob: slice(t, i + 1, len(t))};
+}
+fn child_restore(q, path) {
+  let s = snap_read(path);
+  if (s.err != nil) { return s; }
+  if (q.ctx == nil) { return E("子系统未运行：请从快照“分叉/打开”为新实例"); }
+  let r = vm_restore(q.ctx, s.blob);
+  if (typeof(r) == "map" && r.err != nil) { return r; }
+  let c = q.sys; let m = s.meta;
+  c.t = m.t; c.rate = m.rate; c.step = m.step; c.queue = []; c.stepping = false; c.step_left = 0; q.idle_at = -1;
+  c.grant = m.grant; c.budget = m.budget;
+  child_report(q, m.state == "paused" ? "paused" : "running");
+  notify("已恢复快照", c.name + " ← " + path, "ok");
+  return {ok: true};
+}
+fn child_fork(path, name) {
+  let s = snap_read(path);
+  if (s.err != nil) { return s; }
+  let m = s.meta;
+  let r = vm_fork(s.blob, name);
+  if (r.err != nil) { return r; }
+  let id = r.sys.id;
+  let dir = "/System/Kernels/" + id;
+  fs_mkdir_(dir);
+  fs_copy_("/System/kernel.ns", dir + "/kernel.ns");
+  fs_copy_("/System/kernel.nsx", dir + "/kernel.nsx");
+  let q = proc_add(name, dir + "/kernel.ns", r.kernel, nil, "system", 0);
+  q.sys = child_new_rec(r.sys, name, dir + "/kernel.ns");
+  let c = q.sys;
+  c.t = m.t; c.rate = m.rate; c.step = m.step; c.grant = m.grant; c.budget = m.budget;
+  c.mem_grant = m.mem_grant; c.mem_self = m.mem_self; c.sto_grant = m.sto_grant; c.sto_self = m.sto_self;
+  c.state = m.state == "paused" ? "paused" : "running";
+  q.state = "ready"; q.wait = nil;
+  mi("sys", "bind", c.h, r.kernel);
+  child_apply_cfg(q);
+  mi("sys", "rename", c.h, name);
+  child_report(q, c.state);
+  notify("已分叉", name + "（" + id + "）", "ok");
+  return {ok: true, pid: q.pid, id: id};
+}
+fn snap_list() {
+  let out = [];
+  if (!fs_isdir("/Snapshots")) { return out; }
+  for (let e of fs_list_("/Snapshots")) {
+    if (e.dir || !endsWith(e.name, ".snap")) { continue; }
+    let t = fs_read_(e.path);
+    if (typeof(t) != "str") { continue; }
+    let i = indexOf(t, "\n");
+    let meta = i < 0 ? nil : json_parse(slice(t, 0, i));
+    if (meta != nil && meta.kind == "nested-os-snapshot") { push(out, {path: e.path, name: meta.name, sysname: meta.sysname, id: meta.id, t: meta.t, size: e.size, created: meta.created, state: meta.state}); }
+  }
+  return out;
+}
+
+fn sc_sysctl(p, a) {
+  let op = a[0];
+  if (op == "new") { return child_create(typeof(a[1]) == "str" && a[1] != "" ? a[1] : "子系统"); }
+  if (op == "list") {
+    let out = [];
+    for (let pid of K.order) { let q = K.procs[pid]; if (q.kind == "system") { push(out, child_info(q)); } }
+    return out;
+  }
+  if (op == "snaps") { return snap_list(); }
+  if (op == "fork") { return child_fork(a[1], typeof(a[2]) == "str" && a[2] != "" ? a[2] : "分叉"); }
+  let q = find_child_pid(a[1]);
+  if (q == nil) { return E("子系统不存在"); }
+  let c = q.sys;
+  if (op == "pause") { if (c.state != "running") { return E("子系统当前不在运行"); } child_report(q, "paused"); return {ok: true}; }
+  if (op == "resume") { if (c.state != "paused") { return E("子系统当前不在暂停"); } c.stepping = false; c.step_left = 0; q.idle_at = -1; child_report(q, "running"); return {ok: true}; }
+  if (op == "step") {
+    if (c.state != "paused") { return E("只有暂停的子系统可以单步"); }
+    if (c.stepping) { return {ok: true}; }
+    c.t = c.t + CFG.step_dt; c.step++; c.step_used = 0; c.step_left = child_limit(q); c.stepping = true; q.idle_at = -1;
+    return {ok: true, dt: CFG.step_dt};
+  }
+  if (op == "rate") { c.rate = clamp(a[2], 0.05, 16); return {ok: true, rate: c.rate}; }
+  if (op == "restart") { child_restart(q); return {ok: true}; }
+  if (op == "close") {
+    let id = c.h.id;
+    if (q.ctx != nil) { vm_kill(q.ctx); q.ctx = nil; }
+    mi("sys", "remove", c.h);
+    q.state = "done"; q.kind = "closed";
+    let i = indexOf(K.order, q.pid); if (i >= 0) { remove(K.order, i); if (K.rr > i) { K.rr--; } if (K.rr >= len(K.order)) { K.rr = 0; } }
+    del(K.procs, q.pid);
+    fs_remove_("/System/Kernels/" + id);
+    return {ok: true};
+  }
+  if (op == "grant") {
+    let g = a[2];
+    if (typeof(g.budget) == "num") { c.grant = max(0, floor(g.budget)); }
+    if (typeof(g.mem) == "num") { c.mem_grant = max(0, floor(g.mem)); }
+    if (typeof(g.storage) == "num") { c.sto_grant = max(0, floor(g.storage)); }
+    child_apply_cfg(q);
+    return {ok: true};
+  }
+  if (op == "snapshot") { return child_snapshot(q, typeof(a[2]) == "str" && a[2] != "" ? a[2] : c.name + "-" + floor(K.now)); }
+  if (op == "restore") { return child_restore(q, a[2]); }
+  if (op == "rename") { c.name = a[2]; q.name = a[2]; mi("sys", "rename", c.h, a[2]); return {ok: true}; }
+  if (op == "kernel") { return {path: c.kpath}; }
+  return E("未知子系统操作 " + op);
+}
+
+// ---- 数据订阅与杂项设备（转发给父系统的服务） ----
+fn sc_data_open(p, a) {
+  let r = mi("data", "open", p.ctx, a[0]);
+  if (r != nil && r.err == nil && r.sub != nil) { K.subs[r.sub.id] = {pid: p.pid, sub: r.sub}; }
+  return r;
+}
+fn sc_data_close(p, a) {
+  let s = a[0];
+  if (s != nil) { del(K.subs, s.id); return mi("data", "close", s); }
+  return nil;
+}
+fn sc_dev(p, a) { // 通用设备转发：剪贴板、原生应用、拖放、数据等
+  let allowed = {clip: 1, native: 1, drag: 1, data: 1, bench: 1, fsx: 1, display: 1};
+  if (!has(allowed, a[0])) { return E("不允许的设备 " + a[0]); }
+  return sysv("mi_dev", [nil, a[0], a[1], p.ctx, a[2], a[3], a[4]]);
+}
+
+fn syscalls_init2() {
+  SYSCALLS.sysctl = &sc_sysctl; SYSCALLS.child_screen = &sc_child_screen; SYSCALLS.child_event = &sc_child_event;
+  SYSCALLS.child_resize = &sc_child_resize; SYSCALLS.proj_request = &sc_proj_request; SYSCALLS.proj_send = &sc_proj_send;
+  SYSCALLS.proj_alive = &sc_proj_alive; SYSCALLS.ancestors = &sc_ancestors; SYSCALLS.data_open = &sc_data_open;
+  SYSCALLS.data_close = &sc_data_close; SYSCALLS.dev = &sc_dev;
+}
+
+
+// ============================== 时钟与轮询 ==============================
+fn on_step(dt) {
+  K.step++; K.step_used = 0;
+  for (let pid of K.order) {
+    let p = K.procs[pid];
+    p.rate = p.rate * 0.92 + p.used_step * 0.08;
+    p.used_step = 0;
+    if (p.kind == "system") {
+      let c = p.sys; c.step_used = 0;
+      if (c.state == "running") { c.t = c.t + dt * c.rate; c.step++; }
+    }
+  }
+}
+fn poll() {
+  let r = sys("mi_poll");
+  K.since_poll = 0;
+  if (r.t > K.now) { let dt = r.t - K.now; K.now = r.t; on_step(dt); }
+  K.budget = {total: r.budget, granted: r.granted, used: r.used, svc: r.svc};
+  for (let e of r.evs) { route_event(e); }
+}
+
+// ============================== 启动与主循环 ==============================
+fn restore_children() {
+  let list = mi("sys", "children");
+  if (typeof(list) != "arr") { return nil; }
+  for (let c of list) {
+    let kpath = "/System/Kernels/" + c.id + "/kernel.ns";
+    let q = proc_add(c.name, kpath, nil, nil, "system", 0);
+    q.sys = child_new_rec(c.h, c.name, kpath);
+    q.state = "waiting"; q.wait = "boot";
+    child_boot(q);
+  }
+}
+fn boot() {
+  syscalls_init();
+  K.self_h = mi("sys", "self");
+  K.depth = mi("sys", "depth");
+  K.screen_ref = mi("gfx", "screen");
+  K.wall0 = mi("sys", "wall");
+  for (let d of ["/Documents", "/Downloads", "/Programs", "/Snapshots", "/System/Kernels", "/Temp"]) {
+    if (!fs_isdir(d)) { fs_mkdir_(d); }
+  }
+  poll();
+  spawn_start("/System/wm.ns", {}, "窗口管理", "user", 0, 0, "boot");
+  restore_children();
+  K.booted = true;
+}
+fn main_loop() {
+  while (true) {
+    if (K.since_poll >= CFG.poll_work) { poll(); }
+    wake_sleepers();
+    let p = sched_pick();
+    if (p == nil) {
+      poll();
+      wake_sleepers();
+      p = sched_pick();
+      if (p == nil) { sys("mi_idle"); K.since_poll = CFG.poll_work; continue; }
+    }
+    run_slice(p);
+  }
+}
+
+boot();
+main_loop();

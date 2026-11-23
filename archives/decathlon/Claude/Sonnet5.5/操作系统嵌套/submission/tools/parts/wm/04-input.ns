@@ -1,0 +1,357 @@
+
+// ============================== 输入：命中判断 ==============================
+// 窗口命中规则：从最上层往下找第一个包含该点的窗口；再区分边缘/标题栏/按钮/内容区。
+fn wm_hit(x, y) {
+  for (let i = len(W.wins) - 1; i >= 0; i--) {
+    let w = W.wins[i];
+    if (w.state == "min") { continue; }
+    let e = w.state == "normal" ? WCFG.edge : 0;
+    if (x >= w.x - e && x < w.x + w.w + e && y >= w.y - e && y < w.y + w.h + e) {
+      let rx = x - w.x; let ry = y - w.y;
+      if (e > 0) {
+        let ed = "";
+        if (ry < 3) { ed = ed + "t"; } else if (ry >= w.h - e) { ed = ed + "b"; }
+        if (rx < e) { ed = ed + "l"; } else if (rx >= w.w - e) { ed = ed + "r"; }
+        if (rx < 0 || ry < 0 || rx >= w.w || ry >= w.h) { if (ed == "") { ed = rx < 0 ? "l" : (rx >= w.w ? "r" : (ry < 0 ? "t" : "b")); } }
+        if (ed != "") { return {w: w, part: "edge", edge: ed}; }
+      }
+      if (ry < WCFG.title_h) {
+        if (rx >= w.w - 46 * title_btn_count(w) - (w.kind == "system" ? 76 : 0)) { return {w: w, part: "btn"}; }
+        return {w: w, part: "title"};
+      }
+      return {w: w, part: "client"};
+    }
+  }
+  return nil;
+}
+fn shift_ev(ev, ox, oy) {
+  let e = copy(ev);
+  if (ev.x != nil) { e.x = ev.x - ox; e.y = ev.y - oy; }
+  return e;
+}
+fn fwd_ptr(w, ev) {
+  let ox = w.x; let oy = w.y + WCFG.title_h;
+  if (w.kind == "app" && w.pid > 0) { send(w.pid, ptr_msg(ev, 0, ox, oy)); }
+  else if (w.kind == "system" && w.sysp > 0) { sys("child_event", w.sysp, {k: "input", ev: shift_ev(ev, ox, oy)}); }
+  else if (w.kind == "projection" && w.proj != nil) {
+    if (w.proj.info != nil && w.proj.info.paused) { return nil; }
+    sys("proj_send", w.proj.via, {op: "in", app: w.proj.app, v: 1, ev: shift_ev(ev, ox, oy)});
+  }
+}
+fn fwd_key(w, ev) {
+  if (w == nil) { return nil; }
+  if (w.kind == "app" && w.pid > 0) {
+    if (ev.type == "key") { send(w.pid, key_msg(ev, 0)); } else if (ev.type == "text") { send(w.pid, text_msg(ev, 0)); }
+  } else if (w.kind == "system" && w.sysp > 0) { sys("child_event", w.sysp, {k: "input", ev: ev}); }
+  else if (w.kind == "projection" && w.proj != nil) {
+    if (w.proj.info != nil && w.proj.info.paused) { return nil; }
+    sys("proj_send", w.proj.via, {op: "in", app: w.proj.app, v: 1, ev: ev});
+  }
+}
+
+fn clamp_title_visible(w) {
+  if (w.y < 0) { w.y = 0; }
+  if (w.y > desk_h() - 36) { w.y = desk_h() - 36; }
+  if (w.x + w.w < 80) { w.x = 80 - w.w; }
+  if (w.x > W.sw - 80) { w.x = W.sw - 80; }
+}
+fn resize_by(w, cap, ev) {
+  let r = cap.r0; let dx = ev.x - cap.x0; let dy = ev.y - cap.y0;
+  let x = r.x; let y = r.y; let ww = r.w; let hh = r.h; let e = cap.edge;
+  if (contains(e, "r")) { ww = r.w + dx; }
+  if (contains(e, "l")) { ww = r.w - dx; x = r.x + dx; }
+  if (contains(e, "b")) { hh = r.h + dy; }
+  if (contains(e, "t")) { hh = r.h - dy; y = r.y + dy; }
+  if (ww < WCFG.min_w) { if (contains(e, "l")) { x = r.x + r.w - WCFG.min_w; } ww = WCFG.min_w; }
+  if (hh < WCFG.min_h) { if (contains(e, "t")) { y = r.y + r.h - WCFG.min_h; } hh = WCFG.min_h; }
+  w.x = x; w.y = y; w.w = ww; w.h = hh; w.state = "normal";
+  win_sync_size(w);
+}
+fn snap_target(x, y) {
+  if (y <= 2) { return {kind: "max", x: 0, y: 0, w: W.sw, h: desk_h()}; }
+  if (x <= WCFG.snap_margin) { return {kind: "snapL", x: 0, y: 0, w: floor(W.sw / 2), h: desk_h()}; }
+  if (x >= W.sw - WCFG.snap_margin) { let hw = floor(W.sw / 2); return {kind: "snapR", x: W.sw - hw, y: 0, w: hw, h: desk_h()}; }
+  return nil;
+}
+
+fn wm_ptr(ev) {
+  let t = ev.type;
+  if (W.dialog != nil) { return nil; }
+  let popup = W.menu != nil || W.proj_menu != nil || W.start_open || W.notif_open;
+  if (t == "down") {
+    if (popup) { return nil; }
+    let hit = ev.y < desk_h() ? wm_hit(ev.x, ev.y) : nil;
+    if (hit == nil) {
+      if (ev.y < desk_h()) {
+        if (ev.b == 2) { W.menu = {x: ev.x, y: ev.y, kind: "desktop", skip: true}; }
+        else if (ev.b == 0) { W.sel_icon = -1; }
+        let onicon = false;
+        let items = desktop_items();
+        let per = max(1, floor((desk_h() - 12) / WCFG.icon_h));
+        for (let i = 0; i < len(items); i++) {
+          let cx = 14 + floor(i / per) * WCFG.icon_w; let cy = 12 + (i % per) * WCFG.icon_h;
+          if (ev.x >= cx && ev.x < cx + WCFG.icon_w - 6 && ev.y >= cy && ev.y < cy + WCFG.icon_h - 6) { onicon = true; }
+        }
+        if (!onicon && ev.b == 0) { W.focus = 0; notify_focus(); }
+      }
+      return nil;
+    }
+    let w = hit.w;
+    if (W.focus != w.n || WCFG.raise_on_click) { win_focus(w); }
+    if (hit.part == "client") { W.cap = {kind: "client", n: w.n}; fwd_ptr(w, ev); }
+    else if (hit.part == "title" && ev.b == 0) { W.cap = {kind: "drag", n: w.n, ox: ev.x - w.x, oy: ev.y - w.y, moved: false, x0: ev.x, y0: ev.y}; }
+    else if (hit.part == "edge" && ev.b == 0 && w.state == "normal") { W.cap = {kind: "resize", n: w.n, edge: hit.edge, x0: ev.x, y0: ev.y, r0: {x: w.x, y: w.y, w: w.w, h: w.h}}; }
+    return nil;
+  }
+  if (t == "move") {
+    let cap = W.cap;
+    if (cap == nil) { return nil; }
+    let w = win_by_n(cap.n);
+    if (w == nil) { W.cap = nil; return nil; }
+    if (cap.kind == "client") { fwd_ptr(w, ev); }
+    else if (cap.kind == "drag") {
+      if (!cap.moved && abs(ev.x - cap.x0) + abs(ev.y - cap.y0) < 4) { return nil; }
+      cap.moved = true;
+      if (w.state != "normal") {
+        let frac = cap.ox / max(1, w.w);
+        if (w.prev != nil) { w.w = w.prev.w; w.h = w.prev.h; }
+        w.state = "normal"; cap.ox = floor(w.w * frac); cap.oy = min(cap.oy, 20);
+        win_sync_size(w);
+      }
+      w.x = ev.x - cap.ox; w.y = ev.y - cap.oy;
+      clamp_title_visible(w);
+      let sp = snap_target(ev.x, ev.y);
+      W.snap_preview = sp;
+    } else if (cap.kind == "resize") { resize_by(w, cap, ev); }
+    return nil;
+  }
+  if (t == "up") {
+    let cap = W.cap; W.cap = nil;
+    if (cap == nil) { return nil; }
+    let w = win_by_n(cap.n);
+    if (w == nil) { return nil; }
+    if (cap.kind == "client") { fwd_ptr(w, ev); }
+    else if (cap.kind == "drag") {
+      let sp = W.snap_preview; W.snap_preview = nil;
+      if (sp != nil && cap.moved) {
+        if (sp.kind == "max") { w.prev = {x: w.x, y: w.y, w: w.w, h: w.h}; w.state = "normal"; win_maximize(w); }
+        else { win_snap(w, sp.kind); }
+      }
+    }
+    return nil;
+  }
+  if (t == "dbl") {
+    if (popup) { return nil; }
+    let hit = ev.y < desk_h() ? wm_hit(ev.x, ev.y) : nil;
+    if (hit == nil) { return nil; }
+    if (hit.part == "title") { win_maximize(hit.w); }
+    else if (hit.part == "client") { fwd_ptr(hit.w, ev); }
+    return nil;
+  }
+  if (t == "wheel") {
+    if (popup) { return nil; }
+    let hit = ev.y < desk_h() ? wm_hit(ev.x, ev.y) : nil;
+    if (hit != nil && hit.part == "client") { fwd_ptr(hit.w, ev); }
+    return nil;
+  }
+}
+
+fn wm_input(ev) {
+  let t = ev.type;
+  if (t == "down" || t == "up" || t == "move" || t == "dbl" || t == "wheel") {
+    ui_event(U, ptr_msg(ev, 0, 0, 0));
+    wm_ptr(ev);
+    if (t != "move" && t != "wheel") { wm_draw(); }
+    return true;
+  }
+  if (t == "key") {
+    ui_event(U, key_msg(ev, 0));
+    if (W.dialog == nil && !W.start_open) {
+      if (ev.key == "Escape" && (W.menu != nil || W.notif_open || W.proj_menu != nil)) { close_popups(); }
+      else { fwd_key(win_by_n(W.focus), ev); }
+    }
+    wm_draw();
+    return true;
+  }
+  if (t == "text") {
+    if (ev.id == "start-search") { ui_event(U, text_msg(ev, 0)); wm_draw(); }
+    else { fwd_key(win_by_n(W.focus), ev); }
+    return true;
+  }
+  if (t == "infocus") { return false; }
+  return false;
+}
+
+// ============================== 投送窗口 ==============================
+fn proj_open(req) {
+  // 每个源窗口至多一个投送窗口：已存在则聚焦
+  for (let w of W.wins) {
+    if (w.kind == "projection" && w.proj.app.id == req.app.id) { win_focus(w); toast("该窗口已投送，已为你聚焦", "info"); return nil; }
+  }
+  let w = req.w == nil ? 640 : req.w; let h = req.h == nil ? 400 : req.h;
+  let win = win_open("projection", req.sapp_title, "projection", w, h + WCFG.title_h);
+  win.icon = "project";
+  win.proj = {app: req.app, via: req.via, ssys: req.ssys, swid: req.swid, sapp: req.sapp, sapp_title: req.sapp_title, info: nil, t_alive: 0};
+  win.title = req.sapp_title + "（来自 " + req.ssys + "）";
+  sys("proj_send", req.via, {op: "on", app: req.app, v: 1, w: win.w, h: win.h - WCFG.title_h});
+  toast("已投送：" + req.ssys + " · " + req.sapp_title, "ok");
+}
+fn proj_check() {
+  for (let i = len(W.wins) - 1; i >= 0; i--) {
+    let w = W.wins[i];
+    if (w.kind != "projection") { continue; }
+    let r = sys("proj_alive", w.proj.app);
+    if (r == nil || r.err != nil || r.alive != true) {
+      toast("投送已结束：" + w.proj.ssys + " · " + w.proj.sapp_title + " 的源应用已关闭", "info");
+      remove(W.wins, i);
+      if (W.focus == w.n) { let t = win_top_visible(); W.focus = t == nil ? 0 : t.n; }
+    } else { w.proj.info = r; }
+  }
+}
+
+// ============================== 系统窗口 ==============================
+fn open_system_window(p) {
+  for (let w of W.wins) { if (w.kind == "system" && w.sysp == p) { win_focus(w); return w; } }
+  refresh_children();
+  let ch = W.children[p];
+  let title = ch == nil ? "子系统" : ch.name;
+  let ww = floor(W.sw * 0.82); let hh = floor(desk_h() * 0.88);
+  let win = win_open("system", title, "system", ww, hh);
+  win.icon = "system"; win.sysp = p;
+  win.x = W.sw - ww - 12; win.y = 10 + (W.cascade % 3) * 14;
+  sys("child_resize", p, win.w, win.h - WCFG.title_h);
+  return win;
+}
+fn refresh_natives() {
+  if (W.depth != 0) { return nil; }
+  let list = sys("dev", "native", "list");
+  if (typeof(list) != "arr") { return nil; }
+  let alive = {};
+  for (let n of list) { alive[n.nid] = n; }
+  for (let i = len(W.wins) - 1; i >= 0; i--) {
+    let w = W.wins[i];
+    if (w.kind == "native") {
+      if (alive[w.nid] == nil) {
+        remove(W.wins, i);
+        if (W.focus == w.n) { let t = win_top_visible(); W.focus = t == nil ? 0 : t.n; }
+      } else if (alive[w.nid].title != nil) { w.title = alive[w.nid].title; }
+    }
+  }
+}
+fn refresh_children() {
+  refresh_natives();
+  let list = sys("sysctl", "list");
+  if (typeof(list) != "arr") { return nil; }
+  W.children = {};
+  for (let c of list) { W.children[c.pid] = c; }
+  for (let i = len(W.wins) - 1; i >= 0; i--) {
+    let w = W.wins[i];
+    if (w.kind == "system" && W.children[w.sysp] == nil) {
+      remove(W.wins, i);
+      if (W.focus == w.n) { let t = win_top_visible(); W.focus = t == nil ? 0 : t.n; }
+    } else if (w.kind == "system") { w.title = W.children[w.sysp].name; }
+  }
+}
+
+// ============================== 消息处理 ==============================
+fn wm_msg(m) {
+  if (m.k == "input") { wm_input(m.ev); return nil; }
+  if (m.k == "screen") {
+    W.sw = m.w; W.sh = m.h;
+    for (let w of W.wins) {
+      if (w.state == "max") { w.w = W.sw; w.h = desk_h(); win_sync_size(w); }
+      else if (w.state == "snapL" || w.state == "snapR") { win_snap(w, w.state); }
+      else { if (w.x + w.w > W.sw) { w.x = max(0, W.sw - w.w); } if (w.y + w.h > desk_h()) { w.y = max(0, desk_h() - w.h); } }
+    }
+    return nil;
+  }
+  if (m.k == "notify") { add_note(m.n); return nil; }
+  if (m.k == "proc_exit") {
+    for (let i = len(W.wins) - 1; i >= 0; i--) {
+      let w = W.wins[i];
+      if (w.kind == "app" && w.pid == m.pid) {
+        remove(W.wins, i);
+        if (W.focus == w.n) { let t = win_top_visible(); W.focus = t == nil ? 0 : t.n; }
+      }
+    }
+    return nil;
+  }
+  if (m.k == "proj_req") { proj_open(m.req); return nil; }
+  if (m.k == "drag") { wm_drag(m.ev == nil ? m : m.ev); return nil; }
+  // 来自应用的请求
+  if (m.t == "launch") { launch_app(m.app, m.args); }
+  else if (m.t == "open_file") { open_file(m.path); }
+  else if (m.t == "open_system") { open_system_window(m.pid); }
+  else if (m.t == "toast") { toast(m.text, m.kind); }
+  else if (m.t == "settings") { load_settings(); }
+  else if (m.t == "refresh_desktop") { refresh_desktop_files(); }
+  else if (m.t == "set_scale") { sys("dev", "display", "scale", m.scale); }
+  else if (m.t == "close_pid") { for (let i = len(W.wins) - 1; i >= 0; i--) { if (W.wins[i].pid == m.pid) { remove(W.wins, i); } } }
+}
+// 跨系统拖放：宿主按指针位置把拖放事件交给最上层的窗口，再逐级向下传递
+fn wm_drag(e) {
+  if (e.phase == "end") { return nil; }
+  let hit = e.y < desk_h() ? wm_hit(e.x, e.y) : nil;
+  if (hit == nil || hit.part != "client") { return nil; }
+  let w = hit.w; let ox = w.x; let oy = w.y + WCFG.title_h;
+  if (w.kind == "app" && w.pid > 0) { send(w.pid, {t: "drag", phase: e.phase, x: e.x - ox, y: e.y - oy, v: 0}); }
+  else if (w.kind == "system" && w.sysp > 0) { sys("child_event", w.sysp, {k: "drag", phase: e.phase, x: e.x - ox, y: e.y - oy}); }
+}
+
+fn wm_draw() {
+  ui_begin(U, W.sw, W.sh);
+  ui.enabled = W.dialog == nil && W.menu == nil && W.proj_menu == nil && !W.start_open && !W.notif_open;
+  let root = ui_push(0, 0, W.sw, W.sh, false); root.tid = "os-desktop"; root.aria = "桌面"; root.d = {"system-id": W.id, depth: str(W.depth)}; root.key = "root";
+  draw_wallpaper();
+  draw_icons();
+  for (let w of W.wins) { draw_window(w, false); }
+  draw_snap_preview();
+  draw_taskbar();
+  ui.enabled = true;
+  draw_start_menu();
+  draw_notif_panel();
+  draw_menus();
+  draw_toasts();
+  draw_dialog();
+  ui_pop();
+  return ui_end();
+}
+
+fn wm_submit() {
+  let cmds = wm_draw();
+  sys("gfx_submit", 0, cmds);
+}
+
+// ============================== 主循环 ==============================
+fn wm_main() {
+  let info = sys("wm_register");
+  W.depth = info.depth; W.id = info.id; W.sw = info.screen.w; W.sh = info.screen.h;
+  let si = sys("screen_info"); W.name = si.name;
+  TH = theme_make("", W.depth);
+  load_settings(); load_apps(); refresh_desktop_files();
+  if (W.depth == 0 && W.settings.scale != nil && W.settings.scale != 1) { sys("dev", "display", "scale", W.settings.scale); }
+  for (let n of sys("notes")) { push(W.notes, n); }
+  W.now = time();
+  let last_ref = -9; let last_clock = -9; let launched = false;
+  wm_submit();
+  while (true) {
+    let animating = len(W.toasts) > 0 || W.cap != nil;
+    let e = recv_timeout(animating ? 0.04 : 0.5);
+    let n = 0;
+    W.now = time();
+    let dirty = false;
+    while (e != nil && n < 60) {
+      let m = e.msg;
+      if (typeof(m) == "map") { wm_msg(m); }
+      dirty = true; n++;
+      if (n % 6 == 0) { W.now = time(); }
+      e = poll_msg();
+    }
+    W.now = time();
+    if (W.now - last_ref >= 0.4) { last_ref = W.now; refresh_children(); proj_check(); dirty = true; }
+    if (W.now - last_clock >= 1) { last_clock = W.now; dirty = true; }
+    if (!launched && W.depth > 0 && W.sw > 200) { launched = true; launch_app("player", nil); }
+    if (dirty || animating) { wm_submit(); }
+  }
+}
+wm_main();

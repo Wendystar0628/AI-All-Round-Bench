@@ -1,0 +1,20 @@
+{
+  "problem": "11",
+  "parts": [
+    {
+      "name": "1",
+      "title": "三腔分层伺服分配箱",
+      "features": [
+        {"type":"extrude","plane":"XY","loops":[{"rect":[-5,-5,80,60]}],"depth":6},
+        {"type":"extrude","plane":"XZ","origin":[0,50,0],"loops":[{"path":[[0,6],[75,6],[75,20],[55,46],[0,46]]}],"depth":44},
+        {"type":"hole","plane":"XY","origin":[0,0,6],"at":[[0,0],[75,0],[0,55],[75,55]],"d":8,"through":true},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,40,0],"loops":[{"rect":[8,14,28,37]},{"rect":[34,12,50,34]},{"rect":[56,10,69,25]}],"depth":30},
+        {"type":"extrude","op":"cut","plane":"XZ","origin":[0,40,0],"loops":[{"rect":[34,35,50,42]}],"depth":30},
+        {"type":"hole","plane":"XZ","origin":[0,50,0],"at":[[16,28]],"d":24,"depth":44,"reverse":true},
+        {"type":"hole","plane":"XZ","origin":[0,50,0],"at":[[63,17]],"d":30,"depth":44,"reverse":true},
+        {"type":"hole","plane":"YZ","origin":[75,0,0],"at":[[25,32]],"d":18,"depth":75},
+        {"type":"hole","plane":{"origin":[0,0,0],"normal":[0.7071,0,0.7071],"x_dir":[0,1,0]},"origin":[65,25,33],"at":[0,0],"d":22,"depth":58}
+      ]
+    }
+  ]
+}

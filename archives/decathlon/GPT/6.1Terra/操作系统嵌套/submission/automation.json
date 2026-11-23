@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": [
+      "start",
+      "--",
+      "--data-dir",
+      "{dataDir}",
+      "--width",
+      "{width}",
+      "--height",
+      "{height}",
+      "--remote-debugging-port={port}"
+    ],
+    "cwd": "."
+  },
+  "mainWindow": {
+    "title": "Nested OS"
+  },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernelTemplate": "/System/inner-{n}.kernel"
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernel": "/System/kernel.os",
+      "compiler": "/System/compiler.os",
+      "flightController": "/System/flight.os",
+      "kernelTemplate": "/System/inner-{n}.kernel",
+      "programs": "/Programs",
+      "windowManager": "/System/window-manager.os",
+      "filesProgram": "/System/files-app.os",
+      "chartsProgram": "/System/chart-app.os",
+      "playerProgram": "/System/player-app.os"
+    }
+  }
+}

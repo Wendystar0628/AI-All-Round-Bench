@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>wd</title>
+<style>html,body{margin:0;background:#111;color:#9cf;font:12px monospace}canvas{width:320px;height:180px}</style>
+</head><body>
+<canvas id="c"></canvas><pre id="log"></pre>
+<script src="js/util.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/water.js"></script>
+<script>
+(async () => {
+  const c = document.getElementById('c'); c.width=320; c.height=180;
+  await initGPU(c);
+  const water = createWater({ Lx:2.6, Ly:1.1, Lz:1.4, h:0.05, waterLevel:0.58 });
+  const d = GPU.device;
+  const log = s => document.getElementById('log').textContent += s + "\n";
+  const dump = async (buf, bytes, fn) => {
+    const rb = d.createBuffer({size: bytes, usage: GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+    const e = d.createCommandEncoder(); e.copyBufferToBuffer(buf,0,rb,0,bytes); d.queue.submit([e.finish()]);
+    await d.queue.onSubmittedWorkDone(); await rb.mapAsync(GPUMapMode.READ);
+    const a = fn(new Float32Array(rb.getMappedRange().slice(0))); rb.unmap(); rb.destroy(); return a;
+  };
+  water.init(7);
+  await new Promise(r=>setTimeout(r,50));
+  water.prime();
+  await d.queue.onSubmittedWorkDone();
+  const n = water.nParticles;
+  for (let s = 0; s < 8; s++) {
+    water.step(1/60, []);
+    await d.queue.onSubmittedWorkDone();
+    const st = await dump(water.pressBuf, water.cells*16, a => {
+      let pmax=0, mmax=0, nz=0, massSum=0;
+      for (let i=0;i<a.length;i+=4){ const p=a[i], m=a[i+2]; if(p>pmax)pmax=p; if(m>mmax)mmax=m; if(m>0.5){nz++; massSum+=m;} }
+      return {pmax:+pmax.toFixed(2), mmax:+mmax.toFixed(0), cellsWithMass:nz, avgMass:+(massSum/Math.max(1,nz)).toFixed(0)};
+    });
+    const vv = await dump(water.velBuf, water.NF*16, a => {
+      let mxx=0;
+      for (let i=0;i<a.length;i+=4){ const v=Math.abs(a[i])+Math.abs(a[i+1])+Math.abs(a[i+2]); if(v>mxx)mxx=v; }
+      return +mxx.toFixed(3);
+    });
+    const pp = await dump(water.pPosBuf, n*16, a => {
+      let mxy=-1e9,mny=1e9; for (let i=0;i<n;i++){ const y=a[i*4+1]; if(y>mxy)mxy=y; if(y<mny)mny=y; }
+      return [+mxy.toFixed(3), +mny.toFixed(3)];
+    });
+    log(`s${s} t=${water.time.toFixed(3)} y=[${pp[0]},${pp[1]}] gridVmax=${vv} ${JSON.stringify(st)}`);
+  }
+  window.__done = true;
+})().catch(e => { document.title='ERR'; console.error(e); window.__err = String(e)+'\n'+e.stack; });
+</script>
+</body></html>

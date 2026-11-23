@@ -1,0 +1,24 @@
+const CDP=require('chrome-remote-interface');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+  const target=(await CDP.List({port:19106})).find(x=>x.type==='page'&&x.url.startsWith('file:'));
+  const c=await CDP({target,port:19106});const {Runtime}=c;await Runtime.enable();const errors=[];Runtime.exceptionThrown(({exceptionDetails})=>errors.push(exceptionDetails.exception?.description||exceptionDetails.text));
+  await Runtime.evaluate({expression:'window.bench.reset()',awaitPromise:true});
+  await Runtime.evaluate({expression:`window.nestedRuntime.openWindow('outer','spreadsheet');window.nestedRuntime.createSystem('outer')`});await delay(700);
+  const result=await Runtime.evaluate({expression:`(async()=>{const r=window.nestedRuntime,s=r.systems.get('inner-1'),parent=r.systems.get('outer');
+    s.files['/System/window-manager.nos'].content='PROGRAM wm\\nSERVICE window-manager\\nSTACK fixed\\nHALT';
+    s.files['/System/file-manager.nos'].content='PROGRAM fm\\nSERVICE file-manager\\nSORT directory-first name-desc\\nHALT';
+    s.files['/System/chart-workbench.nos'].content='PROGRAM chart\\nSERVICE chart-workbench\\nVALUES numeric scale=2\\nHALT';
+    parent.files['/Systems/inner-1/kernel.nos'].content='PROGRAM NEST内核\\nKERNEL NEST/1\\nSCHEDULER priority\\nMESSAGE lifo\\nFILES copy\\nSYSCALL answer RETURN 42\\nBOOT desktop';
+    r.restartSystem('inner-1');
+    const compiler='PROGRAM NEST编译器\\nCOMPILER NEST/1\\nALLOW PROGRAM SET ADD LOOP FOREVER END PRINT SEND RECV WAIT WRITE DISPLAY CALL HALT\\nHALT';
+    const cp=r.compileAndRun('inner-1','/System/compiler.nos',compiler);
+    const call=r.compileAndRun('inner-1','/Programs/call.nos','PROGRAM 调用\\nCALL answer result\\nPRINT result\\nHALT');
+    r.openWindow('inner-1','charts');await new Promise(x=>setTimeout(x,80));document.querySelector('[data-system-id="inner-1"][data-app-id="charts"] [data-testid="chart-connect"]').click();
+    const player=[...r.windows.values()].find(w=>w.systemId==='inner-1'&&w.appId==='player');document.querySelector('[data-window-id="'+player.id+'"] [data-testid="window-project"]').click();await new Promise(x=>setTimeout(x,100));const projection=[...r.windows.values()].find(w=>w.appId==='projection');projection.content.querySelector('[data-testid="player-play"]').click();const queuedBefore=player.appMessages?.length||0,playingBefore=player.playerState.playing;
+    await new Promise(x=>setTimeout(x,550));const chart=[...r.windows.values()].find(w=>w.systemId==='inner-1'&&w.appId==='charts');
+    const controls=[...document.querySelectorAll('[data-testid="system-new"]')].map(x=>x.dataset.systemId);
+    const validKernel=parent.files['/Systems/inner-1/kernel.nos'].content;r.createSystem('outer');await new Promise(x=>setTimeout(x,160));const sibling=r.systems.get('inner-2'),before=sibling.virtualTime;parent.files['/Systems/inner-1/kernel.nos'].content='BROKEN';r.restartSystem('inner-1');await new Promise(x=>setTimeout(x,260));const isolation={broken:s.state,error:s.kernelError,siblingDelta:sibling.virtualTime-before};parent.files['/Systems/inner-1/kernel.nos'].content=validKernel;
+    return{rules:{scheduler:s.scheduler,message:s.messageRule,window:s.windowRule,sort:s.fileSort,chartScale:s.chartScale},compiler:cp.output,call:{state:call.state,output:call.output},projection:{queuedBefore,playingBefore,playingAfter:player.playerState.playing,position:player.playerState.position},chart:chart.chartState.data,controls,isolation};})()`,awaitPromise:true,returnByValue:true});
+  console.log(JSON.stringify({result:result.result.value,errors},null,2));await c.close();
+})().catch(e=>{console.error(e);process.exitCode=1});

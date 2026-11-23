@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": ["start", "--", "--data-dir", "{dataDir}", "--width", "{width}", "--height", "{height}", "--remote-debugging-port={port}"],
+    "cwd": "."
+  },
+  "mainWindow": { "title": "Nested OS · AEROLITH" },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "compiler": "/System/compiler.nos",
+      "windowManager": "/System/window-manager.nos",
+      "fileManager": "/System/file-manager.nos"
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "flightController": "/System/flight-control.nos",
+      "scenePlayer": "/System/scene-player.nos",
+      "desktopShell": "/System/desktop-shell.nos",
+      "projectionService": "/System/projection-service.nos",
+      "chartWorkbench": "/System/chart-workbench.nos",
+      "windowManager": "/System/window-manager.nos",
+      "fileManager": "/System/file-manager.nos",
+      "compiler": "/System/compiler.nos"
+    }
+  },
+  "contexts": { "desktop": "main renderer", "externalPages": "webview" }
+}

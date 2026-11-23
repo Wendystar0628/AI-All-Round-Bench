@@ -1,0 +1,7 @@
+let targetHeading = 90
+let collective = 0.68
+let flightTicks = 0
+while true {
+  syscall("flight.control")
+  flightTicks = flightTicks + 1
+}

@@ -1,0 +1,15 @@
+{
+  "problem": "10",
+  "parts": [
+    {"name": "1", "title": "双斜座多腔阀体铸件", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-35, -35, 35, 35]}], "depth": 80},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, 0], "d": 40, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, 0], "d": 30, "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [-15, 0], "d": 20, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [15, 0], "d": 20, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, -15], "d": 16, "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [0, 15], "d": 16, "depth": 30},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -35, 0], [0, 35, 0], [-35, 0, 0], [35, 0, 0]]}
+    ]}
+  ]
+}

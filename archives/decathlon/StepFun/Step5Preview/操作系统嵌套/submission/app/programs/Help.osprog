@@ -1,0 +1,90 @@
+// ============================================================
+// 操作说明（Help.osprog）
+// 读取本系统内的说明文档并分页显示。
+// ============================================================
+
+let win = 0
+let wm = 0
+let text = ""
+let scroll = 0
+let msg = ""
+
+fn boot() {
+  loop_main()
+}
+
+fn loop_main() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    wm = m.wm
+    let c = read_file("/Documents/操作说明.txt")
+    if type(c) == "map" {
+      c = read_file("/System/Help.txt")
+    }
+    if type(c) == "map" {
+      text = "未找到说明文档。\n\n说明文档应位于 /Documents/操作说明.txt，\n可在编辑器中创建并写入内容。"
+    } else {
+      text = c
+    }
+    send(wm, {"t": "win_open", "pid": self(), "key": "help", "title": "操作说明", "w": 640, "h": 500})
+  } else if m.t == "win_opened" {
+    win = m.win
+    reg_win(win)
+    draw()
+  } else if m.t == "closing" {
+    kill(self())
+  } else if m.t == "click" {
+    draw()
+  } else if m.t == "wheel" {
+    scroll = scroll + m.dy
+    if scroll < 0 {
+      scroll = 0
+    }
+    draw()
+  }
+}
+
+fn draw() {
+  if win == 0 {
+    return
+  }
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 640, "h": 500, "c": "#121826", "r": 8})
+  push(p, {"t": "r", "x": 4, "y": 4, "w": 632, "h": 492, "c": "#0e1420", "r": 6, "s": "#33405a"})
+  push(p, {"t": "clip", "x": 4, "y": 4, "w": 632, "h": 492})
+  let lines = split(text, "\n")
+  let y = 24 - scroll
+  let n = 0
+  for l in lines {
+    if y > 12 and y < 490 {
+      let col = "#93a1bb"
+      let fs = 12
+      if substr(l, 0, 2) == "# " {
+        col = "#ffd23f"
+        fs = 15
+      } else if substr(l, 0, 3) == "## " {
+        col = "#8b6cff"
+        fs = 13
+      } else if substr(l, 0, 2) == "- " {
+        col = "#e8ecf4"
+      }
+      push(p, {"t": "t", "x": 16, "y": y, "s": l, "c": col, "fs": fs, "mw": 606})
+    }
+    y = y + 17
+    n = n + 1
+    if n > 200 {
+      break
+    }
+  }
+  push(p, {"t": "unclip"})
+  submit_window(win, p)
+}
+
+// ---------------- 入口 ----------------
+boot()

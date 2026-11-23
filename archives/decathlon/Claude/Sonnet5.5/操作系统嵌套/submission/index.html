@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Nested OS</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: file:; img-src * data: blob:; frame-src *; connect-src 'self' data: blob: file:; media-src * data: blob:;">
+<link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<div id="stage"><div id="screen"></div></div>
+<div id="fatal" hidden></div>
+<script type="module" src="src/host/app.js"></script>
+</body>
+</html>

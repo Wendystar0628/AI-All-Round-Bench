@@ -1,0 +1,13 @@
+﻿{"problem":"15","parts":[{"name":"1","title":"双轴错层传动箱体","features":[
+ {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,214,144]}],"depth":16},
+ {"type":"extrude","plane":"XZ","origin":[0,132,0],"loops":[{"path":[[14,16],[200,16],[200,68],[152,116],[58,116],[14,72]]}],"depth":120},
+ {"type":"extrude","plane":"XZ","origin":[0,12,0],"loops":[{"circle":[62,78],"d":78}],"depth":12},
+ {"type":"extrude","plane":"XZ","origin":[0,12,0],"loops":[{"circle":[144,52],"d":74}],"depth":12},
+ {"type":"extrude","op":"cut","plane":"XY","origin":[0,0,26],"loops":[{"rect":[26,24,94,120]},{"rect":[104,24,188,120]}],"depth":52},
+ {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[62,78],"d":38,"through":true,"cbore":{"d":52,"depth":10}},
+ {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[144,52],"d":32,"through":true,"cbore":{"d":50,"depth":10}},
+ {"type":"hole","plane":"XY","origin":[0,0,16],"at":[[7,7],[7,137],[207,7],[207,137]],"d":10,"through":true,"cbore":{"d":16,"depth":6}},
+ {"type":"fillet","radius":2,"edges":[[0,0,8]]},
+ {"type":"chamfer","distance":1,"edges":[[107,0,0]]}
+]}]}
+

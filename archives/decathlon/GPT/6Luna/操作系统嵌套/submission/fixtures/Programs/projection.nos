@@ -1,0 +1,5 @@
+let publishedFrames = 0
+while true {
+  syscall("projection.publish")
+  publishedFrames = publishedFrames + 1
+}

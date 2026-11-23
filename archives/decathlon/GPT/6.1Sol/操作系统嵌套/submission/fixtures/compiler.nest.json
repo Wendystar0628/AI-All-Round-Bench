@@ -1,0 +1,25 @@
+{
+  "name": "Nest 编译器",
+  "format": "nest-1",
+  "code": [
+    [
+      "recv",
+      "source"
+    ],
+    [
+      "call",
+      "compiler.parse",
+      "result",
+      "$source"
+    ],
+    [
+      "call",
+      "compiler.launch",
+      null,
+      "$result"
+    ],
+    [
+      "halt"
+    ]
+  ]
+}

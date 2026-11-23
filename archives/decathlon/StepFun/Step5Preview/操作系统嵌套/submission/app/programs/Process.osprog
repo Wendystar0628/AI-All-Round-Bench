@@ -1,0 +1,357 @@
+// ============================================================
+// 进程管理器（Process.osprog）
+// 查看本系统进程表：状态、工作量、额度、错误；
+// 挂起/继续/结束进程、调整额度；设置本系统总预算、
+// 内存与存储配额、直属子系统拨付上限。
+// ============================================================
+
+let win = 0
+let wm = 0
+let sel = 0
+let msg = ""
+let info = null
+let lastRefresh = -9999
+let clock = 0
+let tab = 0
+let booted = 0
+
+const C = {"bg": "#121826", "bar": "#1c2433", "line": "#33405a", "text": "#e8ecf4", "dim": "#93a1bb", "acc": "#8b6cff", "acc2": "#ffd23f", "ok": "#43d9a3", "danger": "#ff5d6c", "warn": "#ffb347"}
+
+fn boot() {
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    wm = m.wm
+    send(wm, {"t": "win_open", "pid": self(), "key": "proc", "title": "进程管理器", "w": 660, "h": 470})
+  } else if m.t == "win_opened" {
+    win = m.win
+    draw()
+  } else if m.t == "closing" {
+    kill(self())
+  } else if m.t == "click" {
+    on_click(m.x, m.y)
+  } else if m.t == "wheel" {
+    if m.dy > 0 and sel < 40 {
+      sel = sel + 1
+    }
+    if m.dy < 0 and sel > 0 {
+      sel = sel - 1
+    }
+    draw()
+  }
+}
+
+fn on_click(x, y) {
+  clock = time()
+  if y < 28 {
+    if x < 60 {
+      tab = 0
+    } else if x < 120 {
+      tab = 1
+    } else if x < 180 {
+      tab = 2
+    }
+    draw()
+    return
+  }
+  if tab == 0 {
+    on_proc_click(x, y)
+  } else if tab == 1 {
+    on_cfg_click(x, y)
+  } else {
+    on_sys_click(x, y)
+  }
+}
+
+fn on_proc_click(x, y) {
+  let idx = floor((y - 56) / 22)
+  let ps = get(info, "procs", [])
+  if idx >= 0 and idx < len(ps) {
+    sel = idx
+  }
+  if y >= 400 {
+    if x < 80 {
+      let ps2 = get(info, "procs", [])
+      if sel < len(ps2) {
+        request({"cmd": "proc_ctl", "op": "suspend", "pid": ps2[sel].pid})
+        msg = "已挂起进程 " + str(ps2[sel].pid)
+      }
+    } else if x < 160 {
+      let ps2 = get(info, "procs", [])
+      if sel < len(ps2) {
+        request({"cmd": "proc_ctl", "op": "resume", "pid": ps2[sel].pid})
+        msg = "已继续进程 " + str(ps2[sel].pid)
+      }
+    } else if x < 240 {
+      let ps2 = get(info, "procs", [])
+      if sel < len(ps2) {
+        request({"cmd": "proc_ctl", "op": "kill", "pid": ps2[sel].pid})
+        msg = "已结束进程 " + str(ps2[sel].pid)
+      }
+    } else if x < 340 {
+      let ps2 = get(info, "procs", [])
+      if sel < len(ps2) {
+        let q = get(ps2[sel], "quota", 0)
+        if q <= 0 {
+          q = 900
+        } else {
+          q = q * 2
+        }
+        request({"cmd": "set_proc_quota", "pid": ps2[sel].pid, "quota": q})
+        msg = "进程额度调整为 " + str(q)
+      }
+    } else if x < 440 {
+      let ps2 = get(info, "procs", [])
+      if sel < len(ps2) {
+        let q = get(ps2[sel], "quota", 900)
+        q = floor(q / 2)
+        if q < 50 {
+          q = 50
+        }
+        request({"cmd": "set_proc_quota", "pid": ps2[sel].pid, "quota": q})
+        msg = "进程额度调整为 " + str(q)
+      }
+    }
+  }
+  draw()
+}
+
+fn on_cfg_click(x, y) {
+  let keys = ["budget", "memQuota", "storageQuota", "procQuota", "childGrant", "quantum"]
+  let names = ["每步总预算", "内存配额", "存储配额", "进程额度上限", "子系统拨付上限", "调度量子"]
+  let i = 0
+  for k in keys {
+    if y >= 60 + i * 30 and y < 60 + i * 30 + 26 {
+      let cfg = get(info, "config", {})
+      let v = get(cfg, k, 0)
+      let nv = v
+      if x >= 250 and x < 290 {
+        nv = floor(v / 2)
+      } else if x >= 296 and x < 336 {
+        nv = v * 2
+      }
+      if nv < 100 {
+        nv = 100
+      }
+      let nc = {}
+      nc[k] = nv
+      request({"cmd": "set_config", "cfg": nc})
+      msg = names[i] + " 调整为 " + str(nv)
+      draw()
+      return
+    }
+    i = i + 1
+  }
+}
+
+fn on_sys_click(x, y) {
+  let sl = systems()
+  let i = 0
+  for s in sl {
+    if y >= 56 + i * 30 and y < 56 + i * 30 + 26 {
+      if x < 100 {
+        request({"cmd": "child_pause", "id": s.id})
+        msg = "已暂停 " + s.id
+      } else if x < 200 {
+        request({"cmd": "child_resume", "id": s.id})
+        msg = "已继续 " + s.id
+      } else if x < 300 {
+        request({"cmd": "step_system", "id": s.id})
+        msg = "已单步 " + s.id
+      } else if x < 400 {
+        request({"cmd": "set_child_rate", "id": s.id, "rate": s.rate * 2})
+        msg = s.id + " 速率提升"
+      }
+      draw()
+      return
+    }
+    i = i + 1
+  }
+}
+
+// ---------------- 绘制 ----------------
+fn draw() {
+  if win == 0 {
+    return
+  }
+  clock = time()
+  if clock - lastRefresh > 400 {
+    lastRefresh = clock
+    info = sys_info()
+  }
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 660, "h": 470, "c": C.bg, "r": 8})
+  let tabs = ["进程", "配额", "子系统"]
+  let bx = 4
+  for t in tabs {
+    push(p, {"t": "r", "x": bx, "y": 4, "w": 56, "h": 22, "c": C.bar, "r": 5, "s": C.line})
+    push(p, {"t": "t", "x": bx + 28, "y": 19, "s": t, "c": C.text, "fs": 11, "a": "c"})
+    bx = bx + 60
+  }
+  push(p, {"t": "t", "x": 200, "y": 19, "s": get(info, "name", "") + " · 虚拟时间 " + str(floor(get(info, "vtime", 0))) + " ms", "c": C.acc2, "fs": 11})
+  push(p, {"t": "t", "x": 460, "y": 19, "s": "内存 " + str(floor(get(info, "mem", 0) / 100) / 10) + "K / " + str(floor(get(info, "memQuota", 0) / 1000)) + "K", "c": C.dim, "fs": 11})
+  if tab == 0 {
+    draw_procs(p)
+  } else if tab == 1 {
+    draw_cfg(p)
+  } else {
+    draw_sys(p)
+  }
+  push(p, {"t": "r", "x": 4, "y": 440, "w": 652, "h": 24, "c": C.bar, "r": 5})
+  push(p, {"t": "t", "x": 12, "y": 456, "s": msg, "c": C.ok, "fs": 11, "mw": 620})
+  submit_window(win, p)
+}
+
+fn draw_procs(p) {
+  let ps = get(info, "procs", [])
+  push(p, {"t": "r", "x": 4, "y": 30, "w": 652, "h": 362, "c": "#0e1420", "r": 5, "s": C.line})
+  push(p, {"t": "t", "x": 12, "y": 48, "s": "PID", "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 56, "y": 48, "s": "名称", "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 250, "y": 48, "s": "状态", "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 330, "y": 48, "s": "已用指令", "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 430, "y": 48, "s": "每步额度", "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 520, "y": 48, "s": "错误", "c": C.dim, "fs": 11})
+  push(p, {"t": "l", "x1": 4, "y1": 52, "x2": 656, "y2": 52, "c": C.line, "w": 1})
+  let y = 66
+  let i = 0
+  for pr in ps {
+    if sel == i {
+      push(p, {"t": "r", "x": 6, "y": y - 13, "w": 648, "h": 20, "c": "#2b3550", "r": 4})
+    }
+    let sc = C.text
+    if pr.status == "waiting" {
+      sc = C.warn
+    } else if pr.status == "error" {
+      sc = C.danger
+    } else if pr.status == "suspended" {
+      sc = C.dim
+    } else if pr.status == "ended" {
+      sc = C.dim
+    }
+    push(p, {"t": "t", "x": 12, "y": y, "s": str(pr.pid), "c": C.dim, "fs": 11})
+    push(p, {"t": "t", "x": 56, "y": y, "s": pr.name, "c": C.text, "fs": 11, "mw": 190})
+    push(p, {"t": "t", "x": 250, "y": y, "s": status_text(pr), "c": sc, "fs": 11})
+    push(p, {"t": "t", "x": 330, "y": y, "s": str(pr.used), "c": C.text, "fs": 11})
+    let qt = "不限"
+    if pr.quota > 0 {
+      qt = str(pr.quota)
+    }
+    push(p, {"t": "t", "x": 430, "y": y, "s": qt, "c": C.dim, "fs": 11})
+    let er = ""
+    if pr.err != null {
+      er = pr.err
+    }
+    push(p, {"t": "t", "x": 520, "y": y, "s": er, "c": C.danger, "fs": 10, "mw": 130})
+    y = y + 22
+    i = i + 1
+    if i > 16 {
+      break
+    }
+  }
+  let btns = ["挂起", "继续", "结束", "额度×2", "额度÷2"]
+  let bx = 4
+  for b in btns {
+    push(p, {"t": "r", "x": bx, "y": 398, "w": 76, "h": 22, "c": C.bar, "r": 5, "s": C.line})
+    push(p, {"t": "t", "x": bx + 38, "y": 413, "s": b, "c": C.text, "fs": 11, "a": "c"})
+    bx = bx + 80
+  }
+}
+
+fn status_text(pr) {
+  if pr.status == "waiting" and pr.blocked != null {
+    if pr.blocked.kind == "msg" {
+      return "等待消息"
+    }
+    if pr.blocked.kind == "vtime" {
+      return "计时等待"
+    }
+  }
+  if pr.status == "ready" {
+    return "就绪"
+  }
+  if pr.status == "running" {
+    return "运行中"
+  }
+  if pr.status == "waiting" {
+    return "等待"
+  }
+  if pr.status == "suspended" {
+    return "已挂起"
+  }
+  if pr.status == "ended" {
+    return "已结束"
+  }
+  if pr.status == "error" {
+    return "异常"
+  }
+  return pr.status
+}
+
+fn draw_cfg(p) {
+  push(p, {"t": "r", "x": 4, "y": 30, "w": 652, "h": 362, "c": "#0e1420", "r": 5, "s": C.line})
+  push(p, {"t": "t", "x": 16, "y": 50, "s": "本系统资源配额（每逻辑步生效，逐级拨付）", "c": C.acc2, "fs": 12})
+  let keys = ["budget", "memQuota", "storageQuota", "procQuota", "childGrant", "quantum"]
+  let names = ["每步总预算", "内存配额", "存储配额", "进程额度上限", "子系统拨付上限", "调度量子"]
+  let i = 0
+  for k in keys {
+    let v = get(get(info, "config", {}), k, 0)
+    push(p, {"t": "t", "x": 20, "y": 76 + i * 30, "s": names[i], "c": C.text, "fs": 12})
+    push(p, {"t": "r", "x": 180, "y": 62 + i * 30, "w": 60, "h": 20, "c": "#121826", "r": 4, "s": C.line})
+    push(p, {"t": "t", "x": 186, "y": 76 + i * 30, "s": str(v), "c": C.text, "fs": 12})
+    push(p, {"t": "r", "x": 250, "y": 62 + i * 30, "w": 40, "h": 20, "c": C.bar, "r": 4})
+    push(p, {"t": "t", "x": 270, "y": 76 + i * 30, "s": "½", "c": C.text, "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": 296, "y": 62 + i * 30, "w": 40, "h": 20, "c": C.bar, "r": 4})
+    push(p, {"t": "t", "x": 316, "y": 76 + i * 30, "s": "2×", "c": C.text, "fs": 11, "a": "c"})
+    i = i + 1
+  }
+  let st = get(info, "stat", {})
+  push(p, {"t": "t", "x": 360, "y": 76, "s": "调度统计", "c": C.acc2, "fs": 12})
+  push(p, {"t": "t", "x": 360, "y": 100, "s": "逻辑步数: " + str(get(st, "steps", 0)), "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 360, "y": 118, "s": "调度轮数: " + str(get(st, "schedRounds", 0)), "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 360, "y": 136, "s": "内核自身指令: " + str(get(st, "kernelUsed", 0)), "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 360, "y": 154, "s": "用户程序指令: " + str(get(st, "appUsed", 0)), "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 360, "y": 172, "s": "收到消息: " + str(get(st, "msgIn", 0)), "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 360, "y": 190, "s": "发出消息: " + str(get(st, "msgOut", 0)), "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 360, "y": 214, "s": "存储已用: " + str(get(info, "storage", 0)) + " / " + str(get(info, "storageQuota", 0)), "c": C.dim, "fs": 11})
+}
+
+fn draw_sys(p) {
+  let sl = systems()
+  push(p, {"t": "r", "x": 4, "y": 30, "w": 652, "h": 362, "c": "#0e1420", "r": 5, "s": C.line})
+  push(p, {"t": "t", "x": 16, "y": 50, "s": "直属子系统", "c": C.acc2, "fs": 12})
+  let i = 0
+  for s in sl {
+    let y = 60 + i * 30
+    push(p, {"t": "r", "x": 10, "y": y, "w": 640, "h": 26, "c": "#1a2231", "r": 5})
+    let sst = "运行中"
+    if s.paused == 1 {
+      sst = "已暂停"
+    }
+    push(p, {"t": "t", "x": 18, "y": y + 17, "s": s.id + " · " + sst + " · " + str(s.rate) + "x", "c": C.text, "fs": 11})
+    push(p, {"t": "t", "x": 330, "y": y + 17, "s": "虚拟时间 " + str(floor(s.vtime)) + " ms", "c": C.dim, "fs": 11})
+    let bts = ["暂停", "继续", "单步", "加速"]
+    let bx = 400
+    for b in bts {
+      push(p, {"t": "r", "x": bx, "y": y + 3, "w": 56, "h": 20, "c": C.bar, "r": 4, "s": C.line})
+      push(p, {"t": "t", "x": bx + 28, "y": y + 17, "s": b, "c": C.text, "fs": 11, "a": "c"})
+      bx = bx + 60
+    }
+    i = i + 1
+  }
+  if i == 0 {
+    push(p, {"t": "t", "x": 18, "y": 80, "s": "暂无直属子系统。可在任务栏“系统”按钮中创建。", "c": C.dim, "fs": 12})
+  }
+}
+
+// ---------------- 入口 ----------------
+boot()

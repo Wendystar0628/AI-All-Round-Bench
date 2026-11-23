@@ -1,0 +1,16 @@
+{
+  "problem": "07",
+  "parts": [
+    {"name": "1", "title": "双轴错层回油支承座", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-35, -35, 35, 35]}], "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [0, 0], "d": 50, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [0, 0], "d": 42, "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [0, 0], "d": 32, "depth": 30},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [-15, 0], "d": 10, "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [15, 0], "d": 10, "depth": 20},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [0, -20], "d": 8, "depth": 15},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [0, 20], "d": 8, "depth": 15},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -35, 0], [0, 35, 0], [-35, 0, 0], [35, 0, 0]]}
+    ]}
+  ]
+}

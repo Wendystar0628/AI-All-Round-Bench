@@ -1,0 +1,124 @@
+{
+  "format": "nest-1",
+  "name": "我的程序 / 可交互画布",
+  "policy": {},
+  "code": [
+    [
+      "set",
+      "count",
+      0
+    ],
+    [
+      "set",
+      "drawing",
+      [
+        "literal",
+        {
+          "title": "完全由程序生成的界面",
+          "width": 640,
+          "height": 360,
+          "background": "#f4f5ed",
+          "nodes": [
+            {
+              "type": "text",
+              "x": 42,
+              "y": 55,
+              "size": 11,
+              "color": "#9b9a8b",
+              "text": "A PROGRAM, A LITTLE WORLD"
+            },
+            {
+              "type": "text",
+              "x": 42,
+              "y": 110,
+              "size": 27,
+              "color": "#647563",
+              "text": "界面与行为，都来自文件。"
+            },
+            {
+              "type": "text",
+              "x": 42,
+              "y": 172,
+              "size": 20,
+              "text": "计数：0"
+            },
+            {
+              "type": "button",
+              "x": 42,
+              "y": 210,
+              "width": 145,
+              "height": 42,
+              "id": "increment",
+              "label": "增加一次"
+            },
+            {
+              "type": "text",
+              "x": 42,
+              "y": 297,
+              "size": 11,
+              "color": "#9eaa91",
+              "text": "修改 add 指令的数值，重新运行就能改变按钮的实际行为。"
+            }
+          ]
+        }
+      ]
+    ],
+    [
+      "label",
+      "draw"
+    ],
+    [
+      "set",
+      "text",
+      [
+        "at",
+        "$drawing.nodes",
+        2
+      ]
+    ],
+    [
+      "put",
+      "$text",
+      "text",
+      [
+        "concat",
+        "计数：",
+        "$count"
+      ]
+    ],
+    [
+      "put",
+      "$drawing.nodes",
+      2,
+      "$text"
+    ],
+    [
+      "call",
+      "display.submit",
+      null,
+      "$drawing"
+    ],
+    [
+      "recv",
+      "event"
+    ],
+    [
+      "if",
+      [
+        "!=",
+        "$event.action",
+        "increment"
+      ],
+      "draw"
+    ],
+    [
+      "add",
+      "count",
+      1
+    ],
+    [
+      "jump",
+      "draw"
+    ]
+  ]
+}

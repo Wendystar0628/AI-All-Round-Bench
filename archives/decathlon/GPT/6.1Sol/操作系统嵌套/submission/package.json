@@ -1,0 +1,22 @@
+{
+  "name": "nest-os",
+  "version": "1.0.0",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "node launch.cjs",
+    "build": "esbuild src/main.jsx --bundle --outfile=dist/app.js --loader:.js=jsx",
+    "test": "node tests/all.cjs",
+    "prestart": "npm run build"
+  },
+  "dependencies": {
+    "electron": "45.2.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.11",
+    "playwright-core": "^1.65.0",
+    "prettier": "^3.6.2"
+  }
+}

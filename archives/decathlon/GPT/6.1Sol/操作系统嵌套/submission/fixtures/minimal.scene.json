@@ -1,0 +1,50 @@
+{
+  "format": "nest-scene-1",
+  "title": "最小场景",
+  "duration": 5,
+  "fps": 30,
+  "sky": "#cad4d8",
+  "nodes": [
+    {
+      "id": "cube",
+      "name": "立方体",
+      "shape": "box",
+      "position": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        2,
+        2,
+        2
+      ],
+      "color": "#9474b5"
+    }
+  ],
+  "tracks": [],
+  "lights": [
+    {
+      "type": "sun",
+      "position": [
+        10,
+        10,
+        10
+      ],
+      "intensity": 3,
+      "color": "#fff5da"
+    }
+  ],
+  "camera": {
+    "position": [
+      7,
+      5,
+      8
+    ],
+    "target": [
+      0,
+      1,
+      0
+    ]
+  }
+}

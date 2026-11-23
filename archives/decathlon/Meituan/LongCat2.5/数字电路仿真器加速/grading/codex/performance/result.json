@@ -1,0 +1,35 @@
+{
+    "task":  "数字电路仿真器加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  0,
+                      "reason":  "官方 evaluate.py 得分0.0：7个正确性输入全部 WRONG_ANSWER（k=0），9个性能输入全部通过、性能均分3.0，乘以0/7后为0。最终源码 solution.cpp:187-193 先更新触发器再生成主输出摘要，读取触发器主输出时使用了更新后的状态，违反题面仿真语义。"
+                  }
+              ],
+    "metrics":  {
+                    "correctness_passed":  0,
+                    "correctness_total":  7,
+                    "performance_passed":  9,
+                    "performance_inputs":  9,
+                    "performance_score":  3.0,
+                    "G":  0.2650839354843688,
+                    "per_input_points":  [
+                                             3.1,
+                                             3.0,
+                                             3.4,
+                                             3.2,
+                                             3.1,
+                                             3.4,
+                                             2.6,
+                                             2.8,
+                                             2.7
+                                         ],
+                    "report_path":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Meituan\\LongCat2.5\\数字电路仿真器加速\\codex\\performance\\work\\evaluation_report.json"
+                },
+    "notes":  "评的是作答结束时工作目录中的内容，不看 git 提交；副本位于 work/submission，solution.cpp SHA256=F24BDEF89999EAEC0028F4DBC9387044E3BD5C502C25C63DE34CA911461B69BB。提交和官方基线均按题面参数从源码重编译，所有编译和唯一一次 evaluate.py 均经 process_job.py --cpus 0-15 包装，评测器原有亲和性、优先级、OMP_NUM_THREADS=16、交错3次取中位数及60秒限制保留。无基线失败或环境错误；源码自然检查未发现预置摘要、伪造计时或其他绕过评测行为。评测及其已记录子进程均已退出，未启动浏览器或服务器。",
+    "anomaly":  "最终实现先更新触发器再计算输出摘要，7个正确性输入全部答错。"
+}

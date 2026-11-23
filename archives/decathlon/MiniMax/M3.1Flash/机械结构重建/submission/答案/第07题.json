@@ -1,0 +1,24 @@
+{
+  "problem": "07",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层回油支承座",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 162, 96]}], "depth": 14, "name": "底板"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 7]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[80, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [12, 30, 49, 66]}], "depth": 77, "name": "左支座"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"path": [[45, 30], [103, 30], [103, 39], [45, 39], [45, 30]]}], "depth": 25, "name": "连接腹板"},
+        {"type": "extrude", "op": "cut", "plane": "ZX", "origin": [0, 0, 0], "loops": [{"path": [[14, 49], [39, 49], [14, 74]]}], "depth": 36, "name": "腹板斜面"},
+        {"type": "revolve", "plane": {"origin": [125, 48, 71], "normal": [1, 0, 0], "x_dir": [0, 1, 0]}, "axis": "x", "loops": [{"path": [[-22.5, 0], [22.5, 0], [22.5, 35], [-22.5, 35]]}], "name": "轴承凸台Φ70"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [102.5, 13, 147.5, 83]}], "depth": 66, "name": "凸台下方支承"},
+        {"type": "hole", "plane": {"origin": [147.5, 48, 71], "normal": [1, 0, 0], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 32, "through": true, "name": "轴承孔Φ32"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 91], "at": [[125, 48]], "d": 62, "depth": 20, "name": "沉孔Φ62"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[79, 48]], "d": 10, "through": true, "name": "腹板通孔Φ10"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[8, 8], [154, 8], [8, 88], [154, 88]], "d": 13, "through": true, "name": "底板孔Φ13"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[30, 48], [100, 48], [30, 70], [100, 70]], "d": 8, "through": true, "name": "底板孔Φ8"}
+      ]
+    }
+  ]
+}

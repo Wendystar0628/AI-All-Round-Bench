@@ -1,0 +1,15 @@
+{
+  "problem": "15",
+  "parts": [
+    {"name": "1", "title": "双轴错层传动箱体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-40, -35, 40, 35]}], "depth": 85},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 85], "at": [0, 0], "d": 50, "depth": 60},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 85], "at": [0, 0], "d": 40, "depth": 40},
+      {"type": "hole", "plane": "XY", "origin": [-15, 0, 85], "at": [0, 0], "d": 28, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [15, 0, 85], "at": [0, 0], "d": 28, "depth": 50},
+      {"type": "hole", "plane": "XY", "origin": [0, -15, 85], "at": [0, 0], "d": 20, "depth": 35},
+      {"type": "hole", "plane": "XY", "origin": [0, 15, 85], "at": [0, 0], "d": 20, "depth": 35},
+      {"type": "chamfer", "distance": 1, "edges": [[0, -35, 0], [0, 35, 0], [-40, 0, 0], [40, 0, 0]]}
+    ]}
+  ]
+}

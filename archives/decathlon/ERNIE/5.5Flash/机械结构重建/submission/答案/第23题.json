@@ -1,0 +1,80 @@
+{
+  "problem": "23",
+  "parts": [
+    {"name": "1", "title": "四向斜置夹紧阀组壳体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 180, 150], "r": 6}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [10, 10, 170, 140]}], "depth": 50},
+      {"type": "extrude", "plane": {"origin": [88.34, 73.34, 40.41], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 50},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [88.34, 73.34, 40.41], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-1, 51]},
+      {"type": "extrude", "plane": {"origin": [90, 71.92, 39.94], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 50},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [90, 71.92, 39.94], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-1, 51]},
+      {"type": "extrude", "plane": {"origin": [92.63, 72.37, 39.35], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 50},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [92.63, 72.37, 39.35], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-1, 51]},
+      {"type": "extrude", "plane": {"origin": [88.02, 76.98, 40.15], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": 50},
+      {"type": "extrude", "op": "cut", "plane": {"origin": [88.02, 76.98, 40.15], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-1, 51]}
+    ]},
+    {"name": "2", "title": "1号斜阀套", "features": [
+      {"type": "extrude", "plane": {"origin": [71.74, 56.74, 84.57], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [71.74, 56.74, 84.57], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-22, -6]}
+    ]},
+    {"name": "3", "title": "1号带键阀芯", "features": [
+      {"type": "extrude", "plane": {"origin": [71.74, 56.74, 84.57], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 48}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [71.74, 56.74, 84.57], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-36, -6]}
+    ]},
+    {"name": "4", "title": "1号阀端盖", "features": [
+      {"type": "extrude", "plane": {"origin": [71.74, 56.74, 84.57], "normal": [-0.332, -0.332, 0.883], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}, {"circle": [0, 0], "d": 40}], "depth": [0, 8]}
+    ]},
+    {"name": "5", "title": "2号斜阀套", "features": [
+      {"type": "extrude", "plane": {"origin": [90, 41.12, 79.34], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [90, 41.12, 79.34], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-22, -6]}
+    ]},
+    {"name": "6", "title": "2号带键阀芯", "features": [
+      {"type": "extrude", "plane": {"origin": [90, 41.12, 79.34], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 48}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [90, 41.12, 79.34], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-36, -6]}
+    ]},
+    {"name": "7", "title": "2号阀端盖", "features": [
+      {"type": "extrude", "plane": {"origin": [90, 41.12, 79.34], "normal": [0, -0.616, 0.788], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}, {"circle": [0, 0], "d": 40}], "depth": [0, 8]}
+    ]},
+    {"name": "8", "title": "3号斜阀套", "features": [
+      {"type": "extrude", "plane": {"origin": [118.88, 46.12, 72.80], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [118.88, 46.12, 72.80], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-22, -6]}
+    ]},
+    {"name": "9", "title": "3号带键阀芯", "features": [
+      {"type": "extrude", "plane": {"origin": [118.88, 46.12, 72.80], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 48}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [118.88, 46.12, 72.80], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-36, -6]}
+    ]},
+    {"name": "10", "title": "3号阀端盖", "features": [
+      {"type": "extrude", "plane": {"origin": [118.88, 46.12, 72.80], "normal": [0.525, -0.525, 0.669], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}, {"circle": [0, 0], "d": 40}], "depth": [0, 8]}
+    ]},
+    {"name": "11", "title": "4号斜阀套", "features": [
+      {"type": "extrude", "plane": {"origin": [68.27, 96.73, 81.60], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [68.27, 96.73, 81.60], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 50}], "depth": [-22, -6]}
+    ]},
+    {"name": "12", "title": "4号带键阀芯", "features": [
+      {"type": "extrude", "plane": {"origin": [68.27, 96.73, 81.60], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 48}], "depth": [-6, 0]},
+      {"type": "extrude", "plane": {"origin": [68.27, 96.73, 81.60], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 32}], "depth": [-36, -6]}
+    ]},
+    {"name": "13", "title": "4号阀端盖", "features": [
+      {"type": "extrude", "plane": {"origin": [68.27, 96.73, 81.60], "normal": [-0.395, 0.395, 0.829], "x_dir": [1, 0, 0]}, "loops": [{"circle": [0, 0], "d": 64}, {"circle": [0, 0], "d": 40}], "depth": [0, 8]}
+    ]},
+    {"name": "14", "title": "前接口阶梯盖", "features": [
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [90, 34], "d": 70}], "depth": [-14, 0]},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [90, 34], "d": 50}], "depth": [-24, -14]}
+    ]},
+    {"name": "15", "title": "前密封定位环", "features": [
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [90, 34], "d": 78}, {"circle": [90, 34], "d": 66}], "depth": [-8, 0]}
+    ]},
+    {"name": "16", "title": "1号阶梯定位销", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [24, 24, 0], "loops": [{"circle": [0, 0], "d": 12}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [24, 24, 14], "loops": [{"circle": [0, 0], "d": 8}], "depth": 12}
+    ]},
+    {"name": "17", "title": "2号阶梯定位销", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [156, 24, 0], "loops": [{"circle": [0, 0], "d": 12}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [156, 24, 14], "loops": [{"circle": [0, 0], "d": 8}], "depth": 12}
+    ]},
+    {"name": "18", "title": "3号阶梯定位销", "features": [
+      {"type": "extrude", "plane": "XY", "origin": [90, 138, 0], "loops": [{"circle": [0, 0], "d": 12}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [90, 138, 14], "loops": [{"circle": [0, 0], "d": 8}], "depth": 12}
+    ]}
+  ]
+}

@@ -1,0 +1,73 @@
+// =====================================================================
+// 飞控程序（/Flight/controller.ns）：排演时由子系统的飞控进程运行，保持直升机飞行并降落在 B 号停机坪。
+//
+// 接口（写给修改者）：
+//   func control(s) 每个飞行周期调用一次。s 是传感器读数（映射）：
+//     t 时间（秒）；alt 离地高度；x,y,z 位置（x 东、z 北、y 上）；vx,vy,vz 速度；
+//     pitch 俯仰（机头向上为正）；roll 横滚（右倾为正）；yaw 偏航（自北向东，弧度）；
+//     yawRate 偏航角速度；rotor 旋翼转速比（1 为正常）；tgtX,tgtZ 目标停机坪坐标；
+//     crashed 是否已坠毁；onGround 是否着地。
+//   返回映射 {c, lon, lat, tail}：
+//     c 总距 0~1（约 0.5 为悬停）；lon 纵向周期 -1~1（正为前倾）；
+//     lat 横向周期 -1~1（正为右倾）；tail 尾桨 -1~1（正为机头右转）。
+//   控制量保持到下一次写入；错过的周期不补发，因此飞控跟不上时飞行会变差。
+//
+// 参数：args[0] 模拟进程的 pid（由排演界面传入），args[1] 飞行周期（秒，缺省 0.02）。
+// 可以在编辑器中修改下面的增益与逻辑，保存后重新开始排演即可生效。
+// =====================================================================
+
+var HOVER_ALT = 6.5;
+var LAND_ALT = 1.4;
+
+func clamp1(v, lo, hi) {
+    if (v < lo) { return lo; }
+    if (v > hi) { return hi; }
+    return v;
+}
+
+func control(s) {
+    var dx = s.tgtX - s.x;
+    var dz = s.tgtZ - s.z;
+    var dist = sqrt(dx * dx + dz * dz);
+    // 高度：远离目标时保持巡航高度，接近后缓慢降落
+    var altT = HOVER_ALT;
+    if (dist < 7) { altT = LAND_ALT + max(0, dist - 1.5) * 0.7; }
+    if (dist < 4) { altT = 0; }
+    var c = 0.5 + 0.25 * (altT - s.alt) - 0.45 * s.vy;
+    c = clamp1(c, 0, 1);
+    // 水平：期望加速度 -> 机体前后左右分量 -> 周期变距
+    var ax = clamp1(0.3 * dx - 0.7 * s.vx, -2.2, 2.2);
+    var az = clamp1(0.3 * dz - 0.7 * s.vz, -2.2, 2.2);
+    if (dist < 2.5) {
+        ax = clamp1(-0.8 * s.vx, -1, 1);
+        az = clamp1(-0.8 * s.vz, -1, 1);
+    }
+    var fwd = ax * sin(s.yaw) + az * cos(s.yaw);
+    var rgt = ax * cos(s.yaw) - az * sin(s.yaw);
+    var lon = clamp1(-fwd / 9.81 / 0.35 - 0.3 * s.pitch, -1, 1);
+    var lat = clamp1(rgt / 9.81 / 0.35 - 0.3 * s.roll, -1, 1);
+    // 偏航：面向目标；接近后保持当前朝向
+    var wantYaw = 0;
+    if (dist > 4) { wantYaw = atan2(dx, dz); }
+    var dy = wantYaw - s.yaw;
+    while (dy > 3.14159) { dy = dy - 6.28318; }
+    while (dy < -3.14159) { dy = dy + 6.28318; }
+    var tail = clamp1(1.6 * dy - 0.9 * s.yawRate, -1, 1);
+    return {c: c, lon: lon, lat: lat, tail: tail};
+}
+
+func main(args) {
+    var simPid = args[0];
+    var period = 0.02;
+    if (len(args) > 1 && args[1] != nil) { period = args[1]; }
+    var me = sys_self();
+    while (true) {
+        sys_sleep(period);
+        sys_send(simPid, {type: "sense", reply: me});
+        var m = sys_recv();
+        while (m.type != "sense") { m = sys_recv(); }
+        var cmd = control(m.s);
+        sys_send(simPid, {type: "input", kind: "ctl", value: cmd});
+    }
+    return 0;
+}

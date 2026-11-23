@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>water diag</title>
+<style>html,body{margin:0;background:#111;color:#9cf;font:12px monospace}canvas{width:320px;height:180px}</style>
+</head><body>
+<canvas id="c"></canvas>
+<pre id="log"></pre>
+<script src="js/util.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/water.js"></script>
+<script>
+(async () => {
+  const canvas = document.getElementById('c');
+  canvas.width = 320; canvas.height = 180;
+  await initGPU(canvas);
+  const T = { Lx: 2.6, Ly: 1.1, Lz: 1.4, h: 0.05, waterLevel: 0.58 };
+  const water = createWater(T);
+  const d = GPU.device;
+  const log = (s) => { document.getElementById('log').textContent += s + "\n"; };
+  async function dump(buf, bytes, fn) {
+    const rb = d.createBuffer({size: bytes, usage: GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+    const e = d.createCommandEncoder(); e.copyBufferToBuffer(buf, 0, rb, 0, bytes); d.queue.submit([e.finish()]);
+    await d.queue.onSubmittedWorkDone(); await rb.mapAsync(GPUMapMode.READ);
+    const a = fn(new Float32Array(rb.getMappedRange().slice(0)));
+    rb.unmap(); rb.destroy(); return a;
+  }
+  window.__run = async function (opts) {
+    document.getElementById('log').textContent = '';
+    water.init(7);
+    water.substeps = opts.substeps;
+    water.pressureIters = opts.iters;
+    water.flip = opts.flip;
+    water.prime();
+    await new Promise(r=>setTimeout(r,30));
+    await d.queue.onSubmittedWorkDone();
+    const n = water.nParticles;
+    const rows = [];
+    for (let step = 0; step < 40; step++) {
+      water.step(1/60, []);
+      await d.queue.onSubmittedWorkDone();
+      if (step % 5 === 4) {
+        const P = await dump(water.pPosBuf, n*16, a => {
+          let mxy=-1e9, mny=1e9;
+          for (let i=0;i<n;i++){ const y=a[i*4+1]; if(y>mxy)mxy=y; if(y<mny)mny=y; }
+          return [+mxy.toFixed(3), +mny.toFixed(3)];
+        });
+        const V = await dump(water.pVelBuf, n*16, a => {
+          let mv=0; for (let i=0;i<n;i++){ const s=Math.hypot(a[i*4],a[i*4+1],a[i*4+2]); if(s>mv)mv=s; }
+          return +mv.toFixed(2);
+        });
+        rows.push(`${step}: y=[${P[0]},${P[1]}] vmax=${V}`);
+      }
+    }
+    return rows.join(' | ');
+  };
+  window.__ready = true;
+})().catch(e => { document.title='ERR'; console.error(e); window.__err = String(e)+'\n'+e.stack; });
+</script>
+</body></html>

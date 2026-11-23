@@ -1,0 +1,1719 @@
+{
+  "schema": 1,
+  "model": "Meituan/LongCat2.5",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 465,
+      "sha256": "17bf6be6bd61184c1ee722520301675672107ea66e4bac3291594292eb247bfb"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10442,
+      "sha256": "620bfa39cd3152c512664d558777f8117acb3d8690e8a4515a8fcd0c278be14e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6204,
+      "sha256": "a7cac68a8e2141ae785d8048ea3ae423873d2e0bad68b835005c68e3eeea49ef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\css\\style.css",
+      "path": "AE风味动效设计编辑器/submission/css/style.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 16035,
+      "sha256": "5db66c4853f705408d933d8538b45702941bfe686d85c311ea58038bead9f5ae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9019,
+      "sha256": "ec724fff782cd97c1deee6ee127e99a056f57de41fb67a771229a80bbb06eb31"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\audio.js",
+      "path": "AE风味动效设计编辑器/submission/js/audio.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 5913,
+      "sha256": "947e98ccdab561deb951d24b1a5dddc9ab5be70ec2912d0da6ab5682e73268b4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\composite.js",
+      "path": "AE风味动效设计编辑器/submission/js/composite.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21352,
+      "sha256": "835f84479879a6fe9b56e36cd9f3dcf37052de74bfa332ce7d002982f4a65844"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\demo.js",
+      "path": "AE风味动效设计编辑器/submission/js/demo.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13976,
+      "sha256": "54bd6a08b3700339b28911f180251ca6f880c8bf67d828913070429f29e155a2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\editor.js",
+      "path": "AE风味动效设计编辑器/submission/js/editor.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 40158,
+      "sha256": "dbe423033000d975746d74372de27307a99865a590adfc0f69ace610b0d8a27b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\expression.js",
+      "path": "AE风味动效设计编辑器/submission/js/expression.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13161,
+      "sha256": "52f9018c6c3c780d5aaac5b763d022c71b14807c41028d641f565a2ede19246a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\geometry.js",
+      "path": "AE风味动效设计编辑器/submission/js/geometry.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 30023,
+      "sha256": "0ce5f64ca73bb208a8f98e833d2ee55f164b761899a0ecf646da70334cebf358"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\main.js",
+      "path": "AE风味动效设计编辑器/submission/js/main.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2616,
+      "sha256": "9ec127c424ebe7e632f470c63c37f2fad1cb39c089517318bd7e4bf88958c516"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\model.js",
+      "path": "AE风味动效设计编辑器/submission/js/model.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 24904,
+      "sha256": "b60ce976789e4c2a7b278fd8edd37f32779518cc107f1f9e8602fa98f4ab5108"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\nodes.js",
+      "path": "AE风味动效设计编辑器/submission/js/nodes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22184,
+      "sha256": "150d0cc9187f7fe55e69073396be6ab2fc21f29411b30467478434aa204bb6e0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\particles.js",
+      "path": "AE风味动效设计编辑器/submission/js/particles.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12575,
+      "sha256": "6b4e61c8eaa3d6c39372009a368b8fa7401268fc3a6300796b281ca8b7fa65f8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\render.js",
+      "path": "AE风味动效设计编辑器/submission/js/render.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 29586,
+      "sha256": "859569fd4e1686a8f34d4e810655d1e11ba2ff2853d339ed9458cb6d191ec895"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\ui.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 56000,
+      "sha256": "33323b3f2c658d601d65e0837eab74d2cb3080295f152217f160609cffa60f17"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\js\\util.js",
+      "path": "AE风味动效设计编辑器/submission/js/util.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 20886,
+      "sha256": "3e35b3e4f5b651e48e48b04ff5cf872a02b6d24a1a2c2f60a6c97d92fa4ae531"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 455,
+      "sha256": "e793514fdaf1bf382999f6a1ca2cb662ad0b6df457edf267e895f33f94348a47"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 2881,
+      "sha256": "33fd4b8f3b0cc958879043e8fc0cd44d14139edc0c8c9676a905278221d15eb1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2320,
+      "sha256": "923464a192a86092d6897707b5bf02973ac65b13e5880462cf632bbbe4cc855c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 18629,
+      "sha256": "5f1e04a10f325ad1afe2724eb463650c4c1946ecf7363eeb6831850dde23c3a5"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 441,
+      "sha256": "1eaa60ac8ca13fd1084d9eaac650190cb2c5bc70db132631f6fd35d8213e6cc8"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 6566,
+      "sha256": "bee51981df646135f92e53d683a9cb6030b47f898548b7cf68a39c6d79bd3701"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4161,
+      "sha256": "ebe9c19e2c8e120319454e658180776ee46cf98f4e1314210731836b37ba58ec"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 26581,
+      "sha256": "8a3f2e5e6af977482768dcb00884d9de00c6961ae3702a4f559dcae1f56b6e41"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\js\\audio.js",
+      "path": "动态路由塔防/submission/js/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 9488,
+      "sha256": "23b63839a46b03da1b832f242b376fd8560cb264f57f88aa64d5dcfe2d1daad9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\js\\fx.js",
+      "path": "动态路由塔防/submission/js/fx.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 11608,
+      "sha256": "995847f950c8f32ace1bd3a5c3d0b0c55d60a3cdd0db3f385751187770ed44f2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\js\\maps.js",
+      "path": "动态路由塔防/submission/js/maps.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 39662,
+      "sha256": "1b5614f3cd9ebf0772ff5720ea5b6a144bfbb328b0607c53ce35182b3c751259"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\js\\models.js",
+      "path": "动态路由塔防/submission/js/models.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 39177,
+      "sha256": "5e63b0f112cc26590893a31ba499156e99dd9e787625177abed6f95e9cef86b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\js\\three.min.js",
+      "path": "动态路由塔防/submission/js/three.min.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 603445,
+      "sha256": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\js\\util.js",
+      "path": "动态路由塔防/submission/js/util.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4016,
+      "sha256": "97e0570a7d80b71e2a1c13e5164c5af1ef3b5e44e41ec6f66e0c5626c17bb553"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 453,
+      "sha256": "50c1c58d9077f73cfe79f4c92ee45a05dbbab994245fd7011e8c5e3698c2181e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6304,
+      "sha256": "254243bb6550b580e2dc2cd36f2c84defff4438e1b8dba0cd395621ebb2e32cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4122,
+      "sha256": "52c77141a0937673a7f1826113011890fade2cda4f4097109344a51ac3945364"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 433,
+      "sha256": "125dd9c7393aefa6ac7f5df7ac2f818a90dc019813b0414c95ec26722fe42da2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\package-lock.json",
+      "path": "太阳雨渔港3D渲染/submission/package-lock.json",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 13143,
+      "sha256": "2c35815fa4f949dc82ac8a13e1e74a9ace75230839f0c4e79124fee5c7b41226"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\package.json",
+      "path": "太阳雨渔港3D渲染/submission/package.json",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 348,
+      "sha256": "f313fbe2d3893d264a16e714818806f25d0fa2171c91de6422ebbc67a94e26b5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\base.js",
+      "path": "太阳雨渔港3D渲染/submission/src/base.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 34429,
+      "sha256": "ffdbd908d206d422e02f0b2beb957ec53f433ed14e612a8ce7e9c0141b9faf0c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\boats.js",
+      "path": "太阳雨渔港3D渲染/submission/src/boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 21552,
+      "sha256": "bea182f65b4a3840c636956ced33c32538f60338dce17b684d48921510480245"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/src/buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 19304,
+      "sha256": "f0b5e1f0a409aee8f297b57b7d807f4aa6ade4717c2a961e20be338884f122a6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\common.js",
+      "path": "太阳雨渔港3D渲染/submission/src/common.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6368,
+      "sha256": "ca652a7b3b3381c0b60d4d03a9ce2eedc8dad4ea3019e82cefa24b1e67d86e8a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\creatures.js",
+      "path": "太阳雨渔港3D渲染/submission/src/creatures.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 12878,
+      "sha256": "964e1fb69a646411c4f984b33dae94bbe27b79c34cd3ab1c547b6db49a505aa2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\effects.js",
+      "path": "太阳雨渔港3D渲染/submission/src/effects.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 15048,
+      "sha256": "5af81391e1d6369432d446de52ca206b107acd8ea2960e41714bf85e722d5ae4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\main.js",
+      "path": "太阳雨渔港3D渲染/submission/src/main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4336,
+      "sha256": "a3c117f1ed1bcbcdf1d2495f4950378f274e0ed6a2b118ef04a202e823fc65e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\quay.js",
+      "path": "太阳雨渔港3D渲染/submission/src/quay.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 27776,
+      "sha256": "ef9a2894c32c0738a6662643ddfbced33d1002520cddde5dbdd730f3ac7a60bb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\sky.js",
+      "path": "太阳雨渔港3D渲染/submission/src/sky.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8493,
+      "sha256": "fec4fc73b956db6d6202d27cd71305f83e9bd22d65a81a7e9ae5f84d32183cd0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\src\\tour.js",
+      "path": "太阳雨渔港3D渲染/submission/src/tour.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 2558,
+      "sha256": "287229712804dcff691a1f3e0030b981fa2b0a97ab6d38b8a9d46daad715e703"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 441,
+      "sha256": "d59cb9dd7bd1a27689039472cc30fd7f20cd00f58338b73c1be826c834bf174d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 3151,
+      "sha256": "047c174cf4de096d7b91a0e75fe77c26ef150ca576e7b6a6c78d93d3e5a83725"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1194,
+      "sha256": "f49991986aaa5c375f2e60aaed0efc0d6125b6c5d739ae40046f95204593f091"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 343,
+      "sha256": "6fad78318f12284ef0a148f258de1db5eaccbc236d6724440ddad6f8b6911ee9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem2.lean",
+      "path": "形式化证明题/submission/Problem2.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 273,
+      "sha256": "dc7d32816823451dae102775a23d1d1cc8a547181079b8dd2559b99e4f00dfe4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem3.lean",
+      "path": "形式化证明题/submission/Problem3.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 178,
+      "sha256": "28c3cbb3bfe108092ccc1a9dbe8680f79c9f94026b05676051f26016cb56acff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem4.lean",
+      "path": "形式化证明题/submission/Problem4.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 235,
+      "sha256": "049dacd655ab03b902b74d77603fd8bf19b84b3aabd21d3306f5727fd0b721a0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem5.lean",
+      "path": "形式化证明题/submission/Problem5.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 343,
+      "sha256": "80c55832febaf38152d8d2bfb6017653d0645650f0305e18a7a9955b3a2afad9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem6.lean",
+      "path": "形式化证明题/submission/Problem6.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 508,
+      "sha256": "95d1d1b627836c34aea4167608e6b6587675f8557472ab5233a931960a89930e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem7.lean",
+      "path": "形式化证明题/submission/Problem7.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 377,
+      "sha256": "00adcaed4c78d0f59bbc554a36ed134313da0d4943a15a8800ffe752e709079b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\Problem8.lean",
+      "path": "形式化证明题/submission/Problem8.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 201,
+      "sha256": "ef328a1cc71670a41dd6334b536804710ea66be89f3f0379f86a0a294a41362f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 442,
+      "sha256": "d7e3ad21b52423c2dbd6e6fe6f4eef3ff4535aa7759de208c690a1641b53f6c0"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 12861,
+      "sha256": "3ed2b77ec83aabdfea5e518f4bcacbd706f02a690e705025a707807288d235df"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10571,
+      "sha256": "51801880bed313ca6f18dcb99179bd39b723d1507a80fb67bf34cb5e7d2c2bfd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\assets\\wallpaper.png",
+      "path": "操作系统嵌套/submission/assets/wallpaper.png",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 91254,
+      "sha256": "7802597054d76273c1b9f20fc42d170c5834bd4b756e6bfc865388875e244e28"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\css\\style.css",
+      "path": "操作系统嵌套/submission/css/style.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 33223,
+      "sha256": "d5de1b3c48fb029d75caedd4729793e220e535f3a45f5827661c46e4b9043b90"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\index.html",
+      "path": "操作系统嵌套/submission/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1628,
+      "sha256": "ad35d49a37651b7ca6caad94724b316fb083b16eaa652340faf4829373e8de92"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\js\\desktop.js",
+      "path": "操作系统嵌套/submission/js/desktop.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 34144,
+      "sha256": "6ffe8609cab6663c6bd7bb51121be26a60de9f5e5b2194f0ca35279d4dc39882"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\js\\kernel-sources.js",
+      "path": "操作系统嵌套/submission/js/kernel-sources.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 26562,
+      "sha256": "837c6275b80b3fe9abe935e911ab80c375ff8bdb72d4286ec03d3f7894fde6bd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\js\\sys.js",
+      "path": "操作系统嵌套/submission/js/sys.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 52231,
+      "sha256": "b38cd62dd265e28209bd110e4037f959064ab569be579d41786fb3ba8d36d715"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\js\\util.js",
+      "path": "操作系统嵌套/submission/js/util.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6656,
+      "sha256": "b9612de2c9e08ccec8cae9e01f3ab0360f97c3138db9c5f15bb8cdf159ff0d04"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\js\\vm.js",
+      "path": "操作系统嵌套/submission/js/vm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 32949,
+      "sha256": "6c9065a154f12ea0ffeec54bd0187cffb2de90ef6fcf30340749ddad4284dc81"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\js\\wallpaper.js",
+      "path": "操作系统嵌套/submission/js/wallpaper.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 787,
+      "sha256": "0040bb6e2141f92a4fd9f61e56d250ebfcf2eb9b0ba903caaa49e32e3788959e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\main.js",
+      "path": "操作系统嵌套/submission/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2862,
+      "sha256": "3ff43053b838285667c40c3115aa9029036ce5859c6d3820ad06e612caef4cda"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6119,
+      "sha256": "f16099fc265706805b4893efa2d0cc078ca014ff4378c6749aa4e531fc7d1a20"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 370,
+      "sha256": "9b5adb79b56c1ab34db72351cabd858793e529e755ea4e1773bd21ffe8cea77c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\bisect.js",
+      "path": "操作系统嵌套/submission/test/bisect.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 765,
+      "sha256": "a12c75d6c058d5d4e07e28c595d16d1f720935b5f7e7017af06b289d514c7a7a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\check-src.js",
+      "path": "操作系统嵌套/submission/test/check-src.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 366,
+      "sha256": "9be15e538adec6de1cfe571cba67642f1ab17fbc255edab141127bf3a13ee342"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\check-src2.js",
+      "path": "操作系统嵌套/submission/test/check-src2.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 469,
+      "sha256": "0a60b4609c63b8ce585edca5abb47ff50457fb3d754326becf99d79d25188b75"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\compile-all.js",
+      "path": "操作系统嵌套/submission/test/compile-all.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1177,
+      "sha256": "9f22d74dcfdeab4806b9d26b0cb17d9365c64f2dfbc8e2746294640b8613b999"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\debug-vm.js",
+      "path": "操作系统嵌套/submission/test/debug-vm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1381,
+      "sha256": "9c81240e2638ccf41dda6fac4f1bcb057863dfffde78e1997b05b1c806d71c40"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\debug2.js",
+      "path": "操作系统嵌套/submission/test/debug2.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1343,
+      "sha256": "5cb596d253741e80a787e63e8c011b1b07a73bc352f5c1d4f8c04273abe67adf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\debug3.js",
+      "path": "操作系统嵌套/submission/test/debug3.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 869,
+      "sha256": "3801daa6afd23a5146731e6f0144ab28903a93eb52cdb8ae9ddaf942b08f3d8e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\debug4.js",
+      "path": "操作系统嵌套/submission/test/debug4.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1081,
+      "sha256": "0b78ef2e856cc8d0580cae84f6315ccad6090859c9263c0e7b2cf640db7bcd1f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\debug5.js",
+      "path": "操作系统嵌套/submission/test/debug5.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1525,
+      "sha256": "a3706a1d670854d71bb4034390fab373130157bb5f4c019170f86869902fe079"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\kernel-debug.js",
+      "path": "操作系统嵌套/submission/test/kernel-debug.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1272,
+      "sha256": "ae025e9436f31e3357a66f58014eec9a95927d33df50085593d54197eb8d7d5a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\linecheck.js",
+      "path": "操作系统嵌套/submission/test/linecheck.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 472,
+      "sha256": "18ca8cff7e26a476604f1e709cf584a38e44eb1aa2be9c51e45ae96222ca4e61"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\msg-debug.js",
+      "path": "操作系统嵌套/submission/test/msg-debug.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1376,
+      "sha256": "829a333034516683eee7bc46aa0d92b5e25488aba74a0f28d1c559700ae9d7fb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\sched-debug.js",
+      "path": "操作系统嵌套/submission/test/sched-debug.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1500,
+      "sha256": "76d762198d07d12d3d0f8e414fa253cc0faf57e22b07fe6bd165e86404247aac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\sender-trace.js",
+      "path": "操作系统嵌套/submission/test/sender-trace.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1541,
+      "sha256": "85c10fc1a4659e7911ba843e407fd501df1374be4d24aa55a2c2c159435e6e56"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\sys-test.js",
+      "path": "操作系统嵌套/submission/test/sys-test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2995,
+      "sha256": "8e85088fee706d6393effff71fbb3037ebf778d66bb881f4b4fefa5a9bb6dcf7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\trace-kernel.js",
+      "path": "操作系统嵌套/submission/test/trace-kernel.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1453,
+      "sha256": "7f8b146627bb31914cb6405a5af99cc421c81e374d021fed91f0171f028338c6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\test\\vm-test.js",
+      "path": "操作系统嵌套/submission/test/vm-test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4031,
+      "sha256": "19528d27c1b5712d3ecae1e7b6952c8ccb50f048c49888e6085bd0f372e3a3bd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\tools\\gen-wallpaper.js",
+      "path": "操作系统嵌套/submission/tools/gen-wallpaper.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6744,
+      "sha256": "9b94913a5a11470779297002dd35d4ef3d252bd21e52102fffb197a74b059758"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 430,
+      "sha256": "e613850396d80bfab2a5852ff2f1c9a1da70c2e45d8ce04cea1aeff26cef7364"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 3836,
+      "sha256": "613d75a202e737193d2205aa3cd0a7c99314f356ff32d124ba4b10626f4f77bf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1688,
+      "sha256": "ce3c9ab53746c82aa6c3450b1236fca070ace23f8b2dc88c4cd12c14d01fb7be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 5497,
+      "sha256": "b4dbc4bdf622880b24606fb51eda173d3cd1f7878184dfd3fa04b7e62967da7c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 461,
+      "sha256": "d060ecb29bb836ffe121d6935f7457b5ba9d20762055ebf02eca3b9566582cd3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 2463,
+      "sha256": "380628e574fd9aff578cab54780dfed8f959c6ea6aaa4d54ba659629aaa419ec"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 2028,
+      "sha256": "e08f2edc33753e6429ffa1d7d5ec364f3d95421c8292679cf364a9826d83cafa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 10006,
+      "sha256": "f24bdef89999eaec0028f4dbc9387044e3bd5c502c25c63de34ca911461b69bb"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 453,
+      "sha256": "9adddb6a70ee1384ac3fa9d991faee750b041dfc3640dff8f08965dcda8e0cfd"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 8041,
+      "sha256": "6de2cc634d480b58f83775b8c5a68bd4279f29ddec600268a790c71fa21960cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3374,
+      "sha256": "e2cd08f30d3303e601036ace8b5d2e3dd04ba324b37a956aa252afab5f7f8b99"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 443,
+      "sha256": "1a315bad2d687b166caa13aaff741a562bec9f4e7c337208ea4f14ab8db45b2b"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 8469,
+      "sha256": "e3b9b5a83eba5601cc92d83c37d6cef066a565ed76879c0f665c219ea8c1da3a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7311,
+      "sha256": "b4ae44a2e04b00b6c1aabc0c4d22a71b52a885b881ec0db89f0df34d92f46891"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 1223,
+      "sha256": "4535c8345ec433870695d25b5fbf9bba18ecb40c27cd92af67c053403949b760"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\js\\battle.js",
+      "path": "星际战舰编队/submission/js/battle.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 19193,
+      "sha256": "e94923c4b381e81a6bc8cbc8e76eb464c458820e1bf2a771e05857f11156fb5e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\js\\builders.js",
+      "path": "星际战舰编队/submission/js/builders.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 6666,
+      "sha256": "656f6b90a4307348686df447f012e21d1b5898b070af59bd3490bbe570f7e429"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\js\\core.js",
+      "path": "星际战舰编队/submission/js/core.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 41134,
+      "sha256": "a9fc63d412bcb87cce640dafdb9db8bc0d080a9f4cd729542f12d37e8c3a5179"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\js\\fleet.js",
+      "path": "星际战舰编队/submission/js/fleet.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 26782,
+      "sha256": "f6f8f22123da8494dab79dbc1cb2805cc6629fc0bb5255d9095e6a37e7ff7229"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\js\\interiors.js",
+      "path": "星际战舰编队/submission/js/interiors.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 24710,
+      "sha256": "f4d9feee6b720ca52d1efab9d8ec8650b5c64eb140608c26844a0a8f0713fd12"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4357,
+      "sha256": "b5ab07d732e52f45df0418ae6e24e3fb3f73b31ea207100e60d6755a6df54587"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\js\\timeline.js",
+      "path": "星际战舰编队/submission/js/timeline.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 22098,
+      "sha256": "0fd5bb6dc5413aa671f67a2cbcb310588a2bdc86915e80390203b3c8405a463a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 2832,
+      "sha256": "e99138bb4069ba272f7ee298743afa8df1f0ae426463dae228a8ea77e691fc31"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 443,
+      "sha256": "7df5b0e36e1ef212035d3fb0529e4a89fc1baa816b4a91ee491e4e9cd26e3e65"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 19746,
+      "sha256": "d5669e945d17ed61ffd632fb98e7575793163d9bb6ff2f913582e20e5ad743b3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 3136,
+      "sha256": "97655d805e0f44a9670103505f509e1b4b74d137c133fba75105291e4815308f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4091,
+      "sha256": "35673f6da60344edab9395da83484f682f1790b39c39a73e61ead3a3cdfddc6e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3302,
+      "sha256": "66eff6f663f2d1ece2295499e750c99d67530621fb5520c6d9c4a14df905b382"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 393,
+      "sha256": "90010c9e57f1e0eaa023c1b31f2103688764f981af320fe98c37bdced32e5760"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 375,
+      "sha256": "f39875d5f4847f0de0ef10b087d36d8d898855dfba1afe4227c8c2e6bd524078"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 393,
+      "sha256": "f277a975d29dbbf8373094538698fea729ce5b743f9a877e78bc848cbdfc1879"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "aa58dfabdaa474433092ca3314d8419f1dce735a4201976552c764eb9475a139"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "e64b9d33adb61607959d36728affd1ded93f4ac3fc903e1af772c28307901d50"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "f56a8967573d575f9949c186e13b4ebb2f6b241267329f49e72da849aaef4d81"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "372b738169fa3a82505048897c51243261fea508dda9c58734549176650bb459"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "2136e8429937ec5b1e2dc99dbaf07bca0d2029fb30fe3b5a22ed40bba45c7dec"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "f4249a06e8019233beea8f660fa9680a1264ea355ffbde0d6046cb8003ff7455"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 393,
+      "sha256": "785c47ed73d6585b705317f4806ecd2caeaf7a5aa59ad2d73732b79563b41103"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 393,
+      "sha256": "f9ff8e6876b82c23f464ab33227d75d34752326db1499f2aed4dbbdbf7fdc7c1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "9e80ffb97a8b9595270faecfd68eca9349d77d76d719114546c5e124eb629965"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 393,
+      "sha256": "ddb71045a52528672c8c6ec4bec364acaae26749ceb887913a07aa584101d4b9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 399,
+      "sha256": "84480ebdcd7a30f826284be7ea248b169a6bafe13a61936505bce2d39a85818e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 399,
+      "sha256": "ad0e6cd2f46cd98eb19070309b8674b5eade7e81638982e511e3752bb2a7ad13"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 399,
+      "sha256": "0b92576fefd907936c801af97c2eb3a990525dda21b8996029198289d5f6dbad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 396,
+      "sha256": "04c2583e73a6fec265f9add9472673c22b8d0e7ccd2a3c2e65388fb69a5cc28a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 399,
+      "sha256": "82cd5e0584005160eba2cd5ad3a0e94582e1414080ee56e62e9140a3b21a7f54"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 399,
+      "sha256": "7ed2742fc62591262d85218f4854b2d9a43c08fbd3d09e2f13e9cd42f7987486"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 24999,
+      "sha256": "c10101522647e880e037fd8ecd3fe20408fb1c4b3dee8964367595aedc9edc50"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 32417,
+      "sha256": "50fe66f998927fb43213dd33cb01a7d6adc129e97188965b9c6b7b4c956687ba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 39992,
+      "sha256": "0f136cc9ef191139468aaff5de0e917f6a11ade11598c10d7f492b14bfef4f64"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 47626,
+      "sha256": "efb505242fb3e38a60c7c65a9ff91b45ecdbcedf47447b71c33e443803cf2ac1"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 461,
+      "sha256": "f49f29cbdc3713ce5530ccacbc00f460824d901bc4611664f57fdaaa3e708bbb"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6912,
+      "sha256": "37c2a80778860c109da070625219a1baea96ed17728e2e1d114c9336ae8c10b5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5128,
+      "sha256": "9ece070570acdef4535d33b94fcc21fe58f8d03a3220ef5db7ed620fe9ad0be9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\_test.html",
+      "path": "果冻冲击与造浪水槽/submission/_test.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1387,
+      "sha256": "96fcdfedfb77acc1e8d34c47afc5a8607fbaf4b1139b90c80706790f0bd0c583"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\_test2.html",
+      "path": "果冻冲击与造浪水槽/submission/_test2.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1582,
+      "sha256": "369a496aa80965733c885d4764a583062972d4a219a065534f10cddf8ae743e9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 3648,
+      "sha256": "1344016e2a8abe0bf9295658b28a15040543bd71736e456e8160c95f631bdb3e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\audio.js",
+      "path": "果冻冲击与造浪水槽/submission/js/audio.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 68,
+      "sha256": "5045ab43ed53a0fb339926bd087b4697c48018fac077898c1af57852b15382be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\core.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 11141,
+      "sha256": "b1caea88ba2d6337e911f1fe583c0381f1c22f3b9c9489aafa831a7055777f64"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\demos.js",
+      "path": "果冻冲击与造浪水槽/submission/js/demos.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 68,
+      "sha256": "5045ab43ed53a0fb339926bd087b4697c48018fac077898c1af57852b15382be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/js/jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 24513,
+      "sha256": "ae7b8db21a032068b851e9fe019754bd8dea3cb248cd34a7eae72b4276518e28"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\main.js",
+      "path": "果冻冲击与造浪水槽/submission/js/main.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 9453,
+      "sha256": "25da0cfcfefd9f9b4168d4d69f7eebca9534b3899d8f9b0a83a026eddd1b2033"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\renderer.js",
+      "path": "果冻冲击与造浪水槽/submission/js/renderer.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 34987,
+      "sha256": "7c2fbfbe943358c799883dc2c3cc5d3ce08d6c03b77a6b94b410cbc6f8a2b0b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\rigid.js",
+      "path": "果冻冲击与造浪水槽/submission/js/rigid.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5028,
+      "sha256": "04f0e21c16b1358e7189c33f1ce90b1b5029bfb0def84d897ad7a296fd0bb9ea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\scene_jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene_jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 14176,
+      "sha256": "56fc67f391e053d0907193f20a3e523de68c5b74af100815b823b88a119fa10b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\scene_tank.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene_tank.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2250,
+      "sha256": "9fc6e5457a2bd5ffdd216d1351d9dbf2f8acad5edbea6ea943ab41eb73c61672"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\js\\water.js",
+      "path": "果冻冲击与造浪水槽/submission/js/water.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 68,
+      "sha256": "5045ab43ed53a0fb339926bd087b4697c48018fac077898c1af57852b15382be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\style.css",
+      "path": "果冻冲击与造浪水槽/submission/style.css",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 7978,
+      "sha256": "a0261050d4c5aac9d648a0c1f6334c27d9532178ba1909f3fc6a9ece02bf658d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 435,
+      "sha256": "2ad9f59aca619ce3b26cfcd84fc86938c5f0ded439dd001df6344577c4a3c7ee"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Meituan\\LongCat2.5\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 2836,
+      "sha256": "047a020e5baf85388ddfdd30dd1308e9e10bfa3ead3243acf604f86d20be8693"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 1915,
+      "sha256": "90380c51d92980086458cd9cdef0e94b2024926107d3e5cce4fce75d4717e4d7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\鲁班锁拆解\\答案\\test01.json",
+      "path": "鲁班锁拆解/submission/答案/test01.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 283,
+      "sha256": "554ed98c8d32b8b3668deea249925c0c729d5c2ff7a7cccd61fccc7431351e84"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp2.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp3.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp4.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\exp4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\grader.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\grader_sah.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\grader_sah.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\prof.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\prof_main.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\prof_sah.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\sol_count.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\sol_sah.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\sol_sah_bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\bundle.js",
+      "reason": "构建输出；生成入口 package.json"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\形式化证明题\\形式化证明题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\logs_noob",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\noop_bot.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\noop_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\tools",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze3.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze4.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze5.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze6.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze7.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\analyze8.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\bench.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\bench.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\bench2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\bench_and.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\bench_nd.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\bench_ng.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\bench_sm.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\circuit.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\debug_main.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\debug_main.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\debug_main2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\debug_main2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\debug_sol.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\exp1.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\exp1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\exp_and.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\exp_nodigest.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\exp_nogather.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\exp_small.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\micro.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\micro.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\micro2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\micro2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\micro3.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\micro3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\sample_input.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose3.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose4.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\test_transpose4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数学竞赛原创试题\\答案",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\工作",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\机械结构重建\\机械结构重建.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\鲁班锁拆解\\记录.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Meituan\\LongCat2.5\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": [
+    "数学竞赛原创试题"
+  ]
+}

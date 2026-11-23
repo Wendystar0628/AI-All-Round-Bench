@@ -1,0 +1,28 @@
+// sys.ns — 系统调用封装（自动并入每个程序；首行 // #noprelude 可关闭）。
+// 程序通过 sys("名称", 参数...) 向所在系统的内核请求服务；下面是内核提供的标准调用的便捷封装。
+// 同名的用户函数会覆盖这里的封装。
+fn print(x) { return sys("print", x); }
+fn exit(code) { return sys("exit", code); }
+fn time() { return sys("time"); }
+fn sleep(t) { return sys("sleep", t); }
+fn yield() { return sys("yield"); }
+fn pid() { return sys("self"); }
+fn spawn(path, args, name) { return sys("spawn", path, args, name); }
+fn kill(p) { return sys("kill", p); }
+fn suspend(p) { return sys("suspend", p); }
+fn resume(p) { return sys("resume", p); }
+fn send(to, msg) { return sys("send", to, msg); }
+fn recv() { return sys("recv"); }
+fn recv_timeout(t) { return sys("recv_timeout", t); }
+fn poll_msg() { return sys("poll"); }
+fn fs_read(path) { return sys("fs_read", path); }
+fn fs_write(path, data) { return sys("fs_write", path, data); }
+fn fs_list(path) { return sys("fs_list", path); }
+fn fs_stat(path) { return sys("fs_stat", path); }
+fn fs_mkdir(path) { return sys("fs_mkdir", path); }
+fn fs_remove(path) { return sys("fs_remove", path); }
+fn fs_copy(a, b) { return sys("fs_copy", a, b); }
+fn fs_move(a, b) { return sys("fs_move", a, b); }
+fn fs_exists(path) { let s = sys("fs_stat", path); return s != nil && s.err == nil; }
+fn ps() { return sys("ps"); }
+fn notify(title, text) { return sys("notify", title, text); }

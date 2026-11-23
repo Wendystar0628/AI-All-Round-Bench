@@ -1,0 +1,58 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "Problem1.lean 单独编译退出码 1，99、101、104、113 行存在未解决目标及类型错误，主定理末尾仍保留 sorry。追加核查的 #print axioms problem1 包含 sorryAx，#check @problem1 命题与题面一致，但不满足有效性门槛。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem2.lean；已检查其余 Lean 草稿，均无 problem2 主定理。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem3.lean；已检查其余 Lean 草稿，均无 problem3 主定理。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem4.lean；已检查其余 Lean 草稿，均无 problem4 主定理。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem5.lean；已检查其余 Lean 草稿，均无 problem5 主定理。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem6.lean；已检查其余 Lean 草稿，均无 problem6 主定理。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem7.lean；已检查其余 Lean 草稿，均无 problem7 主定理。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem8.lean；已检查其余 Lean 草稿，均无 problem8 主定理。"
+    }
+  ],
+  "metrics": {},
+  "notes": "评的是作答结束时工作目录的内容，不看 git 提交；原始提交已复制到评分工作目录，所有编译均在副本上完成。原始 Problem1.lean 与追加 #print axioms、#check 的核查副本均编译失败，日志为 work/Problem1.compile.log 和 work/Problem1.audit.log。已检查全部四个 Lean 文件，只有 problem1 主定理，其余七题未提交。自然检查未见绕过或篡改评测、宏替换命题或伪造输出的迹象。评分启动的两次编译均已退出，未启动浏览器或服务器。",
+  "anomaly": "仅交第1题且以sorry收尾并编译失败，其余七题未交。"
+}

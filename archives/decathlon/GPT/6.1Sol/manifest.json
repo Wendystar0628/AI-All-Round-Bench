@@ -1,0 +1,3581 @@
+{
+  "schema": 1,
+  "model": "GPT/6.1Sol",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 466,
+      "sha256": "f92b7dfbe05ebaf019086b366318294286df22e5c10bea43d5ab0ba90933dd94"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\claude\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/claude/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7517,
+      "sha256": "1fe961be727757962a0f41548b632d31d61bd44814a9e17447716528ce37c082"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10203,
+      "sha256": "a15d1c27953f3bce97474c9a80b4f4f63b234094890b66c83b02d43ab920d989"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6101,
+      "sha256": "19b822082342dd5bb6edbedbf187e6d8f41dde681dad678ca19f046ef8dcc7d7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\评分表_Opus5.5.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6286,
+      "sha256": "d1517d25ca2c092cb6dc2ab43bf7c7879a0b960c18658a279a021b7df807a55a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\README.txt",
+      "path": "AE风味动效设计编辑器/submission/README.txt",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 4142,
+      "sha256": "c8a7bbd3768fc7762f566585c24cb81a98132e6b5516226f50675b4b6aadb508"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\VERIFICATION.txt",
+      "path": "AE风味动效设计编辑器/submission/VERIFICATION.txt",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1805,
+      "sha256": "9b84321e643b159ee22b8ca9a8641dc091878eaf0908dcd0376cf30ca3c4f19f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\app.js",
+      "path": "AE风味动效设计编辑器/submission/app.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 75094,
+      "sha256": "a8831532125130fbb38decb87255582874a82f993a266ebc5b7d7d2ed731bb49"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\engine.js",
+      "path": "AE风味动效设计编辑器/submission/engine.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 32047,
+      "sha256": "27afcc0555e9a700823ae865cc767ed9c5b0576258debcaa32d2fae2889ef5fb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\enhancements.js",
+      "path": "AE风味动效设计编辑器/submission/enhancements.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 29204,
+      "sha256": "d1b43e42acb7e107d5a2ccee41f8d96c7238b0c5c044b0d0ae473da380647b7e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\examples\\demo.forge",
+      "path": "AE风味动效设计编辑器/submission/examples/demo.forge",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 34392,
+      "sha256": "086387c9136fe1a99acc061dd20ead77147009ccc3d986ece822c79152f50252"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8811,
+      "sha256": "ed72608f621dd0e1f5fc829f8abd1a8b8bb82c85c2599fd5800aff6fd8844082"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\physics.js",
+      "path": "AE风味动效设计编辑器/submission/physics.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 20521,
+      "sha256": "6237e90a81ffae3b2b10749d8ad1cd24c3f7ff95235ef29ba39789dac3852c02"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\style.css",
+      "path": "AE风味动效设计编辑器/submission/style.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 26134,
+      "sha256": "c29a3b6ddd1038669820b25c085bd7a6d869050c019d479a1cb97fc264d3d227"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 456,
+      "sha256": "abc268d148a06f65a55fc51d32048a7f9c1dad9590a7148959228daa42d18968"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 2019,
+      "sha256": "0c960e638bd07c38eacd96a47c1d93d0f19a1727fb9eac6546e0eaf6e22ae9d5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2115,
+      "sha256": "a109397ca4cdb4287555c3a132abb7623ab7922875f4914cb446b5efcc878c88"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 18979,
+      "sha256": "3edeb45f32b978a69644d0f6578c0cdeaae0b0840374a7f77b39342715af98c1"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 423,
+      "sha256": "937bb22e2b9de085d788ab71f7bf57d532c1bc290a73ce420686f8fe864b3f89"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\claude\\main\\result.json",
+      "path": "动态路由塔防/grading/claude/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 5304,
+      "sha256": "29927bb49faf22e8b420dc1c8f5e732e081c7fa28253b76e9ea46c0367e4fdb9"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 6265,
+      "sha256": "2ed56ac9cdeb37f347ee7a69a7fac3d1decddd83379264898ac82e2a3384db50"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4100,
+      "sha256": "dba2eed80125c4634cb32bbc3038bd701e9c237bcf224f7f758b6c049213a16c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\评分表_Opus5.5.md",
+      "path": "动态路由塔防/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4028,
+      "sha256": "44454b5d94e53d266a386c8274abafd3148ccdd1df9bb151d43129e2204b55ed"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\README.md",
+      "path": "动态路由塔防/submission/README.md",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2393,
+      "sha256": "001e17a1b1349cb3aff9ca0be1c7e13ee337440a438745217229ba94be912e20"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\catalog.js",
+      "path": "动态路由塔防/submission/catalog.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2769,
+      "sha256": "f6c426a4ff3171758e32853ddc848478a816eae5698ce37ae5792f09ea447172"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\data.js",
+      "path": "动态路由塔防/submission/data.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 12283,
+      "sha256": "e94d970a0387ff499bee54e3d29da079e2569e22a0a54ce75bbf2a5888f7a98e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\demo-camera.js",
+      "path": "动态路由塔防/submission/demo-camera.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2494,
+      "sha256": "5ee8acda938f48fff06c3afe61928826ab1fb3f53c0ca59ed3742552a9ad8755"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\demo-motion.js",
+      "path": "动态路由塔防/submission/demo-motion.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2560,
+      "sha256": "82c16a5183c920e81d1279938b74c467742d61e94f401e7f6d87cb87b4f303b4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\game.js",
+      "path": "动态路由塔防/submission/game.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 30592,
+      "sha256": "71eb01f1411e983bdbb6d91fde16b76fd22faa0affc25b158b171833e4fe6db5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 6307,
+      "sha256": "aa40dcf101f315de7dfae3cb9ea449fd738d609c3087efdff4acdf71e4022683"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\inspector.js",
+      "path": "动态路由塔防/submission/inspector.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 9183,
+      "sha256": "f2e3c0d53d8b6c6b377c2122fc24d3a90f83d7ea22d83e4bf703b34cc091fa86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\polish.css",
+      "path": "动态路由塔防/submission/polish.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 9364,
+      "sha256": "cf1d7a410c598dd4d6682a6cc37d7389d0fc96c9fc2a649eb7f14d852d9bb93c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\routing.js",
+      "path": "动态路由塔防/submission/routing.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 5169,
+      "sha256": "0f30fef45dc08d4dc537c4e4208f9f9ca4c7ba562e13e873eb76c2ec8e944cdc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\scene.js",
+      "path": "动态路由塔防/submission/scene.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 35681,
+      "sha256": "5c00f289aee34cba4e28820df06957aa5b0f8429681c515dc828c24db2559cc8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\styles.css",
+      "path": "动态路由塔防/submission/styles.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 22103,
+      "sha256": "64928d18c225fd513fcd462e7a51aa49d0440ecebfb87ec62d0d19d8814eeb8d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\ui.js",
+      "path": "动态路由塔防/submission/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 36063,
+      "sha256": "b794c9eacc89e96d245e14c55e3506c601db2eb05283cd3ec43b260605977b32"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\verify-campaign.cjs",
+      "path": "动态路由塔防/submission/verify-campaign.cjs",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3967,
+      "sha256": "d33d033b0c129b84436ce7dfa406797a28e4b41458736f80ad2ea7f2085d4cea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\verify-demos.js",
+      "path": "动态路由塔防/submission/verify-demos.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 5380,
+      "sha256": "27682ff8006e1b0b5dde09ab73ec5a853706d4d0e1fb043b09c669198cf39aef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\verify-game.cjs",
+      "path": "动态路由塔防/submission/verify-game.cjs",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 8324,
+      "sha256": "4c3d9135743223031de3dd7ea217298418123592dd4804f5b9fd6d3d08cca8ca"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\verify-routing.cjs",
+      "path": "动态路由塔防/submission/verify-routing.cjs",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1918,
+      "sha256": "443db1767fe7299ba6b88b3ee998cbcd20370b9f8e4c7eba814e673f5feec6f5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\visuals.js",
+      "path": "动态路由塔防/submission/visuals.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 21907,
+      "sha256": "78de99ea07d86d37d5754b5ce0e99d2ec52aa46836b302d3ab014434ccce455a"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 433,
+      "sha256": "d0d8bcedd19680930bdaaae479d62e8d59a4c35b12bce8ca55b2684db5da8471"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\claude\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/claude/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5156,
+      "sha256": "8ad05cba1b8850c7a9635aa9ba6ed56ca816ee76e397f7e1904613550e27bc14"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6143,
+      "sha256": "ba482bd8a53cabb172b3360fb4b62697d3126b0c99c64b6adb929cb353ec626d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4071,
+      "sha256": "213d3cbf29c6264bc4aac5a9098bbede9a628d3f618a67a299105e572f417738"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\评分表_Opus5.5.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4083,
+      "sha256": "703e8b0ec1fec3eaf5701381b6fe46297d07e169e24aaad739e10e50b3a22d49"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\README.md",
+      "path": "太阳雨渔港3D渲染/submission/README.md",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 2046,
+      "sha256": "5ae0be4e86f3b5e6b803fb034d6ba60b8cd880df49a10cf4e085e0e0615e364e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 570,
+      "sha256": "0eafb06e9c83c436d6528d197f408d57dc4ad43cf6d50158d936beb521480e88"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\scene.js",
+      "path": "太阳雨渔港3D渲染/submission/scene.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 94679,
+      "sha256": "13c8811f03d8b5ad6067e8ede5642d67007184c24fc626be8979bc08cd1d2902"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 450,
+      "sha256": "72ca5136547061f7563da0f37f472f339b0d7595d697571ca618ec6d5db751fd"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 2302,
+      "sha256": "1d34c7b3415dd583ac661646d6a0cdba4c8a2724e49e759b282a2ebc2ec80591"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1114,
+      "sha256": "23b537f4af8b3700c57e3ad69cc907d899e9c0f5b4bd575377e6e97831176011"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 7953,
+      "sha256": "37de0bc4c6cee550b2d67757a38648907b050f9fb6a8b1c899ad0061dc9c10c2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem2.lean",
+      "path": "形式化证明题/submission/Problem2.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 8246,
+      "sha256": "5c2379adfe3203be5f21ecd0f3db55ba9e580dac95cd095d81d40fea9d1d6494"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem3.lean",
+      "path": "形式化证明题/submission/Problem3.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 2550,
+      "sha256": "940642ed0371feac2b95d3dff78d785eff31bc42eb8bffde37347c11b4337b25"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem4.lean",
+      "path": "形式化证明题/submission/Problem4.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 2163,
+      "sha256": "45c85b77e622a95d4e586d423b348e901117fd7992c1e7c6ca76f1c0b979c2e7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem5.lean",
+      "path": "形式化证明题/submission/Problem5.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 15060,
+      "sha256": "669fa8cbcd59988339e8f91e323ed8649ba140552bc0add7e90bf1797a47ac11"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem6.lean",
+      "path": "形式化证明题/submission/Problem6.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 7376,
+      "sha256": "a73cdcc080d0908b082af59e560df23ac619d1afce4438c7035e7a75703c256c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem7.lean",
+      "path": "形式化证明题/submission/Problem7.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 10403,
+      "sha256": "519d8d74987e155670be30b9e968485fb8377db8d1567287c36ac227355c23b7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\Problem8.lean",
+      "path": "形式化证明题/submission/Problem8.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 33322,
+      "sha256": "2c14925167001977b7acd5a51c84c9dd57533bca24b6ee76656edc78c4512188"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 444,
+      "sha256": "15fee4bafb10b48b677b45cf128ed04e3eb7da103489b5b6a9a1f49b5f749673"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\claude\\main\\result.json",
+      "path": "操作系统嵌套/grading/claude/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 9278,
+      "sha256": "06a57208e8a6674135b573a26e3fad3346c5cf938fd6a1ed9ed1f7182bd1fae8"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 11332,
+      "sha256": "2aa56b09515f81f87caa16d30f3e40d4ab01556e958db477418c82dbd5ef0069"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10542,
+      "sha256": "3ecb721ed773fd71cc8122d19bc0652fe8a24b57bafb7205bdddb89cc1db506a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\评分表_Opus5.5.md",
+      "path": "操作系统嵌套/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10636,
+      "sha256": "e04c4f7dc6dff407702d2edf8ee43a58cc8447df2c3a54dd76370b3204a3330a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\.gitignore",
+      "path": "操作系统嵌套/submission/.gitignore.txt",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 36,
+      "sha256": "b5f04b8c27388c2b3d2eb0a059d3971e7fadb731b4050b7cd2a98bbdaabd10d8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\README.md",
+      "path": "操作系统嵌套/submission/README.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6944,
+      "sha256": "5a4032ce77a34454a85b334a433cfcff1fa7d79689cbe934b0a8430afc8edd4e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\assets\\landscape.svg",
+      "path": "操作系统嵌套/submission/assets/landscape.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1959,
+      "sha256": "8aca773771231a2908b4f9be64ceb001b23722c7864c4f14cc90f9bb1043d957"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\assets\\style.css",
+      "path": "操作系统嵌套/submission/assets/style.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 39796,
+      "sha256": "48427d30e0baec1a98cf50a03c6d2c39abb3151399b7161dc93ae48b502d9a25"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\automation.json",
+      "path": "操作系统嵌套/submission/automation.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1637,
+      "sha256": "c0e5d563b1ca58f4e8c6f283e5224b530f78af7efe08dfa75a09d883f477a5b7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\accumulate.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/accumulate.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 457,
+      "sha256": "8a45b5bc1a7744b70d8182df72472841aa130f82726770b368a68ea13523dfd2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\charts.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/charts.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5422,
+      "sha256": "bab370b994e57a675385b94ed30989d71c0e366afc0135c6fe0e28657e166ed9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\compiler.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/compiler.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 299,
+      "sha256": "50b6aa96725998085932a052ee67e057410d02ae0fccab7aea8f2c4420c916e5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\compute.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/compute.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 237,
+      "sha256": "004cd4f58ebb8ed02bba5417a801589158c6621cc63c7ac65b50cf59422521ac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\counter.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/counter.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2199,
+      "sha256": "4b38510e9d3d9e1af4d2eb27dea01762df470a5e9a182f8b8b9e094395411c33"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\editor.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/editor.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 274,
+      "sha256": "ef1b1303075fc5f0c53f8d819c888f68c148006cd34aa5c86cc2aa1b12dceaea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\files.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/files.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5302,
+      "sha256": "edd22fd19af73366d97caa515a94fd0c12c8b96e6d01f11e17bf2ab7df14ba46"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\flight.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/flight.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1546,
+      "sha256": "96f3f4c85576d8c1b00160f9ea305be4a53361f9226accfd32ebddaf22a26c38"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\generate.cjs",
+      "path": "操作系统嵌套/submission/fixtures/generate.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11331,
+      "sha256": "2366961b2ff635c5cac50c627fcf33b75c3cd023a3f768c00bfc1c553fe22782"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\helicopter-24.scene.json",
+      "path": "操作系统嵌套/submission/fixtures/helicopter-24.scene.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 49525,
+      "sha256": "e1a131d0f5fa225b480e78f138f9c3f7a4a30550287b8e53c54a336dab827d5e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\kernel.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/kernel.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6266,
+      "sha256": "d8cc738ae97f3ba4a83aeae662f48ecb9800dfb7644930e64044a909ec845c63"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\minimal.scene.json",
+      "path": "操作系统嵌套/submission/fixtures/minimal.scene.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 647,
+      "sha256": "b5cceb6102b835ed7c9f15b554c8db5776b9466629a9de35859ecb50fe817e1d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\physics.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/physics.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6045,
+      "sha256": "e0ee9faf07bc5bfb115d2df85272d1884da22a6d35f797f4dcf290a0697c26ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\player.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/player.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 12704,
+      "sha256": "4669c68d2ac035b18092aef2a1c2c3b07f9678d196aff51d83074c30704c055a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\programs.cjs",
+      "path": "操作系统嵌套/submission/fixtures/programs.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 16268,
+      "sha256": "b6f18cb28946d3be1959e868e25d9495072ea3e0786cc3a4ce6b9c90b48d5235"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\receive.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/receive.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 237,
+      "sha256": "02971087a964f96077e0719636fabfcce37b896c0fbd1e5556cccb8755b1e150"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\sample.sheet.json",
+      "path": "操作系统嵌套/submission/fixtures/sample.sheet.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 460,
+      "sha256": "71af7a6ab8278a11541cc4a76672e1e9f5ada71cdd4914f77d00fcde415bbb7a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\send.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/send.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 515,
+      "sha256": "769f17583d244235d9aaa82d025ed0ffba1f92460629972ec964bb1df936a07d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\tasks.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/tasks.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 273,
+      "sha256": "0f4be52d0588ed1650effd09d9ed3c910397bfa2d37d806e74b9501e3afd5789"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\fixtures\\wm.nest.json",
+      "path": "操作系统嵌套/submission/fixtures/wm.nest.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3702,
+      "sha256": "393d60e1783c4e30e2750a41b5cb955d8be671be630d44c30f91949d0d070544"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\index.html",
+      "path": "操作系统嵌套/submission/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 300,
+      "sha256": "bb660307c61135e1e9aa95ccc2ceb09c84eef8b164d28f7e09e054e1105842d8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\launch.cjs",
+      "path": "操作系统嵌套/submission/launch.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 483,
+      "sha256": "d175bc0d6eee51f0a0499c89ae106e72d783cee8b91b29489a1ee6f0e9138e10"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\main.cjs",
+      "path": "操作系统嵌套/submission/main.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3065,
+      "sha256": "d2da3c16368b3f045e17a26257949a120f15be55838cbd9cdd680077e487397e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 22293,
+      "sha256": "0aea4e5981918de5a7c20d2b3841ca24699e93b9c1a6736ccef86bb16b04f26d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 507,
+      "sha256": "e7f1880b640a9644511e9c5b39528dc39ab8a56324cbcea825b95c561eadb288"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\preload.cjs",
+      "path": "操作系统嵌套/submission/preload.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 481,
+      "sha256": "8b90eba6b8f36160a27a2d2d432251d0429cfc2f1f4f8c5f98252b0f70fa55ed"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\src\\apps.jsx",
+      "path": "操作系统嵌套/submission/src/apps.jsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 77608,
+      "sha256": "6e2c09e28805f9540d86eba6f2c71163d342bc76b3e0fdbf3401c8056d1cbb93"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\src\\icons.jsx",
+      "path": "操作系统嵌套/submission/src/icons.jsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3460,
+      "sha256": "97cb76e9131141da872c2e01dd78f3451253ed567cf7ce51ad78107d7873f523"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\src\\main.jsx",
+      "path": "操作系统嵌套/submission/src/main.jsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 26223,
+      "sha256": "95af755244d69c02a1d8bcb0083e4aa61048acf4d9406a542532f888e5c4bf4b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\src\\program-display.jsx",
+      "path": "操作系统嵌套/submission/src/program-display.jsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3308,
+      "sha256": "f730050b76b9090e9577e4f3f66ac49b785eaf67419f347706fd258d4f60ae62"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\src\\runtime.cjs",
+      "path": "操作系统嵌套/submission/src/runtime.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 75617,
+      "sha256": "59376936a224839c37f0c806f432765c96d02b13d17f8d9c8c8710bd6fcb72c5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\src\\stage.jsx",
+      "path": "操作系统嵌套/submission/src/stage.jsx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14017,
+      "sha256": "8d7adf521786d1f2697469f1951b6e5ee1cb5ad468aa43e5919859aa402ca06b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\all.cjs",
+      "path": "操作系统嵌套/submission/tests/all.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 93,
+      "sha256": "5f2453f74ec0dc5053d98c9bde82bf96acc9fb76b11c865d2da8cd0b87026d75"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\authoring-gui.cjs",
+      "path": "操作系统嵌套/submission/tests/authoring-gui.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3423,
+      "sha256": "919649beb994f4d88adfdfd90f6b6aa19be3d7d2fb67e3e79776c9a1ca080a1b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\desktop-check.cjs",
+      "path": "操作系统嵌套/submission/tests/desktop-check.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3281,
+      "sha256": "2b6e88c2517d3ebb7c122b35ed6d54fd0fe84e5ecf879c2c6a8c00fb50bca768"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\full-playback.cjs",
+      "path": "操作系统嵌套/submission/tests/full-playback.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1302,
+      "sha256": "0c6862ca092d6ee5378bb34ee771da4bcd0c523bab50b659a411cb0c241042f3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\graphics-gui.cjs",
+      "path": "操作系统嵌套/submission/tests/graphics-gui.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1784,
+      "sha256": "7fc62ae8ce802a388bcb697ffad276f60730146ab5535180038161ef53e96d43"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\gui-check.cjs",
+      "path": "操作系统嵌套/submission/tests/gui-check.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4659,
+      "sha256": "c5b8602b3fbee4efa5aee76db4b61c414f3ff27d35b8baace353f643ef1d0664"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\programs.test.cjs",
+      "path": "操作系统嵌套/submission/tests/programs.test.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8942,
+      "sha256": "b394dec853b0bc34a50fe95897fc8f85e42049af6cf5a6a5ff70c78161567ec7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\review.test.cjs",
+      "path": "操作系统嵌套/submission/tests/review.test.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3385,
+      "sha256": "434933c47cc96285394a0b9605bc5c4aaf09a53f9731113bd736f525bed0626c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\tests\\runtime.test.cjs",
+      "path": "操作系统嵌套/submission/tests/runtime.test.cjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8108,
+      "sha256": "ddb4b27aafc6092562074df657c1834b54ddacbae684fe6bb5b4db1d4968d5db"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\启动栖境.cmd",
+      "path": "操作系统嵌套/submission/启动栖境.cmd",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 45,
+      "sha256": "95fa168257f7dc7c2b3fb19acd69842ae245d8d429628dcf341e548af60ce345"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\复核清单.md",
+      "path": "操作系统嵌套/submission/复核清单.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4160,
+      "sha256": "6308c85f2d85b9a291e76eb32c4708ed713a0d68f88ca1b897f338c72ff10189"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 459,
+      "sha256": "b709f5934468560e09a1859328b48b0217f858726f68d3c33fde6bfa622f2442"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 4452,
+      "sha256": "7b6527f217501322e1f3f2b273a8400ff95cc3ec2cfdbbc94de243a9812e93f8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1709,
+      "sha256": "e1872eaa9ce01ab9793a73b0fe516f17e079beccac93400af244e65a23e58c5c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 12461,
+      "sha256": "bbc85344cb3aa5b3655c9b6e21cd6ca5ff75c1a7a6fdb51dd9bf5045123df841"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 488,
+      "sha256": "78ad6020cfc2476587e7b1321d66e0ecb984b4666b369a5f10d163744e2b4bd6"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 6785,
+      "sha256": "04cd78ceacf49b155891e29aad2f5626d82a098cce107ddf4dbb8c5abb2c964a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 1938,
+      "sha256": "e5539737c130321f398756b1377863daa267789c1de2f36e5d4c6342e5e75c8b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 32230,
+      "sha256": "2062f22bc742176ba550dd0874fe6a15375fbf02f3842bdd60610a5aae72ce32"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 481,
+      "sha256": "adc06192c30620a264ccc6c757042e92e2a6ace062040cfe20e927dea18d8c84"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 8662,
+      "sha256": "01a5a7804d9bc2e15e2d9fa17b506d337d14863e2e7109bc9a603b0046645cb1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3319,
+      "sha256": "6cbf61a502bf5c126a248ccd3cfe48466ece46510e6723e3ca8a647c1133eebf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第01题.md",
+      "path": "数学竞赛原创试题/submission/答案/第01题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2110,
+      "sha256": "ebbc6cdff97968dde9cf11fdc28718cb17f49de8f36f7a7966434680bccf9eae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第02题.md",
+      "path": "数学竞赛原创试题/submission/答案/第02题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3661,
+      "sha256": "39c804e86c63b73b6c3ab899d2ba036a848c47429abb4bb998f6fb3b9bd0b5e8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第03题.md",
+      "path": "数学竞赛原创试题/submission/答案/第03题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3305,
+      "sha256": "0a3b29008a6cc3bcd7f4c277028ace4a047fa1134e6a38a9d2c025175fe71d77"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第04题.md",
+      "path": "数学竞赛原创试题/submission/答案/第04题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3258,
+      "sha256": "ec13c91d85b55c479b672ecc3980b8739669a9a9099d53ae31413df511f3b289"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4333,
+      "sha256": "4e05745f8fdd826a81525224ff4995ef04087ab15757e62a339dff3c0f065590"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第06题.md",
+      "path": "数学竞赛原创试题/submission/答案/第06题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1937,
+      "sha256": "acc6e24f577e7140ab3f21b0a3c6ca1757581ea699d2a9fd31a059e4e143600e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第07题.md",
+      "path": "数学竞赛原创试题/submission/答案/第07题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2227,
+      "sha256": "eb728cd2902bcab69b1ba0d642f17aeaaff0f75c68c60b9afe0eedc60b111b26"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第08题.md",
+      "path": "数学竞赛原创试题/submission/答案/第08题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3147,
+      "sha256": "24b66ce68f8d313250d46262db2c23e6e8c0c21f9bf271166b0f37ee78f40b70"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第09题.md",
+      "path": "数学竞赛原创试题/submission/答案/第09题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5834,
+      "sha256": "d49dbcebe1cc69e918a11fc8704179a87ff822beddbbd4151182b4fa542e8659"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第10题.md",
+      "path": "数学竞赛原创试题/submission/答案/第10题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2844,
+      "sha256": "2e25f1067bcd97ad9d97c957ffd2076a0746280e2fba1f7eeed5f8fc339ed76b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2962,
+      "sha256": "040c29a965dfe7982e28df88e699b54fba4d18692b3b06a65326342c9710db3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第12题.md",
+      "path": "数学竞赛原创试题/submission/答案/第12题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3388,
+      "sha256": "af92db920af2207530f5283ddebf535b9e9defe26739dd3b78c673df6df078f2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第13题.md",
+      "path": "数学竞赛原创试题/submission/答案/第13题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2690,
+      "sha256": "8343ad2bcfd1e07633903ff8410991ac33c79eff3b90493d5cf96fa9f5de556f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第14题.md",
+      "path": "数学竞赛原创试题/submission/答案/第14题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3844,
+      "sha256": "c1e13046dc1fa9fb79b893c735747da58f6b24298225a1f721916acf325b4484"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第15题.md",
+      "path": "数学竞赛原创试题/submission/答案/第15题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3643,
+      "sha256": "00ec808b8f9386c399674759e20d35d17e2b1ca4386721752f9c073c07f2340a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第16题.md",
+      "path": "数学竞赛原创试题/submission/答案/第16题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4165,
+      "sha256": "36329acea58c525a393327a5e3552d4caa107175f456053335c1b8467d63b488"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第17题.md",
+      "path": "数学竞赛原创试题/submission/答案/第17题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3944,
+      "sha256": "16926cd7366feea990e2e7b8680c2ecf643dcc80eebdeb53f46baa07c8b76ff5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第18题.md",
+      "path": "数学竞赛原创试题/submission/答案/第18题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2210,
+      "sha256": "90f03e56903cea5e9774c257165f289304ab1bfd140f3993f0b865d231d6f9ef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第19题.md",
+      "path": "数学竞赛原创试题/submission/答案/第19题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2182,
+      "sha256": "9dfa3c4cfce9037f5b8dd5fb266f295432c6275e10c3a25dcbaf86688fb5410b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第20题.md",
+      "path": "数学竞赛原创试题/submission/答案/第20题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4482,
+      "sha256": "5012b6c5222fc82115a48d8fad2488d9cc9ecccdd548a9016162e6467bb2fedd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第21题.md",
+      "path": "数学竞赛原创试题/submission/答案/第21题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1031,
+      "sha256": "cb1f40b00afd02431124c29bf5cccfdb7e366a0ccacde06fe3c129fa099b989b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第22题.md",
+      "path": "数学竞赛原创试题/submission/答案/第22题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5887,
+      "sha256": "7a1806d4a5c42823610ad6586ae242abac840f2a2a19bb3edbf365e378a24b86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第23题.md",
+      "path": "数学竞赛原创试题/submission/答案/第23题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1099,
+      "sha256": "cffbfcf4e41c60ed86bc20534dadb28fe064d1b412d70114a3132a33a104475a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\答案\\第24题.md",
+      "path": "数学竞赛原创试题/submission/答案/第24题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1025,
+      "sha256": "9fd11a8ea3cbf7d422b6edc58444a30c20222f2a31046fb1b04c68cf0f3e4957"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 470,
+      "sha256": "c1f3220cba80cdb23996190992aed01c0932bc9b195faa3e9f122caa0f79fc1d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\claude\\main\\result.json",
+      "path": "星际战舰编队/grading/claude/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 6331,
+      "sha256": "f9edf68c10e4e5c064987a4af643dd98b4eb79c7691c31000793781637e4de3d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 7773,
+      "sha256": "0d9948ffc16af3766f8f58a5f89cd208e4ac0a9f63cfa25995a6ca0364bc3bd0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7218,
+      "sha256": "cb962db7f571668f5f9936184d1e27259a3b6e02ce0ad700eefb5a2bfc1c2d7e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\评分表_Opus5.5.md",
+      "path": "星际战舰编队/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7367,
+      "sha256": "51747b9a8be1095f003d6667e96fdbfa254168185500f59334ecdff8e404ca3e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\THREE-LICENSE.txt",
+      "path": "星际战舰编队/submission/THREE-LICENSE.txt",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 1081,
+      "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\fleet.js",
+      "path": "星际战舰编队/submission/fleet.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 71663,
+      "sha256": "5a0582f43c63ad3c56965366645acd4a5a31d6b2e5bdd945d48096eeec436f52"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 511,
+      "sha256": "4c6e965fa1f353c1faa9b79d98abe4f9b624ec76228d85b44a6ee523414d7cd5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\three.min.js",
+      "path": "星际战舰编队/submission/three.min.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 669884,
+      "sha256": "170c6789f43217c96b3170f4b42fafe135de7f7cd48497a4218f9757ee1d49fa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\完善记录.md",
+      "path": "星际战舰编队/submission/完善记录.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 8936,
+      "sha256": "d2b88648f93a9d704219526798698ba09dcaaf7df00bd965944e159ec9accf1b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 2914,
+      "sha256": "7fc0c0cda1017413ced14ae9820bd05a53f981cc7ef36e47e55e42f1dfe0942e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 471,
+      "sha256": "bf0bff9550fc2d219da3d929feac860f77370cea69a5b56c6d44b2e81a927d66"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 17846,
+      "sha256": "d31324a3fcd70b4b0f8e3edf82e791113e8b775768e04a71a00fce43ccbda7cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 3207,
+      "sha256": "a94edad8f5aec91d2512c8350ba69b7d337768fb7d0c2c762710d41ab77c548b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3774,
+      "sha256": "8e2c5aa4122b28adfa113249e484635c63b185f444122d88e3ff08c9b22be51d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3177,
+      "sha256": "0453bf6ce741c6409f9cf98948acb8d07e3a519eab9563bbdbcb4a28c0a2e21b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1331,
+      "sha256": "d9845d42a52c4143c0f75505c7001b3d94665a32b923841bd86236fe56ec2119"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1633,
+      "sha256": "b0aa63450d6b6e55904b19d8f11a3034cb807e69b2be4a07ddeff3b0c31d1fff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1841,
+      "sha256": "00f7a48fa50e39296e23ab813bb9efe9c5d682367cb1015ffa01c013b0f4d32d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1734,
+      "sha256": "3983db9f15c0e2cbcac36f0ba3029bc23e25f384a1387a58a0aad58224b03df6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1509,
+      "sha256": "ecf24c2fc92fd2116ab8173d0cc35d2cfcbb38571a894cf654e83d9df05d4883"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1913,
+      "sha256": "3809014630555c89a8c29729b36847d8350662b1ee5f0abac66fbef0f3a8b774"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1579,
+      "sha256": "81e7823145a5aa16462f897a36d9e6060919bc970f578d658bc1ca748284b1db"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1930,
+      "sha256": "61dc1ac091f5ea088be5a365cd2d4de8c4dd2886233258b5a970c4e707637ee7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2055,
+      "sha256": "91e0c59bcc9d9269dc068dde0735b6994a8547e629e8a5b7a6749277c2184b05"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1621,
+      "sha256": "d16f57da57445a8cfe20f145d4d4e99c492971ea5a2a745bb0186a27aef5283d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1897,
+      "sha256": "3b75266f7ea3b38c2c7618484cf567b39856805e0764c9f236498a5c511d2ae3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1668,
+      "sha256": "ac45e00948edb216252bde648038e49b56fb3fd155a4f9e743191bb350970aa1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2066,
+      "sha256": "f745af4b6dbf8c5c1f7b9d02f48e8838e8abf50a67f4500b34e6c82fecb72bb7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3966,
+      "sha256": "ee5e2d6625eaec29c8144d82fd6388f6df0724c16c26700dc22118453719b707"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4582,
+      "sha256": "6a9af7f8b4a74349a6e2b12bde008dc8cf8b53a443fd7061271dd0e94947adfb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3222,
+      "sha256": "9627d717ffdbebdc851112e950c3e8d39f4cf300aaa430e44ba7cc300803d887"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4052,
+      "sha256": "2c088a0940809d32baa8640046e68eb02f8c30e834ad7a3217d19b88d0c3a9ee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3222,
+      "sha256": "dc072cb50c3b16bd1b67e30733985ca68ae9715ccb18ef27f2e933587661e725"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 5269,
+      "sha256": "577506e96136b10f1dbe96bf2ce966083ddd2d820483dd08290fd3110477bcfd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 9886,
+      "sha256": "688c5dab26e1776394847bbc61d18996ce20070fc5b70137b7eed055ea8922ae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 11974,
+      "sha256": "697c1fb028a49d82bf6c2d749d81accfaba362ba6f785b43604a9b1bde31e230"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 15220,
+      "sha256": "ea914c0c5f5e65be3d6fb50b764ee6173e3dd250a63921a031bd4c53c1aa82f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 17784,
+      "sha256": "4656e9199e203a0da496a07b714336e40c4eabaa8d6237a4e8b7b76be6cc9c22"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 461,
+      "sha256": "f8fc87b58927ab753d026dad6993f650e3255005d990e5fbe9d5231841f22072"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\claude\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/claude/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5712,
+      "sha256": "ffec25d94379a7e9c39bc4b16d8c091fe8f25dcb5360372eab9981100d37ab3c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6683,
+      "sha256": "81e37d1fac3b1192830ef58446ec48260add5723b761cb03d9e04063982f7a3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4793,
+      "sha256": "5462898554de9874a85eb14b624822b68e4d6b0738f1a0fed1c0abb1ede6403f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\评分表_Opus5.5.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_Opus5.5.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4831,
+      "sha256": "8d015f838b7da3db4d70acc5609fa04860a1894517d924ef97a8a4485a96f65e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\README.md",
+      "path": "果冻冲击与造浪水槽/submission/README.md",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6966,
+      "sha256": "6b14a809c3ae1b341ab3c35e5208448cbe66c08d3bf2cd76e8bbb0928acbd3d6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\app.js",
+      "path": "果冻冲击与造浪水槽/submission/app.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 34066,
+      "sha256": "3b3cf9a09dc4f8c4c7f9a1613885550dd18b17c1a8341c7df10d96d4d7d3718f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\fluid-surface.js",
+      "path": "果冻冲击与造浪水槽/submission/fluid-surface.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4797,
+      "sha256": "4c7aeb90d92108a45086a200c9d9b3d928976cfc9be9295248b5695a5361336d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\fluid.js",
+      "path": "果冻冲击与造浪水槽/submission/fluid.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 22978,
+      "sha256": "e681886285100fbea422ee1bc54f60a000d5c7f685796cb61d8fa6de0aeda6cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 7377,
+      "sha256": "d9a4e97a59bbee141f55b4f511cfd698a2bebc245184d533aac5d3be7f4b87c8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 13190,
+      "sha256": "57d57aae22be5741dcef63364f4eb96c13b8fc2baf14b852d5d146feea9864da"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\style.css",
+      "path": "果冻冲击与造浪水槽/submission/style.css",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10341,
+      "sha256": "4acc508f8fb55e381b5fbc9de740447ddc5328d33d04c9c74452238f4e3cfa52"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 443,
+      "sha256": "a75ca3e3478b24482fc1522fb94dcd38d768d402118218902cbf45f365cf66c1"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 2946,
+      "sha256": "68196dd35ed080380ba35ba7c544ad473757187c758af9399e14a20c4bbfba48"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 1291,
+      "sha256": "3849b00ffd40cad6f306f2f2d20814b974a7c4b4c6ecad489507a63d1fd12193"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\答案\\第01题.json",
+      "path": "鲁班锁拆解/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 615,
+      "sha256": "639634d56f12bd2b536614a9b1b09728b832ccd66f89d423691599e72a77395e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\答案\\第02题.json",
+      "path": "鲁班锁拆解/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 769,
+      "sha256": "12cc8b6545797c5c0daded387b1c35d8999a2fcf7260aaa464a91a6847c6a506"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\答案\\第03题.json",
+      "path": "鲁班锁拆解/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 999,
+      "sha256": "b3e494b598276d4fa348efaafc03dd15b49455193cca3c8486edea496fb246dd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\答案\\第04题.json",
+      "path": "鲁班锁拆解/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 861,
+      "sha256": "d8fd4df2ccef224b5a798ee54a36fdb57b35637cd6b8fd29433bdd9fc9a40758"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\答案\\第05题.json",
+      "path": "鲁班锁拆解/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1106,
+      "sha256": "6ab3ad6248052821879ea9a80b9f7be6ff1635f1b6c8df44b2ee3c47f1240f67"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\答案\\第06题.json",
+      "path": "鲁班锁拆解/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1094,
+      "sha256": "432f80672a02a9a1089364175a34fba351114e3e60be6925a43e4d7bff9ec59a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\答案\\第08题.json",
+      "path": "鲁班锁拆解/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1924,
+      "sha256": "701730207627d0ba403a93b36135f9fb1ac6e022bde60a32490112cd39e7d845"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\AE风味动效设计编辑器\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\build_double.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\calibrate_large.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\correctness_ref.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\dev.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_beam.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_cache.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_clip.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_fast.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_final.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_gpu.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_grid.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_inline.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_leaf.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_probes.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_register_stack.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_robust.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_sah.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_secondary.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_shadow_rope.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_slabs.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_smem_quote.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_smem_spill.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_sort_fix.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_sort_rays.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_stats.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_v2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_warp_query.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_wide.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_wide_fix.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\edit_woop.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_double.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_double.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_final.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_final.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_shadowrope.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_shadowrope.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_tree32.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_tree32.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v10.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v10.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v11.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v11.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v12.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v12.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v13.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v13.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v14.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v14.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v15.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v15b.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v15b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v16.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v16.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v17.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v17.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v18.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v18.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v19.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v19.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v20.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v20.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v21.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v21.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v22.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v22b.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v22b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v2p.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v2p.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v3b.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v3b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v5.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v5b.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v5b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v6.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v7.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v7.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v7prof.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v7prof.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v9.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\grader_v9.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\profile.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\profile_launch.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\profile_query.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\profile_v18.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\profile_v21.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\profile_v6.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_before_followup.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_shadowrope.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_tree32.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v1.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v10.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v11.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v12.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v13.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v14.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v15b.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v16.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v17.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v18.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v19.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v20.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v21.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v22b.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v2p.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v3b.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v4.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v5b.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v6.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v7.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v7prof.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v8.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\solution_v9.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\synthetic",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\synthetic.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_final_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_final_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_final_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_final_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_reference_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_shadowrope_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_shadowrope_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_shadowrope_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_shadowrope_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_tree32_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_tree32_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_tree32_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_tree32_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v10_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v10_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v10_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v10_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v11_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v11_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v11_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v11_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v12_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v12_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v12_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v12_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v13_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v13_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v13_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v13_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v14_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v14_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v14_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v14_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v15b_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v15b_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v15b_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v15b_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v16_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v16_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v16_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v16_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v17_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v17_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v17_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v17_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v18_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v18_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v18_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v18_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v19_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v19_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v19_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v19_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v1_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v1_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v1_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v1_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v20_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v20_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v20_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v20_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v21_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v21_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v21_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v21_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v22_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v22b_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v2p_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v3b_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v3b_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v3b_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v3b_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v4_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v4_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v4_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v4_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v5b_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v5b_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v5b_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v5b_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v6_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v6_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v6_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v6_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v7_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v7_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v7_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v7_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v7prof_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v8_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v8_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v8_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v8_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v9_boundary_01",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v9_boundary_02",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v9_boundary_03",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\test_v9_garden",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\形式化证明题\\形式化证明题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\dist",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_pre_final.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2a.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2a.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2b.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2b.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2c.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2c.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2d.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2d.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2e.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_r2e.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_start2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_start2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v1.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v10.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v10.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v11.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v11.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v12.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v12.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v13.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v13.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v14.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v14.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v15.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v15.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v16.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v16.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v17.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v17.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v18.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v18.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v19.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v19.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v20.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v20.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v21.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v21.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v22.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v22.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v23.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v23.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v24.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v24.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v25.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v25.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v25_work.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v26.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v26.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v27.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v27.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v27_work.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v28.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v28.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v29.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v29.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v3.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v4.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v4_current.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v5.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v5.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v6.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v7.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v7.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v8.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v9.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\bot_v9.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_round2_base",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v1",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v11",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v12",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v13",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v15",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v16",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v17",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v2",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v20",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v3",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v4",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v6",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v7",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\logs_v9",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_final_sample.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_final_strong.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_final_weak.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_final_weak_verified.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_r2a.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_r2b.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_r2c.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_r2d_holdout.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_r2e.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_r2f.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_round2_base.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v1.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v10.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v11.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v12.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v13.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v14.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v15.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v16.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v17.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v18.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v19.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v2.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v20.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v21.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v22.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v23.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v24.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v25.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v25_holdout.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v26.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v27.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v27_holdout.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v28.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v29.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v3.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v4.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v4_holdout.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v5.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v6.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v7.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v8.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\report_v9.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\verify.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\verify.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\addr_transpose_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\analyze.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\andor_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\arith_include.tmp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\arithmetic_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\arithmetic_kernel.inc",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\bdd_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\bench.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\chainstats.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\chainstats.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\chainstats_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\chainstats_ff.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\chainstats_ff.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\chunk_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\cut_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\depth_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\detailbench.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\digest_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\extract_profiler.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\fast_transpose.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\ff_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\ffstats.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\finalize_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\fuzz.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\fuzz.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\gather_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\jit_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\make_muxstats.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\make_profilebench.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\mem_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\mul_leaf_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\multstats.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\multstats.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\muxstats.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\muxstats.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\narrow_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\parallel_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\profile.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\profile_create.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\profile_solution.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\profilebench.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\reg_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\reorder_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\same.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\share_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_all_andor.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_bdd.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_before_mux_andor.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_before_priority.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_chunk.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_cut.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_gather1.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_gather_fast.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_gather_simdtranspose.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_gather_vec.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_mul_initial.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_mux_andor_reg.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_narrow.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_parallel.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_priority_gather.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_shared_masks.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_su.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_sync_cache.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_transpose.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_v1.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_v2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_v3.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_v4.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_v5.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_v6.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\solution_v7.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\stats.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\stats.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\stats_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\structured_coverage_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\structured_fuzz.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\structured_fuzz.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\su_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\sync_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\transpose_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\vector_gather_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\writeinspect.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\writeinspect.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\writeinspect_edit.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\机械结构重建.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\机械结构重建\\预览",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\第07题推演.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\GPT\\6.1Sol\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": []
+}

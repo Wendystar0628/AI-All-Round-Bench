@@ -1,0 +1,5 @@
+let fileOperations = 0
+while true {
+  syscall("files.refresh")
+  fileOperations = fileOperations + 1
+}

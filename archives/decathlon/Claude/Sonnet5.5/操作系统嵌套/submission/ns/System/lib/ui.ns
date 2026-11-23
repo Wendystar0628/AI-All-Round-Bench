@@ -1,0 +1,364 @@
+// ui.ns — 即时模式界面库。应用收到窗口管理发来的指针/键盘消息后，用这里的函数重建整帧指令树
+// （矩形、文字、图标、按钮、输入框、滚动区……），再经 gfx_submit 交给显示设备。命中判断和点击逻辑
+// 全部在程序里完成：设备只负责把指令画出来。
+let ui = nil;
+let TH = nil;
+
+fn theme_make(accent, depth) {
+  let accs = ["#8b6cff", "#2fd0b5", "#ff7a6b", "#4aa8ff", "#ffc83d"];
+  if (accent == nil || accent == "") { accent = accs[depth % 5]; }
+  return {bg0: "#0f0c1d", bg1: "#181430", bg2: "#221d40", bg3: "#2d2752", bg4: "#3a3366", border: "#3a3366", text: "#ece9ff", muted: "#a49ecb",
+    faint: "#6f6a99", acc: accent, acc2: "#ffc83d", danger: "#ff6b81", ok: "#4ade80", warn: "#fbbf24", depth: depth, sel: "rgba(139,108,255,.32)"};
+}
+
+fn ui_new(v) {
+  return {v: v, w: 0, h: 0, cmds: [], cur: nil, stack: [], ox: 0, oy: 0, cx: 0, cy: 0, cw: 99999, ch: 99999, mx: -1, my: -1, down: false, ev: nil,
+    active: nil, vals: {}, rev: {}, scroll: {}, fseq: {}, big: {}, len: {}, caret: {}, keys: [], enabled: true, last_key: nil, drag: nil, menu: nil, tick: 0, texts: {}};
+}
+fn ui_begin(U, w, h) {
+  ui = U; U.w = w; U.h = h; U.cmds = []; U.cur = U.cmds; U.stack = []; U.ox = 0; U.oy = 0; U.cx = 0; U.cy = 0; U.cw = 99999; U.ch = 99999; U.enabled = true;
+}
+fn ui_end() {
+  let U = ui; let c = U.cmds;
+  if (U.ev != nil && U.ev.k == "up") { U.active = nil; U.drag = nil; }
+  U.ev = nil; U.keys = [];
+  return c;
+}
+// 把一条消息喂给界面状态（指针位置、按下/抬起、键盘、文本框内容）
+fn ui_event(U, m) {
+  if (m.t == "ptr") {
+    U.mx = m.x; U.my = m.y;
+    U.ev = m;
+    if (m.k == "down") { U.down = true; } else if (m.k == "up") { U.down = false; }
+    U.shift = m.shift; U.ctrl = m.ctrl;
+  } else if (m.t == "key") {
+    push(U.keys, m); U.last_key = m;
+  } else if (m.t == "text") {
+    if (m.big) { U.vals[m.id] = nil; U.big[m.id] = true; } else { U.vals[m.id] = m.val; U.big[m.id] = false; }
+    U.len[m.id] = m.len; U.caret[m.id] = {line: m.line, col: m.col, pos: m.caret};
+    U.texts[m.id] = (U.texts[m.id] == nil ? 0 : U.texts[m.id]) + 1;
+  }
+}
+fn ui_add(n) { push(ui.cur, n); return n; }
+fn ui_push(x, y, w, h, clip) {
+  let g = gx_group(x, y, w, h, []);
+  if (clip) { g.clip = true; }
+  push(ui.cur, g);
+  push(ui.stack, {cur: ui.cur, ox: ui.ox, oy: ui.oy, cx: ui.cx, cy: ui.cy, cw: ui.cw, ch: ui.ch});
+  ui.cur = g.k; ui.ox = ui.ox + x; ui.oy = ui.oy + y;
+  if (clip) {
+    let nx = max(ui.cx, ui.ox); let ny = max(ui.cy, ui.oy);
+    let ex = min(ui.cx + ui.cw, ui.ox + w); let ey = min(ui.cy + ui.ch, ui.oy + h);
+    ui.cx = nx; ui.cy = ny; ui.cw = max(0, ex - nx); ui.ch = max(0, ey - ny);
+  }
+  return g;
+}
+fn ui_pop() {
+  let s = pop(ui.stack);
+  ui.cur = s.cur; ui.ox = s.ox; ui.oy = s.oy; ui.cx = s.cx; ui.cy = s.cy; ui.cw = s.cw; ui.ch = s.ch;
+}
+fn ui_in(x, y, w, h) {
+  let ax = ui.ox + x; let ay = ui.oy + y;
+  return ui.enabled && ui.mx >= ax && ui.mx < ax + w && ui.my >= ay && ui.my < ay + h && ui.mx >= ui.cx && ui.mx < ui.cx + ui.cw && ui.my >= ui.cy && ui.my < ui.cy + ui.ch;
+}
+fn ui_ev_is(k, b) { return ui.ev != nil && ui.ev.k == k && (b == nil || ui.ev.b == b); }
+
+// ---- 绘制原语 ----
+fn ui_rect(x, y, w, h, fill, r) { let n = gx_rect(x, y, w, h, fill, r); push(ui.cur, n); return n; }
+fn ui_box(x, y, w, h, fill, stroke, r) { let n = gx_rect(x, y, w, h, fill, r); if (stroke != nil) { n.stroke = stroke; } push(ui.cur, n); return n; }
+fn ui_text(x, y, s, size, color, st) {
+  let n = gx_text(x, y, s, size, color);
+  if (st != nil) { for (let k of keys(st)) { n[k] = st[k]; } }
+  push(ui.cur, n); return n;
+}
+fn ui_textc(x, y, w, s, size, color, st) { let n = ui_text(x, y, s, size, color, st); n.w = w; n.al = "c"; return n; }
+fn ui_textr(x, y, w, s, size, color, st) { let n = ui_text(x, y, s, size, color, st); n.w = w; n.al = "r"; return n; }
+fn ui_textw(x, y, w, s, size, color, st) { let n = ui_text(x, y, s, size, color, st); n.w = w; n.ell = true; return n; }
+fn ui_icon(x, y, name, size, color) { let n = gx_icon(x, y, name, size, color); push(ui.cur, n); return n; }
+fn ui_line(x1, y1, x2, y2, color, sw) { let n = gx_line(x1, y1, x2, y2, color, sw); push(ui.cur, n); return n; }
+fn ui_node(n) { push(ui.cur, n); return n; }
+
+// ---- 控件 ----
+// 按钮：返回是否被点击（在按钮内按下并在其内抬起）。st: {fill, hf, color, r, size, icon, stroke, tip, d(数据属性), b(粗体)}
+fn ui_button(id, x, y, w, h, label, st) {
+  if (st == nil) { st = {}; }
+  let inside = ui_in(x, y, w, h);
+  let clicked = false;
+  if (inside) {
+    if (ui_ev_is("down", 0)) { ui.active = id; }
+    else if (ui_ev_is("up", 0) && ui.active == id) { clicked = true; }
+  }
+  let fill = st.fill == nil ? TH.bg3 : st.fill;
+  let n = gx_rect(x, y, w, h, fill, st.r == nil ? 6 : st.r);
+  n.hf = st.hf == nil ? TH.bg4 : st.hf;
+  if (ui.active == id && ui.down && inside) { n.fill = st.ac == nil ? TH.acc : st.ac; }
+  if (st.stroke != nil) { n.stroke = st.stroke; }
+  n.tid = id; n.aria = st.aria == nil ? label : st.aria; n.cur = "pointer";
+  if (st.d != nil) { n.d = st.d; }
+  if (st.tip != nil) { n.tip = st.tip; }
+  if (st.sh != nil) { n.sh = st.sh; }
+  if (st.key != nil) { n.key = st.key; }
+  push(ui.cur, n);
+  let col = st.color == nil ? TH.text : st.color;
+  let sz = st.size == nil ? 13 : st.size;
+  if (st.icon != nil && label != "" && label != nil) {
+    let tw = text_w(label, sz);
+    let total = 16 + 6 + tw; let sx = x + (w - total) / 2;
+    ui_icon(sx, y + (h - 16) / 2, st.icon, 16, col);
+    ui_text(sx + 22, y + (h - sz * 1.3) / 2, label, sz, col, {b: st.b});
+  } else if (st.icon != nil) {
+    let isz = st.isz == nil ? 18 : st.isz;
+    ui_icon(x + (w - isz) / 2, y + (h - isz) / 2, st.icon, isz, col);
+  } else if (label != nil) {
+    ui_textc(x, y + (h - sz * 1.3) / 2, w, label, sz, col, {b: st.b});
+  }
+  return clicked;
+}
+fn ui_iconbtn(id, x, y, s, icon, tip, st) {
+  if (st == nil) { st = {}; }
+  st.icon = icon; st.tip = tip; st.aria = tip; if (st.fill == nil) { st.fill = "rgba(0,0,0,0)"; }
+  return ui_button(id, x, y, s, s, nil, st);
+}
+fn ui_checkbox(id, x, y, label, checked) {
+  let w = 22 + text_w(label, 13) + 4;
+  let inside = ui_in(x, y, w, 22);
+  let clicked = false;
+  if (inside) { if (ui_ev_is("down", 0)) { ui.active = id; } else if (ui_ev_is("up", 0) && ui.active == id) { clicked = true; } }
+  let hit = gx_rect(x, y, w, 22, "rgba(0,0,0,0)", 5); hit.hf = "rgba(255,255,255,.06)"; hit.tid = id; hit.aria = label; hit.cur = "pointer"; hit.d = {checked: checked ? "true" : "false", value: checked ? "on" : "off"};
+  ui_node(hit);
+  ui_box(x + 2, y + 3, 16, 16, checked ? TH.acc : TH.bg1, checked ? TH.acc : TH.faint, 4);
+  if (checked) { ui_icon(x + 3, y + 4, "check", 14, "#fff"); }
+  ui_text(x + 24, y + 3, label, 13, TH.text);
+  return clicked;
+}
+// 水平滑块：返回新值（拖动时更新）
+fn ui_slider(id, x, y, w, h, value, lo, hi) {
+  let inside = ui_in(x, y, w, h);
+  let frac = hi > lo ? (value - lo) / (hi - lo) : 0;
+  frac = clamp(frac, 0, 1);
+  if (inside && ui_ev_is("down", 0)) { ui.active = id; }
+  if (ui.active == id && ui.down && ui.ev != nil && (ui.ev.k == "down" || ui.ev.k == "move")) {
+    let f = clamp((ui.mx - (ui.ox + x)) / w, 0, 1);
+    value = lo + f * (hi - lo); frac = f;
+  }
+  let trk = gx_rect(x, y + h / 2 - 3, w, 6, TH.bg3, 3); ui_node(trk);
+  ui_rect(x, y + h / 2 - 3, w * frac, 6, TH.acc, 3);
+  let hit = gx_rect(x, y, w, h, "rgba(0,0,0,0)", 0); hit.tid = id; hit.aria = id; hit.cur = "pointer"; hit.d = {value: str(value)}; ui_node(hit);
+  let knob = ui_box(x + w * frac - 7, y + h / 2 - 7, 14, 14, "#fff", TH.acc, 7); knob.sh = "s1";
+  return value;
+}
+fn ui_progress(x, y, w, h, frac, color) {
+  ui_rect(x, y, w, h, TH.bg3, h / 2);
+  if (frac > 0) { ui_rect(x, y, max(h, w * clamp(frac, 0, 1)), h, color == nil ? TH.acc : color, h / 2); }
+}
+// 文本输入（宿主文本设备）：值由设备持有，事件把当前内容带回；st: {ph, ml, mono, size, fill, stroke, ro}
+fn ui_input(id, x, y, w, h, st) {
+  if (st == nil) { st = {}; }
+  let n = {o: "input", id: id, x: x, y: y, w: w, h: h, v: ui.vals[id] == nil ? "" : ui.vals[id], rev: ui.rev[id] == nil ? 0 : ui.rev[id], f: ui.fseq[id] == nil ? 0 : ui.fseq[id],
+    tid: id, aria: st.aria == nil ? id : st.aria, size: st.size == nil ? 13 : st.size, color: TH.text, fill: st.fill == nil ? TH.bg0 : st.fill,
+    stroke: st.stroke == nil ? TH.border : st.stroke, r: st.r == nil ? 6 : st.r};
+  if (st.ph != nil) { n.ph = st.ph; }
+  if (st.ml) { n.ml = true; }
+  if (st.ro) { n.ro = true; }
+  if (st.mono) { n.fam = "mono"; }
+  if (st.pw) { n.pw = true; }
+  if (st.pad != nil) { n.pad = st.pad; }
+  if (st.sel) { n.sel = true; }
+  if (st.tid != nil) { n.tid = st.tid; }
+  if (st.d != nil) { n.d = st.d; }
+  push(ui.cur, n);
+  return n;
+}
+fn ui_val(id) {
+  if (ui.big[id]) { return sys("input_value", ui.v, id); }
+  let v = ui.vals[id]; return v == nil ? "" : v;
+}
+fn ui_set(id, val) { ui.vals[id] = val; ui.big[id] = false; ui.rev[id] = (ui.rev[id] == nil ? 0 : ui.rev[id]) + 1; ui.len[id] = len(val); }
+fn ui_focus(id) { ui.fseq[id] = (ui.fseq[id] == nil ? 0 : ui.fseq[id]) + 1; }
+fn ui_key_in(name, id) { for (let k of ui.keys) { if (k.key == name && k.id == id) { return k; } } return nil; }
+fn ui_key(name) { for (let k of ui.keys) { if (k.key == name) { return k; } } return nil; }
+fn ui_text_changed(id) { return ui.texts[id] != nil && ui.texts[id] > 0; }
+fn ui_text_ack(id) { ui.texts[id] = 0; }
+
+// 滚动区域：返回当前滚动偏移；内容请画在 (0, -offset) 起的坐标里，最后调用 ui_scroll_end
+fn ui_scroll_begin(id, x, y, w, h, content_h) {
+  let off = ui.scroll[id] == nil ? 0 : ui.scroll[id];
+  let maxoff = max(0, content_h - h);
+  if (ui_in(x, y, w, h) && ui_ev_is("wheel", nil)) { off = off + ui.ev.dy * 0.6; ui.ev.used = true; }
+  off = clamp(off, 0, maxoff);
+  ui.scroll[id] = off;
+  ui_push(x, y, w, h, true);
+  ui_push(0, 0 - off, w, content_h > h ? content_h : h, false);
+  if (ui.stack_scroll == nil) { ui.stack_scroll = []; }
+  push(ui.stack_scroll, {id: id, w: w, h: h, content: content_h, off: off});
+  return off;
+}
+fn ui_scroll_end() {
+  ui_pop(); ui_pop();
+  let s = pop(ui.stack_scroll);
+  if (s.content > s.h) {
+    let th = max(24, s.h * s.h / s.content);
+    let ty = (s.h - th) * (s.off / (s.content - s.h));
+    // 滚动条画在区域右侧（相对父坐标，调用方在滚动区同一坐标系中）
+    s.thumb_y = ty; s.thumb_h = th;
+  }
+  return s;
+}
+fn ui_scrollbar(x, y, w, h, content, off) {
+  if (content <= h) { return nil; }
+  let th = max(24, h * h / content);
+  let ty = y + (h - th) * (off / (content - h));
+  ui_rect(x, ty, w, th, "rgba(170,160,230,.35)", w / 2);
+}
+
+// 下拉/弹出菜单：items = [{id, label, icon, sep, disabled, d}]；返回被点击的项 id（或 "" 表示点击外部关闭）
+fn ui_menu(id, x, y, w, items, row_h) {
+  if (row_h == nil) { row_h = 30; }
+  let h = 8; for (let it of items) { h = h + (it.sep ? 9 : row_h); }
+  let mx = x; let my = y;
+  if (mx + w > ui.w - 4) { mx = max(4, ui.w - w - 4); }
+  if (my + h > ui.h - 4) { my = max(4, ui.h - h - 4); }
+  let bg = gx_rect(mx, my, w, h, TH.bg2, 10); bg.stroke = TH.bg4; bg.sh = "s3"; bg.tid = id; ui_node(bg);
+  let res = nil; let cy = my + 4;
+  let saved = ui.enabled; ui.enabled = true;
+  for (let it of items) {
+    if (it.sep) { ui_rect(mx + 10, cy + 4, w - 20, 1, TH.bg4, 0); cy = cy + 9; continue; }
+    let dis = it.disabled == true;
+    if (!dis) {
+      if (ui_button(it.tid == nil ? it.id : it.tid, mx + 4, cy, w - 8, row_h - 2, nil, {fill: "rgba(0,0,0,0)", hf: TH.bg4, r: 6, aria: it.label, d: it.d})) { res = it.id; }
+    }
+    ui_text(mx + 34, cy + (row_h - 2 - 17) / 2, it.label, 13, dis ? TH.faint : (it.danger ? TH.danger : TH.text));
+    if (it.icon != nil) { ui_icon(mx + 12, cy + (row_h - 2 - 16) / 2, it.icon, 16, dis ? TH.faint : TH.muted); }
+    if (it.hint != nil) { ui_textr(mx + 34, cy + (row_h - 2 - 17) / 2, w - 48, it.hint, 12, TH.faint); }
+    cy = cy + row_h;
+  }
+  // 点击菜单外部：关闭
+  if (res == nil && ui_ev_is("down", nil) && !(ui.mx >= mx && ui.mx < mx + w && ui.my >= my && ui.my < my + h)) { res = ""; }
+  return res;
+}
+// 标题栏式分隔标题
+fn ui_header(x, y, w, title, icon) {
+  if (icon != nil) { ui_icon(x, y + 1, icon, 16, TH.acc); ui_text(x + 22, y, title, 13, TH.muted, {b: true}); }
+  else { ui_text(x, y, title, 13, TH.muted, {b: true}); }
+}
+
+// ---- 应用主循环：处理消息 → 重建画面 → 提交 ----
+// app: {frame: &fn(U, w, h) 画一个视图, on_msg: &fn(m) 处理应用自己的消息, tick: 动画/定时刷新间隔(秒，0=不刷新)}
+let APP = {views: {}, args: nil, wid: "", app: "", tick: 0, dirty: true, on_msg: nil, on_idle: nil, frame: nil, size: {}, focused: false};
+fn app_theme(args) { TH = theme_make(args == nil ? nil : args.accent, args == nil || args.depth == nil ? 0 : args.depth); }
+fn app_view(v) {
+  if (APP.views[v] == nil) { APP.views[v] = ui_new(v); }
+  return APP.views[v];
+}
+fn app_init(frame_fn, msg_fn, tick) {
+  APP.args = args(); APP.frame = frame_fn; APP.on_msg = msg_fn; APP.tick = tick == nil ? 0 : tick;
+  let a = APP.args;
+  if (a != nil) { APP.wid = a.wid == nil ? "" : a.wid; APP.app = a.app == nil ? "" : a.app; }
+  app_theme(a);
+  let w = (a != nil && a.w != nil) ? a.w : 600; let h = (a != nil && a.h != nil) ? a.h : 400;
+  APP.size[0] = {w: w, h: h};
+}
+fn app_redraw(v) {
+  let sz = APP.size[v];
+  if (sz == nil) { return nil; }
+  let U = app_view(v);
+  ui_begin(U, sz.w, sz.h);
+  let root = ui_push(0, 0, sz.w, sz.h, false);
+  if (v == 0) { root.wid = APP.wid; root.app = APP.app; }
+  APP.frame(U, sz.w, sz.h);
+  ui_pop();
+  return ui_end();
+}
+fn app_submit_all() {
+  for (let k of keys(APP.size)) {
+    let v = num(k);
+    let cmds = app_redraw(v);
+    if (cmds != nil) { sys("gfx_submit", v, cmds); }
+  }
+  APP.dirty = false;
+}
+fn app_handle(m) {
+  // 窗口管理发来的标准消息
+  if (m.t == "ptr" || m.t == "key" || m.t == "text") {
+    let v = m.v == nil ? 0 : m.v;
+    let U = app_view(v);
+    ui_event(U, m);
+    if (APP.size[v] != nil && (m.t != "ptr" || m.k != "move" || U.down)) {
+      // 重建一遍让界面消费这次事件（命中判断与点击逻辑在这里发生）；提交留到这一批消息处理完
+      app_redraw(v);
+    }
+    APP.dirty = true;
+    return true;
+  }
+  if (m.t == "proj") {
+    // 投送窗口发来的控制/输入：视图 1 属于投送窗口，应用内容与交互仍由本应用处理
+    let q = m.m;
+    if (q.op == "on") { APP.size[1] = {w: q.w, h: q.h}; APP.dirty = true; if (APP.on_proj != nil) { APP.on_proj("on"); } }
+    else if (q.op == "resize") { APP.size[1] = {w: q.w, h: q.h}; APP.dirty = true; }
+    else if (q.op == "off") { del(APP.size, 1); sys("gfx_free", 1); if (APP.on_proj != nil) { APP.on_proj("off"); } }
+    else if (q.op == "in") {
+      let ev = q.ev; let U1 = app_view(1);
+      if (ev.type == "key") { app_handle(key_msg(ev, 1)); }
+      else if (ev.type == "text") { app_handle(text_msg(ev, 1)); }
+      else { app_handle(ptr_msg(ev, 1, 0, 0)); }
+    }
+    return true;
+  }
+  if (m.t == "resize") { APP.size[m.v == nil ? 0 : m.v] = {w: m.w, h: m.h}; APP.dirty = true; return true; }
+  if (m.t == "theme") { TH = m.theme; APP.dirty = true; return true; }
+  if (m.t == "view_off") { del(APP.size, m.v); sys("gfx_free", m.v); return true; }
+  if (m.t == "view_on") { APP.size[m.v] = {w: m.w, h: m.h}; APP.dirty = true; return true; }
+  return false;
+}
+fn app_run() {
+  app_submit_all();
+  while (true) {
+    let e = recv_timeout(APP.tick > 0 ? APP.tick : 0.5);
+    let n = 0;
+    while (e != nil && n < 40) {
+      let m = e.msg;
+      if (typeof(m) == "map") {
+        if (!app_handle(m)) { if (APP.on_msg != nil) { APP.on_msg(m); } APP.dirty = true; }
+      }
+      n++;
+      e = poll_msg();
+    }
+    if (n == 0 && APP.on_idle != nil) { if (APP.on_idle()) { APP.dirty = true; } }
+    if (APP.tick > 0 || APP.dirty) { app_submit_all(); }
+  }
+}
+fn fmt_size(n) {
+  if (n == nil) { return ""; }
+  if (n < 1024) { return n + " B"; }
+  if (n < 1048576) { return fmt(n / 1024, 1) + " KB"; }
+  return fmt(n / 1048576, 2) + " MB";
+}
+fn fmt_mtime(t) {
+  if (t == nil || t == 0) { return "—"; }
+  let w = wall_secs() - time() + t;
+  let d = date_parts(w);
+  return d.y + "-" + pad(d.m, 2, "0") + "-" + pad(d.d, 2, "0") + " " + pad(d.hh, 2, "0") + ":" + pad(d.mm, 2, "0");
+}
+
+// ---- 时间与日期（系统虚拟时钟 + 启动时的真实时间）----
+fn wall_secs() { return sys("wallclock") / 1000; }
+fn date_parts(secs) {
+  let days = floor(secs / 86400); let rem = secs - days * 86400;
+  let z = days + 719468; let era = floor(z / 146097); let doe = z - era * 146097;
+  let yoe = floor((doe - floor(doe / 1460) + floor(doe / 36524) - floor(doe / 146096)) / 365);
+  let y = yoe + era * 400; let doy = doe - (365 * yoe + floor(yoe / 4) - floor(yoe / 100));
+  let mp = floor((5 * doy + 2) / 153); let d = doy - floor((153 * mp + 2) / 5) + 1;
+  let m = mp < 10 ? mp + 3 : mp - 9;
+  if (m <= 2) { y = y + 1; }
+  return {y: y, m: m, d: d, hh: floor(rem / 3600), mm: floor((rem % 3600) / 60), ss: floor(rem % 60), wd: mod(days + 4, 7)};
+}
+fn days_in_month(y, m) {
+  if (m == 2) { return (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)) ? 29 : 28; }
+  return (m == 4 || m == 6 || m == 9 || m == 11) ? 30 : 31;
+}
+// 把原始事件翻译成应用消息（窗口管理与投送共用）
+fn ptr_msg(ev, v, ox, oy) {
+  return {t: "ptr", k: ev.type, v: v, x: ev.x - ox, y: ev.y - oy, b: ev.b, dx: ev.dx, dy: ev.dy, ctrl: ev.ctrl, shift: ev.shift, alt: ev.alt, bt: ev.bt};
+}
+fn key_msg(ev, v) { return {t: "key", v: v, key: ev.key, code: ev.code, ctrl: ev.ctrl, shift: ev.shift, alt: ev.alt, ed: ev.ed, rep: ev.rep, id: ev.id}; }
+fn text_msg(ev, v) { return {t: "text", v: v, id: ev.id, val: ev.v, len: ev.len, big: ev.big, caret: ev.caret, line: ev.line, col: ev.col}; }

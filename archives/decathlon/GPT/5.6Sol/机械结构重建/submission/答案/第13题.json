@@ -1,0 +1,13 @@
+{
+  "problem":"13","parts":[{"name":"1","title":"斜耳叉架减速箱体","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,88,72],"r":6}],"depth":6},
+    {"type":"extrude","plane":"XZ","origin":[0,8,6],"loops":[{"path":[[10,0],[78,0],[72,46],[18,46]]}],"depth":-56},
+    {"type":"extrude","op":"cut","plane":"XZ","origin":[0,14,6],"loops":[{"rect":[18,8,70,38]}],"depth":-44},
+    {"type":"extrude","plane":"XZ","origin":[0,8,0],"loops":[{"circle":[36,28],"d":66}],"depth":-6},
+    {"type":"hole","plane":"XZ","origin":[0,8,0],"at":[36,28],"d":30,"through":true,"cbore":{"d":44,"depth":4}},
+    {"type":"extrude","plane":"ZY","origin":[88,0,0],"loops":[{"circle":[36,24],"d":54}],"depth":12},
+    {"type":"hole","plane":"ZY","origin":[88,0,0],"at":[36,24],"d":24,"through":true,"reverse":true,"cbore":{"d":36,"depth":6}},
+    {"type":"extrude","plane":"XZ","origin":[0,10,0],"loops":[{"path":[[8,46],[20,48],[24,66],[12,64]]},{"path":[[64,46],[80,48],[76,70],[62,68]]}],"depth":-12,"name":"两叉耳"},
+    {"type":"hole","plane":{"origin":[18,12,64],"normal":[-0.405579788,-0.405579788,0.819152044],"x_dir":[0.707106781,-0.707106781,0]},"at":[0,0],"d":12,"depth":76},
+    {"type":"hole","plane":"XY","origin":[0,0,6],"at":[[8,8],[80,8],[8,64],[80,64]],"d":9,"through":true,"cbore":{"d":16,"depth":2}}
+  ]}]}

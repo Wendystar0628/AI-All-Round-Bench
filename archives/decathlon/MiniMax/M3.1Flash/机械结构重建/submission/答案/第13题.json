@@ -1,0 +1,24 @@
+{
+  "problem": "13",
+  "parts": [
+    {
+      "name": "1",
+      "title": "斜耳叉架减速箱体",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 150, 96]}], "depth": 12, "name": "底板150x96x12"},
+        {"type": "fillet", "radius": 6, "edges": [[0, 0, 6], [150, 0, 6], [0, 96, 6], [150, 96, 6]], "name": "底板四竖棱R6"},
+        {"type": "extrude", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [8, 8, 146, 88]}], "depth": 74, "name": "箱体"},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 26], "loops": [{"rect": [18, 18, 136, 78]}], "depth": 44, "name": "内腔"},
+        {"type": "extrude", "plane": "ZX", "origin": [0, 30, 0], "loops": [{"path": [[86, 10], [115, 10], [112, 44], [20, 88], [20, 86]]}], "depth": 8, "name": "斜耳板"},
+        {"type": "extrude", "plane": "ZX", "origin": [0, 82, 0], "loops": [{"path": [[86, 10], [115, 10], [112, 44], [20, 88], [20, 86]]}], "depth": 8, "name": "斜耳板2"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 88, 0], "at": [[104, 28]], "d": 16, "through": true, "name": "叉耳孔Φ16"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 88, 0], "at": [[104, 28]], "d": 16, "through": true, "name": "叉耳孔Φ16b"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 88, 0], "at": [[50, 49]], "d": 44, "through": true, "name": "低速轴孔Φ44"},
+        {"type": "hole", "plane": "ZX", "origin": [0, 88, 0], "at": [[50, 49]], "d": 66, "depth": 6, "name": "前沉孔Φ66"},
+        {"type": "hole", "plane": {"origin": [60, 45, 12], "normal": [0.4056, 0.4056, -0.8192], "x_dir": [0.7071, -0.7071, 0]}, "at": [[0, 0]], "d": 12, "depth": 76, "name": "斜孔Φ12 深76 倾角35 方位225"},
+        {"type": "hole", "plane": {"origin": [8, 48, 70], "normal": [-0.966, 0, 0.259], "x_dir": [0, 1, 0]}, "at": [[0, 0]], "d": 10, "depth": 50, "name": "斜孔Φ10 深50 倾角75 方位180"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[10, 10], [140, 10], [10, 86], [140, 86]], "d": 9, "through": true, "cbore": {"d": 16, "depth": 3}, "name": "底板孔Φ9 沉孔Φ16"}
+      ]
+    }
+  ]
+}

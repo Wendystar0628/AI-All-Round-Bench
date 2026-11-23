@@ -1,0 +1,49 @@
+{
+  "problem": "22",
+  "parts": [
+    {"name": "1", "title": "阀体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-50, -40, 50, 40]}], "depth": 100},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [0, 0], "d": 55, "depth": 70},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [0, 0], "d": 44, "depth": 50}
+    ]},
+    {"name": "2", "title": "斜轴1", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 8}], "depth": 60}
+    ]},
+    {"name": "3", "title": "斜轴2", "placement": {"translate": [20, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 8}], "depth": 60}
+    ]},
+    {"name": "4", "title": "斜轴3", "placement": {"translate": [-20, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 8}], "depth": 60}
+    ]},
+    {"name": "5", "title": "密封件", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 10}], "depth": 5}
+    ]},
+    {"name": "6", "title": "压盖", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-30, -30, 30, 30]}], "depth": 10}
+    ]},
+    {"name": "7", "title": "定位销", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 2}], "depth": 15}
+    ]},
+    {"name": "8", "title": "弹簧", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 3}], "depth": 20}
+    ]},
+    {"name": "9", "title": "螺塞", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 12}], "depth": 15}
+    ]},
+    {"name": "10", "title": "垫片", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-25, -25, 25, 25]}], "depth": 2}
+    ]},
+    {"name": "11", "title": "O型圈", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 12}], "depth": 3}
+    ]},
+    {"name": "12", "title": "挡圈", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-20, -20, 20, 20]}], "depth": 3}
+    ]},
+    {"name": "13", "title": "锁紧螺母", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 10}], "depth": 8}
+    ]},
+    {"name": "14", "title": "防尘罩", "placement": {"translate": [0, 0, 100]}, "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [0, 0], "r": 15}], "depth": 10}
+    ]}
+  ]
+}

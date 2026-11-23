@@ -1,0 +1,800 @@
+# 窗口管理器。层叠、焦点和命中都在这里。
+# 修改点：函数 hit_test。改成从底层往上找，被挡住的窗口会先接到点击。
+
+fn make_desk() {
+  return {
+    vw: 1100,
+    vh: 680,
+    windows: [],
+    nextZ: 3,
+    seq: 1,
+    focus: "",
+    start: false,
+    query: "",
+    menu: null,
+    dialog: null,
+    drag: null,
+    press: null,
+    hot: [],
+    nodes: [],
+    clock: 0,
+    level: 1,
+    name: "内层",
+    selIcon: ""
+  };
+}
+
+fn main() {
+  let desk = make_desk();
+  desk.name = self_name();
+  let anc = ancestors();
+  if (anc != null) { desk.level = len(anc); }
+  while (true) {
+    let m = wait_msg();
+    on_msg(desk, m);
+    let g = 0;
+    while (g < 30) {
+      let extra = recv();
+      if (extra == null) { g = 100; }
+      else { on_msg(desk, extra); g = g + 1; }
+    }
+    sync_children(desk);
+    rebuild(desk);
+    present(desk_frame(desk));
+  }
+}
+
+fn on_msg(desk, m) {
+  if (m == null) { return 0; }
+  if (m.tag == "tick") { desk.clock = m.time; return 0; }
+  if (m.tag == "boot") { return 0; }
+  if (m.tag == "body") { apply_body(desk, m); return 0; }
+  if (m.tag == "dropped") { return 0; }
+  if (m.tag == "open") { open_path(desk, m.path); return 0; }
+  if (m.tag == "project-input") { return on_project_input(desk, m); }
+  if (m.tag == "team") { return on_team(desk, m); }
+  if (m.t == "resize") {
+    if (m.w > 200) { desk.vw = m.w; }
+    if (m.h > 160) { desk.vh = m.h; }
+    fit_max(desk);
+    return 0;
+  }
+  if (m.t == "value") { forward_value(desk, m); return 0; }
+  if (m.t == "down" || m.t == "move" || m.t == "up" || m.t == "dbl" || m.t == "context" || m.t == "wheel") {
+    on_pointer(desk, m);
+    return 0;
+  }
+  if (m.t == "key") { on_key(desk, m); return 0; }
+  return 0;
+}
+
+fn on_key(desk, m) {
+  if (m.key == "Escape") {
+    desk.menu = null;
+    desk.start = false;
+    desk.dialog = null;
+    return 0;
+  }
+  let win = focused(desk);
+  if (win != null && win.pid != 0) {
+    send(win.pid, { tag: "key", key: m.key });
+  }
+  return 0;
+}
+
+fn on_pointer(desk, ev) {
+  rebuild(desk);
+  let h = hit_test(desk, ev.x, ev.y);
+  if (ev.t == "down") { pointer_down(desk, ev, h); }
+  else if (ev.t == "move") { pointer_move(desk, ev, h); }
+  else if (ev.t == "up") { pointer_up(desk, ev, h); }
+  else if (ev.t == "dbl") { pointer_dbl(desk, ev, h); }
+  else if (ev.t == "context") { pointer_menu(desk, ev, h); }
+  else if (ev.t == "wheel") { forward_hit(desk, h, ev); }
+  return 0;
+}
+
+fn pointer_down(desk, ev, h) {
+  desk.press = h;
+  if (h.kind != "menu" && h.kind != "mitem") { desk.menu = null; }
+  if (h.kind == "title" || h.kind == "min" || h.kind == "max" || h.kind == "close" || h.kind == "edge" || h.kind == "button" || h.kind == "item" || h.kind == "client" || h.kind == "view") {
+    let win = win_by_id(desk, h.win);
+    if (win != null) { focus_win(desk, win); }
+  }
+  if (h.kind == "title" && h.win != "") {
+    let win2 = win_by_id(desk, h.win);
+    if (win2 != null && win2.state != "max") {
+      desk.drag = { mode: "move", id: h.win, dx: ev.x - win2.x, dy: ev.y - win2.y };
+    }
+  }
+  if (h.kind == "edge") {
+    let win3 = win_by_id(desk, h.win);
+    if (win3 != null) {
+      desk.drag = { mode: "size", id: h.win, edge: h.target, x0: ev.x, y0: ev.y, ox: win3.x, oy: win3.y, ow: win3.w, oh: win3.h };
+    }
+  }
+  if (h.kind == "icon") { desk.selIcon = h.id; }
+  if (h.kind == "start") { desk.start = !desk.start; }
+  return 0;
+}
+
+fn pointer_move(desk, ev, h) {
+  if (desk.drag == null) {
+    if (desk.press != null && desk.press.kind == "view") { forward_hit(desk, desk.press, ev); }
+    return 0;
+  }
+  let win = win_by_id(desk, desk.drag.id);
+  if (win == null) { return 0; }
+  if (desk.drag.mode == "move") {
+    win.x = ev.x - desk.drag.dx;
+    win.y = ev.y - desk.drag.dy;
+    if (win.y < 0) { win.y = 0; }
+    if (win.y > desk.vh - 80) { win.y = desk.vh - 80; }
+  } else if (desk.drag.mode == "size") {
+    resize_win(win, desk.drag, ev);
+  }
+  return 0;
+}
+
+fn pointer_up(desk, ev, h) {
+  if (desk.drag != null && desk.drag.mode == "move") {
+    let win = win_by_id(desk, desk.drag.id);
+    if (win != null) { snap_win(desk, win); }
+  }
+  if (desk.press != null && h.id == desk.press.id && h.kind == desk.press.kind) {
+    activate(desk, h, ev);
+  }
+  desk.drag = null;
+  desk.press = null;
+  return 0;
+}
+
+fn pointer_dbl(desk, ev, h) {
+  if (h.kind == "title") {
+    let win = win_by_id(desk, h.win);
+    if (win != null) { toggle_max(desk, win); }
+    return 0;
+  }
+  if (h.kind == "icon") { open_icon(desk, h); return 0; }
+  if (h.kind == "item") { forward_hit(desk, h, ev); return 0; }
+  return 0;
+}
+
+fn pointer_menu(desk, ev, h) {
+  if (h.kind == "icon") { desk.selIcon = h.id; }
+  desk.menu = { x: ev.x, y: ev.y, items: [
+    { id: "refresh", label: "刷新" },
+    { id: "new-system", label: "新建子系统" },
+    { id: "tile", label: "排列图标" }
+  ] };
+  if (ev.y > desk.vh - 160) { desk.menu.y = desk.vh - 160; }
+  return 0;
+}
+
+fn activate(desk, h, ev) {
+  if (h.kind == "min") {
+    let win = win_by_id(desk, h.win);
+    if (win != null) { win.state = "min"; }
+    return 0;
+  }
+  if (h.kind == "max") {
+    let win2 = win_by_id(desk, h.win);
+    if (win2 != null) { toggle_max(desk, win2); }
+    return 0;
+  }
+  if (h.kind == "close") { ask_close(desk, h.win); return 0; }
+  if (h.kind == "start") { return 0; }
+  if (h.kind == "launch") { launch(desk, h.app, h.path); desk.start = false; return 0; }
+  if (h.kind == "task") {
+    let win3 = win_by_id(desk, h.win);
+    if (win3 != null) {
+      if (win3.state == "min") { win3.state = "normal"; focus_win(desk, win3); }
+      else if (desk.focus == win3.id) { win3.state = "min"; }
+      else { focus_win(desk, win3); }
+    }
+    return 0;
+  }
+  if (h.kind == "mitem") {
+    if (h.id == "new-system") { new_system(desk); }
+    if (h.id == "tile") { tile_icons(desk); }
+    desk.menu = null;
+    return 0;
+  }
+  if (h.kind == "dialog") {
+    answer_dialog(desk, h.id);
+    return 0;
+  }
+  if (h.kind == "button" || h.kind == "item" || h.kind == "view" || h.kind == "client") {
+    forward_hit(desk, h, ev);
+    return 0;
+  }
+  if (h.kind == "desktop") { desk.start = false; }
+  return 0;
+}
+
+fn on_project_input(desk, m) {
+  let winp = win_by_id(desk, m.windowId);
+  if (winp == null || winp.pid == 0) { return 0; }
+  if (m.kind == "value") {
+    send(winp.pid, { tag: "value", id: m.id, value: m.value });
+    return 0;
+  }
+  send(winp.pid, {
+    tag: "ui", id: m.id, testid: m.testid, path: m.path, target: m.target,
+    sys: m.sys, dbl: false, x: m.x, y: m.y, dx: m.dx, dy: m.dy, pick: m.pick, act: m.act
+  });
+  return 0;
+}
+
+fn on_team(desk, m) {
+  let wint = win_by_id(desk, m.windowId);
+  if (wint == null || m.pid == 0) { return 0; }
+  if (wint.team == null) { wint.team = []; }
+  push(wint.team, m.pid);
+  return 0;
+}
+
+fn forward_hit(desk, h, ev) {
+  let win = win_by_id(desk, h.win);
+  if (win == null || win.pid == 0) { return 0; }
+  let dbl = false;
+  if (ev.t == "dbl") { dbl = true; }
+  send(win.pid, {
+    tag: "ui", id: h.id, testid: h.testid, path: h.path, target: h.target,
+    sys: h.sys, dbl: dbl, x: ev.x, y: ev.y, dx: ev.dx, dy: ev.dy, pick: ev.pick, act: ev.t
+  });
+  return 0;
+}
+
+fn forward_value(desk, m) {
+  let i = 0;
+  while (i < len(desk.windows)) {
+    let win = desk.windows[i];
+    if (win.id == m.win || widget_has(win, m.widget)) {
+      if (m.widget == "start-search") { desk.query = str(m.value); return 0; }
+      if (win.pid != 0) { send(win.pid, { tag: "value", id: m.widget, value: m.value }); }
+      return 0;
+    }
+    i = i + 1;
+  }
+  if (m.widget == "start-search") { desk.query = str(m.value); }
+  return 0;
+}
+
+fn widget_has(win, id) {
+  if (win.widgets == null || id == null) { return false; }
+  let i = 0;
+  while (i < len(win.widgets)) {
+    if (win.widgets[i].id == id) { return true; }
+    i = i + 1;
+  }
+  return false;
+}
+
+fn apply_body(desk, m) {
+  let win = null;
+  let i = 0;
+  while (i < len(desk.windows)) {
+    if (desk.windows[i].pid == m.from || desk.windows[i].id == m.windowId) { win = desk.windows[i]; }
+    i = i + 1;
+  }
+  if (win == null) { return 0; }
+  if (m.widgets != null) { win.widgets = m.widgets; }
+  if (m.title != null && m.title != "") { win.title = m.title; }
+  return 0;
+}
+
+fn launch(desk, app, path) {
+  if (app == "new-system") { new_system(desk); return 0; }
+  if (app == "files") { return open_prog(desk, "files", "文件", "/Programs/files.npl", "文件", 640, 460, path); }
+  if (app == "editor") { return open_prog(desk, "editor", "编辑器", "/Programs/editor.npl", "编辑", 700, 480, path); }
+  if (app == "tasks") { return open_prog(desk, "tasks", "进程", "/Programs/tasks.npl", "进程", 760, 500, path); }
+  if (app == "player") { return open_player(desk, path); }
+  if (app == "charts") { return open_charts(desk); }
+  if (app == "file") { return open_path(desk, path); }
+  return 0;
+}
+
+fn open_icon(desk, h) {
+  if (h.app == "file") { return open_path(desk, h.path); }
+  return launch(desk, h.app, h.path);
+}
+
+fn open_path(desk, path) {
+  if (path == null || path == "") { return 0; }
+  if (ends(path, ".scene")) { return open_player(desk, path); }
+  if (ends(path, ".npl") || ends(path, ".txt") || ends(path, ".md") || ends(path, ".json")) {
+    return open_prog(desk, "editor", "编辑器", "/Programs/editor.npl", "编辑", 700, 480, path);
+  }
+  return open_prog(desk, "editor", "编辑器", "/Programs/editor.npl", "编辑", 700, 480, path);
+}
+
+fn open_prog(desk, app, title, file, pname, w, h, path) {
+  let old = find_app(desk, app);
+  if (old != null) {
+    if (old.state == "min") { old.state = "normal"; }
+    focus_win(desk, old);
+    if (path != null && path != "" && old.pid != 0) { send(old.pid, { tag: "open", path: path }); }
+    return old.pid;
+  }
+  let win = create_win(desk, app, title, w, h);
+  let pid = spawn(file, pname);
+  win.pid = pid;
+  if (pid != 0) { send(pid, { tag: "boot", windowId: win.id, wm: self(), path: path }); }
+  return pid;
+}
+
+fn open_player(desk, path) {
+  if (path == null || path == "") { path = "/Demo/helicopter-24.scene"; }
+  let old = find_app(desk, "player");
+  if (old != null) {
+    if (old.state == "min") { old.state = "normal"; }
+    focus_win(desk, old);
+    if (old.pid != 0) { send(old.pid, { tag: "open", path: path }); }
+    return old.pid;
+  }
+  let win = create_win(desk, "player", "场景播放器", 820, 560);
+  let timeline = spawn("/Programs/player.npl", "时序");
+  let stage = spawn("/Programs/stage.npl", "机身");
+  let fx = spawn("/Programs/fx.npl", "环境");
+  win.pid = timeline;
+  win.team = [timeline, stage, fx];
+  if (timeline != 0) {
+    send(timeline, { tag: "boot", windowId: win.id, wm: self(), path: path, stage: stage, fx: fx });
+  }
+  return timeline;
+}
+
+fn open_charts(desk) {
+  let old = find_app(desk, "charts");
+  if (old != null) {
+    if (old.state == "min") { old.state = "normal"; }
+    focus_win(desk, old);
+    return old.pid;
+  }
+  let win = create_win(desk, "charts", "图表工作台", 760, 520);
+  let draw = spawn("/Programs/charts.npl", "图表");
+  let recv = spawn("/Programs/chart-recv.npl", "图表接收");
+  win.pid = draw;
+  win.team = [draw, recv];
+  if (draw != 0) { send(draw, { tag: "boot", windowId: win.id, wm: self(), recv: recv }); }
+  if (recv != 0) { send(recv, { tag: "boot", draw: draw, windowId: win.id }); }
+  return draw;
+}
+
+fn new_system(desk) {
+  let res = create_child("");
+  if (res == null || res.id == null) { return 0; }
+  open_system(desk, res.id, res.name);
+  return 0;
+}
+
+fn open_system(desk, id, name) {
+  if (find_sys_win(desk, id) != null) { return 0; }
+  let title = id;
+  if (name != null && name != "") { title = name; }
+  let win = create_win(desk, "system", title, 880, 580);
+  win.sysId = id;
+  win.widgets = [];
+  return 0;
+}
+
+fn sync_children(desk) {
+  let kids = children();
+  if (kids == null) { return 0; }
+  let i = 0;
+  while (i < len(kids)) {
+    if (find_sys_win(desk, kids[i].id) == null) { open_system(desk, kids[i].id, kids[i].name); }
+    i = i + 1;
+  }
+  return 0;
+}
+
+fn ask_close(desk, id) {
+  let win = win_by_id(desk, id);
+  if (win == null) { return 0; }
+  if (win.app == "system") {
+    desk.dialog = { title: "关闭子系统", text: "停止 " + win.sysId + " 及其全部后代？已保存的快照还在。", sys: win.sysId, win: win.id };
+    return 0;
+  }
+  close_win(desk, win);
+  return 0;
+}
+
+fn answer_dialog(desk, id) {
+  if (desk.dialog == null) { return 0; }
+  if (id == "yes" && desk.dialog.sys != null && desk.dialog.sys != "") {
+    ctl("stop", desk.dialog.sys, 0);
+    let win = win_by_id(desk, desk.dialog.win);
+    if (win != null) { remove_win(desk, win.id); }
+  }
+  desk.dialog = null;
+  return 0;
+}
+
+fn close_win(desk, win) {
+  if (win.team != null) {
+    let i = 0;
+    while (i < len(win.team)) {
+      if (win.team[i] != 0) { kill(win.team[i]); }
+      i = i + 1;
+    }
+  } else if (win.pid != 0) { kill(win.pid); }
+  remove_win(desk, win.id);
+  return 0;
+}
+
+fn remove_win(desk, id) {
+  let out = [];
+  let i = 0;
+  while (i < len(desk.windows)) {
+    if (desk.windows[i].id != id) { push(out, desk.windows[i]); }
+    i = i + 1;
+  }
+  desk.windows = out;
+  if (desk.focus == id) { desk.focus = ""; }
+  return 0;
+}
+
+fn create_win(desk, app, title, w, h) {
+  let win = {
+    id: "w" + str(desk.seq),
+    app: app,
+    title: title,
+    x: 48 + (desk.seq % 6) * 28,
+    y: 36 + (desk.seq % 5) * 24,
+    w: w,
+    h: h,
+    z: desk.nextZ,
+    state: "normal",
+    pid: 0,
+    team: null,
+    widgets: [],
+    sysId: "",
+    rx: 48, ry: 36, rw: w, rh: h
+  };
+  desk.seq = desk.seq + 1;
+  desk.nextZ = desk.nextZ + 1;
+  push(desk.windows, win);
+  focus_win(desk, win);
+  return win;
+}
+
+fn focus_win(desk, win) {
+  desk.focus = win.id;
+  win.z = desk.nextZ;
+  desk.nextZ = desk.nextZ + 1;
+  if (win.state == "min") { win.state = "normal"; }
+  return 0;
+}
+
+fn toggle_max(desk, win) {
+  if (win.state == "max") {
+    win.state = "normal";
+    win.x = win.rx;
+    win.y = win.ry;
+    win.w = win.rw;
+    win.h = win.rh;
+  } else {
+    win.rx = win.x; win.ry = win.y; win.rw = win.w; win.rh = win.h;
+    win.state = "max";
+    win.x = 0; win.y = 0;
+    win.w = desk.vw;
+    win.h = desk.vh - 52;
+  }
+  return 0;
+}
+
+fn snap_win(desk, win) {
+  if (win.x < 16) {
+    win.rx = win.x; win.ry = win.y; win.rw = win.w; win.rh = win.h;
+    win.x = 0; win.y = 0; win.w = floor(desk.vw / 2); win.h = desk.vh - 52;
+    win.state = "snap";
+  } else if (win.x + win.w > desk.vw - 16) {
+    win.rx = win.x; win.ry = win.y; win.rw = win.w; win.rh = win.h;
+    win.w = floor(desk.vw / 2);
+    win.x = desk.vw - win.w;
+    win.y = 0;
+    win.h = desk.vh - 52;
+    win.state = "snap";
+  }
+  return 0;
+}
+
+fn resize_win(win, drag, ev) {
+  let dx = ev.x - drag.x0;
+  let dy = ev.y - drag.y0;
+  if (drag.edge == "e" || drag.edge == "se" || drag.edge == "ne") { win.w = drag.ow + dx; }
+  if (drag.edge == "s" || drag.edge == "se" || drag.edge == "sw") { win.h = drag.oh + dy; }
+  if (drag.edge == "w" || drag.edge == "sw" || drag.edge == "nw") {
+    win.x = drag.ox + dx;
+    win.w = drag.ow - dx;
+  }
+  if (drag.edge == "n" || drag.edge == "ne" || drag.edge == "nw") {
+    win.y = drag.oy + dy;
+    win.h = drag.oh - dy;
+  }
+  if (win.w < 280) { win.w = 280; }
+  if (win.h < 180) { win.h = 180; }
+  win.state = "normal";
+  return 0;
+}
+
+fn fit_max(desk) {
+  let i = 0;
+  while (i < len(desk.windows)) {
+    let win = desk.windows[i];
+    if (win.state == "max") {
+      win.x = 0; win.y = 0; win.w = desk.vw; win.h = desk.vh - 52;
+    }
+    i = i + 1;
+  }
+  return 0;
+}
+
+fn tile_icons(desk) {
+  return 0;
+}
+
+fn find_app(desk, app) {
+  let i = 0;
+  while (i < len(desk.windows)) {
+    if (desk.windows[i].app == app) { return desk.windows[i]; }
+    i = i + 1;
+  }
+  return null;
+}
+
+fn find_sys_win(desk, id) {
+  let i = 0;
+  while (i < len(desk.windows)) {
+    if (desk.windows[i].app == "system" && desk.windows[i].sysId == id) { return desk.windows[i]; }
+    i = i + 1;
+  }
+  return null;
+}
+
+fn win_by_id(desk, id) {
+  let i = 0;
+  while (i < len(desk.windows)) {
+    if (desk.windows[i].id == id) { return desk.windows[i]; }
+    i = i + 1;
+  }
+  return null;
+}
+
+fn focused(desk) {
+  return win_by_id(desk, desk.focus);
+}
+
+fn ends(path, suf) {
+  if (path == null) { return false; }
+  if (len(path) < len(suf)) { return false; }
+  return slice(path, len(path) - len(suf), len(path)) == suf;
+}
+
+fn hit_test(desk, x, y) {
+  # 修改点：命中顺序。现在从最上层热区往下。倒着循环改成从 0 往上，遮挡会反掉。
+  let i = len(desk.hot) - 1;
+  while (i >= 0) {
+    let zone = desk.hot[i];
+    if (x >= zone.x && y >= zone.y && x < zone.x + zone.w && y < zone.y + zone.h) { return zone; }
+    i = i - 1;
+  }
+  return { kind: "desktop", id: "desktop", win: "", app: "", path: "", target: "", testid: "", sys: "" };
+}
+
+fn add_hot(desk, x, y, w, h, kind, id, win, app, path, target, testid, sys) {
+  push(desk.hot, { x: x, y: y, w: w, h: h, kind: kind, id: id, win: win, app: app, path: path, target: target, testid: testid, sys: sys });
+  return 0;
+}
+
+fn z_indices(desk) {
+  let ids = [];
+  let i = 0;
+  while (i < len(desk.windows)) { push(ids, i); i = i + 1; }
+  let a = 0;
+  while (a < len(ids)) {
+    let b = 0;
+    while (b + 1 < len(ids)) {
+      if (desk.windows[ids[b]].z > desk.windows[ids[b + 1]].z) {
+        let tmp = ids[b];
+        ids[b] = ids[b + 1];
+        ids[b + 1] = tmp;
+      }
+      b = b + 1;
+    }
+    a = a + 1;
+  }
+  return ids;
+}
+
+fn rebuild(desk) {
+  desk.hot = [];
+  desk.nodes = [];
+  add_hot(desk, 0, 0, desk.vw, desk.vh - 52, "desktop", "desktop", "", "", "", "", "", "");
+  add_icons(desk);
+  let order = z_indices(desk);
+  let i = 0;
+  while (i < len(order)) {
+    let win = desk.windows[order[i]];
+    if (win.state != "min") { add_window(desk, win); }
+    i = i + 1;
+  }
+  add_taskbar(desk);
+  if (desk.start) { add_start(desk); }
+  if (desk.menu != null) { add_menu(desk); }
+  if (desk.dialog != null) { add_dialog(desk); }
+  return 0;
+}
+
+fn add_icons(desk) {
+  let items = icon_list();
+  let i = 0;
+  while (i < len(items)) {
+    let col = floor(i / 6);
+    let row = i - col * 6;
+    let x = 18 + col * 96;
+    let y = 12 + row * 92;
+    let it = items[i];
+    add_hot(desk, x, y, 84, 84, "icon", it.label, "", it.app, it.path, "", "desktop-icon", "");
+    push(desk.nodes, { t: "icon", id: it.label, x: x, y: y, w: 84, h: 84, label: it.label, app: it.app, path: it.path, testid: "desktop-icon", sel: desk.selIcon == it.label });
+    i = i + 1;
+  }
+  return 0;
+}
+
+fn icon_list() {
+  return [
+    { app: "files", label: "文件", path: "" },
+    { app: "editor", label: "编辑器", path: "" },
+    { app: "tasks", label: "进程", path: "" },
+    { app: "player", label: "播放器", path: "/Demo/helicopter-24.scene" },
+    { app: "charts", label: "图表", path: "" },
+    { app: "file", label: "24号直升机", path: "/Demo/helicopter-24.scene" },
+    { app: "file", label: "操作说明", path: "/Desktop/操作说明.txt" }
+  ];
+}
+
+fn add_window(desk, win) {
+  let x = win.x;
+  let y = win.y;
+  let w = win.w;
+  let h = win.h;
+  add_hot(desk, x, y + h - 8, w, 8, "edge", "s", win.id, win.app, "", "s", "", "");
+  add_hot(desk, x, y, 8, h, "edge", "w", win.id, win.app, "", "w", "", "");
+  add_hot(desk, x + w - 8, y, 8, h, "edge", "e", win.id, win.app, "", "e", "", "");
+  add_hot(desk, x, y, w, 8, "edge", "n", win.id, win.app, "", "n", "", "");
+  let widgets = win.widgets;
+  if (widgets != null) {
+    let k = 0;
+    while (k < len(widgets)) {
+      add_widget_hot(desk, win, widgets[k]);
+      k = k + 1;
+    }
+  }
+  if (win.app == "system") {
+    push(desk.nodes, { t: "viewport", id: "vp-" + win.sysId, systemId: win.sysId, x: 0, y: 0, w: w - 8, h: h - 42 });
+  }
+  add_hot(desk, x, y, w - 108, 34, "title", "title", win.id, win.app, "", "", "window-titlebar", "");
+  add_hot(desk, x + w - 102, y + 4, 30, 26, "min", "min", win.id, win.app, "", "", "window-minimize", "");
+  add_hot(desk, x + w - 70, y + 4, 30, 26, "max", "max", win.id, win.app, "", "", "window-maximize", "");
+  add_hot(desk, x + w - 38, y + 4, 30, 26, "close", "close", win.id, win.app, "", "", "window-close", "");
+  push(desk.nodes, {
+    t: "window", id: win.id, app: win.app, title: win.title, x: x, y: y, w: w, h: h,
+    z: win.z, state: win.state, focus: desk.focus == win.id, widgets: widgets, sysId: win.sysId
+  });
+  return 0;
+}
+
+fn add_widget_hot(desk, win, widget) {
+  if (widget == null) { return 0; }
+  if (widget.t == "viewport") { return 0; }
+  let x = win.x + widget.x;
+  let y = win.y + 34 + widget.y;
+  let kind = "button";
+  if (widget.t == "list") { kind = "list"; }
+  else if (widget.t == "view3d") { kind = "view"; }
+  else if (widget.t == "text" || widget.t == "input" || widget.t == "label" || widget.t == "plot") { kind = "client"; }
+  if (widget.t == "list" && widget.items != null) {
+    add_hot(desk, x, y, widget.w, widget.h, "client", widget.id, win.id, win.app, widget.path, "", widget.testid, "");
+    let n = len(widget.items);
+    let i = 0;
+    while (i < n && i < 12) {
+      let it = widget.items[i];
+      let iy = y + 4 + i * 28;
+      if (iy + 26 < y + widget.h) {
+        add_hot(desk, x + 4, iy, widget.w - 8, 26, "item", it.path, win.id, win.app, it.path, "", "files-item", "");
+      }
+      i = i + 1;
+    }
+    return 0;
+  }
+  let ww = widget.w;
+  let hh = widget.h;
+  if (widget.t == "view3d") {
+    if (win.w - widget.x - 8 > ww) { ww = win.w - widget.x - 8; }
+    if (win.h - 34 - widget.y - 8 > hh) { hh = win.h - 34 - widget.y - 8; }
+  }
+  if (ww == null || hh == null || ww < 2 || hh < 2) { return 0; }
+  add_hot(desk, x, y, ww, hh, kind, widget.id, win.id, win.app, widget.path, widget.target, widget.testid, widget.sys);
+  return 0;
+}
+
+fn add_taskbar(desk) {
+  let y = desk.vh - 52;
+  add_hot(desk, 8, y + 8, 40, 36, "start", "start", "", "", "", "", "start-toggle", "");
+  let items = [];
+  let i = 0;
+  let x = 56;
+  while (i < len(desk.windows)) {
+    let win = desk.windows[i];
+    add_hot(desk, x, y + 8, 132, 36, "task", win.id, win.id, win.app, "", "", "taskbar-item", win.sysId);
+    push(items, { id: win.id, title: win.title, app: win.app, active: desk.focus == win.id, state: win.state, sysId: win.sysId });
+    x = x + 138;
+    i = i + 1;
+  }
+  push(desk.nodes, { t: "taskbar", x: 0, y: y, w: desk.vw, h: 52, items: items, clock: desk.clock, name: desk.name, level: desk.level, start: desk.start });
+  return 0;
+}
+
+fn add_start(desk) {
+  let y = desk.vh - 52 - 340;
+  add_hot(desk, 12, y, 260, 332, "client", "start-panel", "", "", "", "", "start-menu", "");
+  push(desk.nodes, { t: "start", x: 12, y: y, w: 260, h: 332, testid: "start-menu", query: desk.query });
+  let list = launches();
+  let i = 0;
+  let ly = y + 52;
+  while (i < len(list)) {
+    let it = list[i];
+    let show = true;
+    if (desk.query != null && desk.query != "" && index_of(it.label, desk.query) < 0) { show = false; }
+    if (show) {
+      add_hot(desk, 24, ly, 230, 34, "launch", it.testid, "", it.app, it.path, "", it.testid, "");
+      push(desk.nodes, { t: "launch", x: 24, y: ly, w: 230, h: 34, label: it.label, testid: it.testid, app: it.app, path: it.path });
+      ly = ly + 38;
+    }
+    i = i + 1;
+  }
+  add_hot(desk, 24, y + 8, 230, 32, "client", "start-search", "", "", "", "", "start-search", "");
+  push(desk.nodes, { t: "input", id: "start-search", testid: "start-search", x: 24, y: y + 8, w: 230, h: 32, value: desk.query });
+  return 0;
+}
+
+fn launches() {
+  return [
+    { testid: "launch-files", app: "files", label: "文件", path: "" },
+    { testid: "launch-editor", app: "editor", label: "编辑器", path: "" },
+    { testid: "launch-tasks", app: "tasks", label: "进程", path: "" },
+    { testid: "launch-player", app: "player", label: "播放器", path: "/Demo/helicopter-24.scene" },
+    { testid: "launch-charts", app: "charts", label: "图表", path: "" },
+    { testid: "system-new", app: "new-system", label: "新建子系统", path: "" }
+  ];
+}
+
+fn add_menu(desk) {
+  let x = desk.menu.x;
+  let y = desk.menu.y;
+  let items = desk.menu.items;
+  let i = 0;
+  while (i < len(items)) {
+    add_hot(desk, x, y + i * 32, 180, 32, "mitem", items[i].id, "", "", "", "", "desktop-menu-item", "");
+    i = i + 1;
+  }
+  push(desk.nodes, { t: "menu", x: x, y: y, w: 180, h: len(items) * 32, items: items });
+  return 0;
+}
+
+fn add_dialog(desk) {
+  let x = floor(desk.vw / 2) - 180;
+  let y = floor(desk.vh / 2) - 90;
+  add_hot(desk, x, y, 360, 180, "client", "dialog", "", "", "", "", "dialog", "");
+  add_hot(desk, x + 36, y + 120, 120, 34, "dialog", "yes", "", "", "", "", "dialog-yes", desk.dialog.sys);
+  add_hot(desk, x + 180, y + 120, 120, 34, "dialog", "no", "", "", "", "", "dialog-no", "");
+  push(desk.nodes, { t: "dialog", x: x, y: y, w: 360, h: 180, title: desk.dialog.title, text: desk.dialog.text });
+  return 0;
+}
+
+fn desk_frame(desk) {
+  return { name: desk.name, level: desk.level, clock: desk.clock, vw: desk.vw, vh: desk.vh, nodes: desk.nodes };
+}

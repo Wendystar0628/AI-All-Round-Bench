@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#061831"/><stop offset=".55" stop-color="#275782"/><stop offset="1" stop-color="#e4a66f"/></linearGradient>
+    <radialGradient id="sun"><stop stop-color="#fff4b0"/><stop offset=".35" stop-color="#ffc55b" stop-opacity=".95"/><stop offset="1" stop-color="#ff8d59" stop-opacity="0"/></radialGradient>
+    <linearGradient id="ridge" x2="0" y2="1"><stop stop-color="#263c56"/><stop offset="1" stop-color="#091426"/></linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <circle cx="1460" cy="285" r="210" fill="url(#sun)"/>
+  <path d="M0 690L220 500l180 136 250-286 240 272 195-180 218 212 260-310 357 347v389H0z" fill="#142941" opacity=".72"/>
+  <path d="M0 785l260-210 176 146 225-198 230 215 242-188 180 173 212-147 395 245v259H0z" fill="url(#ridge)"/>
+  <path d="M0 862c310-62 474-13 716-57 307-56 580-13 1204 97v178H0z" fill="#081323"/>
+  <path d="M0 827c480 82 760 22 1010 22 285 0 531 92 910 118" fill="none" stroke="#eecc69" stroke-opacity=".2" stroke-width="4"/>
+  <g fill="#fff" opacity=".5"><circle cx="265" cy="240" r="2"/><circle cx="480" cy="120" r="2"/><circle cx="720" cy="210" r="1.5"/><circle cx="1100" cy="120" r="2"/><circle cx="1700" cy="160" r="1.5"/></g>
+  <ellipse cx="1435" cy="303" rx="340" ry="48" fill="#ffbf78" opacity=".12" filter="url(#blur)"/>
+</svg>

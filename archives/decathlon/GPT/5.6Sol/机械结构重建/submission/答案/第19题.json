@@ -1,0 +1,13 @@
+{
+  "problem":"19","parts":[{"name":"1","title":"斜交三轴变速箱壳","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,190,145],"r":6}],"depth":12},
+    {"type":"extrude","plane":"XZ","origin":[0,13,0],"loops":[{"path":[[10,12],[180,12],[180,72],[160,108],[126,126],[58,126],[26,106],[10,68]]}],"depth":-119},
+    {"type":"extrude","plane":"XZ","origin":[0,13,0],"loops":[{"circle":[54,62],"d":72},{"circle":[128,70],"d":86}],"depth":13},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[54,62],"d":34,"through":true,"cbore":{"d":56,"depth":4}},
+    {"type":"hole","plane":"XZ","origin":[0,0,0],"at":[128,70],"d":42,"through":true,"cbore":{"d":66,"depth":5}},
+    {"type":"extrude","plane":{"origin":[34,72,102],"normal":[-0.643,0,0.766],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":44},{"circle":[0,0],"d":26}],"depth":42},
+    {"type":"extrude","plane":{"origin":[92,72,122],"normal":[0,0,1],"x_dir":[1,0,0]},"loops":[{"circle":[0,0],"d":48},{"circle":[0,0],"d":28}],"depth":44},
+    {"type":"extrude","plane":{"origin":[164,72,102],"normal":[0.707,0,0.707],"x_dir":[0,1,0]},"loops":[{"circle":[0,0],"d":42},{"circle":[0,0],"d":24}],"depth":42},
+    {"type":"hole","plane":{"origin":[190,74,62],"normal":[1,0,0],"x_dir":[0,1,0]},"at":[0,0],"d":18,"depth":80},
+    {"type":"hole","plane":"XY","origin":[0,0,0],"at":[[12,12],[178,12],[12,133],[178,133]],"d":10,"through":true,"reverse":true}
+  ]}]}

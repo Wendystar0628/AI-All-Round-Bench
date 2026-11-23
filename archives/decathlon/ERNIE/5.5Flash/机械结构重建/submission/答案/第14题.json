@@ -1,0 +1,16 @@
+{
+  "problem": "14",
+  "parts": [
+    {"name": "1", "title": "偏置双出口泵体铸件", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 90, 62], "r": 5}], "depth": 14},
+      {"type": "extrude", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [0, 0, 90, 62]}], "depth": 58},
+      {"type": "extrude", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 44], "d": 82}], "depth": [-34, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 44], "d": 66}], "depth": [-12, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 44], "d": 54}], "depth": [-22, 0]},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 0, 0], "loops": [{"circle": [45, 44], "d": 46}], "through": true},
+      {"type": "extrude", "plane": "YZ", "origin": [0, 0, 0], "loops": [{"circle": [31, 26], "d": 68}], "depth": [0, 90]},
+      {"type": "extrude", "op": "cut", "plane": "YZ", "origin": [0, 0, 0], "loops": [{"circle": [31, 26], "d": 28}], "through": true},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 72], "at": [[24, 18], [66, 18], [24, 46], [66, 46]], "d": 9, "depth": 10, "cbore": {"d": 16, "depth": 4}}
+    ]}
+  ]
+}

@@ -1,0 +1,407 @@
+/*
+ * 子系统应用：三维场景播放器（NSL 程序）
+ * ------------------------------------------------------------
+ * 播放器本身只负责窗口、控件与显示提交；播放位置由“时序进程”推进，
+ * 机体状态由“飞行场景进程”计算，环境特效由“特效进程”生成，
+ * 飞行排演时另有飞控进程参与。三者通过消息协作，都由内核调度。
+ */
+var WIN = 0;
+var MY = 0;
+var SCENE = null;
+var RES_SENT = 0;
+var DUR = 15;
+var POS = 0;
+var RATE = 1;
+var PLAYING = 0;
+var MODE = "show";
+var CAM = 0;
+var LOOP = 1;
+var DIRTY = 0;
+
+var P_TIME = 0;
+var P_SCENE = 0;
+var P_FX = 0;
+var P_CTRL = 0;
+
+var HPOS = [0, 1.62, 0];
+var HROT = [0, 0, 0];
+var HVEL = [0, 0, 0];
+var HROTV = [0, 0, 0];
+var HROTOR = 0;
+var HDMG = [];
+var HDEAD = 0;
+var HIT = 0;
+
+var FPARTS = [];
+var FDEBRIS = [];
+var CTRL = [];
+var CTIME = 0;
+var CWITES = 0;
+var SELPART = "";
+var STATUS = "就绪";
+var SHOWPROJ = 0;
+var ANC = [];
+var LASTDRAW = 0;
+var CAMYAW = 0.6;
+var CAMDIST = 22;
+var CAMPITCH = 0.42;
+var WINDSET = 0;
+var HDGSET = 0;
+var FAULTSET = 999;
+
+function A(o, k) { return obj.get(o, k); }
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function send(to, obj) { call("msg.send", { to: to, payload: json.str(obj) }); }
+function wid(id, type, x, y, ww, wh, value, data, testid) {
+  return [id, type, x, y, ww, wh, value, data, testid];
+}
+function f2(v) { return num.toInt(v * 100) / 100; }
+function fs(v) { return num.toStr(f2(v)); }
+
+/* ---------- 资源与进程 ---------- */
+function loadScene(path) {
+  var res = call("file.read", { path: path });
+  if (!A(res, "ok")) { STATUS = "场景读取失败：" + A(res, "error"); draw(); return; }
+  SCENE = json.parse(A(res, "content"));
+  var tl = A(SCENE, "timeline");
+  if (tl != null) { DUR = num.toInt(A(tl, "duration")); }
+  RES_SENT = 0;
+  STATUS = "已载入场景 " + path;
+  draw();
+}
+
+function spawnWorkers() {
+  MY = sys.self();
+  /* 顺序：特效 → 场景 → 时序；后面的进程通过启动参数拿到前面进程的身份 */
+  var a1 = [];
+  oput(a1, "parent", MY);
+  oput(a1, "dur", DUR);
+  var r1 = call("proc.spawn", { name: "环境特效进程", path: "/System/apps/player-fx.nsl", role: "user", args: json.str(a1) });
+  if (A(r1, "ok")) { P_FX = num.toInt(A(r1, "pid")); }
+  var a2 = [];
+  oput(a2, "parent", MY);
+  oput(a2, "dur", DUR);
+  oput(a2, "fxPid", P_FX);
+  var r2 = call("proc.spawn", { name: "飞行场景进程", path: "/System/apps/player-scene.nsl", role: "user", args: json.str(a2) });
+  if (A(r2, "ok")) { P_SCENE = num.toInt(A(r2, "pid")); }
+  var a3 = [];
+  oput(a3, "parent", MY);
+  oput(a3, "dur", DUR);
+  oput(a3, "scenePid", P_SCENE);
+  oput(a3, "fxPid", P_FX);
+  var r3 = call("proc.spawn", { name: "时序进程", path: "/System/apps/player-timing.nsl", role: "user", args: json.str(a3) });
+  if (A(r3, "ok")) { P_TIME = num.toInt(A(r3, "pid")); }
+  var a4 = [];
+  oput(a4, "parent", MY);
+  oput(a4, "dur", DUR);
+  var r4 = call("proc.spawn", { name: "飞控进程", path: "/System/flight-controller.nsl", role: "user", args: json.str(a4) });
+  if (A(r4, "ok")) { P_CTRL = num.toInt(A(r4, "pid")); }
+}
+
+function ctrlToTiming(action, t, rate, mode, loop) {
+  var o = [];
+  oput(o, "type", "ctl");
+  oput(o, "action", action);
+  oput(o, "t", t);
+  oput(o, "rate", rate);
+  oput(o, "mode", mode);
+  oput(o, "loop", loop);
+  send(P_TIME, o);
+}
+
+/* ---------- 相机 ---------- */
+function camKeys() {
+  if (SCENE == null) { return []; }
+  var tl = A(SCENE, "timeline");
+  if (tl == null) { return []; }
+  var ck = A(tl, "cameraKeys");
+  if (ck == null) { return []; }
+  return ck;
+}
+function sampleCam(t) {
+  var ks = camKeys();
+  var off = [13.5, 4.2, 15.0];
+  var look = [0, 0.2, 0];
+  if (arr.len(ks) > 0) {
+    var i = 0;
+    while (i < arr.len(ks) - 1 && num.toInt(A(arr.get(ks, i), "t") * 1000) <= t * 1000) { i = i + 1; }
+    var k0 = arr.get(ks, i);
+    var k1 = arr.get(ks, math.min(i + 1, arr.len(ks) - 1));
+    var t0 = num.toInt(A(k0, "t") * 1000);
+    var t1 = num.toInt(A(k1, "t") * 1000);
+    var u = 0;
+    if (t1 > t0) { u = (t * 1000 - t0) / (t1 - t0); }
+    if (u < 0) { u = 0; }
+    if (u > 1) { u = 1; }
+    var o0 = A(k0, "off"); var o1 = A(k1, "off");
+    var l0 = A(k0, "look"); var l1 = A(k1, "look");
+    for (var q = 0; q < 3; q = q + 1) {
+      arr.set(off, q, num.toInt(arr.get(o0, q) * 100) / 100 + (num.toInt(arr.get(o1, q) * 100) / 100 - num.toInt(arr.get(o0, q) * 100) / 100) * u);
+      arr.set(look, q, num.toInt(arr.get(l0, q) * 100) / 100 + (num.toInt(arr.get(l1, q) * 100) / 100 - num.toInt(arr.get(l0, q) * 100) / 100) * u);
+    }
+  }
+  return [off, look];
+}
+
+/* ---------- 提交显示 ---------- */
+function submit() {
+  if (SCENE == null) { return; }
+  var parts = [];
+  oput(parts, "body", { pos: HPOS, rot: HROT });
+  oput(parts, "blades", { spin: HROTOR * 0.5 });
+  oput(parts, "tailrotor", { spin: HROTOR * 1.6, axis: "x" });
+  oput(parts, "disc", {});
+  var dmg = [];
+  for (var i = 0; i < arr.len(HDMG); i = i + 1) {
+    var d = arr.get(HDMG, i);
+    arr.push(dmg, [arr.get(d, 0), arr.get(d, 1)]);
+  }
+  var cam = [];
+  if (CAM == 0) {
+    var ck = sampleCam(POS);
+    var off = arr.get(ck, 0); var look = arr.get(ck, 1);
+    var cp = [HPOS[0] + off[0], HPOS[1] + off[1], HPOS[2] + off[2]];
+    var ct = [HPOS[0] + look[0], HPOS[1] + look[1], HPOS[2] + look[2]];
+    arr.push(cam, "pos", cp);
+    arr.push(cam, "target", ct);
+    arr.push(cam, "fov", 42);
+  } else if (CAM == 1) {
+    arr.push(cam, "pos", [HPOS[0] + 13, HPOS[1] + 5, HPOS[2] + 13]);
+    arr.push(cam, "target", HPOS);
+    arr.push(cam, "fov", 45);
+  } else {
+    var cy = CAMYAW; var cd = CAMDIST; var cp2 = CAMPITCH;
+    arr.push(cam, "pos", [HPOS[0] + math.sin(cy) * cd * math.cos(cp2), HPOS[1] + math.sin(cp2) * cd + 2, HPOS[2] + math.cos(cy) * cd * math.cos(cp2)]);
+    arr.push(cam, "target", HPOS);
+    arr.push(cam, "fov", 45);
+  }
+  var st = [];
+  oput(st, "parts", parts);
+  oput(st, "damage", dmg);
+  oput(st, "camera", cam);
+  oput(st, "particles", FPARTS);
+  oput(st, "debris", FDEBRIS);
+  oput(st, "rotorSpeed", HROTOR);
+  var ai = [];
+  oput(ai, "kind", "player");
+  oput(ai, "position", POS);
+  oput(ai, "duration", DUR);
+  oput(ai, "rate", RATE);
+  oput(ai, "state", PLAYING == 1 ? "playing" : "paused");
+  oput(ai, "mode", MODE);
+  oput(ai, "scene", "/Demo/helicopter-24.scene");
+  oput(ai, "frameTime", POS);
+  oput(st, "app", ai);
+  var data = [];
+  if (RES_SENT == 0) { oput(data, "resource", SCENE); RES_SENT = 1; }
+  oput(data, "state", st);
+  call("scene.submit", { key: "k" + num.toStr(WIN), windowId: WIN, data: data });
+}
+
+/* ---------- 界面 ---------- */
+function draw() {
+  var ws = [];
+  arr.push(ws, wid("view", "canvas3d", 12, 8, 596, 330, "", null, "player-view"));
+  arr.push(ws, wid("play", "button", 12, 346, 56, 26, "播放", null, "player-play"));
+  arr.push(ws, wid("pause", "button", 72, 346, 56, 26, "暂停", null, "player-pause"));
+  arr.push(ws, wid("stop", "button", 132, 346, 56, 26, "停止", null, "player-stop"));
+  arr.push(ws, wid("step", "button", 192, 346, 56, 26, "逐帧", null, "player-step"));
+  arr.push(ws, wid("loop", "button", 252, 346, 56, 26, LOOP == 1 ? "循环开" : "循环关", null, "player-loop"));
+  arr.push(ws, wid("seek", "input", 312, 346, 78, 26, fs(POS), null, "player-seek"));
+  arr.push(ws, wid("rate", "input", 394, 346, 62, 26, fs(RATE), null, "player-rate"));
+  arr.push(ws, wid("cam", "button", 460, 346, 86, 26, "镜头：" + camName(), null, "player-camera"));
+  arr.push(ws, wid("proj", "button", 550, 346, 58, 26, "投送", null, "window-project"));
+  arr.push(ws, wid("time", "text", 12, 376, 596, 20, "时间 " + fs(POS) + " / " + fs(DUR) + " 秒 · 速率 " + fs(RATE) + " · " + modeName(), null, "player-time"));
+  arr.push(ws, wid("sel", "text", 12, 398, 596, 20, "选中：" + (SELPART == "" ? "（无）" : SELPART), null, "player-selection"));
+  arr.push(ws, wid("reh", "button", 12, 420, 70, 26, "开始排演", null, "rehearsal-start"));
+  arr.push(ws, wid("wind", "input", 86, 420, 74, 26, fs(WINDSET), null, "rehearsal-wind"));
+  arr.push(ws, wid("hdg", "input", 164, 420, 74, 26, fs(HDGSET), null, "rehearsal-heading"));
+  arr.push(ws, wid("fault", "input", 242, 420, 74, 26, fs(FAULTSET), null, "rehearsal-fault"));
+  arr.push(ws, wid("ctl", "text", 320, 420, 288, 26, ctrlText(), null, "rehearsal-controller"));
+  arr.push(ws, wid("stat", "text", 12, 450, 596, 20, STATUS, null, "player-status"));
+  if (SHOWPROJ == 1) {
+    var y = 474;
+    for (var i = 0; i < arr.len(ANC); i = i + 1) {
+      var t = arr.get(ANC, i);
+      arr.push(ws, wid("pt" + num.toStr(i), "button", 12 + i * 108, y, 100, 26, "投送到 " + arr.get(t, 0), null, "project-target"));
+    }
+  }
+  call("ui.declare", { windowId: WIN, widgets: ws });
+}
+function camName() { if (CAM == 0) { return "演出"; } if (CAM == 1) { return "跟随"; } return "自由"; }
+function modeName() { if (MODE == "rehearse") { return "飞行排演"; } return "默认演出"; }
+function ctrlText() {
+  if (arr.len(CTRL) == 0) { return "飞控：待命"; }
+  return "飞控：总距 " + num.toStr(arr.get(CTRL, 0)) + " 俯仰 " + num.toStr(arr.get(CTRL, 1)) +
+    " 偏航 " + num.toStr(arr.get(CTRL, 2)) + " 写入 " + num.toStr(CWITES);
+}
+
+/* ---------- 交互 ---------- */
+function projectTo(idx) {
+  if (idx < 0 || idx >= arr.len(ANC)) { return; }
+  var target = arr.get(arr.get(ANC, idx), 0);
+  var res = call("project.create", { target: target, windowId: WIN, app: "player" });
+  STATUS = A(res, "ok") ? ("已投送到 " + target) : "投送失败";
+  SHOWPROJ = 0;
+  draw();
+}
+
+function onEvent(ev) {
+  var type = A(ev, "type");
+  var w = A(ev, "widget");
+  if (type == "value") {
+    if (w == "seek") { POS = str.toNum(A(ev, "value")); ctrlToTiming("seek", num.toInt(POS * 1000), num.toInt(RATE * 100), MODE, LOOP); DIRTY = 1; draw(); return; }
+    if (w == "rate") { RATE = str.toNum(A(ev, "value")); if (RATE <= 0) { RATE = 1; } ctrlToTiming("rate", num.toInt(POS * 1000), num.toInt(RATE * 100), MODE, LOOP); draw(); return; }
+    if (w == "wind") { WINDSET = str.toNum(A(ev, "value")); send(P_SCENE, { type: "wind", value: num.toInt(WINDSET * 10) }); draw(); return; }
+    if (w == "hdg") { HDGSET = str.toNum(A(ev, "value")); send(P_CTRL, { type: "cfg", alt: 140, hdg: num.toInt(HDGSET * 100) }); draw(); return; }
+    if (w == "fault") { FAULTSET = str.toNum(A(ev, "value")); send(P_SCENE, { type: "fault", at: FAULTSET }); draw(); return; }
+  }
+  if (type == "pick") {
+    var pk = A(ev, "pick");
+    if (pk != null && str.len(pk) > 0) {
+      var p = json.parse(pk);
+      SELPART = A(p, "part") == null ? "" : A(p, "part");
+      if (SELPART == "") { SELPART = "地面"; }
+    }
+    draw(); return;
+  }
+  if (type == "drag") {
+    CAMYAW = CAMYAW + num.toInt(A(ev, "dx")) / 260;
+    CAMPITCH = CAMPITCH - num.toInt(A(ev, "dy")) / 260;
+    if (CAMPITCH > 1.4) { CAMPITCH = 1.4; }
+    if (CAMPITCH < -0.4) { CAMPITCH = -0.4; }
+    CAM = 2; DIRTY = 1; draw(); return;
+  }
+  if (type == "wheel") {
+    CAMDIST = CAMDIST + num.toInt(A(ev, "value")) / 6;
+    if (CAMDIST < 6) { CAMDIST = 6; }
+    if (CAMDIST > 90) { CAMDIST = 90; }
+    CAM = 2; DIRTY = 1; draw(); return;
+  }
+  if (type != "click") { return; }
+  if (w == "play") { PLAYING = 1; ctrlToTiming("play", num.toInt(POS * 1000), num.toInt(RATE * 100), MODE, LOOP); STATUS = "播放中"; draw(); return; }
+  if (w == "pause") { PLAYING = 0; ctrlToTiming("pause", num.toInt(POS * 1000), num.toInt(RATE * 100), MODE, LOOP); STATUS = "已暂停"; draw(); return; }
+  if (w == "stop") { PLAYING = 0; POS = 0; ctrlToTiming("stop", 0, num.toInt(RATE * 100), MODE, LOOP); STATUS = "已停止"; DIRTY = 1; draw(); return; }
+  if (w == "step") { POS = POS + 1 / 30; ctrlToTiming("pause", num.toInt(POS * 1000), num.toInt(RATE * 100), MODE, LOOP); STATUS = "逐帧前进"; DIRTY = 1; draw(); return; }
+  if (w == "loop") { LOOP = 1 - LOOP; ctrlToTiming("loop", num.toInt(POS * 1000), num.toInt(RATE * 100), MODE, LOOP); draw(); return; }
+  if (w == "cam") { CAM = (CAM + 1) % 3; DIRTY = 1; draw(); return; }
+  if (w == "proj") {
+    if (SHOWPROJ == 1) { SHOWPROJ = 0; draw(); return; }
+    ANC = [];
+    var res = call("sys.ancestors", {});
+    for (var i = 0; i < arr.len(res); i = i + 1) {
+      var a = arr.get(res, i);
+      arr.push(ANC, [A(a, "id"), A(a, "name")]);
+    }
+    SHOWPROJ = 1;
+    STATUS = "选择目标桌面";
+    draw(); return;
+  }
+  if (w == "reh") {
+    MODE = "rehearse";
+    POS = 0; PLAYING = 1;
+    ctrlToTiming("play", 0, num.toInt(RATE * 100), MODE, LOOP);
+    send(P_SCENE, { type: "rehearse" });
+    send(P_CTRL, { type: "cfg", alt: 140, hdg: num.toInt(HDGSET * 100) });
+    STATUS = "飞行排演开始";
+    DIRTY = 1; draw(); return;
+  }
+  if (str.startsWith(w, "pt")) {
+    projectTo(num.toInt(str.sub(w, 2, str.len(w))));
+    return;
+  }
+}
+
+/* ---------- 消息 ---------- */
+function onTick(ev) {
+  POS = num.toInt(A(ev, "t") * 100) / 100;
+  PLAYING = A(ev, "playing");
+  if (DIRTY == 1) { DIRTY = 0; submit(); }
+  /* 界面按固定节奏刷新，避免频繁声明控件 */
+  var now = sys.time();
+  if (now - LASTDRAW > 140) { LASTDRAW = now; draw(); }
+}
+
+function onHeli(ev) {
+  HPOS = A(ev, "pos");
+  HROT = A(ev, "rot");
+  HVEL = A(ev, "vel");
+  HROTV = A(ev, "rotv");
+  HROTOR = num.toInt(A(ev, "rotor"));
+  HDMG = A(ev, "dmg");
+  HDEAD = A(ev, "dead");
+  HIT = A(ev, "impact");
+  DIRTY = 1;
+  /* 把机体状态交给特效进程 */
+  var h = [];
+  oput(h, "type", "heli");
+  oput(h, "pos", HPOS);
+  oput(h, "rotor", HROTOR);
+  send(P_FX, h);
+  /* 排演时把传感器值送给飞控进程 */
+  if (MODE == "rehearse") {
+    var s = [];
+    oput(s, "type", "sensor");
+    oput(s, "t", num.toInt(A(ev, "t") * 1000));
+    oput(s, "pos", HPOS);
+    oput(s, "rot", HROT);
+    oput(s, "rotv", HROTV);
+    oput(s, "vy", arr.get(HVEL, 1));
+    oput(s, "speed", math.abs(arr.get(HVEL, 0)) + math.abs(arr.get(HVEL, 2)));
+    send(P_CTRL, s);
+  }
+}
+
+function onFx(ev) {
+  FPARTS = A(ev, "parts");
+  FDEBRIS = A(ev, "debris");
+  DIRTY = 1;
+}
+
+function onCtrl(ev) {
+  var c = A(ev, "ctrl");
+  CTRL = [num.toInt(A(c, "collective")), num.toInt(A(c, "pitch")), num.toInt(A(c, "yaw"))];
+  CWITES = num.toInt(A(ev, "writes"));
+  if (MODE == "rehearse") {
+    var o = [];
+    oput(o, "type", "ctrl");
+    oput(o, "ctrl", c);
+    send(P_SCENE, o);
+  }
+}
+
+function main() {
+  MY = sys.self();
+  var r = call("win.open", { app: "player", title: "三维场景播放器", w: 640, h: 520 });
+  WIN = num.toInt(A(r, "id"));
+  loadScene("/Demo/helicopter-24.scene");
+  spawnWorkers();
+  draw();
+  while (true) {
+    /* 一次取尽收件箱，避免消息积压 */
+    var guard = 0;
+    var got = 0;
+    while (guard < 64) {
+      guard = guard + 1;
+      var raw = sys.takeMsg();
+      if (raw == null || str.len(raw) == 0) { break; }
+      got = got + 1;
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl == null || str.len(pl) == 0) { continue; }
+      var ev = json.parse(pl);
+      var et = A(ev, "type");
+      if (et == "tick") { onTick(ev); continue; }
+      if (et == "heli") { onHeli(ev); continue; }
+      if (et == "fx") { onFx(ev); continue; }
+      if (et == "ctrl") { onCtrl(ev); continue; }
+      if (et == "click" || et == "value" || et == "pick" || et == "drag" || et == "wheel") { onEvent(ev); }
+    }
+    if (got == 0) { nap(8); }
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

@@ -1,0 +1,13 @@
+# 等待消息并记入日志。挂起期间信件保留，继续后按顺序取出。
+
+fn main() {
+  let n = 0;
+  while (n < 8) {
+    let m = wait_msg();
+    if (m != null && m.tag != "tick") {
+      log(str(m));
+      n = n + 1;
+    }
+  }
+  return n;
+}

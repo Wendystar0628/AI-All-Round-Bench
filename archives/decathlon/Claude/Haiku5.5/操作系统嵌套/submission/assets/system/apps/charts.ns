@@ -1,0 +1,349 @@
+// =====================================================================
+// 图表工作台（/System/apps/charts.ns）
+// 从根系统工作簿显式建立实时数据连接：选择工作簿、矩形区域、标签列与数值列，
+// 生成分组柱状图或折线图。每次根系统的表格提交后，图表收到该区域的新版本。
+// 投送：把图表窗口投送到任一祖先桌面（投送视图按各自尺寸排版，数据来自本进程）。
+// 参数：args[0] 窗口号，args[1] 应用名。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var MW = 860;
+var MH = 580;
+var views = {};
+var source = "/Demo/sample.sheet";
+var range = "A1:D4";
+var labelCol = "A";
+var seriesCols = "D";
+var field = "";
+var fieldBuf = "";
+var kind = "bar";
+var state = "未连接";
+var connected = false;
+var rows = [];
+var title = "";
+var ver = 0;
+var selLabel = -1;
+var menu = false;
+var parents = [];
+var ROOT = "outer";
+var chartPal = ["#7c5cff", "#2f9bff", "#1fb58f", "#ff8a3d", "#f0558c", "#e8b339"];
+
+func col_index(letter) {
+    return ord(upper(letter)) - 65;
+}
+
+func range_box() {
+    var parts = split(range, ":");
+    if (len(parts) != 2) { return nil; }
+    var a = parse_cell(upper(parts[0]));
+    var b = parse_cell(upper(parts[1]));
+    if (a == nil || b == nil) { return nil; }
+    return [min(a[0], b[0]), min(a[1], b[1]), max(a[0], b[0]), max(a[1], b[1])];
+}
+
+func parse_cell(s) {
+    if (len(s) < 2) { return nil; }
+    var c = ord(substr(s, 0, 1)) - 65;
+    var r = num(substr(s, 1, len(s) - 1));
+    if (c < 0 || c > 25 || r < 1) { return nil; }
+    return [c, r];
+}
+
+// 由已接收的数据计算图表用的系列：返回 {labels, names, data}
+func model() {
+    var out = {labels: [], names: [], data: []};
+    if (len(rows) < 2) { return out; }
+    var box = range_box();
+    if (box == nil) { return out; }
+    var lidx = col_index(labelCol) - box[0];
+    var sids = [];
+    for (var s in split(seriesCols, ",")) {
+        var si = col_index(trim(s)) - box[0];
+        if (si >= 0 && si < len(rows[0])) { push(sids, si); }
+    }
+    for (var si2 in sids) { push(out.names, str(rows[0][si2])); push(out.data, []); }
+    for (var r = 1; r < len(rows); r = r + 1) {
+        var lab = "";
+        if (lidx >= 0 && lidx < len(rows[r])) { lab = str(rows[r][lidx]); }
+        push(out.labels, lab);
+        var k = 0;
+        for (var si3 in sids) {
+            var v = 0;
+            if (si3 < len(rows[r]) && isnum(rows[r][si3])) { v = rows[r][si3]; }
+            push(out.data[k], v);
+            k = k + 1;
+        }
+    }
+    return out;
+}
+
+func nice_max(v) {
+    if (v <= 0) { return 1; }
+    var p = pow(10, floor(log(v) / log(10)));
+    var n = v / p;
+    if (n <= 1) { return p; }
+    if (n <= 2) { return 2 * p; }
+    if (n <= 5) { return 5 * p; }
+    return 10 * p;
+}
+
+func connect() {
+    if (connected) { return; }
+    state = "连接中";
+    sys_xpost(ROOT, {to: "kernel", type: "book-sub", path: source, sys: sys_info().id, pid: sys_self(), range: range});
+    connected = true;
+}
+
+func disconnect() {
+    if (!connected) { return; }
+    sys_xpost(ROOT, {to: "kernel", type: "book-unsub", path: source, sys: sys_info().id, pid: sys_self(), range: range});
+    connected = false;
+    state = "已断开";
+}
+
+func apply_field() {
+    var t = trim(fieldBuf);
+    if (field == "source") { source = t; }
+    if (field == "range") { range = upper(t); }
+    if (field == "label") { labelCol = upper(t); }
+    if (field == "series") { seriesCols = upper(t); }
+    field = "";
+}
+
+// ---------------------------- 绘制 ----------------------------
+func render(sid, w, h) {
+    var L = [];
+    add_rect(L, 0, 0, w, h, "#ffffff");
+    add_rect(L, 0, 0, w, 96, "#f6f7fb");
+    add_rect(L, 0, 96, w, 1, THEME.line);
+    add_text(L, 14, 8, 90, 24, "数据源", 12, THEME.sub, "l");
+    var fs = add_frame(L, 70, 8, w - 84 - 260, 26, "#ffffff", pick(field == "source", accent_color("violet"), THEME.line), 6);
+    fs.tid = "chart-source";
+    add_text(L, 80, 8, w - 104 - 260, 26, pick(field == "source", fieldBuf + "▏", source), 12, THEME.text, "l");
+    add_text(L, 14, 40, 90, 24, "区域", 12, THEME.sub, "l");
+    var fr = add_frame(L, 70, 40, 110, 26, "#ffffff", pick(field == "range", accent_color("violet"), THEME.line), 6);
+    fr.tid = "chart-range";
+    add_text(L, 80, 40, 90, 26, pick(field == "range", fieldBuf + "▏", range), 12, THEME.text, "l");
+    add_text(L, 194, 40, 70, 24, "标签列", 12, THEME.sub, "l");
+    var fl = add_frame(L, 252, 40, 50, 26, "#ffffff", pick(field == "label", accent_color("violet"), THEME.line), 6);
+    fl.tid = "chart-label-column";
+    add_text(L, 258, 40, 40, 26, pick(field == "label", fieldBuf + "▏", labelCol), 12, THEME.text, "c");
+    add_text(L, 318, 40, 70, 24, "数值列", 12, THEME.sub, "l");
+    var fse = add_frame(L, 380, 40, 80, 26, "#ffffff", pick(field == "series", accent_color("violet"), THEME.line), 6);
+    fse.tid = "chart-series";
+    add_text(L, 386, 40, 70, 26, pick(field == "series", fieldBuf + "▏", seriesCols), 12, THEME.text, "c");
+    var bx = w - 250;
+    add_btn(L, bx, 8, 78, 28, pick(connected, "已连接", "连接"), "chart-connect", pick(connected, "#e8f6ef", accent_color("violet")), pick(connected, THEME.ok, "#ffffff"));
+    add_btn(L, bx + 84, 8, 78, 28, "断开", "chart-disconnect", "#f0f1f6", THEME.text);
+    add_btn(L, bx + 168, 8, 78, 28, pick(kind == "bar", "折线", "柱状"), "chart-type", "#f0f1f6", THEME.text);
+    add_btn(L, bx, 40, 246, 28, "投送到祖先桌面", "window-project", "#f0f1f6", THEME.text);
+    add_text(L, 14, 68, w - 28, 22, "状态：" + state + "   版本 " + str(ver) + "   " + title, 12, THEME.sub, "l");
+
+    // 图表区
+    var m = model();
+    var ax = 62;
+    var ay = 118;
+    var aw = w - ax - 24;
+    var ah = h - ay - 56;
+    if (len(m.labels) == 0) {
+        add_text(L, 0, ay + ah / 2 - 20, w, 40, pick(connected, "等待数据…", "请连接工作簿的区域"), 14, THEME.hint, "c");
+    } else {
+        var mx = 0;
+        for (var sl in m.data) { for (var v in sl) { if (v > mx) { mx = v; } } }
+        var top = nice_max(mx);
+        for (var t2 = 0; t2 <= 5; t2 = t2 + 1) {
+            var gy = ay + ah - ah * t2 / 5;
+            add_rect(L, ax, gy, aw, 1, "#eceef5");
+            add_text(L, 0, gy - 10, ax - 8, 20, fmt(top * t2 / 5, 0), 11, THEME.sub, "r");
+        }
+        add_rect(L, ax, ay, 1, ah, THEME.line);
+        var nl = len(m.labels);
+        var ns = len(m.names);
+        var gw = aw / nl;
+        for (var li = 0; li < nl; li = li + 1) {
+            var gx = ax + li * gw;
+            add_text(L, gx, ay + ah + 6, gw, 22, m.labels[li], 12, THEME.text, "c");
+            if (kind == "bar") {
+                var bw = gw * 0.7 / ns;
+                for (var si = 0; si < ns; si = si + 1) {
+                    var v2 = m.data[si][li];
+                    var bh = ah * v2 / top;
+                    var bar = add_rect(L, gx + gw * 0.15 + si * bw, ay + ah - bh, bw - 3, bh, chartPal[si % 6]);
+                    bar.r = 4;
+                    bar.hv = true;
+                    bar.tid = "chart-bar";
+                    bar.da = {label: m.labels[li], value: str(v2)};
+                    if (selLabel == li) { bar.s = "#1d2233"; bar.sw = 2; }
+                    add_text(L, gx + gw * 0.15 + si * bw - 6, ay + ah - bh - 20, bw + 8, 18, fmt(v2, 0), 11, THEME.sub, "c");
+                }
+            } else {
+                for (var si2 = 0; si2 < ns; si2 = si2 + 1) {
+                    var px = gx + gw / 2;
+                    var py = ay + ah - ah * m.data[si2][li] / top;
+                    var dot = add_rect(L, px - 5, py - 5, 10, 10, chartPal[si2 % 6]);
+                    dot.r = 5;
+                    dot.tid = "chart-point";
+                    dot.da = {label: m.labels[li], value: str(m.data[si2][li])};
+                }
+            }
+        }
+        if (kind == "line") {
+            for (var si3 = 0; si3 < ns; si3 = si3 + 1) {
+                var els = [];
+                var d = "";
+                for (var li2 = 0; li2 < nl; li2 = li2 + 1) {
+                    var lx = ax + li2 * gw + gw / 2;
+                    var ly = ay + ah - ah * m.data[si3][li2] / top;
+                    d = d + pick(li2 == 0, "M", " L") + str(floor(lx)) + " " + str(floor(ly));
+                }
+                push(els, {e: "path", d: d, s: chartPal[si3 % 6], sw: 2.5, f: "none"});
+                var svg = nd("svg", 0, 0, w, h);
+                svg.els = els;
+                push(L, svg);
+            }
+        }
+        // 图例
+        var lx2 = ax;
+        for (var sn = 0; sn < ns; sn = sn + 1) {
+            add_rect(L, lx2, h - 26, 12, 12, chartPal[sn % 6]).r = 3;
+            add_text(L, lx2 + 16, h - 30, 120, 20, m.names[sn], 12, THEME.text, "l");
+            lx2 = lx2 + 130;
+        }
+    }
+    if (menu) { paint_menu(L, w); }
+    sys_submit(sid, L);
+}
+
+func paint_menu(L, w) {
+    var mx = w - 260;
+    var f = add_frame(L, mx, 68, 240, 40 + len(parents) * 32, "#ffffff", THEME.line, 10);
+    f.sh = true;
+    f.tid = "project-menu";
+    var y = 76;
+    for (var p in parents) {
+        var b = add_rect(L, mx + 8, y, 224, 28, "#00000000");
+        b.hv = true;
+        b.r = 6;
+        b.cur = "pointer";
+        b.tid = "project-target";
+        b.tg = p.id;
+        add_text(L, mx + 18, y, 210, 28, "投送到 " + p.id, 12, THEME.text, "l");
+        y = y + 32;
+    }
+    if (len(parents) == 0) { add_text(L, mx + 18, y, 210, 28, "根系统没有祖先", 12, THEME.hint, "l"); }
+}
+
+func paint_all() {
+    render("win-" + str(WID), MW, MH);
+    for (var k in keys(views)) {
+        var v = views[k];
+        render(k, v.w, v.h);
+    }
+}
+
+// ---------------------------- 输入 ----------------------------
+func on_pointer(m) {
+    var x = m.x;
+    var y = m.y;
+    if (m.kind != "down") { return; }
+    var w = MW;
+    if (m.view != nil && m.view != "win" && has(views, m.view)) {
+        w = views[m.view].w;
+    }
+    if (menu) {
+        var mx = w - 260;
+        var i = 0;
+        for (var p in parents) {
+            if (inside(x, y, mx + 8, 76 + i * 32, 224, 28)) {
+                sys_send("wm", {type: "project", win: WID, target: p.id});
+                menu = false;
+                return;
+            }
+            i = i + 1;
+        }
+        menu = false;
+        return;
+    }
+    if (y < 96) {
+        field = "";
+        var bx = w - 250;
+        if (inside(x, y, 70, 8, w - 84 - 260, 26)) { field = "source"; fieldBuf = source; return; }
+        if (inside(x, y, 70, 40, 110, 26)) { field = "range"; fieldBuf = range; return; }
+        if (inside(x, y, 252, 40, 50, 26)) { field = "label"; fieldBuf = labelCol; return; }
+        if (inside(x, y, 380, 40, 80, 26)) { field = "series"; fieldBuf = seriesCols; return; }
+        if (inside(x, y, bx, 8, 78, 28)) { if (!connected) { connect(); } return; }
+        if (inside(x, y, bx + 84, 8, 78, 28)) { disconnect(); return; }
+        if (inside(x, y, bx + 168, 8, 78, 28)) { kind = pick(kind == "bar", "line", "bar"); return; }
+        if (inside(x, y, bx, 40, 246, 28)) {
+            parents = sys_ancestors();
+            menu = true;
+            return;
+        }
+        return;
+    }
+    if (field != "") { apply_field(); }
+    // 柱子点选
+    var m2 = model();
+    if (len(m2.labels) > 0 && kind == "bar") {
+        var nl = len(m2.labels);
+        var gw = (w - 62 - 24) / nl;
+        var li = floor((x - 62) / gw);
+        if (li >= 0 && li < nl) { selLabel = li; }
+    }
+}
+
+func on_key(m) {
+    if (field == "") { return; }
+    if (m.key == "Enter") { apply_field(); return; }
+    if (m.key == "Escape") { field = ""; return; }
+    if (m.key == "Backspace") { if (len(fieldBuf) > 0) { fieldBuf = substr(fieldBuf, 0, len(fieldBuf) - 1); } return; }
+    if (m.text != nil && m.text != "") { fieldBuf = fieldBuf + m.text; }
+}
+
+func on_data(m) {
+    if (m.type == "data") {
+        if (m.ver < ver) { return; }
+        ver = m.ver;
+        rows = m.rows;
+        title = m.title;
+        state = "已连接";
+    } else if (m.type == "data-closed") {
+        state = "数据源已关闭，保留最后的数据";
+        connected = false;
+    } else if (m.type == "data-error") {
+        state = "连接失败：" + m.error;
+        connected = false;
+    }
+}
+
+func main(args) {
+    WID = args[0];
+    paint_all();
+    while (true) {
+        var m = sys_recv();
+        if (m.type == "data" || m.type == "data-closed" || m.type == "data-error") {
+            on_data(m);
+            paint_all();
+        } else if (m.type == "view") {
+            if (m.view == "win") {
+                MW = m.w;
+                MH = m.h;
+            } else {
+                views[m.view] = {w: m.w, h: m.h};
+            }
+            paint_all();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+            paint_all();
+        } else if (m.type == "key" || m.type == "text") {
+            on_key(m);
+            paint_all();
+        } else if (m.type == "close-req") {
+            if (connected) { disconnect(); }
+            sys_send("wm", {type: "close", win: WID});
+            return 0;
+        }
+    }
+    return 0;
+}

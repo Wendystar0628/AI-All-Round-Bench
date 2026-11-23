@@ -1,0 +1,13 @@
+{
+  "problem":"14","parts":[{"name":"1","title":"偏置双出口泵体铸件","features":[
+    {"type":"extrude","plane":"XY","loops":[{"rect":[0,0,112,84],"r":5}],"depth":10},
+    {"type":"extrude","plane":"XZ","origin":[0,10,10],"loops":[{"path":[[12,0],[100,0],[94,50],[22,50]]}],"depth":-64},
+    {"type":"extrude","plane":"XZ","origin":[0,4,0],"loops":[{"circle":[50,34],"d":82}],"depth":-6},
+    {"type":"hole","plane":"XZ","origin":[0,4,0],"at":[50,34],"d":32,"through":true,"cbore":{"d":66,"depth":2}},
+    {"type":"extrude","plane":"ZY","origin":[112,0,0],"loops":[{"circle":[42,34],"d":68}],"depth":8},
+    {"type":"hole","plane":"ZY","origin":[112,0,0],"at":[42,34],"d":28,"through":true,"reverse":true,"cbore":{"d":46,"depth":4}},
+    {"type":"extrude","op":"cut","plane":"XZ","origin":[0,16,10],"loops":[{"rect":[22,8,82,42]}],"depth":-52},
+    {"type":"hole","plane":{"origin":[70,84,48],"normal":[0,0.866025404,0.5],"x_dir":[1,0,0]},"at":[0,0],"d":8,"depth":52},
+    {"type":"hole","plane":{"origin":[40,0,46],"normal":[0,-0.819152044,0.573576436],"x_dir":[1,0,0]},"at":[0,0],"d":10,"depth":50},
+    {"type":"hole","plane":"XY","origin":[0,0,10],"at":[[10,10],[102,10],[10,74],[102,74]],"d":9,"through":true,"cbore":{"d":16,"depth":2}}
+  ]}]}

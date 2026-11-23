@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>网络安全攻防战 · 动态路由塔防</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<canvas id="c3d"></canvas>
+<canvas id="ov"></canvas>
+
+<!-- 图标 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-firewall" viewBox="0 0 48 48"><path d="M8 30h32v8H8z M8 18h14v8H8z M26 18h14v8H26z M14 8c6 4 14 4 20 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M10 30h28" stroke="currentColor" stroke-width="2" opacity=".5"/></symbol>
+    <symbol id="i-honeypot" viewBox="0 0 48 48"><path d="M14 16c0-4 5-6 10-6s10 2 10 6c4 2 6 8 6 14 0 8-6 12-16 12S8 38 8 30c0-6 2-12 6-14z" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="28" r="5" fill="currentColor"/><path d="M14 16h20" stroke="currentColor" stroke-width="2" opacity=".6"/></symbol>
+    <symbol id="i-gateway" viewBox="0 0 48 48"><path d="M10 40V14h28v26M10 14l14-8 14 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M18 40V24h12v16" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="24" cy="18" r="3" fill="currentColor"/></symbol>
+    <symbol id="i-interceptor" viewBox="0 0 48 48"><circle cx="20" cy="30" r="10" fill="none" stroke="currentColor" stroke-width="3"/><path d="M20 22V8h4l6 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M26 10h14" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="i-sandbox" viewBox="0 0 48 48"><path d="M24 6l16 9v18l-16 9-16-9V15z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M8 15l16 9 16-9M24 24v18" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/></symbol>
+    <symbol id="i-repair" viewBox="0 0 48 48"><path d="M19 6h10v13h13v10H29v13H19V29H6V19h13z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="24" r="4" fill="currentColor"/></symbol>
+    <symbol id="i-isolator" viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="3"/><path d="M14 14l20 20" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M24 6v6M24 36v6M6 24h6M36 24h6" stroke="currentColor" stroke-width="2.5"/></symbol>
+    <symbol id="i-downgrade" viewBox="0 0 48 48"><path d="M10 14h10l4 6 4-6h10" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M24 22v16M18 32l6 6 6-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></symbol>
+    <symbol id="i-restore" viewBox="0 0 48 48"><path d="M38 24a14 14 0 1 1-4.1-9.9" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M36 6v10H26" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-compute" viewBox="0 0 48 48"><rect x="13" y="13" width="22" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="3"/><rect x="19" y="19" width="10" height="10" fill="currentColor"/><path d="M19 7v6M29 7v6M19 35v6M29 35v6M7 19h6M7 29h6M35 19h6M35 29h6" stroke="currentColor" stroke-width="2.5"/></symbol>
+    <symbol id="i-intel" viewBox="0 0 48 48"><path d="M6 24s7-12 18-12 18 12 18 12-7 12-18 12S6 24 6 24z" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="24" r="6" fill="currentColor"/></symbol>
+    <symbol id="i-core" viewBox="0 0 48 48"><path d="M24 5l16 6v12c0 10-7 17-16 20C15 40 8 33 8 23V11z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M17 24l5 5 9-10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 48 48"><path d="M4 30c5-8 9-8 13 0s8 8 13 0 8-8 14 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M4 18c5-8 9-8 13 0s8 8 13 0 8-8 14 0" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 48 48"><rect x="12" y="10" width="8" height="28" rx="2" fill="currentColor"/><rect x="28" y="10" width="8" height="28" rx="2" fill="currentColor"/></symbol>
+    <symbol id="i-play" viewBox="0 0 48 48"><path d="M14 9l24 15-24 15z" fill="currentColor"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 48 48"><path d="M10 14h28M10 24h28M10 34h28" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 48 48"><path d="M8 19h8l10-8v26l-10-8H8z" fill="currentColor"/><path d="M32 17c4 4 4 10 0 14M37 12c7 7 7 17 0 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 48 48"><path d="M8 19h8l10-8v26l-10-8H8z" fill="currentColor"/><path d="M32 18l12 12M44 18L32 30" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 48 48"><rect x="11" y="22" width="26" height="20" rx="3" fill="currentColor"/><path d="M17 22v-6a7 7 0 0 1 14 0v6" fill="none" stroke="currentColor" stroke-width="3.5"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 48 48"><path d="M24 6l20 36H4z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M24 18v12" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="36" r="2.5" fill="currentColor"/></symbol>
+    <symbol id="i-book" viewBox="0 0 48 48"><path d="M10 8h24a4 4 0 0 1 4 4v28H14a4 4 0 0 1-4-4z" fill="none" stroke="currentColor" stroke-width="3"/><path d="M10 36a4 4 0 0 1 4-4h24" fill="none" stroke="currentColor" stroke-width="3"/></symbol>
+    <symbol id="i-cursor" viewBox="0 0 48 48"><path d="M12 6l26 16-11 3 7 13-6 3-7-13-9 8z" fill="currentColor" stroke="#081018" stroke-width="2"/></symbol>
+  </defs>
+</svg>
+
+<!-- 对局界面 -->
+<div id="hud" class="hidden">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark"></span><div><b>守护进程</b><small id="mapName"></small></div></div>
+    <div class="resources">
+      <div class="res" id="resCompute" title="算力：用于部署与升级设备、备份还原；撤下设备退还一半">
+        <svg class="ico"><use href="#i-compute"/></svg>
+        <div><span>算力</span><b id="vCompute">0</b></div><em id="incCompute"></em>
+      </div>
+      <div class="res" id="resIntel" title="情报：用于隔离节点、选择升级分支与情报道具；守住隔离节点、消灭重点威胁可获得">
+        <svg class="ico"><use href="#i-intel"/></svg>
+        <div><span>情报</span><b id="vIntel">0</b></div>
+      </div>
+      <div class="res integ" title="中枢完整度：敌人到达出口时下降，归零即失败">
+        <svg class="ico"><use href="#i-core"/></svg>
+        <div><span>中枢完整度</span><div class="bar"><i id="barInteg"></i></div></div><b id="vInteg">100</b>
+      </div>
+    </div>
+    <div class="wave-box">
+      <svg class="ico"><use href="#i-wave"/></svg>
+      <div><span id="waveLabel">准备阶段</span><b id="vWave">0 / 0</b></div>
+      <div class="countdown" id="vCountdown"></div>
+    </div>
+    <div class="ctrl">
+      <button class="btn-icon" id="btnPause" title="暂停（空格）"><svg><use href="#i-pause"/></svg></button>
+      <div class="speed">
+        <button class="spd" data-s="1" title="1 倍速">1×</button>
+        <button class="spd" data-s="2" title="2 倍速">2×</button>
+        <button class="spd" data-s="3" title="3 倍速">3×</button>
+      </div>
+      <button class="btn small" id="btnView" title="回到默认视角（Home）">默认视角</button>
+      <button class="btn small" id="btnNext" title="提前开始下一波（获得一次额外算力）">立即来袭</button>
+      <button class="btn-icon" id="btnMute" title="静音"><svg><use href="#i-sound"/></svg></button>
+      <button class="btn-icon" id="btnMenu" title="菜单（Esc）"><svg><use href="#i-menu"/></svg></button>
+    </div>
+  </header>
+
+  <aside class="panel left" id="leftPanel">
+    <div class="panel-head"><span>流量预报</span><small id="forecastWave"></small></div>
+    <div id="forecast"></div>
+    <div class="panel-head sub"><span>威胁概览</span></div>
+    <div id="threatIntro" class="muted small"></div>
+  </aside>
+
+  <aside class="panel right" id="rightPanel">
+    <div class="panel-head"><span id="selTitle">选中</span></div>
+    <div id="selBody" class="sel-body"><div class="muted">点选设备、敌人或地块查看详情。右键取消当前操作。</div></div>
+    <div class="panel-head sub"><span>系统日志</span></div>
+    <div id="logBox" class="log"></div>
+  </aside>
+
+  <section class="deck" id="deck">
+    <div class="deck-tabs">
+      <span class="tag block">阻挡</span><span class="tag lure">诱敌</span><span class="tag iso">隔离</span>
+      <span class="tag ranged">远程</span><span class="tag detect">检测</span><span class="tag support">支援</span><span class="tag item">道具</span>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <div id="bossBar" class="boss-bar hidden">
+    <div class="boss-name"><span id="bossName"></span><small id="bossTitle"></small></div>
+    <div class="boss-hp"><i id="bossHp"></i></div>
+    <div class="boss-phase" id="bossPhase"></div>
+  </div>
+
+  <div id="modeHint" class="mode-hint hidden"></div>
+  <div id="toast" class="toast"></div>
+  <div id="waveBanner" class="wave-banner hidden"></div>
+  <div id="subtitle" class="subtitle hidden"></div>
+  <div id="demoBar" class="demo-bar hidden"><span id="demoTitle"></span><button class="btn small" id="btnDemoExit">退出演示（Esc）</button></div>
+</div>
+
+  <div id="tooltip" class="tooltip hidden"></div>
+  <div id="ghost" class="ghost hidden"></div>
+  <div id="cursorFx" class="cursor-fx hidden"><svg><use href="#i-cursor"/></svg></div>
+
+<!-- 菜单界面 -->
+<div id="screens">
+  <section class="screen" id="scrTitle">
+    <div class="title-wrap">
+      <div class="title-kicker">汐域 · 网络空间防御</div>
+      <h1>网络安全攻防战</h1>
+      <p class="title-sub">蠕虫、木马、勒索软件与僵尸网络混入正常流量，涌向“中枢”。你是守护进程：部署设备，改写路由，守住数据。</p>
+      <div class="menu-btns">
+        <button class="btn big" data-go="levels">开始行动</button>
+        <button class="btn big" data-go="demos">实战演示</button>
+        <button class="btn big" data-go="codex">图鉴</button>
+        <button class="btn big" data-go="help">说明</button>
+        <button class="btn big" data-go="settings">设置</button>
+      </div>
+      <div class="title-foot">画面：三维实时渲染 · 声音：程序合成 · 鼠标与键盘操作</div>
+    </div>
+  </section>
+
+  <section class="screen" id="scrLevels">
+    <header class="screen-head"><button class="btn" data-go="title">返回</button><h2>关卡选择</h2><span class="muted">选择一张网络拓扑，进入战局</span></header>
+    <div class="level-grid" id="levelGrid"></div>
+  </section>
+
+  <section class="screen" id="scrDemos">
+    <header class="screen-head"><button class="btn" data-go="title">返回</button><h2>实战演示</h2><span class="muted">从编排好的局面开始，在游戏逻辑上实时演出；可随时按 Esc 退出</span></header>
+    <div class="demo-grid" id="demoGrid"></div>
+  </section>
+
+  <section class="screen" id="scrCodex">
+    <header class="screen-head"><button class="btn" data-go="title">返回</button><h2>图鉴</h2>
+      <div class="tabs"><button class="tab active" data-tab="devices">设备手册</button><button class="tab" data-tab="threats">威胁档案</button></div>
+    </header>
+    <div class="codex">
+      <nav class="codex-list" id="codexList"></nav>
+      <article class="codex-detail" id="codexDetail"></article>
+    </div>
+  </section>
+
+  <section class="screen" id="scrHelp">
+    <header class="screen-head"><button class="btn" data-go="title">返回</button><h2>说明</h2></header>
+    <div class="help" id="helpBody"></div>
+  </section>
+
+  <section class="screen" id="scrSettings">
+    <header class="screen-head"><button class="btn" data-go="title">返回</button><h2>设置</h2></header>
+    <div class="settings">
+      <label>总音量<input type="range" min="0" max="100" value="70" data-vol="master"><b id="vMaster">70</b></label>
+      <label>音乐<input type="range" min="0" max="100" value="55" data-vol="music"><b id="vMusic">55</b></label>
+      <label>音效<input type="range" min="0" max="100" value="80" data-vol="sfx"><b id="vSfx">80</b></label>
+      <button class="btn" id="btnMuteSet">静音</button>
+    </div>
+  </section>
+
+  <section class="screen" id="scrPause">
+    <div class="pause-card">
+      <h2>暂停</h2>
+      <div class="menu-btns">
+        <button class="btn big" id="pResume">继续</button>
+        <button class="btn big" id="pRestart">重开本图</button>
+        <button class="btn big" id="pLevels">返回关卡选择</button>
+        <button class="btn big" data-go="codex" data-from="pause">图鉴</button>
+        <button class="btn big" data-go="help" data-from="pause">说明</button>
+        <button class="btn big" data-go="settings" data-from="pause">设置</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="scrReport">
+    <div class="report" id="reportBody"></div>
+  </section>
+</div>
+
+<div id="loading" class="loading"><div>正在载入网络拓扑……</div></div>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/data.js"></script>
+<script src="js/grid.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/models.js"></script>
+<script src="js/view3d.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

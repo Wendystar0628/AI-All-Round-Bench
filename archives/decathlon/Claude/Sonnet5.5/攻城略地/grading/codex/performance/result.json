@@ -1,0 +1,123 @@
+{
+  "task": "攻城略地",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "本题得分",
+      "max": 100,
+      "score": 14.8,
+      "reason": "按用户决定，评的是它自测的调参版 cfg_r3.exe（官方评测脚本，同一组 96 张图 480 局）：120 胜、0 平、360 负，实力值 r=112.3，换算 9.6 分。原提交 bot.cpp 按官方命令编译的成绩为 101 胜、r=58.9、5.1 分。（11-12 用户调整 0 分线：R1-200 为 0 分、R1 为 10 分，按实力值 r=112.3 重算为 14.8 分，原为 9.6 分。）"
+    }
+  ],
+  "metrics": {
+    "score": 14.8,
+    "score_ci95": [
+      3.3,
+      16.1
+    ],
+    "r": 112.26567905780018,
+    "total_games": 480,
+    "wins": 120,
+    "draws": 0,
+    "losses": 360,
+    "by_opponent": [
+      {
+        "id": "tier1",
+        "name": "第1档",
+        "rating": 0.0,
+        "score_anchor": 0.0,
+        "games": 96,
+        "wins": 52,
+        "draws": 0,
+        "losses": 44,
+        "points": 52.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier2",
+        "name": "第2档",
+        "rating": 232.72971403075087,
+        "score_anchor": 20.0,
+        "games": 96,
+        "wins": 26,
+        "draws": 0,
+        "losses": 70,
+        "points": 26.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier3",
+        "name": "第3档",
+        "rating": 374.02562493412154,
+        "score_anchor": 40.0,
+        "games": 96,
+        "wins": 16,
+        "draws": 0,
+        "losses": 80,
+        "points": 16.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier4",
+        "name": "第4档",
+        "rating": 581.4837730581465,
+        "score_anchor": 60.0,
+        "games": 96,
+        "wins": 17,
+        "draws": 0,
+        "losses": 79,
+        "points": 17.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier5",
+        "name": "第5档",
+        "rating": 825.1484030205629,
+        "score_anchor": 80.0,
+        "games": 96,
+        "wins": 9,
+        "draws": 0,
+        "losses": 87,
+        "points": 9.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      }
+    ],
+    "cpu_timeout_turns": 0,
+    "forfeit_losses": 0,
+    "simultaneous_forfeit_draws": 0,
+    "is_official_configuration": true,
+    "report_path": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Claude\\Sonnet5.5\\攻城略地\\codex\\performance\\work\\tuned_report.json"
+  },
+  "notes": "评的是作答结束时工作目录的副本（submission），不看git提交。bot.cpp SHA256=86DA5C161431F05C182E0B2D2593B2E3BA118E985A46F80124BAF68EC67CCF2E。指定g++16.1.0及-O2 -std=c++20编译通过，数据目录逐项与官方一致。正式评测只运行一次，96图交替座位、五档各96局、8局并行、CPU0–15，无剔除或补跑。评分表旧版48图换边及0/25/50/75/100公式已按现行题面和指南更正，表格结构不变；95%区间仅作参考。未自然发现作弊。官方报告status=complete且正式配置有效，全部480局覆盖完整；本会话启动的评测进程PID18664已退出，无残留直接子进程。"
+}

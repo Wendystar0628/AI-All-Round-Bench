@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": [
+      "start", "--",
+      "--data-dir", "{dataDir}",
+      "--width", "{width}",
+      "--height", "{height}",
+      "--remote-debugging-port={port}"
+    ],
+    "cwd": "."
+  },
+  "mainWindow": {
+    "title": "Nested OS",
+    "match": "title",
+    "note": "Electron 主窗口；客户区尺寸由 --width/--height 指定"
+  },
+  "connection": {
+    "type": "electron-remote-debugging",
+    "port": "{port}",
+    "note": "Electron 启动参数 --remote-debugging-port 提供 CDP；也可用 --remote-debugging-port=19106 连接"
+  },
+  "bench": {
+    "access": "window.bench",
+    "version": 1,
+    "methods": ["ready", "reset", "inspect"],
+    "note": "主桌面渲染上下文可直接脚本访问"
+  },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "chartLabelColumn": "A",
+      "chartSeries": ["D"],
+      "helicopter": "/Demo/helicopter-24.scene",
+      "minimalScene": "/Demo/minimal.scene",
+      "documents": "/Documents",
+      "kernelTemplate": "/System/kernel.sys",
+      "controller": "/System/controller.prog",
+      "compiler": "/System/compiler.prog",
+      "programs": ["/Demo/add.prog", "/Demo/loop.prog", "/Demo/sender.prog", "/Demo/receiver.prog", "/Demo/service.prog", "/Demo/draw.prog"]
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "minimalScene": "/Demo/minimal.scene",
+      "documents": "/Documents",
+      "kernelTemplate": "/System/kernel.sys",
+      "controller": "/System/controller.prog",
+      "compiler": "/System/compiler.prog",
+      "programs": ["/System/winman.prog", "/System/files.prog", "/System/player.prog", "/System/charts.prog", "/System/flight.prog"]
+    },
+    "kernelLocation": {
+      "root": "/System/kernel.sys",
+      "child": "/System/kernels/<instance>.kernel",
+      "note": "子系统的内核源文件位于其父系统文件系统中；修改后重启子系统生效"
+    }
+  },
+  "localServer": { "port": 18106, "note": "项目静态资源服务，由启动入口自动完成" },
+  "notes": [
+    "初次启动显示根系统桌面，不自动播放演示",
+    "非根实例按全局创建顺序命名 inner-1、inner-2……",
+    "根系统浏览器允许联网；断网时本地应用仍可用",
+    "每个子系统的桌面完整位于父系统的系统窗口中，可继续递归"
+  ]
+}

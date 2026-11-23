@@ -1,0 +1,345 @@
+// ============================================================
+// 文本与程序编辑器（Editor.osprog）
+// 打开/编辑/保存程序与文本，运行程序并查看输出，
+// 可打开直属子系统的内核源文件与飞控程序。
+// ============================================================
+
+let win = 0
+let wm = 0
+let path = ""
+let lines = [""]
+let row = 0
+let col = 0
+let scroll = 0
+let msg = ""
+let dirty = 0
+let runPid = 0
+let outLines = []
+let pathBuf = ""
+let editing = 0
+let clock = 0
+let booted = 0
+
+const C = {"bg": "#121826", "bar": "#1c2433", "area": "#0e1420", "line": "#33405a", "text": "#e8ecf4", "dim": "#93a1bb", "acc": "#8b6cff", "acc2": "#ffd23f", "ok": "#43d9a3", "danger": "#ff5d6c", "num": "#7fd0ff"}
+
+fn boot() {
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    wm = m.wm
+    if m.path != "" {
+      load_file(m.path)
+    }
+    let title = "程序编辑器"
+    if path != "" {
+      title = "程序编辑器 - " + path
+    }
+    send(wm, {"t": "win_open", "pid": self(), "key": "editor", "title": title, "w": 640, "h": 460})
+  } else if m.t == "win_opened" {
+    win = m.win
+    draw()
+  } else if m.t == "closing" {
+    kill(self())
+  } else if m.t == "click" {
+    on_click(m.x, m.y)
+  } else if m.t == "key" {
+    on_key(m.key, m.text)
+  } else if m.t == "text" {
+    if m.ctl == "path" {
+      load_file(m.value)
+    }
+  } else if m.t == "open_path" {
+    load_file(m.path)
+  }
+}
+
+fn load_file(p) {
+  let c = read_file(p)
+  if type(c) == "map" {
+    msg = "打开失败: " + c.error
+    path = ""
+    lines = [""]
+  } else {
+    path = p
+    msg = "已打开 " + p
+    lines = split(c, "\n")
+    if len(lines) == 0 {
+      lines = [""]
+    }
+  }
+  row = 0
+  col = 0
+  scroll = 0
+  dirty = 0
+  draw()
+}
+
+fn save_file() {
+  if path == "" {
+    msg = "请先输入路径"
+    return
+  }
+  let c = join(lines, "\n")
+  let r = write_file(path, c)
+  if type(r) == "map" {
+    msg = "保存失败: " + r.error
+  } else {
+    msg = "已保存 " + path
+    dirty = 0
+  }
+  draw()
+}
+
+fn run_program() {
+  if path == "" {
+    msg = "请先打开或保存一个程序文件"
+    return
+  }
+  if dirty == 1 {
+    save_file()
+  }
+  let r = spawn(path)
+  if type(r) == "map" {
+    msg = "启动失败: " + r.error
+    outLines = []
+  } else {
+    runPid = r
+    outLines = []
+    msg = "已启动进程 " + str(runPid) + "（" + path + "）"
+  }
+  draw()
+}
+
+fn stop_program() {
+  if runPid == 0 {
+    return
+  }
+  kill(runPid)
+  msg = "已结束进程 " + str(runPid)
+  runPid = 0
+  draw()
+}
+
+fn on_click(x, y) {
+  clock = time()
+  if y < 30 {
+    if x < 50 {
+      save_file()
+    } else if x < 100 {
+      run_program()
+    } else if x < 150 {
+      stop_program()
+    } else if x < 200 {
+      send(wm, {"t": "text_focus", "win": win, "ctl": "path"})
+      msg = "输入路径后回车打开"
+    } else if x < 250 {
+      load_file(path)
+    }
+    draw()
+    return
+  }
+  if y >= 330 and y < 356 {
+    if x >= 500 and x < 560 {
+      outLines = []
+      draw()
+    }
+    return
+  }
+  // 文本区点击定位光标
+  if y >= 36 and y < 326 {
+    let r = floor((y - 40) / 16) + scroll
+    if r >= 0 and r < len(lines) {
+      row = r
+      let lw = text_width(lines[r])
+      col = floor((x - 14) / 7)
+      if col > lw {
+        col = lw
+      }
+      if col < 0 {
+        col = 0
+      }
+    }
+    draw()
+  }
+}
+
+fn on_key(key, text) {
+  let line = lines[row]
+  if key == "Backspace" {
+    if col > 0 {
+      lines[row] = substr(line, 0, col - 1) + substr(line, col)
+      col = col - 1
+      dirty = 1
+    } else if row > 0 {
+      let prev = lines[row - 1]
+      col = len(prev)
+      lines[row - 1] = prev + line
+      lines = del_at(lines, row)
+      row = row - 1
+      dirty = 1
+    }
+  } else if key == "Enter" {
+    let head = substr(line, 0, col)
+    let tail = substr(line, col)
+    lines[row] = head
+    lines = ins_at(lines, row + 1, tail)
+    row = row + 1
+    col = 0
+    dirty = 1
+  } else if key == "Left" {
+    if col > 0 {
+      col = col - 1
+    } else if row > 0 {
+      row = row - 1
+      col = len(lines[row])
+    }
+  } else if key == "Right" {
+    if col < len(line) {
+      col = col + 1
+    } else if row < len(lines) - 1 {
+      row = row + 1
+      col = 0
+    }
+  } else if key == "Up" {
+    if row > 0 {
+      row = row - 1
+      if col > len(lines[row]) {
+        col = len(lines[row])
+      }
+    }
+  } else if key == "Down" {
+    if row < len(lines) - 1 {
+      row = row + 1
+      if col > len(lines[row]) {
+        col = len(lines[row])
+      }
+    }
+  } else if key == "Home" {
+    col = 0
+  } else if key == "End" {
+    col = len(line)
+  } else if key == "Tab" {
+    lines[row] = substr(line, 0, col) + "  " + substr(line, col)
+    col = col + 2
+    dirty = 1
+  } else if text != null and text != "" {
+    lines[row] = substr(line, 0, col) + text + substr(line, col)
+    col = col + len(text)
+    dirty = 1
+  }
+  draw()
+}
+
+fn del_at(a, i) {
+  let out = []
+  let n = 0
+  for v in a {
+    if n != i {
+      push(out, v)
+    }
+    n = n + 1
+  }
+  return out
+}
+
+fn ins_at(a, i, v) {
+  let out = []
+  let n = 0
+  for x in a {
+    if n == i {
+      push(out, v)
+    }
+    push(out, x)
+    n = n + 1
+  }
+  if i >= n {
+    push(out, v)
+  }
+  return out
+}
+
+fn text_width(s) { return len(s) }
+
+// ---------------- 绘制 ----------------
+fn draw() {
+  if win == 0 {
+    return
+  }
+  if runPid != 0 {
+    let o = console_tail(runPid, 12)
+    if type(o) != "map" {
+      outLines = o
+    }
+  }
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 640, "h": 460, "c": C.bg, "r": 8})
+  let btns = ["保存", "运行", "停止", "路径", "重载"]
+  let bx = 4
+  for b in btns {
+    push(p, {"t": "r", "x": bx, "y": 4, "w": 46, "h": 22, "c": C.bar, "r": 5, "s": C.line})
+    push(p, {"t": "t", "x": bx + 23, "y": 19, "s": b, "c": C.text, "fs": 11, "a": "c"})
+    bx = bx + 50
+  }
+  let pt = path
+  if path == "" {
+    pt = "（未打开文件）"
+  }
+  push(p, {"t": "t", "x": 260, "y": 19, "s": pt, "c": C.acc2, "fs": 11, "mw": 220})
+  if dirty == 1 {
+    push(p, {"t": "t", "x": 488, "y": 19, "s": "未保存 *", "c": C.danger, "fs": 11})
+  }
+  push(p, {"t": "r", "x": 4, "y": 30, "w": 632, "h": 292, "c": C.area, "r": 5, "s": C.line})
+  push(p, {"t": "clip", "x": 4, "y": 30, "w": 632, "h": 292})
+  let y = 44
+  let i = 0
+  for ln in lines {
+    if i >= scroll and i < scroll + 18 {
+      push(p, {"t": "t", "x": 8, "y": y, "s": str(i + 1), "c": C.dim, "fs": 11})
+      push(p, {"t": "t", "x": 34, "y": y, "s": ln, "c": C.text, "fs": 12, "mw": 560})
+      if i == row {
+        push(p, {"t": "r", "x": 34 + col * 7, "y": y - 12, "w": 1, "h": 14, "c": C.acc2})
+      }
+      y = y + 16
+    }
+    i = i + 1
+  }
+  push(p, {"t": "unclip"})
+  // 输出区
+  push(p, {"t": "r", "x": 4, "y": 326, "w": 632, "h": 100, "c": "#0b1018", "r": 5, "s": C.line})
+  let ot = "程序输出"
+  if runPid != 0 {
+    ot = "程序输出（进程 " + str(runPid) + "）"
+  }
+  push(p, {"t": "t", "x": 12, "y": 342, "s": ot, "c": C.acc2, "fs": 11})
+  push(p, {"t": "r", "x": 500, "y": 330, "w": 60, "h": 20, "c": C.bar, "r": 4})
+  push(p, {"t": "t", "x": 530, "y": 344, "s": "清空", "c": C.dim, "fs": 11, "a": "c"})
+  let oy = 358
+  let n = 0
+  for o in outLines {
+    push(p, {"t": "t", "x": 12, "y": oy, "s": o, "c": C.num, "fs": 11, "mw": 616})
+    oy = oy + 14
+    n = n + 1
+    if n > 6 {
+      break
+    }
+  }
+  if n == 0 {
+    push(p, {"t": "t", "x": 12, "y": 358, "s": "运行程序后这里显示 print 输出", "c": C.dim, "fs": 11})
+  }
+  push(p, {"t": "r", "x": 4, "y": 430, "w": 632, "h": 24, "c": C.bar, "r": 5})
+  push(p, {"t": "t", "x": 12, "y": 446, "s": msg, "c": C.ok, "fs": 11, "mw": 600})
+  submit_window(win, p)
+}
+
+// ---------------- 入口 ----------------
+boot()

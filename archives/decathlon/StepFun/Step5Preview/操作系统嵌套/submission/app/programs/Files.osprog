@@ -1,0 +1,502 @@
+// ============================================================
+// 文件管理器（Files.osprog）
+// 目录导航、文件列表、新建/重命名/复制/移动/删除、按类型打开、
+// 跨层拖放传出与接收。是内核启动的普通程序。
+// ============================================================
+
+let win = 0
+let wm = 0
+let path = "/Documents"
+let entries = []
+let sel = -1
+let scroll = 0
+let msg = ""
+let msgT = 0
+let clip = null          // {op:"copy"|"move", paths:[]}
+let renaming = -1
+let renameBuf = ""
+let newFolder = 0
+let folderBuf = ""
+let dragging = 0
+let dragPath = ""
+let lastClick = -1
+let lastClickT = -9999
+let pendingDrop = null
+let booted = 0
+let clock = 0
+
+const C = {"bg": "#141a24", "bar": "#1c2433", "line": "#33405a", "text": "#e8ecf4", "dim": "#93a1bb", "acc": "#8b6cff", "acc2": "#ffd23f", "sel": "#2b3550", "danger": "#ff5d6c", "ok": "#43d9a3"}
+
+fn boot() {
+  list_refresh()
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    win = 0
+    wm = m.wm
+    send(wm, {"t": "win_open", "pid": self(), "key": "files", "title": "文件管理器", "w": 620, "h": 430})
+  } else if m.t == "win_opened" {
+    win = m.win
+    draw()
+  } else if m.t == "closing" {
+    exit_program()
+  } else if m.t == "click" {
+    on_click(m.x, m.y)
+  } else if m.t == "wheel" {
+    scroll = scroll + m.dy
+    if scroll < 0 {
+      scroll = 0
+    }
+    draw()
+  } else if m.t == "text" {
+    on_text(m.ctl, m.value)
+  } else if m.t == "open_path" {
+    open_file_at(m.path)
+  } else if m.t == "drop_request" {
+    on_drop_request(m)
+  } else if m.t == "drop_done" {
+    if m.ok == 1 {
+      notify("已接收 " + m.name)
+    } else {
+      notify("接收失败: " + m.error)
+    }
+    list_refresh()
+    draw()
+  } else if m.t == "move" {
+    on_move(m.x, m.y)
+  } else if m.t == "up" {
+    on_up()
+  }
+}
+
+fn on_move(x, y) {
+  if dragging == 0 and sel >= 0 and sel < len(entries) {
+    dragging = 1
+    dragPath = path + "/" + entries[sel].name
+    drag_begin(dragPath)
+  }
+}
+
+fn on_up() {
+  if dragging == 1 {
+    dragging = 0
+    drag_end()
+  }
+}
+
+fn exit_program() {
+  exit_now()
+}
+
+// ---------------- 数据 ----------------
+fn list_refresh() {
+  let l = list_dir(path)
+  if type(l) == "map" {
+    entries = []
+    msg = l.error
+    return
+  }
+  entries = l
+  if sel >= len(entries) {
+    sel = len(entries) - 1
+  }
+}
+
+fn notify(t) {
+  msg = t
+  msgT = clock
+}
+
+// ---------------- 交互 ----------------
+fn on_click(x, y) {
+  clock = time()
+  // 投放确认条
+  if pendingDrop != null and y >= 358 {
+    if x >= 430 and x <= 500 {
+      let r = transfer_from(pendingDrop.from, pendingDrop.path, path)
+      if type(r) == "map" {
+        notify("接收失败: " + r.error)
+        send(wm, {"t": "app_msg", "to": 0, "msg": {}})
+      } else {
+        notify("已请求接收 " + pendingDrop.name)
+      }
+      pendingDrop = null
+      draw()
+      return
+    }
+    if x >= 506 and x <= 576 {
+      notify("已拒绝接收 " + pendingDrop.name)
+      pendingDrop = null
+      draw()
+      return
+    }
+  }
+  // 工具栏
+  if y < 30 {
+    if x < 46 {
+      go_up()
+    } else if x < 92 {
+      list_refresh()
+      draw()
+    } else if x < 138 {
+      newFolder = 1
+      folderBuf = ""
+    } else if x < 184 {
+      do_rename()
+    } else if x < 230 {
+      do_delete()
+    } else if x < 276 {
+      clip = {"op": "copy", "paths": sel_paths()}
+      notify("已复制 " + str(len(clip.paths)) + " 项")
+    } else if x < 322 {
+      clip = {"op": "move", "paths": sel_paths()}
+      notify("已剪切 " + str(len(clip.paths)) + " 项")
+    } else if x < 368 {
+      do_paste()
+    } else if x < 414 {
+      open_selected()
+    }
+    draw()
+    return
+  }
+  // 路径栏
+  if y >= 30 and y < 56 {
+    if x >= 240 and x < 300 {
+      // 点击路径栏：回到根
+      path = "/"
+      sel = -1
+      list_refresh()
+      draw()
+    }
+    return
+  }
+  if newFolder == 1 {
+    newFolder = 0
+    mkdir(folderBuf)
+    folderBuf = ""
+    draw()
+    return
+  }
+  if renaming >= 0 {
+    let nm = renameBuf
+    renaming = -1
+    renameBuf = ""
+    apply_rename(nm)
+    draw()
+    return
+  }
+  // 列表
+  let rowH = 22
+  let iy = 62
+  let idx = floor((y - iy) / rowH) + scroll
+  if idx >= 0 and idx < len(entries) {
+    let now = clock
+    if lastClick == idx and now - lastClickT < 500 {
+      open_entry(idx)
+    } else {
+      sel = idx
+      lastClick = idx
+      lastClickT = now
+    }
+  } else {
+    sel = -1
+  }
+  draw()
+}
+
+fn on_text(ctl, value) {
+  if ctl == "rename" {
+    apply_rename(value)
+    renaming = -1
+  } else if ctl == "folder" {
+    mkdir(value)
+    newFolder = 0
+  }
+  draw()
+}
+
+fn sel_paths() {
+  let out = []
+  if sel >= 0 and sel < len(entries) {
+    push(out, path + "/" + entries[sel].name)
+  }
+  return out
+}
+
+fn go_up() {
+  if path == "/" {
+    return
+  }
+  let i = len(path) - 1
+  while i > 0 and substr(path, i, 1) != "/" {
+    i = i - 1
+  }
+  if i <= 0 {
+    path = "/"
+  } else {
+    path = substr(path, 0, i)
+  }
+  sel = -1
+  scroll = 0
+  list_refresh()
+  draw()
+}
+
+fn open_entry(i) {
+  let e = entries[i]
+  if e.type == "dir" {
+    path = path + "/" + e.name
+    sel = -1
+    scroll = 0
+    list_refresh()
+    draw()
+  } else {
+    open_file_at(path + "/" + e.name)
+  }
+}
+
+fn open_selected() {
+  if sel >= 0 and sel < len(entries) {
+    open_entry(sel)
+  }
+}
+
+fn open_file_at(p) {
+  let ext = ""
+  let dot = find(p, ".")
+  if dot >= 0 {
+    ext = lower(substr(p, dot))
+  }
+  if ext == ".scene" or ext == ".rec" {
+    request({"cmd": "open_app", "key": "player", "path": p})
+  } else {
+    request({"cmd": "open_app", "key": "editor", "path": p})
+  }
+}
+
+fn do_rename() {
+  if sel < 0 or sel >= len(entries) {
+    notify("请先选择一个文件")
+    return
+  }
+  renaming = sel
+  renameBuf = entries[sel].name
+  send(wm, {"t": "text_focus", "win": win, "ctl": "rename"})
+}
+
+fn apply_rename(nm) {
+  if renaming < 0 or renaming >= len(entries) {
+    return
+  }
+  if nm == "" or nm == entries[renaming].name {
+    return
+  }
+  let old = path + "/" + entries[renaming].name
+  let r = move_file(old, path + "/" + nm)
+  if type(r) == "map" {
+    notify("重命名失败: " + r.error)
+  } else {
+    notify("已重命名为 " + nm)
+  }
+  list_refresh()
+}
+
+fn mkdir(nm) {
+  if nm == "" {
+    nm = "新建文件夹"
+  }
+  let r = mkdir(path + "/" + nm)
+  if type(r) == "map" {
+    notify("新建失败: " + r.error)
+  } else {
+    notify("已新建 " + nm)
+  }
+  list_refresh()
+}
+fn do_delete() {
+  let ps = sel_paths()
+  if len(ps) == 0 {
+    notify("请先选择文件")
+    return
+  }
+  for p in ps {
+    let r = delete_file(p)
+    if type(r) == "map" {
+      notify("删除失败: " + r.error)
+    }
+  }
+  notify("已删除 " + str(len(ps)) + " 项")
+  sel = -1
+  list_refresh()
+}
+
+fn do_paste() {
+  if clip == null or len(clip.paths) == 0 {
+    notify("剪贴板为空")
+    return
+  }
+  let n = 0
+  for p in clip.paths {
+    let name = base_name(p)
+    let dst = path + "/" + name
+    let i = 1
+    while exists(dst) {
+      dst = path + "/" + str(i) + "_" + name
+      i = i + 1
+    }
+    let r = null
+    if clip.op == "copy" {
+      r = copy_file(p, dst)
+    } else {
+      r = move_file(p, dst)
+    }
+    if type(r) == "map" {
+      notify("粘贴失败: " + r.error)
+    } else {
+      n = n + 1
+    }
+  }
+  if clip.op == "move" {
+    clip = null
+  }
+  notify("已粘贴 " + str(n) + " 项")
+  list_refresh()
+}
+
+fn base_name(p) {
+  let i = len(p) - 1
+  while i > 0 and substr(p, i, 1) != "/" {
+    i = i - 1
+  }
+  return substr(p, i + 1)
+}
+
+// ---------------- 跨层拖放 ----------------
+fn on_drop_request(m) {
+  // 来自其他系统的投放请求：确认后由本系统发起传递
+  pendingDrop = m
+  notify("收到投放: " + m.name + " → " + path + "，点击“接收”确认")
+  draw()
+}
+
+// ---------------- 绘制 ----------------
+fn draw() {
+  if win == 0 {
+    return
+  }
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 620, "h": 430, "c": C.bg, "r": 8})
+  // 工具栏
+  let btns = ["上级", "刷新", "新建", "重命名", "删除", "复制", "剪切", "粘贴", "打开"]
+  let bx = 4
+  let i = 0
+  for b in btns {
+    push(p, {"t": "r", "x": bx, "y": 4, "w": 42, "h": 22, "c": C.bar, "r": 5, "s": C.line})
+    push(p, {"t": "t", "x": bx + 21, "y": 19, "s": b, "c": C.text, "fs": 11, "a": "c"})
+    bx = bx + 46
+    i = i + 1
+  }
+  // 路径栏
+  push(p, {"t": "r", "x": 4, "y": 32, "w": 612, "h": 20, "c": C.bar, "r": 5, "s": C.line})
+  push(p, {"t": "t", "x": 10, "y": 46, "s": path, "c": C.acc2, "fs": 12})
+  push(p, {"t": "t", "x": 596, "y": 46, "s": str(len(entries)) + " 项", "c": C.dim, "fs": 11, "a": "r"})
+  // 列表
+  push(p, {"t": "r", "x": 4, "y": 56, "w": 612, "h": 300, "c": "#101623", "r": 5, "s": C.line})
+  push(p, {"t": "t", "x": 14, "y": 70, "s": "名称", "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 380, "y": 70, "s": "类型", "c": C.dim, "fs": 11})
+  push(p, {"t": "t", "x": 470, "y": 70, "s": "大小", "c": C.dim, "fs": 11})
+  push(p, {"t": "l", "x1": 4, "y1": 74, "x2": 616, "y2": 74, "c": C.line, "w": 1})
+  let y = 78
+  let n = 0
+  for e in entries {
+    if n >= scroll {
+      if sel == n {
+        push(p, {"t": "r", "x": 6, "y": y - 12, "w": 608, "h": 20, "c": C.sel, "r": 4})
+      }
+      let ic = "vec:file"
+      if e.type == "dir" {
+        ic = "vec:folder"
+      } else {
+        let ext = ext_of(e.name)
+        if ext == ".scene" or ext == ".rec" {
+          ic = "vec:heli"
+        } else if ext == ".osprog" {
+          ic = "vec:code"
+        } else if ext == ".sheet" {
+          ic = "vec:sheet"
+        } else if ext == ".txt" or ext == ".md" {
+          ic = "vec:doc"
+        }
+      }
+      push(p, {"t": "i", "x": 12, "y": y - 11, "w": 16, "h": 16, "img": ic})
+      let nm = e.name
+      if renaming == n {
+        nm = renameBuf + "|"
+      }
+      push(p, {"t": "t", "x": 34, "y": y, "s": nm, "c": C.text, "fs": 12, "mw": 330})
+      let tp = ext_of(e.name)
+      if e.type == "dir" {
+        tp = "文件夹"
+      }
+      push(p, {"t": "t", "x": 380, "y": y, "s": tp, "c": C.dim, "fs": 11})
+      let sz = ""
+      if e.type != "dir" {
+        sz = str(e.size) + " B"
+      }
+      push(p, {"t": "t", "x": 470, "y": y, "s": sz, "c": C.dim, "fs": 11})
+      y = y + 22
+      if y > 350 {
+        break
+      }
+    }
+    n = n + 1
+  }
+  if newFolder == 1 {
+    push(p, {"t": "r", "x": 120, "y": 150, "w": 380, "h": 70, "c": C.bar, "r": 8, "s": C.acc})
+    push(p, {"t": "t", "x": 132, "y": 172, "s": "新建文件夹名称:", "c": C.text, "fs": 12})
+    push(p, {"t": "r", "x": 240, "y": 160, "w": 240, "h": 20, "c": "#0f141d", "r": 4, "s": C.line})
+    let fText = folderBuf
+    let fColor = C.text
+    if folderBuf == "" {
+      fText = "点击输入，回车确认"
+      fColor = C.dim
+    }
+    push(p, {"t": "t", "x": 246, "y": 174, "s": fText, "c": fColor, "fs": 12})
+  }
+  // 状态栏
+  push(p, {"t": "r", "x": 4, "y": 360, "w": 612, "h": 24, "c": C.bar, "r": 5})
+  push(p, {"t": "t", "x": 12, "y": 376, "s": msg, "c": C.ok, "fs": 11, "mw": 500})
+  if pendingDrop != null {
+    push(p, {"t": "r", "x": 430, "y": 362, "w": 70, "h": 20, "c": C.acc, "r": 5})
+    push(p, {"t": "t", "x": 465, "y": 376, "s": "接收", "c": "#fff", "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": 506, "y": 362, "w": 70, "h": 20, "c": "#43262f", "r": 5})
+    push(p, {"t": "t", "x": 541, "y": 376, "s": "拒绝", "c": C.danger, "fs": 11, "a": "c"})
+  }
+  push(p, {"t": "t", "x": 612, "y": 376, "s": "跨层拖放: 拖动文件到其他系统窗口", "c": C.dim, "fs": 10, "a": "r"})
+  submit_window(win, p, {"path": path})
+}
+
+fn ext_of(n) {
+  let dot = find(n, ".")
+  if dot < 0 {
+    return ""
+  }
+  return lower(substr(n, dot))
+}
+
+fn exit_now() {
+  kill(self())
+}
+
+// ---------------- 入口 ----------------
+boot()

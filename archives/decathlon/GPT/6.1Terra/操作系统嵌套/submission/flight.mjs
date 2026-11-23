@@ -1,0 +1,12 @@
+// Deterministic simple flight dynamics; state and records are serializable.
+export const DEFAULT_CONTROLLER=JSON.stringify({name:'飞控服务',code:[
+ {op:'sensor',key:'y',to:'alt'},{op:'set',to:'thrust',value:4},{op:'sub',to:'thrust',value:'$alt'},{op:'mul',to:'thrust',value:1.5},{op:'add',to:'thrust',value:9.8},
+ {op:'sensor',key:'vy',to:'vertical'},{op:'mul',to:'vertical',value:-1.1},{op:'add',to:'thrust',value:'$vertical'},
+ {op:'sensor',key:'heading',to:'steer'},{op:'sensor',key:'x',to:'x'},{op:'sub',to:'steer',value:'$x'},{op:'mul',to:'steer',value:.05},
+ {op:'sensor',key:'angle',to:'angle'},{op:'mul',to:'angle',value:-1.2},{op:'add',to:'steer',value:'$angle'},
+ {op:'sensor',key:'angularVelocity',to:'spin'},{op:'mul',to:'spin',value:-.7},{op:'add',to:'steer',value:'$spin'},
+ {op:'actuate',thrust:'$thrust',steer:'$steer'},{op:'wait',seconds:.1},{op:'jump',target:0}
+]},null,2);
+export function normalizeController(source){let program=JSON.parse(source);if(!Array.isArray(program.code)&&Number.isFinite(program.targetAltitude)){let template=JSON.parse(DEFAULT_CONTROLLER);template.code[1].value=program.targetAltitude;template.code[3].value=program.altitudeGain??1.5;template.code[6].value=-(program.verticalDamping??1.1);template.code[11].value=program.headingGain??.05;template.code[13].value=-(program.angleDamping??1.2);program=template}if(!Array.isArray(program.code)||!program.code.length)throw Error('飞控必须包含 code 指令数组');return JSON.stringify(program)}
+export function startFlight(source){normalizeController(source);return {time:0,x:0,y:1.5,vx:0,vy:0,angle:0,angularVelocity:0,wind:0,heading:0,fault:false,crashed:false,thrust:0,steer:0,lastControlTime:0,history:[]}}
+export function stepFlight(f,dt){if(f.crashed)return;let torque=f.steer+f.angle*.35+Math.sin(f.time*1.7)*.06+(f.wind*.025)+(f.fault?.8:0);f.angularVelocity+=torque*dt;f.angle+=f.angularVelocity*dt;let lift=f.thrust*(f.fault?.55:1);f.vx+=(Math.sin(f.angle)*lift*.35+f.wind*.12)*dt;f.vy+=(Math.cos(f.angle)*lift-9.8)*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.time+=dt;if(f.y<=1.5){f.y=1.5;if(f.time>.5&&(Math.abs(f.vy)>2||Math.abs(f.angle)>.6)){f.crashed=true;f.vy=0;f.vx=0}else f.vy=Math.max(0,f.vy)}f.history.push({time:f.time,x:f.x,y:f.y,angle:f.angle,vx:f.vx,vy:f.vy,angularVelocity:f.angularVelocity,wind:f.wind,heading:f.heading,fault:f.fault,thrust:f.thrust,steer:f.steer,crashed:f.crashed});if(f.history.length>10000)f.history.shift()}

@@ -1,0 +1,1167 @@
+// =====================================================================
+// 窗口管理程序（/System/wm.ns）
+//
+// 每个系统都运行一份窗口管理程序：它负责桌面图标、任务栏、开始菜单、
+// 窗口的层叠、焦点、命中判断、拖动缩放、贴靠、通知、右键菜单，以及把输入
+// 分发给应用、直属子系统（系统窗口）或投送窗口。
+// 改写这里的层叠、焦点或命中规则并重启本系统，桌面即按新规则工作。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var SELF = "";
+var IS_ROOT = true;
+var W = 1280;
+var H = 800;
+var TB = 38;
+var TASK = 48;
+var wins = [];
+var zs = [];
+var nextWid = 1;
+var focusWid = 0;
+var drag = nil;
+var capWid = 0;
+var menu = nil;
+var startOpen = false;
+var startQuery = "";
+var notifOpen = false;
+var panelOpen = false;
+var sel = "";
+var lastClick = {id: "", t: -10};
+var toasts = [];
+var kidStates = {};
+var accent = "violet";
+var wallpaper = "landscape";
+var scale = 100;
+var sysName = "";
+var depth = 1;
+var nowText = "";
+var projSeq = 0;
+var tickerPid = -1;
+var dirty = true;
+var pending = {};
+
+// 应用表：id -> {title, glyph, color, root, child, w, h, panel}
+var APPS = {
+    files: {title: "文件管理器", glyph: "F", color: "#4f8cff", root: true, child: true, w: 820, h: 540},
+    sheet: {title: "电子表格", glyph: "S", color: "#1fa463", root: true, child: false, w: 900, h: 560},
+    widgets: {title: "小组件", glyph: "W", color: "#8e5cff", root: true, child: false, w: 360, h: 620, panel: true},
+    editor: {title: "文本与程序编辑器", glyph: "E", color: "#ff8a3d", root: true, child: true, w: 820, h: 560},
+    browser: {title: "浏览器", glyph: "B", color: "#2f7bff", root: true, child: false, w: 1040, h: 640},
+    tasks: {title: "任务管理器", glyph: "T", color: "#e5484d", root: true, child: true, w: 820, h: 560},
+    settings: {title: "设置", glyph: "G", color: "#6b7388", root: true, child: false, w: 640, h: 500},
+    player: {title: "三维场景播放器", glyph: "P", color: "#f0558c", root: false, child: true, w: 960, h: 640},
+    charts: {title: "图表工作台", glyph: "C", color: "#14a79a", root: false, child: true, w: 860, h: 580}
+};
+
+var PINNED = ["files", "browser", "editor"];
+
+func app_list() {
+    var out = [];
+    var order = ["files", "sheet", "widgets", "editor", "browser", "tasks", "settings", "player", "charts"];
+    for (var id in order) {
+        var a = APPS[id];
+        if (IS_ROOT && a.root) { push(out, id); }
+        if (!IS_ROOT && a.child) { push(out, id); }
+    }
+    return out;
+}
+
+// ---------------------------- 窗口基础 ----------------------------
+func win_by(id) {
+    for (var w in wins) {
+        if (w.id == id) { return w; }
+    }
+    return nil;
+}
+
+func raise(id) {
+    var out = [];
+    for (var z in zs) {
+        if (z != id) { push(out, z); }
+    }
+    push(out, id);
+    zs = out;
+}
+
+func content_rect(w) {
+    return {x: w.x, y: w.y + TB, w: w.w, h: w.h - TB};
+}
+
+func hit_window(x, y) {
+    var i = len(zs) - 1;
+    while (i >= 0) {
+        var w = win_by(zs[i]);
+        if (w != nil && !w.min && inside(x, y, w.x, w.y, w.w, w.h)) { return w.id; }
+        i = i - 1;
+    }
+    return 0;
+}
+
+func visible_top() {
+    var i = len(zs) - 1;
+    while (i >= 0) {
+        var w = win_by(zs[i]);
+        if (w != nil && !w.min) { return w.id; }
+        i = i - 1;
+    }
+    return 0;
+}
+
+func remove_win(id) {
+    var out = [];
+    for (var w in wins) {
+        if (w.id != id) { push(out, w); }
+    }
+    wins = out;
+    var zo = [];
+    for (var z in zs) {
+        if (z != id) { push(zo, z); }
+    }
+    zs = zo;
+    if (focusWid == id) { focusWid = visible_top(); }
+}
+
+func clamp_win(w) {
+    var maxh = H - TASK;
+    if (w.w > W) { w.w = W; }
+    if (w.h > maxh) { w.h = maxh; }
+    if (w.w < 240) { w.w = 240; }
+    if (w.h < 160) { w.h = 160; }
+    if (w.x + w.w > W) { w.x = W - w.w; }
+    if (w.y + w.h > maxh) { w.y = maxh - w.h; }
+    if (w.x < 0) { w.x = 0; }
+    if (w.y < 0) { w.y = 0; }
+}
+
+// 视图尺寸变化时通知窗口的内容提供者
+func send_view(w) {
+    var c = content_rect(w);
+    if (w.kind == "app") {
+        sys_send(w.pid, {type: "view", view: "win", w: c.w, h: c.h, focus: focusWid == w.id});
+    } else if (w.kind == "sys") {
+        sys_xpost(w.sys, {to: "wm", type: "viewport", w: c.w, h: c.h});
+    } else if (w.kind == "proj") {
+        sys_xpost(w.src, {to: "wm", type: "proj-size", win: w.srcwin, view: w.view, w: c.w, h: c.h});
+    }
+}
+
+func focus_win(id) {
+    var w = win_by(id);
+    if (w == nil) { return; }
+    if (w.min) { w.min = false; }
+    raise(id);
+    focusWid = id;
+    send_view(w);
+    dirty = true;
+}
+
+// 打开应用窗口：先建窗口记录，再启动应用进程（把窗口号作为参数传入）
+func open_app(app) {
+    return open_app_with(app, nil);
+}
+
+// 按文件扩展名选择应用
+func open_file(path) {
+    var ext = ext_of(path);
+    var app = "editor";
+    if (ext == "sheet") { app = "sheet"; }
+    if (ext == "scene" || ext == "rec") { app = "player"; }
+    if (!IS_ROOT && app == "sheet") { push_toast("无法打开", "本系统没有电子表格"); return 0; }
+    if (IS_ROOT && app == "player") { push_toast("无法打开", "根系统没有三维播放器，请在子系统中打开"); return 0; }
+    return open_app_with(app, path);
+}
+
+func open_app_with(app, arg) {
+    var a = APPS[app];
+    if (a == nil) { return 0; }
+    var wid = nextWid;
+    nextWid = nextWid + 1;
+    var n = len(wins);
+    var w = {id: wid, kind: "app", app: app, pid: -1, title: a.title, x: 120 + (n % 6) * 30, y: 60 + (n % 6) * 26, w: a.w, h: a.h, min: false, max: false, rest: nil, projs: [], panel: a.panel == true};
+    if (a.panel == true) {
+        w.kind = "app";
+        w.x = W - 380;
+        w.y = 56;
+        w.h = H - TASK - 80;
+    }
+    clamp_win(w);
+    var r = sys_spawn("/System/apps/" + app + ".ns", [wid, app, arg]);
+    if (!r.ok) {
+        push_toast("无法启动 " + a.title, r.error);
+        return 0;
+    }
+    w.pid = r.pid;
+    push(wins, w);
+    raise(wid);
+    focusWid = wid;
+    if (a.panel == true) { panelOpen = true; }
+    send_view(w);
+    dirty = true;
+    return wid;
+}
+
+func open_sys_window(childId, title) {
+    for (var ew in wins) {
+        if (ew.kind == "sys" && ew.sys == childId) {
+            if (ew.min) { ew.min = false; }
+            focus_win(ew.id);
+            return ew.id;
+        }
+    }
+    var wid = nextWid;
+    nextWid = nextWid + 1;
+    var n = len(wins);
+    var w = {id: wid, kind: "sys", sys: childId, pid: -1, title: title, x: 150 + (n % 5) * 34, y: 80 + (n % 5) * 28, w: 900, h: 600, min: false, max: false, rest: nil, projs: []};
+    clamp_win(w);
+    push(wins, w);
+    raise(wid);
+    focusWid = wid;
+    send_view(w);
+    dirty = true;
+    return wid;
+}
+
+// 关闭窗口：应用窗口先请求应用自行收尾（可能需要确认），子系统窗口需要确认。
+func close_win(id) {
+    var w = win_by(id);
+    if (w == nil) { return; }
+    if (w.kind == "app") {
+        sys_send(w.pid, {type: "close-req", win: id});
+        return;
+    }
+    if (w.kind == "sys") {
+        pending = {kind: "close-sys", win: id, sys: w.sys};
+        dirty = true;
+        return;
+    }
+    if (w.kind == "proj") {
+        sys_xpost(w.src, {to: "wm", type: "proj-closed", win: w.srcwin, view: w.view});
+        remove_win(id);
+        push_toast("投送已取消", w.title);
+        dirty = true;
+    }
+}
+
+func destroy_app(id) {
+    var w = win_by(id);
+    if (w == nil) { return; }
+    for (var p in w.projs) {
+        sys_xpost(p.target, {to: "wm", type: "proj-ended", src: SELF, view: p.view, reason: "源窗口已关闭"});
+    }
+    sys_kill(w.pid);
+    remove_win(id);
+    dirty = true;
+}
+
+// ---------------------------- 投送 ----------------------------
+func project_win(id, target) {
+    var w = win_by(id);
+    if (w == nil || w.kind != "app") { return; }
+    var pid = "pv-" + str(projSeq);
+    projSeq = projSeq + 1;
+    push(w.projs, {view: pid, target: target});
+    sys_xpost(target, {to: "wm", type: "proj-open", src: SELF, srcwin: id, view: pid, title: w.title + "（投送）", app: w.app});
+    push_toast("已投送到 " + target, w.title);
+    dirty = true;
+}
+
+func accept_projection(m) {
+    var wid = nextWid;
+    nextWid = nextWid + 1;
+    var n = len(wins);
+    var w = {id: wid, kind: "proj", src: m.src, srcwin: m.srcwin, view: m.view, sys: m.src, app: m.app, title: m.title, pid: -1, x: 200 + (n % 5) * 30, y: 90 + (n % 5) * 24, w: 760, h: 500, min: false, max: false, rest: nil, projs: []};
+    clamp_win(w);
+    push(wins, w);
+    raise(wid);
+    focusWid = wid;
+    send_view(w);
+    dirty = true;
+}
+
+func proj_source_closed(m) {
+    for (var w in wins) {
+        if (w.kind == "proj" && w.src == m.src && w.view == m.view) {
+            remove_win(w.id);
+            push_toast("投送已结束", m.reason);
+        }
+    }
+    dirty = true;
+}
+
+// ---------------------------- 通知 ----------------------------
+func push_toast(title, body) {
+    push(toasts, {id: nextWid, title: title, body: body, until: sys_now() + 4});
+    nextWid = nextWid + 1;
+    if (len(toasts) > 4) { toasts = slice(toasts, 1, len(toasts)); }
+    dirty = true;
+}
+
+// ---------------------------- 桌面图标与菜单 ----------------------------
+func icon_at(i) {
+    var col = 0;
+    var row = i;
+    var per = floor((H - TASK - 48) / 100);
+    if (row >= per) { col = floor(row / per); row = row % per; }
+    return {x: 24 + col * 96, y: 24 + row * 100};
+}
+
+func desktop_apps_on_desktop() {
+    return app_list();
+}
+
+func menu_items_desktop() {
+    return [
+        {label: "刷新", act: "refresh", tid: "menu-refresh"},
+        {label: "排列图标", act: "arrange", tid: "menu-arrange"},
+        {label: "打开设置", act: "open-settings", tid: "menu-settings"},
+        {label: "打开文件管理器", act: "open-files", tid: "menu-files"}
+    ];
+}
+
+func menu_items_window(w) {
+    var items = [{label: "最小化", act: "min", tid: "menu-min"}, {label: "关闭", act: "close", tid: "menu-close"}];
+    if (w.kind == "app") {
+        for (var a in sys_ancestors()) {
+            push(items, {label: "投送到 " + a.id, act: "project:" + a.id, tid: "menu-project"});
+        }
+    }
+    return items;
+}
+
+func do_menu_act(act) {
+    if (act == "refresh") {
+        dirty = true;
+    } else if (act == "arrange") {
+        dirty = true;
+    } else if (act == "open-settings") {
+        open_app("settings");
+    } else if (act == "open-files") {
+        open_app("files");
+    } else if (act == "min") {
+        if (menu != nil && menu.target != 0) {
+            var mw = win_by(menu.target);
+            if (mw != nil) { mw.min = true; }
+        }
+    } else if (act == "close") {
+        if (menu != nil && menu.target != 0) { close_win(menu.target); }
+    } else if (starts(act, "project:")) {
+        if (menu != nil && menu.target != 0) { project_win(menu.target, substr(act, 8, len(act) - 8)); }
+    }
+    dirty = true;
+}
+
+// ---------------------------- 开始菜单 ----------------------------
+func start_rect() {
+    return {x: 8, y: H - TASK - 500, w: 380, h: 488};
+}
+
+func start_matches() {
+    var out = [];
+    for (var id in app_list()) {
+        var a = APPS[id];
+        if (startQuery == "" || indexOf(lower(a.title), lower(startQuery)) >= 0 || starts(id, lower(startQuery))) {
+            push(out, id);
+        }
+    }
+    return out;
+}
+
+// ---------------------------- 绘制 ----------------------------
+func paint_icon(L, x, y, app, tid) {
+    var a = APPS[app];
+    var n = add_rect(L, x + 14, y + 6, 56, 56, a.color);
+    n.r = 14;
+    n.sh = true;
+    n.hv = true;
+    n.cur = "pointer";
+    n.tid = tid;
+    n.ap = app;
+    add_bold(L, x + 14, y + 6, 56, 56, a.glyph, 22, "#ffffff", "c");
+    var lb = add_text(L, x - 8, y + 66, 96, 26, fit_text(a.title, 12, 88), 12, "#ffffff", "c");
+    lb.sh = true;
+}
+
+// 直属子系统的运行状态（由内核的 sys_kids 给出），用于系统窗口标题栏
+func kid_states() {
+    var out = {};
+    var ks = sys_kids();
+    for (var k in ks) { out[k.id] = k.state; }
+    return out;
+}
+
+func kid_state_label(st) {
+    if (st == "paused") { return "已暂停"; }
+    if (st == "suspended") { return "已挂起"; }
+    if (st == "error") { return "内核错误"; }
+    return "运行中";
+}
+
+func paint_window(L, w) {
+    if (w.min) {
+        // 最小化：内容面保留但隐藏（不销毁网页视图等状态）
+        var hs = nil;
+        if (w.kind == "app") { hs = add_surf(L, SELF, "win-" + str(w.id), 0, 0, w.w, w.h - TB, "c" + str(w.id)); }
+        if (w.kind == "sys") { hs = add_surf(L, w.sys, "desktop", 0, 0, w.w, w.h - TB, "c" + str(w.id)); }
+        if (w.kind == "proj") { hs = add_surf(L, w.src, w.view, 0, 0, w.w, w.h - TB, "c" + str(w.id)); }
+        if (hs != nil) { hs.hid = true; hs.x = w.x; hs.y = w.y + TB; }
+        return;
+    }
+    var focused = focusWid == w.id;
+    var sh = add_rect(L, w.x - 2, w.y - 2, w.w + 4, w.h + 4, "#00000000");
+    sh.r = 14;
+    sh.sh = true;
+    var body = add_frame(L, w.x, w.y, w.w, w.h, THEME.panel, pick(focused, accent_color(accent), THEME.line), 10);
+    body.wid = w.id;
+    body.tid = "app-window";
+    body.ap = pick(w.kind == "sys", "system", w.app);
+    var tbar = add_rect(L, w.x, w.y, w.w, TB, pick(focused, "#f7f7fc", "#fbfbfd"));
+    tbar.tid = "window-titlebar";
+    tbar.wid = w.id;
+    var ic = add_rect(L, w.x + 12, w.y + 11, 14, 14, accent_color(accent));
+    ic.r = 4;
+    var tt = w.title;
+    var tw = w.w - 180;
+    if (w.kind == "sys") {
+        tt = w.title + "  ·  所属 " + pick(IS_ROOT, "根系统", SELF) + "  ·  " + kid_state_label(kidStates[w.sys]);
+    }
+    if (w.kind == "proj") { tt = w.title + "  ·  来自 " + w.src; }
+    if (w.kind == "sys" || w.kind == "proj") { tw = w.w - 290; }
+    add_text(L, w.x + 34, w.y, tw, TB, fit_text(tt, 13, tw - 20), 13, THEME.text, "l");
+    var bx = w.x + w.w - 138;
+    var b1 = add_btn(L, bx, w.y + 4, 40, 30, "—", "window-minimize", "#00000000", THEME.sub);
+    var b2 = add_btn(L, bx + 46, w.y + 4, 40, 30, pick(w.max, "❐", "□"), "window-maximize", "#00000000", THEME.sub);
+    var b3 = add_btn(L, bx + 92, w.y + 4, 40, 30, "×", "window-close", "#00000000", THEME.sub);
+    for (var bb in [b1, b2, b3]) { bb.wid = w.id; }
+    if (w.kind == "sys" || w.kind == "proj") {
+        var bp = add_btn(L, bx - 104, w.y + 4, 96, 30, "返回父桌面", "window-return-parent", "#00000000", THEME.sub);
+        bp.wid = w.id;
+    }
+    var cr = content_rect(w);
+    var cs = nil;
+    if (w.kind == "app") {
+        cs = add_surf(L, SELF, "win-" + str(w.id), cr.x, cr.y, cr.w, cr.h, "c" + str(w.id));
+    } else if (w.kind == "sys") {
+        cs = add_surf(L, w.sys, "desktop", cr.x, cr.y, cr.w, cr.h, "c" + str(w.id));
+    } else if (w.kind == "proj") {
+        cs = add_surf(L, w.src, w.view, cr.x, cr.y, cr.w, cr.h, "c" + str(w.id));
+    }
+    if (cs != nil) {
+        cs.wid = w.id;
+        cs.ap = pick(w.kind == "sys", "system", w.app);
+    }
+    if (!focused) {
+        var veil = add_rect(L, cr.x, cr.y, cr.w, cr.h, "#00000000");
+        veil.tid = "window-content";
+        veil.wid = w.id;
+    }
+}
+
+func pinned_visible() {
+    var out = [];
+    for (var p in PINNED) {
+        if (IS_ROOT || APPS[p].child) { push(out, p); }
+    }
+    return out;
+}
+
+func paint_taskbar(L) {
+    add_rect(L, 0, H - TASK, W, TASK, "#f7f8fc");
+    var sb = add_frame(L, 0, H - TASK, W, 1, THEME.line, THEME.line, 0);
+    var st = add_btn(L, 8, H - TASK + 6, 44, 36, "⊞", "start-toggle", pick(startOpen, accent_color(accent), "#ffffff"), pick(startOpen, "#ffffff", THEME.text));
+    var x = 62;
+    for (var p in pinned_visible()) {
+        paint_icon_small(L, x, H - TASK + 6, p);
+        x = x + 42;
+    }
+    var tx = x + 12;
+    for (var w in wins) {
+        if (w.panel == true) { continue; }
+        var on = focusWid == w.id && !w.min;
+        var r = add_btn(L, tx, H - TASK + 6, 176, 36, fit_text(w.title, 12, 150), "taskbar-item", pick(on, accentSoft(), "#ffffff"), THEME.text);
+        r.wid = w.id;
+        r.sh = !on;
+        tx = tx + 182;
+        if (tx + 176 > W - 330) { break; }
+    }
+    var rx = W - 300;
+    add_btn(L, rx, H - TASK + 6, 36, 36, "🔔", "notifications-toggle", pick(notifOpen, accent_color(accent), "#ffffff"), THEME.text);
+    add_btn(L, rx + 42, H - TASK + 6, 36, 36, "▦", "widgets-toggle", pick(panelOpen, accent_color(accent), "#ffffff"), THEME.text);
+    add_text(L, rx + 90, H - TASK + 6, 150, 36, nowText, 13, THEME.text, "r");
+    add_text(L, W - 150, H - TASK + 6, 140, 36, sysName, 12, THEME.sub, "r");
+}
+
+func accentSoft() {
+    return "#e8e4ff";
+}
+
+func paint_icon_small(L, x, y, app) {
+    var a = APPS[app];
+    var n = add_btn(L, x, y, 36, 36, a.glyph, "launch-" + app, "#ffffff", a.color);
+    n.ap = app;
+    n.bold = true;
+}
+
+func paint_start(L) {
+    var r = start_rect();
+    var f = add_frame(L, r.x, r.y, r.w, r.h, "#ffffff", THEME.line, 14);
+    f.sh = true;
+    add_text(L, r.x + 16, r.y + 12, 200, 24, sysName + "  ·  " + pick(IS_ROOT, "根系统", "第 " + str(depth) + " 层"), 13, THEME.sub, "l");
+    var q = add_frame(L, r.x + 12, r.y + 42, r.w - 24, 34, "#f4f5fa", THEME.line, 8);
+    q.tid = "start-search";
+    add_text(L, r.x + 22, r.y + 42, r.w - 44, 34, pick(startQuery == "", "输入以搜索应用", startQuery), 13, pick(startQuery == "", THEME.hint, THEME.text), "l");
+    var y = r.y + 88;
+    for (var id in start_matches()) {
+        var a = APPS[id];
+        var row = add_rect(L, r.x + 10, y, r.w - 20, 44, "#00000000");
+        row.hv = true;
+        row.r = 8;
+        row.cur = "pointer";
+        row.tid = "launch-" + id;
+        row.ap = id;
+        var ic = add_rect(L, r.x + 18, y + 6, 32, 32, a.color);
+        ic.r = 9;
+        add_bold(L, r.x + 18, y + 6, 32, 32, a.glyph, 14, "#ffffff", "c");
+        add_text(L, r.x + 62, y, r.w - 80, 44, a.title, 14, THEME.text, "l");
+        y = y + 48;
+    }
+}
+
+func paint_notifs(L) {
+    var x = W - 360;
+    var f = add_frame(L, x, 56, 340, H - TASK - 76, "#ffffff", THEME.line, 14);
+    f.sh = true;
+    f.tid = "notifications-panel";
+    add_bold(L, x + 18, 68, 200, 28, "通知中心", 15, THEME.text, "l");
+    var list = sys_notes();
+    var y = 106;
+    var i = len(list) - 1;
+    var shown = 0;
+    while (i >= 0 && shown < 12) {
+        var n = list[i];
+        var c = add_frame(L, x + 14, y, 312, 62, "#f8f9fc", THEME.line, 10);
+        c.tid = "notification-item";
+        add_bold(L, x + 26, y + 8, 290, 22, fit_text(n.title, 13, 280), 13, THEME.text, "l");
+        add_text(L, x + 26, y + 30, 290, 22, fit_text(n.body, 12, 280), 12, THEME.sub, "l");
+        y = y + 70;
+        shown = shown + 1;
+        i = i - 1;
+    }
+    if (shown == 0) { add_text(L, x + 14, 120, 312, 30, "暂无通知", 13, THEME.hint, "c"); }
+    add_btn(L, x + 14, H - TASK - 56, 312, 34, "收起", "notifications-close", THEME.accentSoft, THEME.text);
+}
+
+func paint_toasts(L) {
+    var y = 60;
+    for (var t in toasts) {
+        var c = add_frame(L, W - 330, y, 310, 58, "#ffffff", THEME.line, 10);
+        c.sh = true;
+        c.tid = "toast";
+        add_bold(L, W - 318, y + 8, 290, 22, fit_text(t.title, 13, 280), 13, THEME.text, "l");
+        add_text(L, W - 318, y + 30, 290, 22, fit_text(t.body, 12, 280), 12, THEME.sub, "l");
+        y = y + 66;
+    }
+}
+
+func paint_menu(L) {
+    if (menu == nil) { return; }
+    var h = 12 + len(menu.items) * 34;
+    var f = add_frame(L, menu.x, menu.y, 200, h, "#ffffff", THEME.line, 10);
+    f.sh = true;
+    f.tid = "context-menu";
+    var y = menu.y + 6;
+    for (var it in menu.items) {
+        var r = add_rect(L, menu.x + 6, y, 188, 32, "#00000000");
+        r.hv = true;
+        r.r = 6;
+        r.tid = it.tid;
+        r.lbl = it.label;
+        r.act = it.act;
+        r.cur = "pointer";
+        add_text(L, menu.x + 16, y, 180, 32, it.label, 13, THEME.text, "l");
+        y = y + 34;
+    }
+}
+
+func paint_dialog(L) {
+    if (pending.kind != "close-sys") { return; }
+    var x = W / 2 - 200;
+    var y = H / 2 - 90;
+    add_rect(L, 0, 0, W, H - TASK, "#22263344");
+    var f = add_frame(L, x, y, 400, 180, "#ffffff", THEME.line, 14);
+    f.sh = true;
+    f.tid = "confirm-dialog";
+    add_bold(L, x + 24, y + 22, 352, 26, "停止子系统？", 16, THEME.text, "l");
+    add_text(L, x + 24, y + 56, 352, 40, "将停止 " + pending.sys + " 及其全部后代，并结束其中的所有程序。已保存的快照不受影响。", 13, THEME.sub, "l");
+    add_btn(L, x + 180, y + 118, 96, 38, "取消", "dialog-cancel", "#f0f1f6", THEME.text);
+    add_btn(L, x + 284, y + 118, 96, 38, "停止", "dialog-confirm", THEME.danger, "#ffffff");
+}
+
+// 发布窗口与投送列表（供自动化接口 inspect() 读取）
+func publish_state() {
+    var list = [];
+    var projs = [];
+    for (var w in wins) {
+        var st = "normal";
+        if (w.min) { st = "minimized"; }
+        else if (w.max) { st = "maximized"; }
+        if (!w.min && focusWid == w.id) { st = st + "-focused"; }
+        var app = "system";
+        if (w.kind == "app") { app = w.app; }
+        if (w.kind == "proj") { app = w.app; }
+        if (w.kind == "sys") { app = "system"; }
+        if (w.kind == "proj") {
+            push(projs, {windowId: w.id, systemId: SELF, sourceSystemId: w.src, sourceWindowId: w.srcwin, sourceAppId: w.app, state: st, view: w.view});
+        } else {
+            push(list, {id: w.id, systemId: SELF, appId: app, title: w.title, state: st, kind: w.kind, childSystemId: pick(w.kind == "sys", w.sys, "")});
+        }
+    }
+    sys_res_put("windows", list);
+    sys_res_put("projections", projs);
+}
+
+func compose() {
+    publish_state();
+    var L = [];
+    if (IS_ROOT) { push(L, {t: "scale", v: scale / 100}); }
+    add_img(L, 0, 0, W, H, "assets/wallpaper/" + wallpaper + ".svg");
+    if (depth > 1) {
+        var badge = add_frame(L, W - 170, 10, 160, 26, "#00000066", "#00000000", 13);
+        add_text(L, W - 170, 10, 160, 26, "第 " + str(depth) + " 层 · " + sysName, 12, "#ffffff", "c");
+        badge.tid = "system-badge";
+    }
+    var i = 0;
+    for (var a in desktop_apps_on_desktop()) {
+        var p = icon_at(i);
+        paint_icon(L, p.x, p.y, a, "desktop-icon");
+        i = i + 1;
+    }
+    for (var z in zs) {
+        var w = win_by(z);
+        if (w != nil) { paint_window(L, w); }
+    }
+    paint_taskbar(L);
+    if (startOpen) { paint_start(L); }
+    if (notifOpen) { paint_notifs(L); }
+    paint_toasts(L);
+    paint_menu(L);
+    paint_dialog(L);
+    sys_submit("desktop", L);
+    dirty = false;
+}
+
+// ---------------------------- 输入 ----------------------------
+func forward_pointer(w, kind, x, y, b, dbl) {
+    forward_pointer_dy(w, kind, x, y, b, dbl, 0);
+}
+
+func forward_pointer_dy(w, kind, x, y, b, dbl, dy) {
+    var c = content_rect(w);
+    var lx = x - c.x;
+    var ly = y - c.y;
+    if (w.kind == "app") {
+        sys_send(w.pid, {type: "pointer", view: "win", kind: kind, x: lx, y: ly, b: b, dbl: dbl, dy: dy});
+    } else if (w.kind == "sys") {
+        sys_xpost(w.sys, {to: "wm", type: "ev", ev: {kind: kind, x: lx, y: ly, b: b, dbl: dbl, dy: dy}});
+    } else if (w.kind == "proj") {
+        sys_xpost(w.src, {to: "wm", type: "proj-ev", win: w.srcwin, view: w.view, ev: {kind: kind, x: lx, y: ly, b: b, dbl: dbl, dy: dy}});
+    }
+}
+
+func forward_key(w, ev) {
+    if (w.kind == "app") {
+        sys_send(w.pid, {type: "key", key: ev.key, text: ev.text, ctrl: ev.ctrl, shift: ev.shift, alt: ev.alt, kind: ev.kind});
+    } else if (w.kind == "sys") {
+        sys_xpost(w.sys, {to: "wm", type: "ev", ev: ev});
+    } else if (w.kind == "proj") {
+        sys_xpost(w.src, {to: "wm", type: "proj-ev", win: w.srcwin, view: w.view, ev: ev});
+    }
+}
+
+func on_down(ev) {
+    var x = ev.x;
+    var y = ev.y;
+    var b = ev.b;
+    if (menu != nil) {
+        for (var it in menu_hit_items()) {
+            if (inside(x, y, menu.x + 6, it.y, 188, 32)) {
+                var act = it.act;
+                menu = nil;
+                if (act == "refresh" || act == "arrange") { dirty = true; return; }
+                do_menu_act(act);
+                return;
+            }
+        }
+        menu = nil;
+        dirty = true;
+    }
+    if (pending.kind == "close-sys") {
+        if (inside(x, y, W / 2 + 84, H / 2 + 28, 96, 38)) {
+            var sid = pending.sys;
+            var wid = pending.win;
+            pending = {};
+            sys_child_ctl(sid, "close", nil);
+            remove_win(wid);
+            dirty = true;
+            return;
+        }
+        if (inside(x, y, W / 2 - 20, H / 2 + 28, 96, 38)) {
+            pending = {};
+            dirty = true;
+        }
+        return;
+    }
+    if (startOpen) {
+        var sr = start_rect();
+        if (inside(x, y, sr.x, sr.y, sr.w, sr.h)) {
+            var idx = floor((y - (sr.y + 88)) / 48);
+            var list = start_matches();
+            if (idx >= 0 && idx < len(list)) {
+                startOpen = false;
+                startQuery = "";
+                open_app(list[idx]);
+            }
+            return;
+        }
+        if (!inside(x, y, 8, H - TASK - 42, 44, 36)) {
+            startOpen = false;
+            dirty = true;
+        }
+    }
+    if (notifOpen && inside(x, y, W - 360, 56, 340, H - TASK - 76)) {
+        if (inside(x, y, W - 346, H - TASK - 56, 312, 34)) {
+            notifOpen = false;
+            sys_note_read();
+        }
+        dirty = true;
+        return;
+    }
+    if (y >= H - TASK) {
+        on_taskbar(x, y);
+        return;
+    }
+    var wid = hit_window(x, y);
+    if (wid != 0) {
+        var w = win_by(wid);
+        if (b == 2 && w.kind == "app") {
+            menu = {x: x, y: y, items: menu_items_window(w), target: wid};
+            focus_win(wid);
+            dirty = true;
+            return;
+        }
+        if (wid != focusWid) { focus_win(wid); }
+        if (inside(x, y, w.x, w.y, w.w, TB)) {
+            var bx = w.x + w.w - 138;
+            // 系统窗口与投送窗口：返回父桌面（隐藏本窗口，露出所属桌面）
+            if ((w.kind == "sys" || w.kind == "proj") && inside(x, y, bx - 104, w.y, 96, TB)) { w.min = true; focusWid = visible_top(); dirty = true; return; }
+            if (inside(x, y, bx, w.y, 40, TB)) { w.min = true; focusWid = visible_top(); dirty = true; return; }
+            if (inside(x, y, bx + 46, w.y, 40, TB)) { toggle_max(w); return; }
+            if (inside(x, y, bx + 92, w.y, 40, TB)) { close_win(wid); return; }
+            if (ev.dbl) { toggle_max(w); return; }
+            drag = {kind: "move", wid: wid, ox: x - w.x, oy: y - w.y};
+            return;
+        }
+        if (x >= w.x + w.w - 8 && y >= w.y + w.h - 8) {
+            drag = {kind: "resize", wid: wid, x0: x, y0: y, w0: w.w, h0: w.h};
+            return;
+        }
+        capWid = wid;
+        forward_pointer(w, "down", x, y, b, ev.dbl == true);
+        dirty = true;
+        return;
+    }
+    if (b == 2) {
+        menu = {x: x, y: y, items: menu_items_desktop(), target: 0};
+        dirty = true;
+        return;
+    }
+    sel = "";
+    var i = 0;
+    for (var a in desktop_apps_on_desktop()) {
+        var p = icon_at(i);
+        if (inside(x, y, p.x + 14, p.y + 6, 56, 56)) {
+            var now = sys_now();
+            if (lastClick.id == a && now - lastClick.t < 0.5) {
+                open_app(a);
+                lastClick = {id: "", t: -10};
+            } else {
+                lastClick = {id: a, t: now};
+                sel = a;
+            }
+            dirty = true;
+            return;
+        }
+        i = i + 1;
+    }
+    dirty = true;
+}
+
+func menu_hit_items() {
+    var out = [];
+    var y = menu.y + 6;
+    for (var it in menu.items) {
+        push(out, {act: it.act, y: y});
+        y = y + 34;
+    }
+    return out;
+}
+
+func toggle_max(w) {
+    if (w.max) {
+        w.max = false;
+        if (w.rest != nil) {
+            w.x = w.rest.x;
+            w.y = w.rest.y;
+            w.w = w.rest.w;
+            w.h = w.rest.h;
+        }
+    } else {
+        w.rest = {x: w.x, y: w.y, w: w.w, h: w.h};
+        w.max = true;
+        w.x = 0;
+        w.y = 0;
+        w.w = W;
+        w.h = H - TASK;
+    }
+    send_view(w);
+    dirty = true;
+}
+
+func on_taskbar(x, y) {
+    if (inside(x, y, 8, H - TASK + 6, 44, 36)) {
+        startOpen = !startOpen;
+        notifOpen = false;
+        dirty = true;
+        return;
+    }
+    var i = 0;
+    for (var p in pinned_visible()) {
+        if (inside(x, y, 62 + i * 42, H - TASK + 6, 36, 36)) {
+            open_app(p);
+            return;
+        }
+        i = i + 1;
+    }
+    var tx = 62 + len(pinned_visible()) * 42 + 12;
+    if (x >= W - 330) {
+        on_tray(x, y);
+        return;
+    }
+    for (var w in wins) {
+        if (w.panel == true) { continue; }
+        if (tx + 176 > W - 330) { break; }
+        if (inside(x, y, tx, H - TASK + 6, 176, 36)) {
+            if (focusWid == w.id && !w.min) {
+                w.min = true;
+                focusWid = visible_top();
+            } else {
+                focus_win(w.id);
+            }
+            dirty = true;
+            return;
+        }
+        tx = tx + 182;
+    }
+}
+
+// 托盘：通知中心与小组件面板
+func on_tray(x, y) {
+    var rx = W - 300;
+    if (inside(x, y, rx, H - TASK + 6, 36, 36)) {
+        notifOpen = !notifOpen;
+        dirty = true;
+        return;
+    }
+    if (inside(x, y, rx + 42, H - TASK + 6, 36, 36)) {
+        panelOpen = !panelOpen;
+        if (panelOpen) { open_panel(); } else { close_panel(); }
+        dirty = true;
+    }
+}
+
+func open_panel() {
+    for (var w in wins) {
+        if (w.panel == true) { return; }
+    }
+    open_app("widgets");
+}
+
+func close_panel() {
+    for (var w in wins) {
+        if (w.panel == true) { destroy_app(w.id); return; }
+    }
+}
+
+func on_move(ev) {
+    var x = ev.x;
+    var y = ev.y;
+    if (drag != nil) {
+        var w = win_by(drag.wid);
+        if (w == nil) { drag = nil; return; }
+        if (drag.kind == "move") {
+            w.max = false;
+            w.x = x - drag.ox;
+            w.y = y - drag.oy;
+            clamp_win(w);
+        } else {
+            w.w = drag.w0 + (x - drag.x0);
+            w.h = drag.h0 + (y - drag.y0);
+            clamp_win(w);
+        }
+        dirty = true;
+        return;
+    }
+    if (capWid != 0) {
+        var cw = win_by(capWid);
+        if (cw != nil) { forward_pointer(cw, "move", x, y, ev.b, false); }
+    }
+}
+
+func on_up(ev) {
+    if (drag != nil) {
+        var w = win_by(drag.wid);
+        if (w != nil && drag.kind == "move") {
+            if (ev.y <= 2) {
+                if (!w.max) { toggle_max(w); }
+            } else if (ev.x <= 4) {
+                w.rest = {x: w.x, y: w.y, w: w.w, h: w.h};
+                w.x = 0; w.y = 0; w.w = floor(W / 2); w.h = H - TASK;
+            } else if (ev.x >= W - 4) {
+                w.rest = {x: w.x, y: w.y, w: w.w, h: w.h};
+                w.x = floor(W / 2); w.y = 0; w.w = floor(W / 2); w.h = H - TASK;
+            }
+        }
+        if (w != nil) { send_view(w); }
+        drag = nil;
+        dirty = true;
+    }
+    if (capWid != 0) {
+        var cw = win_by(capWid);
+        if (cw != nil) { forward_pointer(cw, "up", ev.x, ev.y, ev.b, false); }
+        capWid = 0;
+    }
+}
+
+func on_key(ev) {
+    if (menu != nil && ev.key == "Escape") {
+        menu = nil;
+        dirty = true;
+        return;
+    }
+    if (startOpen) {
+        if (ev.key == "Escape") { startOpen = false; dirty = true; return; }
+        if (ev.key == "Backspace") {
+            if (len(startQuery) > 0) { startQuery = substr(startQuery, 0, len(startQuery) - 1); }
+            dirty = true;
+            return;
+        }
+        if (ev.key == "Enter") {
+            var list = start_matches();
+            if (len(list) > 0) { startOpen = false; open_app(list[0]); startQuery = ""; }
+            dirty = true;
+            return;
+        }
+        if (ev.text != nil && ev.text != "") {
+            startQuery = startQuery + ev.text;
+            dirty = true;
+        }
+        return;
+    }
+    var w = win_by(focusWid);
+    if (w == nil) { return; }
+    forward_key(w, ev);
+}
+
+func on_ev(ev) {
+    var k = ev.kind;
+    if (k == "down") { on_down(ev); }
+    else if (k == "move") { on_move(ev); }
+    else if (k == "up") { on_up(ev); }
+    else if (k == "wheel") {
+        var w = win_by(hit_window(ev.x, ev.y));
+        if (w != nil) { forward_pointer_dy(w, "wheel", ev.x, ev.y, 0, false, ev.dy); }
+    }
+    else if (k == "key" || k == "text") { on_key(ev); }
+    dirty = true;
+}
+
+// ---------------------------- 消息 ----------------------------
+func handle_child_msg(m) {
+    if (m.type == "ev") {
+        on_ev(m.ev);
+    } else if (m.type == "viewport") {
+        W = m.w;
+        H = m.h;
+        dirty = true;
+    }
+}
+
+func handle_app_msg(m) {
+    if (m.type == "close") {
+        destroy_app(m.win);
+    } else if (m.type == "title") {
+        var w = win_by(m.win);
+        if (w != nil) { w.title = m.title; dirty = true; }
+    } else if (m.type == "project") {
+        project_win(m.win, m.target);
+    } else if (m.type == "open") {
+        open_app(m.app);
+    } else if (m.type == "open-kid") {
+        open_sys_window(m.sys, m.title);
+    } else if (m.type == "ready") {
+        return;
+    } else if (m.type == "proj-size") {
+        return;
+    }
+}
+
+func handle_proj_msg(m) {
+    if (m.type == "proj-open") {
+        accept_projection(m);
+    } else if (m.type == "proj-ended") {
+        proj_source_closed(m);
+    } else if (m.type == "proj-closed") {
+        for (var w in wins) {
+            if (w.kind == "app" && w.id == m.win) {
+                var out = [];
+                for (var p in w.projs) {
+                    if (p.view != m.view) { push(out, p); }
+                }
+                w.projs = out;
+            }
+        }
+    } else if (m.type == "proj-size") {
+        for (var w in wins) {
+            if (w.kind == "app" && w.id == m.win) {
+                var cnt = 0;
+                for (var p in w.projs) {
+                    if (p.view == m.view) { cnt = 1; }
+                }
+                if (cnt == 1) { sys_send(w.pid, {type: "view", view: m.view, w: m.w, h: m.h}); }
+            }
+        }
+    } else if (m.type == "proj-ev") {
+        for (var w in wins) {
+            if (w.kind == "app" && w.id == m.win) {
+                sys_send(w.pid, {type: "pointer", view: m.view, kind: m.ev.kind, x: m.ev.x, y: m.ev.y, b: m.ev.b, dbl: m.ev.dbl});
+            }
+        }
+    } else if (m.type == "proj-key") {
+        return;
+    }
+}
+
+func handle_msg(m) {
+    var t = m.type;
+    if (t == "ev") {
+        on_ev(m.ev);
+    } else if (t == "viewport") {
+        W = m.w;
+        H = m.h;
+        for (var w in wins) {
+            if (w.max) {
+                w.w = W;
+                w.h = H - TASK;
+            }
+            clamp_win(w);
+            send_view(w);
+        }
+        dirty = true;
+    } else if (t == "tick") {
+        nowText = clock_text_hm();
+        var keep = [];
+        for (var tt in toasts) {
+            if (sys_now() < tt.until) { push(keep, tt); }
+        }
+        if (len(keep) != len(toasts)) { toasts = keep; }
+        kidStates = kid_states();
+        dirty = true;
+    } else if (t == "notice") {
+        push_toast(m.note.title, m.note.body);
+    } else if (t == "settings") {
+        apply_setting(m.key, m.value);
+    } else if (t == "drop") {
+        var target = hit_window(m.x, m.y);
+        var tw = win_by(target);
+        if (tw != nil && tw.kind == "app") {
+            var c = content_rect(tw);
+            sys_send(tw.pid, {type: "drop", x: m.x - c.x, y: m.y - c.y, payload: m.payload});
+        } else {
+            push_toast("投放失败", "目标位置没有可接收的窗口");
+        }
+    } else if (t == "open-app") {
+        open_app(m.app);
+    } else if (t == "open-file") {
+        open_file(m.path);
+    } else if (t == "open-kid") {
+        open_sys_window(m.sys, m.title);
+    } else if (t == "kid-window-close") {
+        remove_win(m.win);
+    } else if (t == "kid-gone") {
+        for (var kw in wins) {
+            if (kw.kind == "sys" && kw.sys == m.sys) { remove_win(kw.id); }
+        }
+    } else if (t == "close-req-ok") {
+        destroy_app(m.win);
+    } else if (t == "dialog") {
+        return;
+    } else if (startsWithProj(t)) {
+        handle_proj_msg(m);
+    } else if (t == "close" || t == "title" || t == "project" || t == "open" || t == "ready") {
+        handle_app_msg(m);
+    } else if (t == "focus-parent") {
+        notifOpen = false;
+    }
+    dirty = true;
+}
+
+func startsWithProj(t) {
+    return starts(t, "proj-");
+}
+
+func apply_setting(key, value) {
+    if (key == "accent") { accent = value; }
+    if (key == "wallpaper") { wallpaper = value; }
+    if (key == "scale") { scale = value; }
+    if (key == "name") { sysName = value; }
+    if (key == "dnd") { return; }
+    dirty = true;
+}
+
+func clock_text_hm() {
+    var secs = floor(sys_now()) + 9 * 3600 + 12 * 60;
+    var h = floor(secs / 3600) % 24;
+    var m = floor(secs / 60) % 60;
+    return two(h) + ":" + two(m);
+}
+
+func boot_wm(args) {
+    var info = sys_info();
+    SELF = info.id;
+    IS_ROOT = info.parentId == nil;
+    depth = 1;
+    if (!IS_ROOT) {
+        var anc = sys_ancestors();
+        depth = len(anc) + 1;
+    }
+    var st = sys_settings();
+    sysName = st.name;
+    accent = st.accent;
+    wallpaper = st.wallpaper;
+    scale = st.scale;
+    nowText = clock_text_hm();
+    tickerPid = sys_spawn("/System/apps/ticker.ns", []).pid;
+    W = 1280;
+    H = 800;
+    dirty = true;
+}
+
+func main(args) {
+    boot_wm(args);
+    compose();
+    while (true) {
+        var m = sys_recv();
+        handle_msg(m);
+        if (dirty) { compose(); }
+    }
+    return 0;
+}

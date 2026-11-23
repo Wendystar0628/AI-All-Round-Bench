@@ -1,0 +1,2949 @@
+{
+  "schema": 1,
+  "model": "ERNIE/5.5Flash",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 564,
+      "sha256": "1d48be705f7ef69b7441d769c56bd4cf1f7e2e7863b52b608c3fa0f007896abc"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10174,
+      "sha256": "b488904857ece7cd023b95893620c39766b84302d3f16c468ed4de68fa73eeb5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6198,
+      "sha256": "c0a344f7d438a75d28cd2e6c73ffb4a73cdf14e6bc72dfebef6c7835566445ee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\css\\style.css",
+      "path": "AE风味动效设计编辑器/submission/css/style.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12063,
+      "sha256": "a55c814dae01d0814026a5ed250f001428e56524de81abe2b72fd9e50925104d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8415,
+      "sha256": "8aea2dd8ade4b47989458df62eb0e1cc569b07d01971f2a9e2371178b2c98aa7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\anim.js",
+      "path": "AE风味动效设计编辑器/submission/js/anim.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7428,
+      "sha256": "f3f3c5755e078aeb91af91b7b9b2bcdbccc2c42eaf0101635f1aece89939a389"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\audio.js",
+      "path": "AE风味动效设计编辑器/submission/js/audio.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7585,
+      "sha256": "cb5ee891f148e4c65c8016d303be044f3df213a0ae4808207cf3658c187af056"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\demo.js",
+      "path": "AE风味动效设计编辑器/submission/js/demo.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12098,
+      "sha256": "b67598c4ece7bdc848d6a017e2da37d836f906f28191cd19a4b8516bdc4a2433"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\expr.js",
+      "path": "AE风味动效设计编辑器/submission/js/expr.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21220,
+      "sha256": "84486f6669f0648280a75eb56718391d71b1549e563520e27d4fa05f9f3f700d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\geom.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 30236,
+      "sha256": "5c268e040580fd0cdab652e7e60b6586d3f91e0377a441437e807dcbc10feac1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\math.js",
+      "path": "AE风味动效设计编辑器/submission/js/math.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9618,
+      "sha256": "862695e266f463ad73e0a6345ee4376e42d745ae0e559c90ec852b49087b53bb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\panels.js",
+      "path": "AE风味动效设计编辑器/submission/js/panels.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 28804,
+      "sha256": "d3a36c5a2ddcc8d76bb01479ca2e76020227b13cefda86d30e043a4eaa2111ff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\particles.js",
+      "path": "AE风味动效设计编辑器/submission/js/particles.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13600,
+      "sha256": "7668596542b4385ded05c9e9f12e75cc5d180a5de68e3124a8c094530dc8c3be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\project.js",
+      "path": "AE风味动效设计编辑器/submission/js/project.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 14126,
+      "sha256": "bc893433ee074036b5837f8b172bddd8c0a1b04be9f41c315f2d5216e224506a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\renderer2d.js",
+      "path": "AE风味动效设计编辑器/submission/js/renderer2d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21291,
+      "sha256": "ef013f853b10e685351de1504db8a1d15a3c9a597112e739b574017338517ee9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\renderer3d.js",
+      "path": "AE风味动效设计编辑器/submission/js/renderer3d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 36209,
+      "sha256": "e73c90387693cd101bfda71cc8cd23103656d97e07eb037d4b0e12287673ae3e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\text.js",
+      "path": "AE风味动效设计编辑器/submission/js/text.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6199,
+      "sha256": "de64485f3fc3969f438970384b70393128559ef6002e49c8dbcf61f4b8456edd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\timeline.js",
+      "path": "AE风味动效设计编辑器/submission/js/timeline.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 25554,
+      "sha256": "446ae21c80ee682af2d494b131fa36abd6e510c0f8f508d83d5b1d6390123c71"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\js\\ui.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 42793,
+      "sha256": "7b19162567c61c7048f1565ec0ab30372eaadbbb579a16cd3d8bb30f9fe81034"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 554,
+      "sha256": "f7dc5f401f1a3a297c1ec2b3e6ce524b9e9ea9d6b95dbf6dda7f2c2c2cbe70fd"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 1684,
+      "sha256": "ea9859783ca5ae73b5e14af31a4e2002aad0d42735209e71a99d610883a07127"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2072,
+      "sha256": "a40c8b453b09500df3bac9875247e33ffe2d97a55ad1b68c3aeb3fa434dc5cb9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 18386,
+      "sha256": "e4fa2ea54b26a5a35801b4bd69d2ca5e306add25b59c3fc5fda0bc22f14367a5"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 544,
+      "sha256": "dc2869ba1aa15218ec486150f793d27ea45a3ae84c398f8b362cdb495d8a70fa"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 7667,
+      "sha256": "f1fab1e5f0919562d546514200cea40ae30709710182b9fb7bd8abc6a8ebf683"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4178,
+      "sha256": "50d7f4847c4036d05d104dfcfbef3d9cf51825d5eb790affe60df83515a9e3bf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\css\\style.css",
+      "path": "动态路由塔防/submission/css/style.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 33672,
+      "sha256": "85a47d6fa5baf6bb75835b4efe9761cd6406e02cb4dc203b1493c4f1fbeceb7a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 12661,
+      "sha256": "483ffeea42705ac06353c636ef03b92f087698d9cfbb657bc832b12c488659e2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\js\\audio.js",
+      "path": "动态路由塔防/submission/js/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 10034,
+      "sha256": "83ad96b90073ad2867d86c27824e3e57cfe7108e49eb23d57e9f7ecdb59d7c32"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\js\\data.js",
+      "path": "动态路由塔防/submission/js/data.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 30305,
+      "sha256": "8773d99cef5f47ba2e3a7fb6b518c4e1b6143b7133e908bc6e58abd5d169bb59"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\js\\main.js",
+      "path": "动态路由塔防/submission/js/main.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 32803,
+      "sha256": "9abe787b815e108eaee42744cf7944c1680e4f3136a49b6902bfc8600f8233aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\js\\maps.js",
+      "path": "动态路由塔防/submission/js/maps.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 10095,
+      "sha256": "c237a198a22d66b4602207b469acf8fcaf4af7931558e7c3455b3a8e5191897e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\js\\sim.js",
+      "path": "动态路由塔防/submission/js/sim.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 52931,
+      "sha256": "5b595633b77ff70c603423ce7a07c8418ae1240ac97c6fa38fdfbf9d1d41a2ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\js\\ui.js",
+      "path": "动态路由塔防/submission/js/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 43024,
+      "sha256": "23ff9a4a819e93d8c03a915f8fb0e671da07c953a1ad475a74824f382822c7f4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\js\\world.js",
+      "path": "动态路由塔防/submission/js/world.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 83352,
+      "sha256": "80e3dfa90d67eea3bb67cac5ab3dc7de5d723394221dde88a44c3f273de56cff"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 526,
+      "sha256": "29a5132e84195acd7cff993c02e39462f8d70062bf47788c52e8b80c65740880"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8604,
+      "sha256": "bf8e28386d88f625b5b6f271e166ac5a8216105d4623efe405d87b83189cc527"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4169,
+      "sha256": "398eb1dbf43db45a58ca3cef2ce9bf31bc48283ad3ae031e042f2135b9ad2048"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1639,
+      "sha256": "2a48b5f384ce1ecfbf136fbfb220e014e64a6f2f96ee9a2e331175f415b37900"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\base.js",
+      "path": "太阳雨渔港3D渲染/submission/js/base.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 19586,
+      "sha256": "32ae0cf1623c4f76f0291155745bb27c70d90a959863ef4aecdde9e2e8bb4096"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\boats.js",
+      "path": "太阳雨渔港3D渲染/submission/js/boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 36605,
+      "sha256": "5f6e715a1a64621563c9896a79bef67c8862dad6545c32d45830f50b55a8234a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/js/buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 21790,
+      "sha256": "8bb2d498a33e002130759db721c1c743635f8f38d42b3fc885252d0753b0dcf3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\life.js",
+      "path": "太阳雨渔港3D渲染/submission/js/life.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 12461,
+      "sha256": "e525703071060712a8114ebc342d422aefe3fe03a3bd51cea6bc286ed505dd54"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\main.js",
+      "path": "太阳雨渔港3D渲染/submission/js/main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 10044,
+      "sha256": "20cfe4c290eb24585d1a3ccce0b39b683a2f728714f10b02a6c11b2a8304b188"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\materials.js",
+      "path": "太阳雨渔港3D渲染/submission/js/materials.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6269,
+      "sha256": "374b978e7659162668b2ff56f44dfdc71fb37c7cf8836494f88dc741b8e192c4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\props.js",
+      "path": "太阳雨渔港3D渲染/submission/js/props.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 26436,
+      "sha256": "2cd0e80fcadca251ec4cd71e07d6e3590f4dfa25d699bd1dacec18a6d9603d47"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\rain.js",
+      "path": "太阳雨渔港3D渲染/submission/js/rain.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4822,
+      "sha256": "e86d6f71b91f559247b35b049bf4ead5c96686a4b329065e577852f741323749"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\sky.js",
+      "path": "太阳雨渔港3D渲染/submission/js/sky.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8079,
+      "sha256": "6b10241e874cb9a34201b50c3b944bd130cf5fcd933aad008f910be4e6845720"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\textures.js",
+      "path": "太阳雨渔港3D渲染/submission/js/textures.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 27307,
+      "sha256": "c6edcd2e8862e6ebefdcbd9064757800a69a6fd05c43cd2a62a7a04520011c10"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\three.min.js",
+      "path": "太阳雨渔港3D渲染/submission/js/three.min.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 603445,
+      "sha256": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\tour.js",
+      "path": "太阳雨渔港3D渲染/submission/js/tour.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 3055,
+      "sha256": "b851b451481649e58d3e2d4b4897a3d90f1c0849ec8dcd5f50b056a4e59a0b7f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\util.js",
+      "path": "太阳雨渔港3D渲染/submission/js/util.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 7218,
+      "sha256": "a5314efbeb93a75722f8092fd9649058d1d0a4b3142ca2efd2f486835abf8107"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\js\\water.js",
+      "path": "太阳雨渔港3D渲染/submission/js/water.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 20620,
+      "sha256": "1a7080ecd6ed2adb25554ab810924b26092c15d02a7266b92cdee92d195b0391"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 542,
+      "sha256": "73d77d01d36242ea253b4f86372032d9188ac18b955c4361424edf05f72e2981"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 2632,
+      "sha256": "890324f061396404bb647b14d327b68a7f1c9007c17f41aa299981564c9e4674"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1217,
+      "sha256": "17a8fa5acfc0a14bf8f2f7a2109092571dfc76b6e94e64f26b1e16da9964242e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 5866,
+      "sha256": "369248bad0c1e2d8551734ad1efda5d85b7aeed33e5a4ffd155a00cbac48cf34"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 543,
+      "sha256": "e16bb4d946039c56df01d33779909abaa343e675ae32f22b162215b751e4fb4e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 11936,
+      "sha256": "aa322008ab4289e6c76b2a5150ce3cb20f0128e7b756cf2eaa4d1e9a329a261e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10541,
+      "sha256": "08a8796133b741a4b85456171a76456db55e3e873a5d3aa2f6abb127745496ab"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\README.md",
+      "path": "操作系统嵌套/submission/README.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3446,
+      "sha256": "a018dfb1f73b89be92d2aaf7a36f64f6d43fbb6a17c59fa9555608fbee7c437f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\assets\\wallpaper-aurora.svg",
+      "path": "操作系统嵌套/submission/assets/wallpaper-aurora.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3420,
+      "sha256": "3d3bda1bea773549c52476052ebb23741ccc3b25db5b1ad05a464ffbb463e02e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\assets\\wallpaper-dunes.svg",
+      "path": "操作系统嵌套/submission/assets/wallpaper-dunes.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2825,
+      "sha256": "5be52601b8945aaed81dde16e0ba5c9ff4e775800cc4801e8b415214372e8d1a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\assets\\wallpaper-dusk.svg",
+      "path": "操作系统嵌套/submission/assets/wallpaper-dusk.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4892,
+      "sha256": "755c1f56caed3d005f243a22ea6d0e0a77c3c7a92e791b6dca4ae83353dfc28d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\assets\\wallpaper-tide.svg",
+      "path": "操作系统嵌套/submission/assets/wallpaper-tide.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3467,
+      "sha256": "8aa107d5cca0348525499a6660bc3be52aeae91f207e83b0e547ce98113092db"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\automation.json",
+      "path": "操作系统嵌套/submission/automation.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2409,
+      "sha256": "4382d89eebcf25c2257c65238bbafe92f512fa743c516854fec66a3cc73f932d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\css\\style.css",
+      "path": "操作系统嵌套/submission/css/style.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 46950,
+      "sha256": "753f066bc26c976adb059c8518e2ba7874c3cea34905da2b52932739388150d1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\docs\\说明.md",
+      "path": "操作系统嵌套/submission/docs/说明.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17848,
+      "sha256": "4cbbb679b83e88e90aa3390f9de270de527dd1ec277d6613abe046e933d444d8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\index.html",
+      "path": "操作系统嵌套/submission/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1170,
+      "sha256": "0c4b1be02b2b47162fba38df41530d133f11227bb113590342a1809f237415c2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\browser.js",
+      "path": "操作系统嵌套/submission/js/apps/browser.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10096,
+      "sha256": "774288e623fe5a62bc27f82e1cf9dfbefa893c09de4b0273f8a566ed670c9c16"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\charts.js",
+      "path": "操作系统嵌套/submission/js/apps/charts.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 25006,
+      "sha256": "7357be6186867be5c0cecea45f8e592adf5a3345f59334024136668e30ed3c37"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\editor.js",
+      "path": "操作系统嵌套/submission/js/apps/editor.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13811,
+      "sha256": "5a7b8a17e2ccedd2599c0bc0a84cea8ea184e900f53f72277e1a2c572622437f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\files.js",
+      "path": "操作系统嵌套/submission/js/apps/files.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18473,
+      "sha256": "831e5b5f2bdd364b332fdeb82b8c3199e6ac382b6bccc44251032a4a34786f3e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\player.js",
+      "path": "操作系统嵌套/submission/js/apps/player.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 37178,
+      "sha256": "38ad5eee127bb2235c8954178679df0cb44ff97fad7de18ad12d76360489e55c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\settings.js",
+      "path": "操作系统嵌套/submission/js/apps/settings.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7202,
+      "sha256": "befa6f2d1005b743e6e8b015f148097fbe9ba60003c7eacbc867e4d8e07637b6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\spreadsheet.js",
+      "path": "操作系统嵌套/submission/js/apps/spreadsheet.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 29398,
+      "sha256": "527688d296199e27fa7b3144fc7bbc21eee0e0136646549aab1eebfabee96ca6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\sysmgr.js",
+      "path": "操作系统嵌套/submission/js/apps/sysmgr.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11393,
+      "sha256": "e1c2723282f854352e8cc5b39759991ef2d83044d3fc318299b257b45702748c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\apps\\tasks.js",
+      "path": "操作系统嵌套/submission/js/apps/tasks.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13251,
+      "sha256": "3559f1c895cb85906c9a6c1f69670305e6a9d7ffd48696aa67eb2214d93c6c29"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\data.js",
+      "path": "操作系统嵌套/submission/js/data.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18447,
+      "sha256": "3e55db5da3f2847d501e36bc05b4d72020c0d26391c85647ce158db9ab137831"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\flight.js",
+      "path": "操作系统嵌套/submission/js/flight.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9981,
+      "sha256": "84363ec29241af1dbba9d6d1368480fc5f1b38536849665ba7fca3d9ba817290"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\kernel.js",
+      "path": "操作系统嵌套/submission/js/kernel.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 26596,
+      "sha256": "43ff5fe19448327e50738613ee908788330611e8af822af9e3ad04e68f5c2145"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\lang.js",
+      "path": "操作系统嵌套/submission/js/lang.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 28762,
+      "sha256": "ff5dd7a40603991c1167acfd6cf81e509c962c887ec3740118778838d23e5c79"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\main.js",
+      "path": "操作系统嵌套/submission/js/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 493,
+      "sha256": "530faae1a79206767c877dcad59fe85df831ddfdba64ce03ab4cb18e29f5a53a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\package.json",
+      "path": "操作系统嵌套/submission/js/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 22,
+      "sha256": "1f356dfa3a15c82df2c2a1754af277d0172957f8d1be78555d919bff4824627d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\scene.js",
+      "path": "操作系统嵌套/submission/js/scene.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 32267,
+      "sha256": "3769a2474e699596eef1622c3f5b21dc265046ee5ad7c6e1805da21e36faf274"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\shell.js",
+      "path": "操作系统嵌套/submission/js/shell.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 123096,
+      "sha256": "ffe05d04822329a36dbb2790b9011cabc21535a8868226d084942ddc93ad0b9e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\terrain.js",
+      "path": "操作系统嵌套/submission/js/terrain.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2298,
+      "sha256": "900a73af8f0b223a275fe3fbbf066350f1e607248e923dc084271fe16f935388"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\js\\util.js",
+      "path": "操作系统嵌套/submission/js/util.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 15595,
+      "sha256": "291ff34fc563257acf79e10f4678d020efc6726ebf5ce24451b7ce7e68f1dcff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\main.js",
+      "path": "操作系统嵌套/submission/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5804,
+      "sha256": "cd3b8866a1cc80ea8c9cea479ef819cfcb412f39b2e686379adb678de348ca98"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 37394,
+      "sha256": "e7010023b537bb134d15e378c0bd853ac995221f1fcfa9413702f181f3a62291"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 303,
+      "sha256": "5fab5d76da9213d09338d548a1dbee5a4270cd69d46e9ab220847e4a967d1dfd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\preload.js",
+      "path": "操作系统嵌套/submission/preload.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 810,
+      "sha256": "c2c53d62379fa721155dc8a2bd8b3c64141b297c42eab20cd2ee12a05130bdf0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\apps.mjs",
+      "path": "操作系统嵌套/submission/test/apps.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3266,
+      "sha256": "adb8b36b82ad5a32bcb150f0e0a13ae35356acdcfbd6e64e2029b762e04790b8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\ascii.mjs",
+      "path": "操作系统嵌套/submission/test/ascii.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1089,
+      "sha256": "666a1470a3ed23254dea81c19704da335811163f631fa1ac16a665fab70a3e84"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\browser.mjs",
+      "path": "操作系统嵌套/submission/test/browser.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1334,
+      "sha256": "73b09debc05d594cedca492a330013aa4a356869b9754da36ae6129e04622a9a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\cdp.mjs",
+      "path": "操作系统嵌套/submission/test/cdp.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1146,
+      "sha256": "653f61cde649dc5fed310eb9673eefc3c8a06444724229a7ac7cc0792a4afb06"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\center.mjs",
+      "path": "操作系统嵌套/submission/test/center.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1424,
+      "sha256": "2e17d81272c7922b8b1f323ba80c5481334b5830bd08ec0e0ec00bd1bd48c7ff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\chart.mjs",
+      "path": "操作系统嵌套/submission/test/chart.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2703,
+      "sha256": "8648e0fdce9f2970de46c24fa2ed74cba6f62e71023b4a7faf003d114771fcc1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\chartreload.mjs",
+      "path": "操作系统嵌套/submission/test/chartreload.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1742,
+      "sha256": "b41ea381a78c27eef581c00b18d38e693b67fa1ee6239b842648da0bfd272be0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\child.mjs",
+      "path": "操作系统嵌套/submission/test/child.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1378,
+      "sha256": "3d2219fa16ac7ab2e8a16492c4bd642ee90d885812bf15379d4d71852b6e0bcf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\child2.mjs",
+      "path": "操作系统嵌套/submission/test/child2.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1388,
+      "sha256": "1e833feb6eb4b8721dbef924b5292a6e3e8439eb4870ed47f83a472eca1cd6f2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\clock.mjs",
+      "path": "操作系统嵌套/submission/test/clock.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 554,
+      "sha256": "7553970ad856833f0b551f9d7240a93ee468b3ea036dfa4587f38e39d2a41549"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\compile.mjs",
+      "path": "操作系统嵌套/submission/test/compile.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 505,
+      "sha256": "8e3fead20ecb73fe54ca6c79478a4729eaecae361ad228812c48beb20938a9d5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\cropascii.mjs",
+      "path": "操作系统嵌套/submission/test/cropascii.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1072,
+      "sha256": "1e736f80441f643e8aa951ebe579172de5af0a7f656c73e5e0e30c85d2e773ac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\ctx.mjs",
+      "path": "操作系统嵌套/submission/test/ctx.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1784,
+      "sha256": "121155006ba1d1d63083d27e18ab5d97c0431a0867f57a14d309f9cae690c945"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\diag.mjs",
+      "path": "操作系统嵌套/submission/test/diag.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2854,
+      "sha256": "ebb8a0020235a27bf68abd3fc0602d88d631166ec8085d6dde8212a448f30d5b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\diag2.mjs",
+      "path": "操作系统嵌套/submission/test/diag2.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2239,
+      "sha256": "5c8c2cc18bc24cdc4182561c6f1c3bfe550f4bdc5c87f8e7c96e74d48f910173"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\files.mjs",
+      "path": "操作系统嵌套/submission/test/files.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2551,
+      "sha256": "29f57cebd9beb4d8d9cebf0a433065aaa5a4d67a4c43321a2d1bd0cd5d18d94c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\interaction.mjs",
+      "path": "操作系统嵌套/submission/test/interaction.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2937,
+      "sha256": "cd43cbbee3abbe74e3f96cf27a8e016c54ee046a75530a9cf1d916cbdc5b07d4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\kernel.mjs",
+      "path": "操作系统嵌套/submission/test/kernel.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3168,
+      "sha256": "9b116db50b0c720867894c7ee7c2e14bdc65154d858ae6d177b31f21e15ce2e5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\low.mjs",
+      "path": "操作系统嵌套/submission/test/low.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1224,
+      "sha256": "830655b11aff617fddf087fd44c2ec652070dd60ea2eea576af614af814bfd89"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\media.mjs",
+      "path": "操作系统嵌套/submission/test/media.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3096,
+      "sha256": "319f681e7e91a05443e5d8e16b5949764f86670f4b2e07e977e7441f4d995be8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\note.mjs",
+      "path": "操作系统嵌套/submission/test/note.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 856,
+      "sha256": "5fb8f2b999a68a3d22b90eb0bfac579df93a79638cbf3a33e9a34b64633e63f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\onlyheli.mjs",
+      "path": "操作系统嵌套/submission/test/onlyheli.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 836,
+      "sha256": "4aee14a06a7481242f04b046a67e3cdcf9e0b1be366c2d2072b62305d54ec0a6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch.mjs",
+      "path": "操作系统嵌套/submission/test/patch.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1584,
+      "sha256": "454d01ad746b75545be5d61015d95a2cd916934f7b5f2383633c7943ec7654c1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch10.mjs",
+      "path": "操作系统嵌套/submission/test/patch10.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1581,
+      "sha256": "6d7f8231c9f699bb57795eefd1959c93b27721dca6d68525f534ddb7b22d4bbb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch11.mjs",
+      "path": "操作系统嵌套/submission/test/patch11.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2449,
+      "sha256": "44cd65aa205a17b2897a76d773171a82bd334b80bb6a54f3d2721007efd81545"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch12.mjs",
+      "path": "操作系统嵌套/submission/test/patch12.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 665,
+      "sha256": "9cc180f89ef64a311fe701df0193aa6bb10286fe8f2e61b6b9e82c20d03b93fb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch13.mjs",
+      "path": "操作系统嵌套/submission/test/patch13.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1238,
+      "sha256": "e6eb31f5c7d199be68c4426a318f001a79ddd4afa84cee319daa7d6361b5e6c4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch14.mjs",
+      "path": "操作系统嵌套/submission/test/patch14.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3104,
+      "sha256": "fa3f412c202a19bf760c6bd8cc9a6583f80eb9c57e71356b2c29f9e2a8978f5e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch15.mjs",
+      "path": "操作系统嵌套/submission/test/patch15.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4277,
+      "sha256": "1715b692d8271dd7e23eb35454615f4cdc1b7444865cf19aea47af213d6ed08b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch16.mjs",
+      "path": "操作系统嵌套/submission/test/patch16.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 239,
+      "sha256": "25d4dbad27aecd20b1c84b1b4695e9c4535509489870cd416ad1ea3931b6f1be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch17.mjs",
+      "path": "操作系统嵌套/submission/test/patch17.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3340,
+      "sha256": "15e03c29166b30a958173b2c150044e241d73d51c80e650c7aa049dd0b6ebeec"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch18.mjs",
+      "path": "操作系统嵌套/submission/test/patch18.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2458,
+      "sha256": "eb440f8d0a336cb75996fa47e48d8ba5ecf0f31b3ee83ee006977d992a5cd985"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch19.mjs",
+      "path": "操作系统嵌套/submission/test/patch19.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1713,
+      "sha256": "7d95ac049e0d108517c9e26e406a9995d72169443a1c064fd727f6ee31a2f36e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch2.mjs",
+      "path": "操作系统嵌套/submission/test/patch2.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3265,
+      "sha256": "e4d09c18670d822cb777b590169fa4fbb887eec86d9cdcc8380fec00552c2464"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch20.mjs",
+      "path": "操作系统嵌套/submission/test/patch20.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 523,
+      "sha256": "819044a4923c3cd959d9fb8139d1a377d79477cc6a03126028e08ed6315d0a6f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch21.mjs",
+      "path": "操作系统嵌套/submission/test/patch21.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 771,
+      "sha256": "436ca612f2780dc7002fee7400453a3e564a3ec2b7f8129db5451d0233451704"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch22.mjs",
+      "path": "操作系统嵌套/submission/test/patch22.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 684,
+      "sha256": "9ae558e43ed5fae7d34f40ed4cd122a77fbd3d950ca633d8cbff542dd9a30222"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch23.mjs",
+      "path": "操作系统嵌套/submission/test/patch23.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1219,
+      "sha256": "74a6e3e47b63a5a2bfe6d15ea30fd2392e1700add4aa6247ab8981feee53d919"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch24.mjs",
+      "path": "操作系统嵌套/submission/test/patch24.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1135,
+      "sha256": "0a85f8ad3133416107c44422b0aa3ef706186114df9c7602f488f4629c2348dc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch25.mjs",
+      "path": "操作系统嵌套/submission/test/patch25.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1023,
+      "sha256": "8c91d2f0a7500a58292f1a3ecace259d70c96ae6fb19f4274ea6b486f0558c10"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch26.mjs",
+      "path": "操作系统嵌套/submission/test/patch26.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 901,
+      "sha256": "398ae0cc7a378282869e253c668cd1431e7ec74492dfadbf9ad340500aca2d48"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch27.mjs",
+      "path": "操作系统嵌套/submission/test/patch27.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 793,
+      "sha256": "c4b937c9be76564a3c16d96cb707c440ccb170c69f1e3d1cdef58c503db8dc43"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch28.mjs",
+      "path": "操作系统嵌套/submission/test/patch28.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 413,
+      "sha256": "e28937c3090c77058b664962d7f34f261a7762b49afd3c05978650a603467fee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch29.mjs",
+      "path": "操作系统嵌套/submission/test/patch29.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 851,
+      "sha256": "e77677167fe9afeecc2fa9d8184fa9c4f1ccb1f358fe14fec6d5e17ec10479e4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch3.mjs",
+      "path": "操作系统嵌套/submission/test/patch3.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9417,
+      "sha256": "e25804286697c3b0b2128307b8c1dfdb9c1e3d42eb74fa6a1fa2d79e5c4ab685"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch30.mjs",
+      "path": "操作系统嵌套/submission/test/patch30.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2514,
+      "sha256": "b0d4d61cfd08561708a6f57cdb5a9c593f23ffcc13b242cd0e408064a5036035"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch31.mjs",
+      "path": "操作系统嵌套/submission/test/patch31.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1203,
+      "sha256": "87ebe537371df2a2033662b0d7314c3ab8e5f3b7c5489ced484d694ca6c72596"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch32.mjs",
+      "path": "操作系统嵌套/submission/test/patch32.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 642,
+      "sha256": "ffc28b4a44907e2a4335527a64a11004598955d0daad0280a2fb9555baed8e87"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch33.mjs",
+      "path": "操作系统嵌套/submission/test/patch33.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 704,
+      "sha256": "16b50e0fa6c805ff8aaf0d963618f3355afaf585dbcafd5176754278da0647f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch34.mjs",
+      "path": "操作系统嵌套/submission/test/patch34.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 406,
+      "sha256": "543b2faa604346a2b35a9b7a2f5ab5c5394c3e54fd664f4d69f6ed083baaeb3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch35.mjs",
+      "path": "操作系统嵌套/submission/test/patch35.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1110,
+      "sha256": "7c5c98b319cde438dacad1b243c5fcc9bb98621b37c15ee4a2cb211ea2777139"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch36.mjs",
+      "path": "操作系统嵌套/submission/test/patch36.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1579,
+      "sha256": "772d504f9534252d9727631d9ac7636e1c9daa96863a489c2f72530acb16c88b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch37.mjs",
+      "path": "操作系统嵌套/submission/test/patch37.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 703,
+      "sha256": "0bee7260c569461faaaf62dc1298f2d64a5a747e4d556109cd0584a48ee70716"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch38.mjs",
+      "path": "操作系统嵌套/submission/test/patch38.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2293,
+      "sha256": "aa819be7deb6ce2142970c4524d9757bdfee3b2ad2498158b8d29b0ce95afaf6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch39.mjs",
+      "path": "操作系统嵌套/submission/test/patch39.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 632,
+      "sha256": "02fc096c210e5e02cfd02685191191b697ef58b6bb848d77158142ad6527f155"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch4.mjs",
+      "path": "操作系统嵌套/submission/test/patch4.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4360,
+      "sha256": "606e3f2e7426c33ce8ef7cc84de18af9711ac9bd9d5e0ffbbedd3e412c15223e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch40.mjs",
+      "path": "操作系统嵌套/submission/test/patch40.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 905,
+      "sha256": "50a47a04b38cd4ca3f22a7ca68f5aad2e04df95e5d7a43858b6a1c1292712d43"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch41.mjs",
+      "path": "操作系统嵌套/submission/test/patch41.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 480,
+      "sha256": "7ea5e581177cee549eefc7a32de30865b33222ba211847ba8325e3ec98ac680b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch42.mjs",
+      "path": "操作系统嵌套/submission/test/patch42.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 801,
+      "sha256": "c051b9ab2b3a4b2b936c4161eb2dae34214820629b2da8189bf0f427d2bbc817"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch43.mjs",
+      "path": "操作系统嵌套/submission/test/patch43.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 566,
+      "sha256": "5e0c552c270dd13e70f359b64f6e0736c578ab187f4e449010ae6223c3fea94b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch44.mjs",
+      "path": "操作系统嵌套/submission/test/patch44.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 696,
+      "sha256": "283f78ca97d570c6ae1a990539ff49edaf42d2d606448e6f62364f4c25146090"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch45.mjs",
+      "path": "操作系统嵌套/submission/test/patch45.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1043,
+      "sha256": "2e006775045119ebe4de4ba74a7d52aeb51fcb4b46bcbbf937cd91118b95cacc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch46.mjs",
+      "path": "操作系统嵌套/submission/test/patch46.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1138,
+      "sha256": "07fabd8f2be9c8e38f6210f891affe9b69918104ad17fc6d952ac69687826b16"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch47.mjs",
+      "path": "操作系统嵌套/submission/test/patch47.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1931,
+      "sha256": "61fee41993cb8e95356871b964f499fca9377d2c640aa2dab4b27c16f020bc7a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch48.mjs",
+      "path": "操作系统嵌套/submission/test/patch48.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 453,
+      "sha256": "7e5cbb62a572f83fc434215f7522176d150c8965e7c94bb90a135b09c89d8b54"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch49.mjs",
+      "path": "操作系统嵌套/submission/test/patch49.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 452,
+      "sha256": "2995eb353b57ac8fbb526c4f20c4b23cf74acfec1ce62e010871f009766ba1b7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch5.mjs",
+      "path": "操作系统嵌套/submission/test/patch5.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3077,
+      "sha256": "055241ce3e3079e13ea0b73b20452f54ce219652588a22e9335d9f674479e18e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch50.mjs",
+      "path": "操作系统嵌套/submission/test/patch50.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 558,
+      "sha256": "3ce26dded8baca20265044e796104ed6ca0c7b3ca17b81613474af52a8f86eae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch51.mjs",
+      "path": "操作系统嵌套/submission/test/patch51.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1165,
+      "sha256": "93cb2316925daaddf0c8db1f987075197b96088012e9f4a1197d16ba97d618b4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch52.mjs",
+      "path": "操作系统嵌套/submission/test/patch52.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 532,
+      "sha256": "f7a5f42473f2761ea32523f9457a542b099a8455ff7b4d9daea9161943598368"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch53.mjs",
+      "path": "操作系统嵌套/submission/test/patch53.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 633,
+      "sha256": "75d936f46241033f68036c23f8e20e9d0f64c9e3f223c2fa4c628781d7bda734"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch54.mjs",
+      "path": "操作系统嵌套/submission/test/patch54.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2886,
+      "sha256": "3350cb7841d25c552685660444f0e1d8c31a922284b0cd385b0f4ed6ba34a580"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch55.mjs",
+      "path": "操作系统嵌套/submission/test/patch55.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 411,
+      "sha256": "dac05b2ede82bdabaf52869718839817b8275c182094b930f690ea942a722d84"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch56.mjs",
+      "path": "操作系统嵌套/submission/test/patch56.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5671,
+      "sha256": "84263309bedf567e8521ae2d5232e822c73e5f742000ffd652d32354ff1063e7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch57.mjs",
+      "path": "操作系统嵌套/submission/test/patch57.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1792,
+      "sha256": "21d18581980e5048ba4a6a7e425db34fdc29b27c01d3e2c46c7d15f69f9ae0f6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch58.mjs",
+      "path": "操作系统嵌套/submission/test/patch58.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 601,
+      "sha256": "69a0224fa2d602a6c784d6aca41e826319e4b716110b9055d957945a5e57d05d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch59.mjs",
+      "path": "操作系统嵌套/submission/test/patch59.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 791,
+      "sha256": "01db3bb14b50014ed7b7611290fa2ebbc66dd5700bfa7121fb5a438567b8ccb7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch6.mjs",
+      "path": "操作系统嵌套/submission/test/patch6.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1169,
+      "sha256": "f7ac7d7f2c98d6f1c619bba031b342bb37aaf3e41ff90fcc17e9b1f47509132b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch60.mjs",
+      "path": "操作系统嵌套/submission/test/patch60.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1183,
+      "sha256": "e2e2f5c793cbec55a6e22703347f0cf5b7143f1f866b218ee7e9788182862a11"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch61.mjs",
+      "path": "操作系统嵌套/submission/test/patch61.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 919,
+      "sha256": "cd574cd441f4c0538b309645b3fe8a2ce96da525c2c2c228e703efcb2f7061e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch62.mjs",
+      "path": "操作系统嵌套/submission/test/patch62.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1406,
+      "sha256": "0ff0a315850e3d6e5e65746ff7ff3437b26a26736f8394d48756b1268697a123"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch63.mjs",
+      "path": "操作系统嵌套/submission/test/patch63.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 911,
+      "sha256": "22571b305a7e375a138e43516870ed5b73706ce342147df283bc26b82ebb3f12"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch64.mjs",
+      "path": "操作系统嵌套/submission/test/patch64.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 411,
+      "sha256": "84e6887dd3c20c2adabec98fca651264ef145fc1bc5af9ee63258d9a58cee2bd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch65.mjs",
+      "path": "操作系统嵌套/submission/test/patch65.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2222,
+      "sha256": "3f3c5c35f74caaef27bda1b3fd07271975c24fe80f117e81fbe9a83e6f743125"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch7.mjs",
+      "path": "操作系统嵌套/submission/test/patch7.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2025,
+      "sha256": "cca4ff5b0ca7b0d3b081d8de158440e73b6aad9cb133b4412cce2c2fab942942"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch8.mjs",
+      "path": "操作系统嵌套/submission/test/patch8.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1235,
+      "sha256": "d2818a79b0be3de02ad50713a726e64208befce564d8acd1192bedcde5f06789"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\patch9.mjs",
+      "path": "操作系统嵌套/submission/test/patch9.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1193,
+      "sha256": "80cbe82cf8c4cf362b3d158d746186cecc6ff25ed9ce33b5edcea87c91be6110"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\persist.mjs",
+      "path": "操作系统嵌套/submission/test/persist.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1962,
+      "sha256": "7bb214318041095827e16fcf870ee1c86f53de1efb1b9ce05edbb26632c122ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\player.mjs",
+      "path": "操作系统嵌套/submission/test/player.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1691,
+      "sha256": "6a4fb247dee0f2d4e5791db28ec7dd7f86b7a9bc8ecaac8fe60e5bbc6fb2a42b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\popup.mjs",
+      "path": "操作系统嵌套/submission/test/popup.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1183,
+      "sha256": "59a28b7f2a4f7f91fe7672d3883d0fd0beefbf2a94c30a3d29a5f648aff6274b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\proj.mjs",
+      "path": "操作系统嵌套/submission/test/proj.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2546,
+      "sha256": "69b03049db8141ca52c5585d258a344a9b08994b2bad692f59d1a13c733edf8c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\record.mjs",
+      "path": "操作系统嵌套/submission/test/record.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1841,
+      "sha256": "6e5fccae9d8ab6482993ca49fc7659684893c92b602effdecd10d5adae32c88e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\reh.mjs",
+      "path": "操作系统嵌套/submission/test/reh.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2124,
+      "sha256": "fe3d1f607f2b35ede24f7fa6a9e36ab5313e341f6e13f64fc8fbea7ce9bd602a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\service.mjs",
+      "path": "操作系统嵌套/submission/test/service.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 734,
+      "sha256": "08e1e67e81f2fea47ec45b3fca498904885e7bf4c638939271762df7c8aa80ac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\service2.mjs",
+      "path": "操作系统嵌套/submission/test/service2.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1289,
+      "sha256": "710db8fab114a40b05501031885eea249a0b001a779cafb9c043ce96b2711cd1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\service2b.mjs",
+      "path": "操作系统嵌套/submission/test/service2b.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1282,
+      "sha256": "4512f6a5f690e9678f07f10f5f009e467b2cfe3674db62bbe5e03e70e73da220"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\sim.mjs",
+      "path": "操作系统嵌套/submission/test/sim.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2785,
+      "sha256": "02044f0f9492db88b7f37edd74a8ed6a8f2ca303e73a9208b1d791664334f340"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\snap.mjs",
+      "path": "操作系统嵌套/submission/test/snap.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3350,
+      "sha256": "3442e47ff453c1dab704d3d5a0fde476d3db89929fa1b402f988b11800f47829"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\trace.mjs",
+      "path": "操作系统嵌套/submission/test/trace.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 802,
+      "sha256": "c4e86b46324762b0036ed9c3f00b9333c653da4c1e79d22657da6137393eb861"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\ui.mjs",
+      "path": "操作系统嵌套/submission/test/ui.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5771,
+      "sha256": "0ee8dcfc0d4e73bafc1f0578d9812ce6006309d59b32baf69b316c46146c7455"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\visual.mjs",
+      "path": "操作系统嵌套/submission/test/visual.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2434,
+      "sha256": "b35b44ae163f41c6affde0d0669ee513b381c2f39a892e2ca1e5f8a0dce20f3a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\test\\widgets.mjs",
+      "path": "操作系统嵌套/submission/test/widgets.mjs",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1915,
+      "sha256": "8d6815efa415c9122306f0220a55b917454da6590f61be37a92c780aac0023d9"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 529,
+      "sha256": "6480aafe6aaa6566d96179b39738d388a402e7cfe5434c16c9cd35df2fb54ebc"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 4392,
+      "sha256": "3a4136b51bfa849c55d8295b8ce50a54968cbf06ee59c604e874b3606c02fd60"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1677,
+      "sha256": "faabf4da0b51a2e51dc4be90cf6aea01c0a2f03681df11deb2501c19f4947738"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 8470,
+      "sha256": "274eb1c434f6ab2ea6422f8d18ffa36206dd5a604100d0f3a577deff45dfb66b"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 560,
+      "sha256": "a456b4955a5334c6c7f3a91492d30b4111a350946ba2a1dec66aced8bb52d236"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 3433,
+      "sha256": "b7c620c8bcb6e5469b5ed51a019f3266f7b65b15d1668bee1ae5c10d4eaa75f5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 1988,
+      "sha256": "5475dee5b764932229784be8ea03d7c44bf57c4957fd6291986fa8ac229d95aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 10717,
+      "sha256": "9ac496ea5dddba58238b1d732cf2d83700dd5644507807bd4dca684bc41451e8"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 654,
+      "sha256": "a3f74d92ba0649c2c527568b877a5c6b4e3e18a45d2214a278a20932162ace04"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 8638,
+      "sha256": "8b92630cf59de17656f3e88da3f1af424d7c90d1f97e3cd1a10cefb4ab4f1223"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3368,
+      "sha256": "87f3455a7b6f248ebe0069b160d52b6603354e24d0636a4a77f2e231878fda29"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第01题.md",
+      "path": "数学竞赛原创试题/submission/答案/第01题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3047,
+      "sha256": "b6ceb0d921b107c3d728ee54d7baef22c083ca75bdab09a1e9d5d609c9186973"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第02题.md",
+      "path": "数学竞赛原创试题/submission/答案/第02题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1915,
+      "sha256": "c4393eb1f803f21135f24763cc1cc80dd193d0c162469caf39d530367c800a32"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第03题.md",
+      "path": "数学竞赛原创试题/submission/答案/第03题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1649,
+      "sha256": "35175ca2d5be13e336048a323a036d5bc75e2c7eaf6119006f379675b99023a4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第04题.md",
+      "path": "数学竞赛原创试题/submission/答案/第04题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3665,
+      "sha256": "4b0144d2c433cee2ceada24c67506cf5b8cbe7f3e2aca764714423bd0dd09655"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2981,
+      "sha256": "054c2d447e96ab41fee09ad29953ac7ec08d32066fac29e2fa02fbce2d8970f5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第06题.md",
+      "path": "数学竞赛原创试题/submission/答案/第06题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2904,
+      "sha256": "133c0cae4eaca8634eda45f3b144797b2029490a21e6e08ce019ffe3b18987d6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第07题.md",
+      "path": "数学竞赛原创试题/submission/答案/第07题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1936,
+      "sha256": "64c362cd848c2dd5187699ba733ef18cb14f11a2b7db2685efcf0180fbb86db1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第08题.md",
+      "path": "数学竞赛原创试题/submission/答案/第08题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1937,
+      "sha256": "198e6b33e4ec9bcc6966b99c55a44714159c283d529f292b7a7f2b2114df92a8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第09题.md",
+      "path": "数学竞赛原创试题/submission/答案/第09题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1925,
+      "sha256": "96eba28a8679b69ac5e2ed0b4078df50a6b80d5f1d437813fd784e5b6dbc0d90"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第10题.md",
+      "path": "数学竞赛原创试题/submission/答案/第10题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2025,
+      "sha256": "8de1be580547fdde444f2754651f0c2bf6c664004e6e2d1fad26d3190cf1da13"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4671,
+      "sha256": "d02cf376a9385fbc3e941ac3441dfa062221d167ebdc5d528eb265ae8068260e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第12题.md",
+      "path": "数学竞赛原创试题/submission/答案/第12题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3236,
+      "sha256": "d3abf4703090da60caffcb3805b18eb5c7e348b1d6fd7948d6d993f475e6242a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第13题.md",
+      "path": "数学竞赛原创试题/submission/答案/第13题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3635,
+      "sha256": "8b88f5cb08e534fd977671fd4b876575985799505a8ec188083e61a1b765be12"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第14题.md",
+      "path": "数学竞赛原创试题/submission/答案/第14题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2076,
+      "sha256": "8f70c50ff18352e807e5b1769fa65db3a1867b565b210677cc801d81dc0400f7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第15题.md",
+      "path": "数学竞赛原创试题/submission/答案/第15题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3496,
+      "sha256": "af45f76361339d3716c4cf1d40ddcd567789396846e96348e5ae7e37c964686a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第16题.md",
+      "path": "数学竞赛原创试题/submission/答案/第16题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2111,
+      "sha256": "50091dc7d663d0f4cd744226761d0d19e18730bcb663b620a9dd0e506a87c102"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第17题.md",
+      "path": "数学竞赛原创试题/submission/答案/第17题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2587,
+      "sha256": "e02c66ec8ef62b0bbd7e26af8d5254185f8d2fdb1fe59e11cc7124edb1a9de7e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第18题.md",
+      "path": "数学竞赛原创试题/submission/答案/第18题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2002,
+      "sha256": "7ec7a6e25560c2dd24ac6486721fec9e2d65cc0b9fb638ffaa7ebe994ae064f6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第19题.md",
+      "path": "数学竞赛原创试题/submission/答案/第19题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2869,
+      "sha256": "0e759b8d8d268d363c061ff0cf95fdd1c13bb47074118796e5f077b138cdc23e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第20题.md",
+      "path": "数学竞赛原创试题/submission/答案/第20题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1906,
+      "sha256": "454db1aad0b71b350ca0956f47aed3d3b31f5858bb3dd9b05fcbc2498cade0d6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第21题.md",
+      "path": "数学竞赛原创试题/submission/答案/第21题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1511,
+      "sha256": "f933051ba3337bd228dc1d88c4f7b36396e4197739c833420bd195defbc59b1b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第22题.md",
+      "path": "数学竞赛原创试题/submission/答案/第22题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2387,
+      "sha256": "4f5acf6dac4259cbf3dcda182dd7eeab9aa1095dddececb35eba97edd66aaf03"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第23题.md",
+      "path": "数学竞赛原创试题/submission/答案/第23题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3303,
+      "sha256": "02541c6915a6255d7adac49b9b5c24dfceb69431407b8718796e0c6f59a21246"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\答案\\第24题.md",
+      "path": "数学竞赛原创试题/submission/答案/第24题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2449,
+      "sha256": "02189ca0b4499d5fa78bef080bb061f610350fcde7e81afed9bbb87819c89c65"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 543,
+      "sha256": "1337164a287eda244ff0e035e19502008aba71cc72ecdac050977127c5dbe263"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 7975,
+      "sha256": "ba20f1a991d00a634ca10bffed44b060282edc450cf1f2798cd1bcc4b6fa8ea0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7317,
+      "sha256": "67dc62cfde5c8c48956b27454d1edd5e763721dafe3f32ff630ab4b4e48ffcfd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 1317,
+      "sha256": "29e728f690c6b96f4ef3a7836041131bf7c1dae5144134256edda024f521d9ee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\js\\engine.js",
+      "path": "星际战舰编队/submission/js/engine.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 38442,
+      "sha256": "b09abd84d4cbfcce4a5c18a8441551e78cfac635b9948c3a86e87e1a1f19766d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 1237,
+      "sha256": "306f2a280034f0f48309ae26967735b05ed3f4fac43df46b4dea992267663c77"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\js\\models.js",
+      "path": "星际战舰编队/submission/js/models.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 27892,
+      "sha256": "3e2cb2e1563e15209c278cd8f9ff4dab83786cc08fce82b6a2b61602074e919b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\js\\scene.js",
+      "path": "星际战舰编队/submission/js/scene.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 34298,
+      "sha256": "28dd7c062b0690e5168bdcb9bdf1080b9cadb54cec8616ad8a27686d758660a7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\js\\voxel.js",
+      "path": "星际战舰编队/submission/js/voxel.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9359,
+      "sha256": "acc36bf9dd898372055b4ae8f9966a47f8fae2203980aeeb9e933634d2e07579"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 2610,
+      "sha256": "5af6e01891d2fd802f77fbdc87149ca9afdc00f4fd76b152001227943edede54"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 542,
+      "sha256": "8a7b044de20e17b5082bc466fde9d3c0ea35f8e2fe469bb960069063eb0b01d7"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 12666,
+      "sha256": "f0a6364e972341cfdae5dd0dd801d790a8836b2ef5bfd2adb8d84210e5db8cee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 3148,
+      "sha256": "492031e2fb5fbe2757efc3754a92aa592666b2664ceaecb0d22a2d724bedf011"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3344,
+      "sha256": "b18332ff34fbb483ee6b6d78840748591e9f8de496f88c65cb5065d941120168"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2850,
+      "sha256": "1002305922a65cec2143db445013f085ea3860dd6b69b8c24a0f7d9d39fda05f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1115,
+      "sha256": "1eab3d4a89d133f66d67585f2251e4f610c9474d54ac3773a6499fed94546fda"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 960,
+      "sha256": "b4e55bbb805e4c60efa9a3cc6d32b5ae2dc967661cba5b836a6b83144e73196a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1357,
+      "sha256": "0409a2e05713e5291b156474013442a6bf9b2dfb48c247b33323e1703b1a6d79"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1362,
+      "sha256": "ef8208bb4ad70ff7649d0702803dec3a3415dc7a9d01d12808e9046c33095a74"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1301,
+      "sha256": "c10dd5b04ae1931ee3551aab3db343b82d0d3ccd0103c1bec561e52b3cf67f6e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1154,
+      "sha256": "0f692fd548c4a003328f89e5881970bf9494cb4741fc003b6fdd27c0506525dc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1393,
+      "sha256": "a724c1243f13f2a0b782ff542fcdc92dbdbaa97173e82ab0378c4359b81e9bd2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1359,
+      "sha256": "9b811c17fee1a553ee7b56d81fc256a4f0217e1b683fbc0110fc58dca62bd0ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1124,
+      "sha256": "9306eb6148c6f8f670f0de9f739de74c80eef09bad78a97cbcab4529507c825d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1286,
+      "sha256": "6a2eab92ffe50dcdc378d23447a3d9c350df9faf74669a478a77ba7cc8da4acd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1144,
+      "sha256": "a900c2f76ac6f19b193352bead9e7be01773713bdce07bb07a432677aaaae45b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1284,
+      "sha256": "167d98eb23bab4408a0f410fc089f68db8283c0e12e1169c85878d075cf979f5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1152,
+      "sha256": "c33d0c2b8782ae809127f354639197a8a82ff1bc836f37c535ee3469a328e0dd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2198,
+      "sha256": "b48817d770739d2ed80a1709fa5672dbf5f3cc44db61974d68dfc6b8a647e856"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3071,
+      "sha256": "3adfca3365a91e6bd9f5dd268dd9da72901cc333e03af6c06da8a690313ad1a6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2378,
+      "sha256": "aaa983d8ecbc3f07f998c2239740e990cff8a9f1ad889f2bfc245d70515151d6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2322,
+      "sha256": "5d3a60268085abd021e0bf88fbfe15dfd64373f07c822560a2741d5561055d15"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 903,
+      "sha256": "e8c982527d2152ff039a1004a0d8035c6d0cf87134e7fad1aca7b6e7bafe641d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3120,
+      "sha256": "b50c1b5bed929f4c3ada40ad6ea5f27ef205d13599a7691606e320eacf24bcfc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 6034,
+      "sha256": "c6842e88826aa05fd140fe40ebc9f9ef4a983942a021b918718a585e462d075f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 7861,
+      "sha256": "f1b21f9378faaef574a8042003f35c36e264824e4e11f587d232bdcb8e613580"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 9728,
+      "sha256": "7bf0e8ca99c3210b3766783328f56638f26d0e6e24cbdc5f17b6e046ab17b3f0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 11520,
+      "sha256": "3a4dcdf5a52f3693178a6fef663e9040a49757ced52e3703106952518084be29"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 560,
+      "sha256": "e1d799bd702359c3407d0da582704518e72b66896ce08dfa73a350cfd434cffe"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6640,
+      "sha256": "303865b5a8c798189f02dc8ef282a34239fd4d4ce067cc4b78f57b97f31e27ea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4873,
+      "sha256": "9c088d167aa86ea60de01174c70bb61aa9819fe68f7e08674b7c0c68da0384cc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\js\\debug.js",
+      "path": "果冻冲击与造浪水槽/submission/js/debug.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 3262,
+      "sha256": "240a703b943dd488c2091cd37575a56e03f0bff5104e21f34270f3e56f145215"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\js\\gpu.js",
+      "path": "果冻冲击与造浪水槽/submission/js/gpu.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 8948,
+      "sha256": "fb098be0e3a5858900701d48ace11b47e598b536d46d75c22f9ec87c566a474d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\js\\renderer.js",
+      "path": "果冻冲击与造浪水槽/submission/js/renderer.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 32066,
+      "sha256": "dfa70b9b5f2d2c5e3471f07d828e9a9ed40f9626b8145d835eccb8d20ec54674"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\js\\util.js",
+      "path": "果冻冲击与造浪水槽/submission/js/util.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6025,
+      "sha256": "66a3332733ea3a8a2dad0effa191cbe70cbd1b9f04a600b29ccfe5b2aa776ec5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\js\\water.js",
+      "path": "果冻冲击与造浪水槽/submission/js/water.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 35714,
+      "sha256": "c1782e1c69469c0ccfdd9009628ca36abb1b24bde721e3687726909baf21850d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_diag.html",
+      "path": "果冻冲击与造浪水槽/submission/test_diag.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2380,
+      "sha256": "7e887773a3308db15787d39d8bc58d202769df43a387494144760757b7272f88"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_gpu.html",
+      "path": "果冻冲击与造浪水槽/submission/test_gpu.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1060,
+      "sha256": "c2dd04514435965789cfbb25c9324508945633bd490e23d52e485f8c1fe298f8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_micro.html",
+      "path": "果冻冲击与造浪水槽/submission/test_micro.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2433,
+      "sha256": "0b3823998d3b3479b9ec14c1d136a4ef94fa8759b8dceda0524b85e492982b89"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_render.html",
+      "path": "果冻冲击与造浪水槽/submission/test_render.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2240,
+      "sha256": "0766d464b1e3456209d4f471eeba452f9cf9a6d2b498ffb69b5a6997dc44237a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_sim.html",
+      "path": "果冻冲击与造浪水槽/submission/test_sim.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 1759,
+      "sha256": "891092d446aaafe3db71cc729f69677e44b95e57bf55a48e9fc1aaaaba698c73"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_tank.html",
+      "path": "果冻冲击与造浪水槽/submission/test_tank.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 3362,
+      "sha256": "374a55c57e1b53aac157007d42e7eb5294f5498dbfd82c29e4e4d14eb628106f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_wave.html",
+      "path": "果冻冲击与造浪水槽/submission/test_wave.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 3429,
+      "sha256": "9995c45ec9a39042fad334bcad09cb9d247052d347fb7144c004f1e359da9b15"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\test_wd.html",
+      "path": "果冻冲击与造浪水槽/submission/test_wd.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2405,
+      "sha256": "ee7f1acd9920672d7738ea12b1dd944dbca7049ffe703fda18d82a4268f49483"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 536,
+      "sha256": "5ebd3067afacc4b48136f3673d5b15899fd745ba59a451328332c72ad4294d9d"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 4051,
+      "sha256": "b5037bb1fc9541a6c96bf0039a21e413f4f9c1b9ed8adee918d311875673b7e2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 1836,
+      "sha256": "1ae3a1e871d54aca9709dad7af19a021fb1a196e840a1f784dba2996c38d8d57"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第01题.json",
+      "path": "鲁班锁拆解/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 193,
+      "sha256": "88a4ecffad2c15eaf167cdfc9c89da955f8570057c1aef20ef6b99d528e8bb2a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第02题.json",
+      "path": "鲁班锁拆解/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 145,
+      "sha256": "aa9720117aa73ae327a324de5854a13f3c18d5766c965aa5a2feecffaa38cf81"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第03题.json",
+      "path": "鲁班锁拆解/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 190,
+      "sha256": "b60f2ab0df1cc926d87794d9234f17685bebd9941121f56ef430475a16f17d5b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第04题.json",
+      "path": "鲁班锁拆解/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 145,
+      "sha256": "9d776a3179a2fa8429f1840ccfd75ca6ed3c58f3af17d777bbfce539cea12e8e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第05题.json",
+      "path": "鲁班锁拆解/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 145,
+      "sha256": "4783f7d68802390906fbfe8c9c1d52cafaf3af1fab69c47356323217ecadfe28"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第06题.json",
+      "path": "鲁班锁拆解/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 144,
+      "sha256": "da7dbe700fd206711b9bd1a1838933d16900f6a905db3aee63ff8256da3d036c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第07题.json",
+      "path": "鲁班锁拆解/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 144,
+      "sha256": "e86556cbb432609c324d647ad49cd9fde4f00d4beaa9c1ee499b83478d1e28ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\答案\\第08题.json",
+      "path": "鲁班锁拆解/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 144,
+      "sha256": "b693a56ef0c57ba42027d400e76db3e25c06b7e7f7d16005476735ceba006a96"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\work",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\形式化证明题\\Scratch.lean",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\形式化证明题\\Scratch2.lean",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\形式化证明题\\Scratch_backup.lean",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\形式化证明题\\形式化证明题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\dev",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs2",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs3",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs4",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs5",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs6",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs7",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs8",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logs9",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logsA",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logsB",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\logsD",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\report_sample_vs_strong.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\analyze.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\cse.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg1.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg_main.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg_main.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg_sample.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg_search.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg_search2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg_search3.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\dbg_search4.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\depth.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err01.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err02.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err03.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err04.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err05.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err06.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err07.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err08.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\err09.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\exp.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\fix.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\fuzz.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\fuzz2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\fuzz3.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\fuzz4.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\fuzz5.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\grader_mem.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\harness_mem.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\hmem.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\hnmb.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\hpf.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\hpf3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\hts.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\live.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mini.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mkbranchy.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mkmem.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mkmem2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mknoinv.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mknomuxbr.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mkpf.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mkpf3.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\mktsort.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\o7.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\oracle.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\oracle2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\oracle3.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\oracle4.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\oracle5.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out01.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out02.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out03.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out04.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out05.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out06.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out07.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out08.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\out09.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\pool.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\rel.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\runs.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\sample.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\scale.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\scale2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\setw.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\solution_bak.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\solution_mem.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\solution_nomuxbr.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\solution_pf.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\solution_pf3.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\solution_tsort.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\span.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\span2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\spanhist.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\syn.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\syn_100000.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\syn_200000.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\syn_50000.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\tsorted.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\u16.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\useful.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\wtest.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\wtest2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\wtest3.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\alldump.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\asm.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\bbox.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\check.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\dims.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\step.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\summarize.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\view.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\warn.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\机械结构重建.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\机械结构重建\\预览",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\empty.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\rec.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\ERNIE\\5.5Flash\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": []
+}

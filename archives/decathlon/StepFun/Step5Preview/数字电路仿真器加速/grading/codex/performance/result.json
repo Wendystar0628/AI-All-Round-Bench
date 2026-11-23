@@ -1,0 +1,26 @@
+{
+    "task":  "数字电路仿真器加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  0.0,
+                      "reason":  "提交与官方基线均按指定命令编译成功。官方 evaluate.py 完整评测中，7 个正确性输入和 9 个性能输入的提交运行均以 3221225501（0xC000001D，非法指令）退出，未产生 simulate_ms；基线 27 次运行均通过，9 个输入各记 0 分，最终得分 0.0。"
+                  }
+              ],
+    "metrics":  {
+                    "correctness_passed":  0,
+                    "correctness_total":  7,
+                    "performance_passed":  0,
+                    "performance_inputs":  9,
+                    "performance_score":  0.0,
+                    "score":  0.0,
+                    "G":  null,
+                    "runtime_error_code":  3221225501,
+                    "report":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\StepFun\\Step5Preview\\数字电路仿真器加速\\codex\\performance\\work\\evaluation_report.json"
+                },
+    "notes":  "评的是作答结束时工作目录的副本，不看 git 提交；完整复制到 work\\submission（排除评分表与 .git），solution.cpp 与原件 SHA256 均为 403EDECD42B3AD47C6307C75FD158F8E9E525C513D6BC81ADF79F4D1FB7659BF。所有编译和唯一一次正式 evaluate.py 均通过指定 Python/process_job.py --cpus 0-15 执行，基线从官方源码重新编译，未使用提交自带二进制。源码使用 AVX2 位切片、内存槽复用和进程内 JIT；未发现读取答案、篡改评测或伪造输出的行为。评测无环境错误，全部自启编译/评测进程已退出，无浏览器或服务器。",
+    "anomaly":  "提交的 JIT 在样例预热触发非法指令，全部输入在计时前崩溃。"
+}

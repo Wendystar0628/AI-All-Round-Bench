@@ -1,0 +1,157 @@
+// ============================================================
+// 环境特效进程（Fx.osprog）
+// 由播放器启动：负责下洗气流尘土、发动机烟、火焰与碎片，
+// 按所属系统虚拟时间演化，每帧把粒子列表交给飞行场景进程
+// 合成进三维场景。挂起本进程只停止特效更新。
+// ============================================================
+
+let scenePid = 0
+let particles = []
+let smokeOn = 0
+let fireOn = 0
+let crashX = 0
+let crashY = 0
+let crashZ = 0
+let booted = 0
+let frames = 0
+
+fn boot() {
+  booted = 1
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    on_msg(m)
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "open" {
+    scenePid = m.scene
+  } else if m.t == "closing" {
+    kill(self())
+  } else if m.t == "tick" {
+    on_tick(m)
+  } else if m.t == "crash" {
+    spawn_debris(m.x, m.y, m.z)
+  }
+}
+
+fn on_tick(m) {
+  frames = frames + 1
+  let dt = m.dt / 1000
+  if dt > 0.05 {
+    dt = 0.05
+  }
+  smokeOn = 0
+  fireOn = 0
+  // 下洗尘土
+  if m.alt < 15 and m.rpm > 0.42 and m.crashed == 0 {
+    let n = 2
+    let i = 0
+    while i < n {
+      let a = rnd() * 6.283
+      let r = rnd() * 3.2
+      push(particles, [m.px + cos(a) * r, ground_at(m.px, m.pz) + 0.15, m.pz + sin(a) * r, cos(a) * (1.5 + rnd() * 2.2), 0.7 + rnd() * 0.8, sin(a) * (1.5 + rnd() * 2.2), 0.7 + rnd() * 0.8, 1.0, 0])
+      i = i + 1
+    }
+  }
+  // 故障烟
+  if m.crashed == 0 and m.rpm < 0.62 and m.alt > 1.5 {
+    smokeOn = 1
+    push(particles, [m.px + (rnd() - 0.5) * 0.6, m.py + 0.4, m.pz - 1.2, (rnd() - 0.5) * 0.5, 1.1 + rnd() * 0.5, (rnd() - 0.5) * 0.5, 0.5 + rnd() * 0.4, 1.0, 1])
+  }
+  // 坠毁火焰与浓烟
+  if m.crashed == 1 {
+    fireOn = 1
+    push(particles, [m.px + (rnd() - 0.5) * 2.4, m.py + 0.4, m.pz + (rnd() - 0.5) * 2.4, (rnd() - 0.5) * 0.6, 1.6 + rnd() * 1.2, (rnd() - 0.5) * 0.6, 0.6 + rnd() * 0.7, 1.0, 2])
+    if frames % 2 == 0 {
+      push(particles, [m.px + (rnd() - 0.5) * 2.0, m.py + 1.0, m.pz + (rnd() - 0.5) * 2.0, (rnd() - 0.5) * 0.4, 1.0 + rnd() * 0.6, (rnd() - 0.5) * 0.4, 0.9 + rnd() * 0.8, 1.0, 1])
+    }
+  }
+  // 更新
+  let out = []
+  for p in particles {
+    p[0] = p[0] + p[3] * dt
+    p[1] = p[1] + p[4] * dt
+    p[2] = p[2] + p[5] * dt
+    if p[8] == 3 {
+      p[4] = p[4] - 9.8 * dt
+      let g = ground_at(p[0], p[2])
+      if p[1] < g + 0.12 {
+        p[1] = g + 0.12
+        p[3] = p[3] * 0.45
+        p[5] = p[5] * 0.45
+        p[4] = -p[4] * 0.3
+        if abs(p[4]) < 0.4 {
+          p[4] = 0
+        }
+      }
+    } else {
+      p[4] = p[4] + (0.5 - p[4]) * dt * 0.6
+      p[6] = p[6] + dt * 1.6
+    }
+    let dr = 0.42
+    if p[8] == 3 {
+      dr = 0.1
+    }
+    p[7] = p[7] - dt * dr
+    if p[7] > 0 and len(out) < 200 {
+      push(out, p)
+    }
+  }
+  particles = out
+  // 交给场景进程（紧凑数组）
+  let list = []
+  for p in particles {
+    push(list, [p[0], p[1], p[2], p[6], p[7], p[8]])
+  }
+  send(scenePid, {"t": "fx_particles", "list": list})
+}
+
+fn spawn_debris(x, y, z) {
+  crashX = x
+  crashY = y
+  crashZ = z
+  let i = 0
+  while i < 16 {
+    let a = rnd() * 6.283
+    let e = rnd() * 1.2
+    let sp = 3 + rnd() * 7
+    push(particles, [x + (rnd() - 0.5) * 1.6, y + (rnd() - 0.5) * 1.6, z + (rnd() - 0.5) * 1.6, cos(a) * sp * cos(e), sin(e) * sp + 2.0, sin(a) * sp * cos(e), 0.28 + rnd() * 0.4, 1.0, 3])
+    i = i + 1
+  }
+}
+
+fn ground_at(x, z) {
+  let b = 8.0 * (0.55 * sin(x * 0.021 + 0.4) * cos(z * 0.019 + 1.1) + 0.3 * sin(x * 0.037 + 1.9) * cos(z * 0.041 + 0.3) + 0.15 * sin(x * 0.083 + 0.8) * cos(z * 0.071 + 2.2))
+  let b1 = 8.0 * (0.55 * sin(0.4) * cos(1.1) + 0.3 * sin(1.9) * cos(0.3) + 0.15 * sin(0.8) * cos(2.2))
+  let b2 = 8.0 * (0.55 * sin(92 * 0.021 + 0.4) * cos(-58 * 0.019 + 1.1) + 0.3 * sin(92 * 0.037 + 1.9) * cos(-58 * 0.041 + 0.3) + 0.15 * sin(92 * 0.083 + 0.8) * cos(-58 * 0.071 + 2.2))
+  let d0 = sqrt(x * x + z * z)
+  let d1 = sqrt((x - 92) * (x - 92) + (z + 58) * (z + 58))
+  let h = b
+  if d0 < 16 {
+    let w = 1 - smooth01(d0 / 16)
+    h = h + (b1 - b) * w
+  }
+  if d1 < 14 {
+    let w = 1 - smooth01(d1 / 14)
+    h = h + (b2 - b) * w
+  }
+  return h
+}
+
+fn smooth01(t) {
+  if t < 0 {
+    return 0
+  }
+  if t > 1 {
+    return 1
+  }
+  return t * t * (3 - 2 * t)
+}
+
+// ---------------- 入口 ----------------
+boot()

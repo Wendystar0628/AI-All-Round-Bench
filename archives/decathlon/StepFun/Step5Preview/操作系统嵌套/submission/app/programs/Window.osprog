@@ -1,0 +1,1185 @@
+// ============================================================
+// 窗口管理程序（Window.osprog）
+// 由内核启动：负责窗口次序、焦点、命中判断、输入分发、
+// 任务栏、开始菜单、桌面图标、系统管理界面与画面合成。
+// 改写本程序的叠放、焦点或命中规则并重启子系统后，按新规则工作。
+// ============================================================
+
+let sysId = ""
+let sysName = ""
+let apps = []
+let depth = 1
+let W = 960
+let H = 600
+let wins = []
+let zTop = 10
+let focusId = 0
+let nextId = 1
+let taskbarH = 36
+let drag = null
+let startOpen = 0
+let startQuery = ""
+let sysOpen = 0
+let notifOpen = 0
+let sysNewName = ""
+let deskSel = -1
+let notifs = []
+let toast = []
+let deskIcons = []
+let sysList = []
+let sysMsg = ""
+let kernelInfo = null
+let infoAt = -9999
+let textFocus = null
+let clockT = 0
+let booted = 0
+let projCache = {}
+
+const TH = {
+  "bg1": "#171d29", "bg2": "#0f141d", "panel": "#1c2433", "panel2": "#232d3f",
+  "line": "#33405a", "text": "#e8ecf4", "dim": "#93a1bb", "accent": "#8b6cff",
+  "accent2": "#ffd23f", "danger": "#ff5d6c", "ok": "#43d9a3", "warn": "#ffb347"
+}
+
+// ---------------- 启动 ----------------
+fn boot() {
+  sysId = ""
+  sysName = ""
+  depth = 1
+  apps = [
+    {"key": "files", "title": "文件管理器", "icon": "folder"},
+    {"key": "editor", "title": "程序编辑器", "icon": "code"},
+    {"key": "proc", "title": "进程管理器", "icon": "cpu"},
+    {"key": "player", "title": "三维播放器", "icon": "heli"},
+    {"key": "chart", "title": "图表工作台", "icon": "chart"},
+    {"key": "console", "title": "程序控制台", "icon": "term"},
+    {"key": "help", "title": "操作说明", "icon": "help"}
+  ]
+  wins = []
+  notifs = []
+  toast = []
+  sysList = systems()
+  refresh_desktop()
+  booted = 1
+  submit_frame()
+  loop()
+}
+
+fn loop() {
+  while true {
+    let m = recv()
+    if type(m) == "map" {
+      on_msg(m)
+    }
+  }
+}
+
+fn on_msg(m) {
+  if m.t == "boot" {
+    sysId = m.sys
+    sysName = m.name
+    if m.apps != null {
+      apps = m.apps
+    }
+    sysList = systems()
+    refresh_desktop()
+    submit_frame()
+  } else if m.t == "input" {
+    on_input(m.ev)
+  } else if m.t == "focus" {
+    if m.on == 0 {
+      startOpen = 0
+      sysOpen = 0
+      notifOpen = 0
+      textFocus = null
+      submit_frame()
+    }
+  } else if m.t == "content" {
+    set_content(m.win, m.prims, m.meta)
+  } else if m.t == "text_focus" {
+    textFocus = {"win": m.win, "ctl": m.ctl, "buf": "", "caret": 0}
+    submit_frame()
+  } else if m.t == "cmd_result" {
+    let err = m.error
+    if err == null {
+      err = ""
+    }
+    if err != "" {
+      sysMsg = m.cmd + "：" + err
+      notif("操作失败", err)
+    } else {
+      sysMsg = m.cmd + "：已完成"
+    }
+    sysList = systems()
+    submit_frame()
+  } else if m.t == "app_error" {
+    notif("应用启动失败", m.error)
+    submit_frame()
+  } else if m.t == "system_added" {
+    sysList = systems()
+    notif("子系统已创建", m.name + "（" + m.id + "）")
+    submit_frame()
+  } else if m.t == "snapshot_saved" {
+    notif("快照已保存", m.path)
+    refresh_desktop()
+    submit_frame()
+  } else if m.t == "snapshot_restored" or m.t == "snapshot_forked" {
+    let what = "恢复"
+    if m.t == "snapshot_forked" {
+      what = "分叉"
+    }
+    notif("快照已" + what, m.path)
+    sysList = systems()
+    refresh_desktop()
+    submit_frame()
+  } else if m.t == "viewport" {
+    W = m.w
+    H = m.h
+    clamp_wins()
+    submit_frame()
+  } else if m.t == "win_open" {
+    on_win_open(m)
+  } else if m.t == "win_close" {
+    on_win_close(m)
+  } else if m.t == "app_msg" {
+    route_app_msg(m)
+  } else if m.t == "projection_open" {
+    open_projection(m)
+  } else if m.t == "projection_closed" {
+    on_proj_closed(m.projId)
+  } else if m.t == "projection_focus" {
+    for w in wins {
+      if w.kind == "proj" and w.projId == m.projId {
+        bring_front(w.id)
+      }
+    }
+    submit_frame()
+  }
+}
+
+fn route_app_msg(m) {
+  let w = win_find(m.win)
+  if w != null and w.pid != 0 {
+    send(w.pid, m.msg)
+  }
+}
+
+fn on_win_open(m) {
+  let id = win_new(m.key, m.title, m.w, m.h, "app")
+  let w = win_find(id)
+  w.pid = m.pid
+  send(m.pid, {"t": "win_opened", "win": id, "key": m.key, "w": m.w, "h": m.h})
+  submit_frame()
+}
+
+fn on_win_close(m) {
+  win_close(m.win)
+  submit_frame()
+}
+
+// ---------------- 通知 ----------------
+fn notif(title, text) {
+  push(notifs, {"title": title, "text": text, "t": clockT})
+  if len(notifs) > 24 {
+    notifs = shift(notifs)
+  }
+  push(toast, {"title": title, "text": text, "t": clockT})
+}
+
+// ---------------- 桌面图标 ----------------
+fn refresh_desktop() {
+  deskIcons = []
+  let l = list_dir("/Desktop")
+  if type(l) != "map" {
+    for e in l {
+      if e.type == "file" {
+        push(deskIcons, {"name": e.name, "path": "/Desktop/" + e.name, "kind": "file"})
+      }
+    }
+  }
+  for a in apps {
+    push(deskIcons, {"name": a.title, "path": "app:" + a.key, "kind": "app", "key": a.key})
+  }
+}
+
+// ---------------- 窗口 ----------------
+fn win_new(key, title, w, h, kind) {
+  let n = len(wins)
+  let x = 36 + (n % 6) * 24
+  let y = 30 + (n % 6) * 20
+  if x + w > W - 8 {
+    x = 12
+  }
+  if y + h > H - taskbarH - 8 {
+    y = 12
+  }
+  let id = nextId
+  nextId = nextId + 1
+  push(wins, {"id": id, "key": key, "title": title, "x": x, "y": y, "w": w, "h": h, "z": zTop, "min": 0, "max": 0, "kind": kind, "content": [], "pid": 0, "prev": null, "projId": ""})
+  zTop = zTop + 1
+  focusId = id
+  return id
+}
+
+fn win_find(id) {
+  for w in wins {
+    if w.id == id {
+      return w
+    }
+  }
+  return null
+}
+
+fn win_close(id) {
+  let w = win_find(id)
+  let out = []
+  for x in wins {
+    if x.id != id {
+      push(out, x)
+    }
+  }
+  wins = out
+  if focusId == id {
+    focusId = 0
+    let top = null
+    for x in wins {
+      if x.min == 0 {
+        if top == null or x.z > top.z {
+          top = x
+        }
+      }
+    }
+    if top != null {
+      focusId = top.id
+    }
+  }
+  if w != null {
+    if w.kind == "app" and w.pid != 0 {
+      send(w.pid, {"t": "closing"})
+    }
+    if w.kind == "proj" {
+      projection_input(w.projId, {"t": "close"})
+    }
+  }
+}
+
+fn set_content(id, prims, meta) {
+  let w = win_find(id)
+  if w != null {
+    w.content = prims
+    if meta != null {
+      w.meta = meta
+    }
+    submit_frame()
+  }
+}
+
+fn clamp_wins() {
+  for w in wins {
+    if w.max == 0 {
+      if w.x > W - 60 {
+        w.x = W - 60
+      }
+      if w.y > H - taskbarH - 30 {
+        w.y = H - taskbarH - 30
+      }
+      if w.w > W {
+        w.w = W
+      }
+      if w.h > H - taskbarH {
+        w.h = H - taskbarH
+      }
+    }
+  }
+}
+
+fn bring_front(id) {
+  let w = win_find(id)
+  if w == null {
+    return
+  }
+  if w.min == 1 {
+    w.min = 0
+  }
+  w.z = zTop
+  zTop = zTop + 1
+  focusId = id
+}
+
+// ---------------- 输入 ----------------
+fn on_input(ev) {
+  if ev.t == "key" {
+    on_key(ev)
+    return
+  }
+  if ev.t == "down" {
+    on_down(ev)
+  } else if ev.t == "move" {
+    on_move(ev)
+  } else if ev.t == "up" {
+    on_up(ev)
+  } else if ev.t == "wheel" {
+    on_wheel(ev)
+  }
+}
+
+fn on_key(ev) {
+  if textFocus != null {
+    let c = textFocus
+    if ev.key == "Backspace" {
+      if c.caret > 0 {
+        c.buf = substr(c.buf, 0, c.caret - 1) + substr(c.buf, c.caret)
+        c.caret = c.caret - 1
+      }
+    } else if ev.key == "Enter" {
+      text_commit(c)
+      textFocus = null
+    } else if ev.key == "Escape" {
+      textFocus = null
+    } else if ev.text != null and ev.text != "" {
+      c.buf = substr(c.buf, 0, c.caret) + ev.text + substr(c.buf, c.caret)
+      c.caret = c.caret + len(ev.text)
+    }
+    submit_frame()
+    return
+  }
+  if ev.key == "Escape" {
+    startOpen = 0
+    sysOpen = 0
+    notifOpen = 0
+    submit_frame()
+  }
+}
+
+fn text_commit(c) {
+  if c.win == 0 {
+    if c.ctl == "start" {
+      startQuery = c.buf
+      startOpen = 1
+    } else if c.ctl == "sysname" {
+      sysNewName = c.buf
+    }
+  } else {
+    let w = win_find(c.win)
+    if w != null and w.pid != 0 {
+      send(w.pid, {"t": "text", "ctl": c.ctl, "value": c.buf})
+    }
+  }
+}
+
+fn on_down(ev) {
+  let x = ev.x
+  let y = ev.y
+  textFocus = null
+  if y >= H - taskbarH {
+    on_taskbar_click(x, y)
+    return
+  }
+  if startOpen == 1 {
+    if in_rect(x, y, start_rect()) {
+      on_start_click(x, y)
+      return
+    }
+    startOpen = 0
+  }
+  if sysOpen == 1 {
+    if in_rect(x, y, sys_rect()) {
+      on_sysmgr_click(x, y)
+      return
+    }
+    sysOpen = 0
+  }
+  if notifOpen == 1 {
+    if in_rect(x, y, notif_rect()) {
+      return
+    }
+    notifOpen = 0
+  }
+  let top = top_win_at(x, y)
+  if top != null {
+    bring_front(top.id)
+    on_win_down(top, x, y)
+    submit_frame()
+    return
+  }
+  let idx = desk_icon_at(x, y)
+  if idx >= 0 {
+    if deskSel == idx {
+      open_desk_icon(idx)
+    } else {
+      deskSel = idx
+    }
+    submit_frame()
+    return
+  }
+  deskSel = -1
+  submit_frame()
+}
+
+fn on_move(ev) {
+  if drag != null {
+    let w = win_find(drag.id)
+    if w != null and w.kind == "proj" {
+      projection_input(w.projId, {"t": "move", "x": ev.x - w.x, "y": ev.y - w.y - 26})
+    }
+  }
+  if drag == null {
+    // 转发给指针下的应用窗口（供文件拖动等使用）
+    let top = top_win_at(ev.x, ev.y)
+    if top != null and top.kind == "app" and top.pid != 0 {
+      send(top.pid, {"t": "move", "x": ev.x - top.x, "y": ev.y - top.y - 26})
+    }
+    return
+  }
+  let w = win_find(drag.id)
+  if w == null {
+    drag = null
+    return
+  }
+  if drag.mode == "move" {
+    w.x = ev.x - drag.dx
+    w.y = ev.y - drag.dy
+    if w.y < 0 {
+      w.y = 0
+    }
+    if w.y > H - taskbarH - 24 {
+      w.y = H - taskbarH - 24
+    }
+    if w.x < -w.w + 80 {
+      w.x = -w.w + 80
+    }
+    if w.x > W - 60 {
+      w.x = W - 60
+    }
+  } else if drag.mode == "resize" {
+    if drag.edge == "e" {
+      w.w = ev.x - w.x
+    } else if drag.edge == "s" {
+      w.h = ev.y - w.y
+    } else if drag.edge == "se" {
+      w.w = ev.x - w.x
+      w.h = ev.y - w.y
+    }
+    if w.w < 200 {
+      w.w = 200
+    }
+    if w.h < 140 {
+      w.h = 140
+    }
+  }
+  submit_frame()
+}
+
+fn on_up(ev) {
+  if drag != null and drag.mode == "move" {
+    let w = win_find(drag.id)
+    if w != null {
+      if ev.x <= 6 {
+        snap_half(w, 0)
+      } else if ev.x >= W - 6 {
+        snap_half(w, 1)
+      }
+    }
+  }
+  if drag != null {
+    let w = win_find(drag.id)
+    if w != null and w.kind == "proj" {
+      projection_input(w.projId, {"t": "up", "x": ev.x - w.x, "y": ev.y - w.y - 26})
+    }
+  }
+  let top = top_win_at(ev.x, ev.y)
+  if top != null and top.kind == "app" and top.pid != 0 {
+    send(top.pid, {"t": "up", "x": ev.x - top.x, "y": ev.y - top.y - 26})
+  }
+  drag = null
+  submit_frame()
+}
+
+fn snap_half(w, right) {
+  let half = W / 2
+  if w.max == 1 {
+    w.max = 0
+  }
+  if right == 1 {
+    w.x = half
+  } else {
+    w.x = 0
+  }
+  w.y = 0
+  w.w = half
+  w.h = H - taskbarH
+}
+
+fn on_wheel(ev) {
+  let top = top_win_at(ev.x, ev.y)
+  if top != null {
+    if top.kind == "app" and top.pid != 0 {
+      send(top.pid, {"t": "wheel", "x": ev.x - top.x, "y": ev.y - top.y - 26, "dx": ev.dx, "dy": ev.dy})
+    } else if top.kind == "proj" {
+      projection_input(top.projId, {"t": "wheel", "x": ev.x - top.x, "y": ev.y - top.y - 26, "dx": ev.dx, "dy": ev.dy})
+    }
+  }
+}
+
+fn on_win_down(w, x, y) {
+  let lx = x - w.x
+  let ly = y - w.y
+  if w.max == 0 {
+    if lx >= w.w - 6 and ly >= w.h - 30 {
+      drag = {"mode": "resize", "id": w.id, "edge": "se"}
+      return
+    }
+    if lx >= w.w - 4 {
+      drag = {"mode": "resize", "id": w.id, "edge": "e"}
+      return
+    }
+    if ly >= w.h - 4 {
+      drag = {"mode": "resize", "id": w.id, "edge": "s"}
+      return
+    }
+  }
+  if ly < 26 {
+    if lx >= w.w - 26 {
+      win_close(w.id)
+      return
+    }
+    if lx >= w.w - 50 {
+      w.min = 1
+      if focusId == w.id {
+        focusId = 0
+      }
+      return
+    }
+    if lx >= w.w - 74 {
+      toggle_max(w)
+      return
+    }
+    if w.kind == "proj" {
+      projection_input(w.projId, {"t": "down", "x": lx, "y": ly - 26})
+      return
+    }
+    drag = {"mode": "move", "id": w.id, "dx": lx, "dy": ly}
+    return
+  }
+  if w.kind == "app" and w.pid != 0 {
+    send(w.pid, {"t": "click", "x": lx, "y": ly - 26})
+  } else if w.kind == "proj" {
+    projection_input(w.projId, {"t": "down", "x": lx, "y": ly - 26})
+  } else if w.kind == "sysmgr" {
+    on_sysmgr_click(x, y)
+  }
+}
+
+fn toggle_max(w) {
+  if w.max == 1 {
+    w.max = 0
+    if w.prev != null {
+      w.x = w.prev.x
+      w.y = w.prev.y
+      w.w = w.prev.w
+      w.h = w.prev.h
+    }
+  } else {
+    w.prev = {"x": w.x, "y": w.y, "w": w.w, "h": w.h}
+    w.max = 1
+    w.x = 0
+    w.y = 0
+    w.w = W
+    w.h = H - taskbarH
+  }
+}
+
+// ---------------- 任务栏 / 开始菜单 / 通知 ----------------
+fn on_taskbar_click(x, y) {
+  if x >= 6 and x <= 60 {
+    startOpen = 1 - startOpen
+    sysOpen = 0
+    notifOpen = 0
+    submit_frame()
+    return
+  }
+  if x >= 64 and x <= 118 {
+    sysOpen = 1 - sysOpen
+    startOpen = 0
+    notifOpen = 0
+    sysList = systems()
+    submit_frame()
+    return
+  }
+  let bx = 124
+  let n = 0
+  for w in wins {
+    if w.min == 0 or w.id == focusId {
+      if x >= bx and x <= bx + 128 {
+        if w.min == 1 {
+          bring_front(w.id)
+        } else if focusId == w.id {
+          w.min = 1
+          focusId = 0
+        } else {
+          bring_front(w.id)
+        }
+        submit_frame()
+        return
+      }
+      bx = bx + 132
+      n = n + 1
+      if n > 6 {
+        break
+      }
+    }
+  }
+  if x >= W - 150 {
+    notifOpen = 1 - notifOpen
+    startOpen = 0
+    sysOpen = 0
+    submit_frame()
+    return
+  }
+}
+
+fn start_rect() { return {"x": 4, "y": H - taskbarH - 336, "w": 300, "h": 336} }
+fn sys_rect() { return {"x": 4, "y": H - taskbarH - 420, "w": 470, "h": 420} }
+fn notif_rect() { return {"x": W - 324, "y": 8, "w": 316, "h": 300} }
+
+fn on_start_click(x, y) {
+  let r = start_rect()
+  let ly = y - r.y
+  if ly >= 8 and ly <= 36 {
+    textFocus = {"win": 0, "ctl": "start", "buf": startQuery, "caret": len(startQuery)}
+    return
+  }
+  let list = filtered_apps()
+  let iy = 48
+  for a in list {
+    if ly >= iy and ly <= iy + 28 {
+      request({"cmd": "open_app", "key": a.key})
+      startOpen = 0
+      return
+    }
+    iy = iy + 28
+  }
+}
+
+fn filtered_apps() {
+  if startQuery == "" {
+    return apps
+  }
+  let out = []
+  let q = lower(startQuery)
+  for a in apps {
+    if find(lower(a.title), q) >= 0 or find(a.key, q) >= 0 {
+      push(out, a)
+    }
+  }
+  return out
+}
+
+// ---------------- 系统管理面板 ----------------
+fn on_sysmgr_click(x, y) {
+  let r = sys_rect()
+  let lx = x - r.x
+  let ly = y - r.y
+  if ly < 26 {
+    sysOpen = 0
+    submit_frame()
+    return
+  }
+  ly = ly - 32
+  if ly < 26 {
+    if lx >= 120 and lx <= 250 {
+      textFocus = {"win": 0, "ctl": "sysname", "buf": sysNewName, "caret": len(sysNewName)}
+    } else if lx >= 258 and lx <= 318 {
+      request({"cmd": "create_system", "name": sysNewName})
+      sysNewName = ""
+      textFocus = null
+    }
+    return
+  }
+  ly = ly - 30
+  for s in sysList {
+    if ly < 26 {
+      on_sys_row(s, lx)
+      return
+    }
+    ly = ly - 26
+  }
+  ly = ly - 10
+  on_cfg_click(lx, ly)
+}
+
+fn on_sys_row(s, lx) {
+  let bx = lx - 310
+  if bx >= 0 and bx < 44 {
+    request({"cmd": "child_pause", "id": s.id})
+  } else if bx >= 48 and bx < 92 {
+    request({"cmd": "child_resume", "id": s.id})
+  } else if bx >= 96 and bx < 140 {
+    request({"cmd": "step_system", "id": s.id})
+  } else if bx >= 144 and bx < 188 {
+    request({"cmd": "restart_system", "id": s.id})
+  } else if bx >= 192 and bx < 236 {
+    request({"cmd": "close_system", "id": s.id})
+  } else if bx >= 240 and bx < 300 {
+    request({"cmd": "snapshot", "id": s.id, "path": "/System/Snapshots/" + s.id + ".ossnap"})
+  }
+}
+
+fn on_cfg_click(lx, ly) {
+  if ly < 20 {
+    return
+  }
+  let keys = ["budget", "memQuota", "storageQuota", "procQuota", "childGrant", "quantum"]
+  let i = 0
+  for k in keys {
+    if ly >= 20 + i * 24 and ly < 20 + i * 24 + 22 {
+      let cfg = get(kernelInfo, "config", {})
+      let v = get(cfg, k, 0)
+      let nv = v
+      if lx >= 250 and lx < 280 {
+        nv = floor(v / 2)
+      } else if lx >= 284 and lx < 314 {
+        nv = v * 2
+      }
+      if nv < 100 {
+        nv = 100
+      }
+      let nc = {}
+      nc[k] = nv
+      request({"cmd": "set_config", "cfg": nc})
+      kernelInfo = sys_info()
+      return
+    }
+    i = i + 1
+  }
+}
+
+// 请求经系统调用交给内核处理（h_request）
+
+// ---------------- 投送窗口 ----------------
+fn open_projection(m) {
+  let id = win_new("proj", "投送 · " + m.title, 540, 380, "proj")
+  let w = win_find(id)
+  w.projId = m.projId
+  w.srcSys = m.sourceSystemId
+  w.pkind = m.kind
+  notif("投送窗口已打开", m.title)
+  submit_frame()
+}
+
+fn on_proj_closed(projId) {
+  let out = []
+  for w in wins {
+    if w.kind == "proj" and w.projId == projId {
+      continue
+    }
+    push(out, w)
+  }
+  wins = out
+  submit_frame()
+}
+
+// ---------------- 命中辅助 ----------------
+fn in_rect(x, y, r) { return x >= r.x and x <= r.x + r.w and y >= r.y and y <= r.y + r.h }
+fn get(m, k, d) {
+  if m == null {
+    return d
+  }
+  let v = m[k]
+  if v == null {
+    return d
+  }
+  return v
+}
+
+fn top_win_at(x, y) {
+  let best = null
+  for w in wins {
+    if w.min == 1 {
+      continue
+    }
+    if x >= w.x and x <= w.x + w.w and y >= w.y and y <= w.y + w.h {
+      if best == null or w.z > best.z {
+        best = w
+      }
+    }
+  }
+  return best
+}
+
+fn desk_icon_at(x, y) {
+  let i = 0
+  for d in deskIcons {
+    let cx = 16 + (i % 2) * 94
+    let cy = 14 + floor(i / 2) * 98
+    if x >= cx and x <= cx + 86 and y >= cy and y <= cy + 90 {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fn open_desk_icon(i) {
+  let d = deskIcons[i]
+  if d.kind == "app" {
+    request({"cmd": "open_app", "key": d.key})
+  } else if d.kind == "file" {
+    request({"cmd": "open_app", "key": "editor", "path": d.path})
+  }
+}
+
+// ---------------- 画面合成 ----------------
+fn submit_frame() {
+  if booted == 0 {
+    return
+  }
+  clockT = time()
+  // 清理过期浮层
+  let t2 = []
+  for t in toast {
+    if clockT - t.t < 4200 {
+      push(t2, t)
+    }
+  }
+  toast = t2
+  let bg = []
+  push(bg, {"t": "g", "x": 0, "y": 0, "w": W, "h": H, "c1": TH.bg1, "c2": TH.bg2})
+  let i = 0
+  for d in deskIcons {
+    let cx = 16 + (i % 2) * 94
+    let cy = 14 + floor(i / 2) * 98
+    if deskSel == i {
+      push(bg, {"t": "r", "x": cx - 4, "y": cy - 4, "w": 94, "h": 94, "c": "#8b6cff2e", "r": 8})
+    }
+    push(bg, {"t": "i", "x": cx + 16, "y": cy + 2, "w": 48, "h": 48, "img": icon_for(d)})
+    push(bg, {"t": "t", "x": cx + 43, "y": cy + 66, "s": d.name, "c": TH.text, "fs": 12, "a": "c", "mw": 86})
+    i = i + 1
+  }
+  push(bg, {"t": "t", "x": W - 12, "y": 16, "s": sysName + " · 第 " + str(depth) + " 层桌面", "c": TH.dim, "fs": 12, "a": "r"})
+  let wins2 = []
+  for w in wins {
+    if w.min == 1 {
+      continue
+    }
+    let c = []
+    for p in draw_window_frame(w) {
+      push(c, p)
+    }
+    push(c, {"t": "clip", "x": 0, "y": 26, "w": w.w, "h": w.h - 26})
+    if w.kind == "proj" {
+      let pl = proj_payload(w.projId)
+      if pl != null and pl.payload != null and pl.payload.content != null {
+        for p in pl.payload.content {
+          push(c, p)
+        }
+      }
+    } else {
+      for p in w.content {
+        push(c, p)
+      }
+    }
+    push(c, {"t": "unclip"})
+    let entry = {"id": w.id, "key": w.key, "x": w.x, "y": w.y, "w": w.w, "h": w.h, "z": w.z, "title": w.title, "content": c, "pid": w.pid, "kind": w.kind, "min": w.min, "max": w.max, "focused": w.id == focusId}
+    if w.meta != null {
+      entry.meta = w.meta
+    }
+    if w.kind == "proj" and w.pkind == "3d" {
+      entry.view3d = w.projId
+    }
+    push(wins2, entry)
+  }
+  if startOpen == 1 {
+    let r = start_rect()
+    push(wins2, {"id": -1, "key": "start", "x": r.x, "y": r.y, "w": r.w, "h": r.h, "z": 900, "title": "", "content": draw_start(), "kind": "menu", "focused": 1})
+  }
+  if sysOpen == 1 {
+    let r = sys_rect()
+    push(wins2, {"id": -2, "key": "sys", "x": r.x, "y": r.y, "w": r.w, "h": r.h, "z": 950, "title": "系统管理 · " + sysName, "content": draw_sysmgr(), "kind": "sysmgr", "focused": 1})
+  }
+  if notifOpen == 1 {
+    let r = notif_rect()
+    push(wins2, {"id": -3, "key": "notif", "x": r.x, "y": r.y, "w": r.w, "h": r.h, "z": 960, "title": "通知中心", "content": draw_notifs(), "kind": "menu", "focused": 1})
+  }
+  let ty = 10
+  for t in toast {
+    push(wins2, {"id": -4, "key": "toast", "x": W - 300, "y": ty, "w": 288, "h": 62, "z": 990, "title": "", "content": draw_toast(t), "kind": "menu", "focused": 0})
+    ty = ty + 68
+  }
+  // 任务栏
+  push(bg, {"t": "r", "x": 0, "y": H - taskbarH, "w": W, "h": taskbarH, "c": TH.panel})
+  push(bg, {"t": "l", "x1": 0, "y1": H - taskbarH, "x2": W, "y2": H - taskbarH, "c": TH.line, "w": 1})
+  let startColor = TH.accent
+  if startOpen == 1 {
+    startColor = "#a68bff"
+  }
+  push(bg, {"t": "r", "x": 6, "y": H - taskbarH + 5, "w": 54, "h": 26, "c": startColor, "r": 6})
+  push(bg, {"t": "t", "x": 33, "y": H - taskbarH + 22, "s": "开始", "c": "#ffffff", "fs": 13, "a": "c"})
+  let sysColor = TH.panel2
+  if sysOpen == 1 {
+    sysColor = "#2f3c5c"
+  }
+  push(bg, {"t": "r", "x": 64, "y": H - taskbarH + 5, "w": 54, "h": 26, "c": sysColor, "r": 6, "s": TH.line})
+  push(bg, {"t": "t", "x": 91, "y": H - taskbarH + 22, "s": "系统", "c": TH.text, "fs": 13, "a": "c"})
+  let bx = 124
+  let n = 0
+  for w in wins {
+    if w.min == 0 or w.id == focusId {
+      let wc = "#141a24"
+      if w.id == focusId and w.min == 0 {
+        wc = TH.panel2
+      }
+      push(bg, {"t": "r", "x": bx, "y": H - taskbarH + 5, "w": 128, "h": 26, "c": wc, "r": 6, "s": TH.line})
+      push(bg, {"t": "t", "x": bx + 8, "y": H - taskbarH + 22, "s": w.title, "c": TH.text, "fs": 12, "mw": 112})
+      bx = bx + 132
+      n = n + 1
+      if n > 6 {
+        break
+      }
+    }
+  }
+  push(bg, {"t": "t", "x": W - 100, "y": H - taskbarH + 22, "s": clock_str(), "c": TH.text, "fs": 13, "a": "r"})
+  let nc = "none"
+  if notifOpen == 1 {
+    nc = TH.panel2
+  }
+  push(bg, {"t": "r", "x": W - 92, "y": H - taskbarH + 5, "w": 84, "h": 26, "c": nc, "r": 6})
+  push(bg, {"t": "t", "x": W - 50, "y": H - taskbarH + 22, "s": "通知 " + str(len(notifs)), "c": TH.dim, "fs": 12, "a": "c"})
+  let ime = null
+  if textFocus != null {
+    if textFocus.win == 0 {
+      ime = {"x": 70, "y": H - taskbarH - 26, "h": 22}
+    } else {
+      let w = win_find(textFocus.win)
+      if w != null {
+        ime = {"x": w.x + 30, "y": w.y + 40, "h": 22}
+      }
+    }
+  }
+  submit_display({"bg": bg, "wins": wins2, "ime": ime, "focus": focusId, "sys": sysId})
+}
+
+fn proj_payload(projId) {
+  let c = projCache[projId]
+  if c == null or clockT - c.at > 120 {
+    c = {"at": clockT, "v": get_projection(projId)}
+    projCache[projId] = c
+  }
+  return c.v
+}
+
+fn clock_str() {
+  let s = floor(clockT / 1000) % 60
+  let mn = floor(clockT / 60000) % 60
+  let hh = floor(clockT / 3600000) % 24
+  return pad2(hh) + ":" + pad2(mn) + ":" + pad2(s)
+}
+fn pad2(n) {
+  if n < 10 {
+    return "0" + str(n)
+  }
+  return str(n)
+}
+
+fn icon_for(d) {
+  if d.kind == "app" {
+    if d.key == "files" {
+      return ICON_FOLDER
+    }
+    if d.key == "editor" {
+      return ICON_CODE
+    }
+    if d.key == "proc" {
+      return ICON_CPU
+    }
+    if d.key == "player" {
+      return ICON_HELI
+    }
+    if d.key == "chart" {
+      return ICON_CHART
+    }
+    if d.key == "console" {
+      return ICON_TERM
+    }
+    return ICON_HELP
+  }
+  let ext = ""
+  let dot = find(d.name, ".")
+  if dot >= 0 {
+    ext = lower(substr(d.name, dot))
+  }
+  if ext == ".scene" or ext == ".rec" {
+    return ICON_HELI
+  }
+  if ext == ".osprog" {
+    return ICON_CODE
+  }
+  if ext == ".sheet" {
+    return ICON_SHEET
+  }
+  return ICON_FILE
+}
+
+fn draw_start() {
+  let p = []
+  let r = start_rect()
+  push(p, {"t": "r", "x": 0, "y": 0, "w": r.w, "h": r.h, "c": TH.panel, "r": 10, "s": TH.line})
+  push(p, {"t": "t", "x": 14, "y": 24, "s": sysName + " · 应用", "c": TH.accent2, "fs": 14})
+  push(p, {"t": "r", "x": 12, "y": 32, "w": r.w - 24, "h": 24, "c": "#0f141d", "r": 6, "s": TH.line})
+  let qText = startQuery
+  let qColor = TH.text
+  if startQuery == "" {
+    qText = "搜索应用…"
+    qColor = TH.dim
+  }
+  push(p, {"t": "t", "x": 20, "y": 49, "s": qText, "c": qColor, "fs": 12})
+  let list = filtered_apps()
+  let iy = 66
+  for a in list {
+    push(p, {"t": "r", "x": 12, "y": iy, "w": r.w - 24, "h": 24, "c": "#232d3f", "r": 6})
+    push(p, {"t": "i", "x": 18, "y": iy + 2, "w": 20, "h": 20, "img": icon_for({"kind": "app", "key": a.key})})
+    push(p, {"t": "t", "x": 46, "y": iy + 17, "s": a.title, "c": TH.text, "fs": 13})
+    iy = iy + 28
+  }
+  push(p, {"t": "l", "x1": 12, "y1": r.h - 34, "x2": r.w - 12, "y2": r.h - 34, "c": TH.line, "w": 1})
+  push(p, {"t": "t", "x": 16, "y": r.h - 12, "s": "速率 " + str(get(kernelInfo, "rate", 1)) + "x · 配额 " + str(get(get(kernelInfo, "config", {}), "budget", 0)), "c": TH.dim, "fs": 11})
+  return p
+}
+
+fn draw_sysmgr() {
+  let p = []
+  let r = sys_rect()
+  if clockT - infoAt > 700 {
+    infoAt = clockT
+    kernelInfo = sys_info()
+  }
+  push(p, {"t": "r", "x": 0, "y": 0, "w": r.w, "h": r.h, "c": TH.panel, "r": 10, "s": TH.line})
+  push(p, {"t": "t", "x": 14, "y": 20, "s": "新建直属子系统", "c": TH.accent2, "fs": 13})
+  push(p, {"t": "r", "x": 120, "y": 6, "w": 130, "h": 22, "c": "#0f141d", "r": 6, "s": TH.line})
+  let nText = sysNewName
+  let nColor = TH.text
+  if sysNewName == "" {
+    nText = "名称（可选）"
+    nColor = TH.dim
+  }
+  push(p, {"t": "t", "x": 126, "y": 21, "s": nText, "c": nColor, "fs": 12})
+  push(p, {"t": "r", "x": 258, "y": 6, "w": 60, "h": 22, "c": TH.accent, "r": 6})
+  push(p, {"t": "t", "x": 288, "y": 21, "s": "创建", "c": "#fff", "fs": 12, "a": "c"})
+  push(p, {"t": "l", "x1": 8, "y1": 34, "x2": r.w - 8, "y2": 34, "c": TH.line, "w": 1})
+  push(p, {"t": "t", "x": 14, "y": 50, "s": "直属子系统（" + str(len(sysList)) + "）", "c": TH.text, "fs": 13})
+  let ly = 58
+  for s in sysList {
+    let st = "运行中"
+    if s.paused == 1 {
+      st = "已暂停"
+    }
+    push(p, {"t": "r", "x": 10, "y": ly, "w": r.w - 20, "h": 24, "c": "#1a2231", "r": 6})
+    push(p, {"t": "t", "x": 18, "y": ly + 16, "s": s.id + " · " + st + " · " + str(s.rate) + "x", "c": TH.text, "fs": 12})
+    push(p, {"t": "r", "x": r.w - 306, "y": ly + 2, "w": 44, "h": 20, "c": "#2a3550", "r": 5})
+    push(p, {"t": "t", "x": r.w - 284, "y": ly + 16, "s": "暂停", "c": TH.text, "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": r.w - 258, "y": ly + 2, "w": 44, "h": 20, "c": "#2a3550", "r": 5})
+    push(p, {"t": "t", "x": r.w - 236, "y": ly + 16, "s": "继续", "c": TH.text, "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": r.w - 210, "y": ly + 2, "w": 44, "h": 20, "c": "#2a3550", "r": 5})
+    push(p, {"t": "t", "x": r.w - 188, "y": ly + 16, "s": "单步", "c": TH.text, "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": r.w - 162, "y": ly + 2, "w": 44, "h": 20, "c": "#3a2b46", "r": 5})
+    push(p, {"t": "t", "x": r.w - 140, "y": ly + 16, "s": "重启", "c": TH.accent2, "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": r.w - 114, "y": ly + 2, "w": 44, "h": 20, "c": "#43262f", "r": 5})
+    push(p, {"t": "t", "x": r.w - 92, "y": ly + 16, "s": "关闭", "c": TH.danger, "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": r.w - 66, "y": ly + 2, "w": 56, "h": 20, "c": "#233b33", "r": 5})
+    push(p, {"t": "t", "x": r.w - 38, "y": ly + 16, "s": "快照", "c": TH.ok, "fs": 11, "a": "c"})
+    ly = ly + 26
+  }
+  ly = ly + 4
+  push(p, {"t": "l", "x1": 8, "y1": ly, "x2": r.w - 8, "y2": ly, "c": TH.line, "w": 1})
+  ly = ly + 16
+  push(p, {"t": "t", "x": 14, "y": ly, "s": "资源配额（本系统，每逻辑步）", "c": TH.text, "fs": 13})
+  ly = ly + 4
+  let keys = ["budget", "memQuota", "storageQuota", "procQuota", "childGrant", "quantum"]
+  let names = ["每步总预算", "内存配额", "存储配额", "进程额度", "子系统拨付", "调度量子"]
+  let i = 0
+  for k in keys {
+    let v = get(get(kernelInfo, "config", {}), k, 0)
+    push(p, {"t": "t", "x": 18, "y": ly + 14, "s": names[i], "c": TH.dim, "fs": 12})
+    push(p, {"t": "r", "x": 150, "y": ly, "w": 92, "h": 18, "c": "#0f141d", "r": 5, "s": TH.line})
+    push(p, {"t": "t", "x": 156, "y": ly + 13, "s": str(v), "c": TH.text, "fs": 12})
+    push(p, {"t": "r", "x": 250, "y": ly, "w": 28, "h": 18, "c": "#2a3550", "r": 5})
+    push(p, {"t": "t", "x": 264, "y": ly + 13, "s": "½", "c": TH.text, "fs": 11, "a": "c"})
+    push(p, {"t": "r", "x": 284, "y": ly, "w": 28, "h": 18, "c": "#2a3550", "r": 5})
+    push(p, {"t": "t", "x": 298, "y": ly + 13, "s": "2×", "c": TH.text, "fs": 11, "a": "c"})
+    ly = ly + 24
+    i = i + 1
+  }
+  if sysMsg != "" {
+    push(p, {"t": "t", "x": 14, "y": r.h - 10, "s": sysMsg, "c": TH.accent2, "fs": 11})
+  }
+  return p
+}
+
+fn draw_notifs() {
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 316, "h": 300, "c": TH.panel, "r": 10, "s": TH.line})
+  push(p, {"t": "t", "x": 14, "y": 24, "s": "通知中心", "c": TH.accent2, "fs": 14})
+  let y = 38
+  let n = 0
+  for x in notifs {
+    push(p, {"t": "t", "x": 14, "y": y + 12, "s": x.title + "：" + x.text, "c": TH.text, "fs": 12, "mw": 286})
+    y = y + 26
+    n = n + 1
+    if n > 9 {
+      break
+    }
+  }
+  if n == 0 {
+    push(p, {"t": "t", "x": 14, "y": 52, "s": "暂无通知", "c": TH.dim, "fs": 12})
+  }
+  return p
+}
+
+fn draw_toast(t) {
+  let p = []
+  push(p, {"t": "r", "x": 0, "y": 0, "w": 288, "h": 62, "c": "#1c2433f2", "r": 8, "s": TH.line})
+  push(p, {"t": "t", "x": 12, "y": 22, "s": t.title, "c": TH.accent2, "fs": 12})
+  push(p, {"t": "t", "x": 12, "y": 42, "s": t.text, "c": TH.text, "fs": 12, "mw": 264})
+  return p
+}
+
+fn draw_window_frame(w) {
+  let p = []
+  let focused = w.id == focusId
+  let bc = TH.line
+  let bw = 1
+  if focused == 1 {
+    bc = TH.accent
+    bw = 2
+  }
+  push(p, {"t": "r", "x": 0, "y": 0, "w": w.w, "h": w.h, "c": TH.panel, "r": 8, "s": bc, "sw": bw})
+  let tc = "#232d3f"
+  if focused == 1 {
+    tc = "#2b3550"
+  }
+  push(p, {"t": "r", "x": 1, "y": 1, "w": w.w - 2, "h": 25, "c": tc, "r": 8})
+  push(p, {"t": "r", "x": 1, "y": 17, "w": w.w - 2, "h": 9, "c": tc})
+  push(p, {"t": "t", "x": 10, "y": 18, "s": w.title, "c": TH.text, "fs": 12, "mw": w.w - 90})
+  push(p, {"t": "r", "x": w.w - 74, "y": 4, "w": 20, "h": 18, "c": "#0f141d", "r": 4, "s": TH.line})
+  push(p, {"t": "l", "x1": w.w - 70, "y1": 13, "x2": w.w - 58, "y2": 13, "c": TH.text, "w": 1})
+  push(p, {"t": "r", "x": w.w - 50, "y": 4, "w": 20, "h": 18, "c": "#0f141d", "r": 4, "s": TH.line})
+  push(p, {"t": "r", "x": w.w - 47, "y": 7, "w": 14, "h": 12, "c": "none", "r": 2, "s": TH.text, "sw": 1})
+  push(p, {"t": "r", "x": w.w - 26, "y": 4, "w": 20, "h": 18, "c": "#43262f", "r": 4})
+  push(p, {"t": "l", "x1": w.w - 21, "y1": 9, "x2": w.w - 11, "y2": 19, "c": TH.danger, "w": 1})
+  push(p, {"t": "l", "x1": w.w - 11, "y1": 9, "x2": w.w - 21, "y2": 19, "c": TH.danger, "w": 1})
+  return p
+}
+
+// ---------------- 自制矢量图标标识（由显示设备绘制） ----------------
+const ICON_FOLDER = "vec:folder"
+const ICON_FILE = "vec:file"
+const ICON_CODE = "vec:code"
+const ICON_CPU = "vec:cpu"
+const ICON_HELI = "vec:heli"
+const ICON_CHART = "vec:chart"
+const ICON_TERM = "vec:term"
+const ICON_HELP = "vec:help"
+const ICON_SHEET = "vec:sheet"
+
+// ---------------- 入口 ----------------
+boot()

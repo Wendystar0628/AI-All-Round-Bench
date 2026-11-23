@@ -1,0 +1,364 @@
+// =====================================================================
+// 文本与程序编辑器（/System/apps/editor.ns）
+// 参数：args[0] 窗口号，args[1] 应用名，args[2] 可选的文件路径。
+// 编辑、保存（Ctrl+S）、运行程序（Ctrl+R，显示该进程的消息输出）。
+// 也用于打开直属子系统的内核源文件（/Kernels/<名>.ns）与本系统的飞控程序。
+// =====================================================================
+#include "/System/lib/ui.ns"
+
+var WID = 0;
+var VW = 820;
+var VH = 560;
+var TOOL = 44;
+var GUT = 52;
+var TX = 62;
+var LH = 20;
+var CW = 8;
+var path = "";
+var name = "新建文档.txt";
+var lines = [""];
+var cy = 0;
+var cx = 0;
+var top = 0;
+var dirty = false;
+var status = "";
+var runPid = -1;
+var output = [];
+var outputOpen = false;
+var confirm = false;
+var closing = false;
+
+func load_file(p) {
+    path = p;
+    name = base_name(p);
+    var text = sys_fs_read(p);
+    if (text == nil) {
+        lines = [""];
+        status = "新文件";
+    } else {
+        lines = split(text, "\n");
+        if (len(lines) == 0) { lines = [""]; }
+        status = "已打开";
+    }
+    cy = 0;
+    cx = 0;
+    top = 0;
+    dirty = false;
+    send_title();
+}
+
+func base_name(p) {
+    var i = len(p) - 1;
+    while (i >= 0 && substr(p, i, 1) != "/") { i = i - 1; }
+    return substr(p, i + 1, len(p) - i - 1);
+}
+
+func send_title() {
+    sys_send("wm", {type: "title", win: WID, title: "编辑器 — " + name + pick(dirty, " *", "")});
+}
+
+func text_area_h() {
+    var h = VH - TOOL;
+    if (outputOpen) { h = h - 150; }
+    return h;
+}
+
+func visible_rows() {
+    return floor(text_area_h() / LH) - 1;
+}
+
+func ensure_caret_visible() {
+    if (cy < top) { top = cy; }
+    if (cy >= top + visible_rows()) { top = cy - visible_rows() + 1; }
+    if (top < 0) { top = 0; }
+}
+
+func save() {
+    var text = join(lines, "\n");
+    if (path == "") {
+        var dir = "/Documents";
+        var cand = "新建文档.txt";
+        var n = 2;
+        while (sys_fs_stat(dir + "/" + cand) != nil) {
+            cand = "新建文档 (" + str(n) + ").txt";
+            n = n + 1;
+        }
+        path = dir + "/" + cand;
+        name = cand;
+    }
+    var r = sys_fs_write(path, text);
+    if (r.ok) {
+        dirty = false;
+        status = "已保存 " + name;
+        send_title();
+    } else {
+        status = "保存失败：" + r.error;
+    }
+}
+
+func run_program() {
+    if (path == "" || ext_of(path) != "ns") {
+        status = "只能运行 .ns 程序";
+        return;
+    }
+    if (dirty) { save(); }
+    var r = sys_spawn(path, []);
+    if (!r.ok) {
+        output = ["启动失败：" + r.error];
+        outputOpen = true;
+        status = "启动失败";
+        return;
+    }
+    runPid = r.pid;
+    outputOpen = true;
+    status = "已启动进程 " + str(runPid);
+    output = [];
+}
+
+func refresh_output() {
+    if (runPid < 0) { return; }
+    output = sys_proc_logs(runPid);
+}
+
+func line_len() {
+    return len(lines[cy]);
+}
+
+func insert_text(t) {
+    var l = lines[cy];
+    lines[cy] = substr(l, 0, cx) + t + substr(l, cx, len(l) - cx);
+    cx = cx + len(t);
+    dirty = true;
+}
+
+func newline() {
+    var l = lines[cy];
+    var head = substr(l, 0, cx);
+    var tail = substr(l, cx, len(l) - cx);
+    var out = [];
+    for (var i = 0; i < len(lines); i = i + 1) {
+        if (i == cy) {
+            push(out, head);
+            push(out, tail);
+        } else {
+            push(out, lines[i]);
+        }
+    }
+    lines = out;
+    cy = cy + 1;
+    cx = 0;
+    dirty = true;
+}
+
+func backspace() {
+    if (cx > 0) {
+        var l = lines[cy];
+        lines[cy] = substr(l, 0, cx - 1) + substr(l, cx, len(l) - cx);
+        cx = cx - 1;
+        dirty = true;
+    } else if (cy > 0) {
+        var prev = lines[cy - 1];
+        cx = len(prev);
+        lines[cy - 1] = prev + lines[cy];
+        var out = [];
+        for (var i = 0; i < len(lines); i = i + 1) {
+            if (i != cy) { push(out, lines[i]); }
+        }
+        lines = out;
+        cy = cy - 1;
+        dirty = true;
+    }
+}
+
+func delete_here() {
+    var l = lines[cy];
+    if (cx < len(l)) {
+        lines[cy] = substr(l, 0, cx) + substr(l, cx + 1, len(l) - cx - 1);
+        dirty = true;
+    } else if (cy < len(lines) - 1) {
+        lines[cy] = l + lines[cy + 1];
+        var out = [];
+        for (var i = 0; i < len(lines); i = i + 1) {
+            if (i != cy + 1) { push(out, lines[i]); }
+        }
+        lines = out;
+        dirty = true;
+    }
+}
+
+func on_key(m) {
+    if (confirm) {
+        if (m.key == "Escape") { confirm = false; }
+        return;
+    }
+    if (m.ctrl == true) {
+        if (m.key == "s") { save(); return; }
+        if (m.key == "r") { run_program(); return; }
+        return;
+    }
+    if (m.key == "ArrowLeft") {
+        if (cx > 0) { cx = cx - 1; } else if (cy > 0) { cy = cy - 1; cx = len(lines[cy]); }
+    } else if (m.key == "ArrowRight") {
+        if (cx < line_len()) { cx = cx + 1; } else if (cy < len(lines) - 1) { cy = cy + 1; cx = 0; }
+    } else if (m.key == "ArrowUp") {
+        if (cy > 0) { cy = cy - 1; cx = min(cx, line_len()); }
+    } else if (m.key == "ArrowDown") {
+        if (cy < len(lines) - 1) { cy = cy + 1; cx = min(cx, line_len()); }
+    } else if (m.key == "Home") {
+        cx = 0;
+    } else if (m.key == "End") {
+        cx = line_len();
+    } else if (m.key == "PageUp") {
+        cy = max(0, cy - visible_rows());
+        cx = min(cx, line_len());
+    } else if (m.key == "PageDown") {
+        cy = min(len(lines) - 1, cy + visible_rows());
+        cx = min(cx, line_len());
+    } else if (m.key == "Enter") {
+        newline();
+    } else if (m.key == "Backspace") {
+        backspace();
+    } else if (m.key == "Delete") {
+        delete_here();
+    } else if (m.key == "Tab") {
+        insert_text("    ");
+    } else if (m.text != nil && m.text != "") {
+        insert_text(m.text);
+    }
+    ensure_caret_visible();
+}
+
+func on_pointer(m) {
+    var x = m.x;
+    var y = m.y;
+    if (m.kind == "wheel") {
+        top = clamp(top + floor(m.dy / 40), 0, max(0, len(lines) - 1));
+        return;
+    }
+    if (m.kind != "down") { return; }
+    if (confirm) {
+        var cfx = VW / 2 - 190;
+        var cfy = VH / 2 - 80;
+        if (inside(x, y, cfx + 20, cfy + 110, 110, 36)) { save(); confirm = false; closing = true; return; }
+        if (inside(x, y, cfx + 140, cfy + 110, 110, 36)) { dirty = false; confirm = false; closing = true; return; }
+        if (inside(x, y, cfx + 260, cfy + 110, 110, 36)) { confirm = false; return; }
+        return;
+    }
+    if (y < TOOL) {
+        if (inside(x, y, 10, 8, 72, 28)) { save(); return; }
+        if (inside(x, y, 88, 8, 72, 28)) { run_program(); return; }
+        return;
+    }
+    if (y < text_area_h() + TOOL && x >= TX) {
+        var row = top + floor((y - TOOL - 6) / LH);
+        if (row < 0) { row = 0; }
+        if (row > len(lines) - 1) { row = len(lines) - 1; }
+        cy = row;
+        cx = clamp(floor((x - TX) / CW + 0.5), 0, line_len());
+    }
+}
+
+func paint() {
+    var L = [];
+    add_rect(L, 0, 0, VW, VH, "#fbfbfd");
+    add_rect(L, 0, 0, VW, TOOL, "#f4f5fa");
+    add_rect(L, 0, TOOL - 1, VW, 1, THEME.line);
+    add_btn(L, 10, 8, 72, 28, "保存", "editor-save", THEME.accentSoft, THEME.text);
+    add_btn(L, 88, 8, 72, 28, "运行", "editor-run", "#ffffff", THEME.text);
+    var fn = add_text(L, 176, 8, VW - 200, 28, name + pick(dirty, "  ●", ""), 13, THEME.text, "l");
+    fn.tid = "editor-filename";
+    fn.lbl = name;
+    add_text(L, VW - 320, 8, 300, 28, status, 12, THEME.sub, "r");
+
+    var area = text_area_h();
+    add_rect(L, 0, TOOL, GUT, area, "#f1f2f7");
+    var ed = add_rect(L, GUT, TOOL, VW - GUT, area, "#fbfbfd");
+    ed.tid = "editor-text";
+    var rows = visible_rows();
+    var i = 0;
+    while (i < rows && top + i < len(lines)) {
+        var ln = top + i;
+        var y = TOOL + 6 + i * LH;
+        add_text(L, 0, y, GUT - 10, LH, str(ln + 1), 12, THEME.hint, "r");
+        var tn = add_text(L, TX, y, VW - TX - 10, LH, lines[ln], 13, THEME.text, "l");
+        tn.da = {line: str(ln + 1)};
+        i = i + 1;
+    }
+    if (cy >= top && cy < top + rows) {
+        add_rect(L, TX + cx * CW, TOOL + 6 + (cy - top) * LH + 2, 2, LH - 4, accent_color("violet"));
+    }
+
+    if (outputOpen) {
+        var oy = TOOL + area;
+        add_rect(L, 0, oy, VW, 1, THEME.line);
+        add_rect(L, 0, oy + 1, VW, 149, "#15172a");
+        add_text(L, 14, oy + 6, 400, 20, "消息输出" + pick(runPid >= 0, "（进程 " + str(runPid) + "）", ""), 12, "#a9b0d6", "l");
+        var k = 0;
+        var from = len(output) - 6;
+        if (from < 0) { from = 0; }
+        for (var j = from; j < len(output); j = j + 1) {
+            var o = add_text(L, 14, oy + 28 + k * 18, VW - 28, 18, output[j], 12, "#e8ebff", "l");
+            o.tid = "editor-output-line";
+            k = k + 1;
+        }
+    }
+
+    if (confirm) {
+        var cfx = VW / 2 - 190;
+        var cfy = VH / 2 - 80;
+        add_rect(L, 0, 0, VW, VH, "#22263355");
+        var card = add_frame(L, cfx, cfy, 380, 170, "#ffffff", THEME.line, 14);
+        card.sh = true;
+        card.tid = "editor-confirm";
+        add_bold(L, cfx + 20, cfy + 20, 340, 24, "保存对 " + name + " 的修改？", 14, THEME.text, "l");
+        add_text(L, cfx + 20, cfy + 52, 340, 40, "未保存的修改会在关闭时丢失。", 12, THEME.sub, "l");
+        add_btn(L, cfx + 20, cfy + 110, 110, 36, "保存", "editor-confirm-save", accent_color("violet"), "#ffffff");
+        add_btn(L, cfx + 140, cfy + 110, 110, 36, "不保存", "editor-confirm-discard", "#f0f1f6", THEME.text);
+        add_btn(L, cfx + 260, cfy + 110, 110, 36, "取消", "editor-confirm-cancel", "#f0f1f6", THEME.text);
+    }
+    sys_submit("win-" + str(WID), L);
+}
+
+func main(args) {
+    WID = args[0];
+    if (len(args) > 2 && args[2] != nil) {
+        load_file(args[2]);
+    } else {
+        send_title();
+    }
+    paint();
+    while (true) {
+        var m = sys_recvt(0.3);
+        if (m == nil) {
+            refresh_output();
+            paint();
+        } else if (m.type == "view") {
+            VW = m.w;
+            VH = m.h;
+            ensure_caret_visible();
+            paint();
+        } else if (m.type == "pointer") {
+            on_pointer(m);
+            if (closing) { sys_send("wm", {type: "close", win: WID}); return 0; }
+            paint();
+        } else if (m.type == "key") {
+            on_key(m);
+            send_title();
+            paint();
+        } else if (m.type == "drop") {
+            if (m.payload != nil && m.payload.text != nil) {
+                insert_text(m.payload.text);
+                paint();
+            }
+        } else if (m.type == "close-req") {
+            if (dirty) {
+                confirm = true;
+                paint();
+            } else {
+                sys_send("wm", {type: "close", win: WID});
+                return 0;
+            }
+        }
+    }
+    return 0;
+}

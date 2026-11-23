@@ -1,0 +1,165 @@
+/*
+ * 子系统应用：环境特效进程（NSL 程序）
+ * ------------------------------------------------------------
+ * 负责旋翼下洗扬尘、撞击烟尘与火焰、碎片飞散。数据只来自场景资源里的
+ * 时序与本进程自己的随机状态，绘制由显示设备完成。
+ */
+var PARENT = 0;
+var T = 0;
+var MODE = "show";
+var SEED = 20241124;
+var LAST = 0;
+var SMOKE = [];
+var FIRE = [];
+var DEBRIS = [];
+var DUST = [];
+var HITX = 0;
+var HITZ = 0;
+var HIT = 0;
+
+function A(o, k) { return obj.get(o, k); }
+function oput(o, k, v) { arr.push(o, [k, v]); return o; }
+function call(code, args) { return json.parse(sys.syscall(code, json.str(args))); }
+function nap(ms) { call("time.sleep", { ms: ms }); }
+function send(to, obj) { call("msg.send", { to: to, payload: json.str(obj) }); }
+function rnd() {
+  SEED = (SEED * 1664525 + 1013904223) % 4294967296;
+  return SEED / 4294967296;
+}
+
+function loadFx(text) {
+  var doc = json.parse(text);
+  var tl = A(doc, "timeline");
+  if (tl == null) { return; }
+  SMOKE = A(tl, "smoke");
+  if (SMOKE == null) { SMOKE = []; }
+  FIRE = A(tl, "fire");
+  if (FIRE == null) { FIRE = []; }
+  DEBRIS = A(tl, "debris");
+  if (DEBRIS == null) { DEBRIS = []; }
+}
+
+function addDust(parts, alt, speed) {
+  if (alt < 0.4 || speed < 6) { return; }
+  var n = 2;
+  for (var i = 0; i < n; i = i + 1) {
+    var p = [];
+    arr.push(p, (rnd() - 0.5) * 16);
+    arr.push(p, 0.2 + rnd() * 1.2);
+    arr.push(p, (rnd() - 0.5) * 16);
+    var q = [];
+    oput(q, "pos", p);
+    oput(q, "color", "#9a8f74");
+    oput(q, "size", 1.4 + rnd() * 1.6);
+    arr.push(parts, q);
+  }
+}
+
+function buildParts() {
+  var parts = [];
+  var i = 0;
+  while (i < arr.len(SMOKE)) {
+    var s = arr.get(SMOKE, i);
+    var t0 = num.toInt(A(s, "t"));
+    if (t0 <= T) {
+      var age = T - t0;
+      var p = A(s, "pos");
+      var pos = [];
+      arr.push(pos, num.toInt(A(p, 0) * 100) / 100 + age * 1.6);
+      arr.push(pos, num.toInt(A(p, 1) * 100) / 100 + age * 2.2);
+      arr.push(pos, num.toInt(A(p, 2) * 100) / 100 + age * 1.1);
+      var q = [];
+      oput(q, "pos", pos);
+      oput(q, "color", A(s, "color"));
+      oput(q, "size", num.toInt(A(s, "size") * (1 + age * 0.25) * 100) / 100);
+      arr.push(parts, q);
+    }
+    i = i + 1;
+  }
+  var j = 0;
+  while (j < arr.len(FIRE)) {
+    var fq = arr.get(FIRE, j);
+    var ft = num.toInt(A(fq, "t"));
+    if (ft <= T) {
+      var age2 = T - ft;
+      if (age2 < 3.2) {
+        var fp = A(fq, "pos");
+        var fpos = [];
+        arr.push(fpos, A(fp, 0));
+        arr.push(fpos, num.toInt((A(fp, 1) + age2 * 0.8) * 100) / 100);
+        arr.push(fpos, A(fp, 2));
+        var q2 = [];
+        oput(q2, "pos", fpos);
+        oput(q2, "color", A(fq, "color"));
+        oput(q2, "size", num.toInt(A(fq, "size") * 100) / 100);
+        arr.push(parts, q2);
+      }
+    }
+    j = j + 1;
+  }
+  return parts;
+}
+
+function buildDebris() {
+  var out = [];
+  var i = 0;
+  while (i < arr.len(DEBRIS)) {
+    var d = arr.get(DEBRIS, i);
+    var t0 = num.toInt(A(d, "t"));
+    if (t0 <= T) {
+      var age = T - t0;
+      var p = A(d, "pos");
+      var v = A(d, "vel");
+      var x = A(p, 0) + A(v, 0) * age;
+      var y = A(p, 1) + A(v, 1) * age - 4.9 * age * age;
+      var z = A(p, 2) + A(v, 2) * age;
+      if (y < 0.35) { y = 0.35; }
+      var q = [];
+      oput(q, "pos", [num.toInt(x * 100) / 100, num.toInt(y * 100) / 100, num.toInt(z * 100) / 100]);
+      oput(q, "rot", [num.toInt(age * 240) / 100, num.toInt(age * 180) / 100, num.toInt(age * 120) / 100]);
+      oput(q, "size", A(d, "size"));
+      arr.push(out, q);
+    }
+    i = i + 1;
+  }
+  return out;
+}
+
+function main() {
+  var args = json.parse(sys.syscall("app.args", "{}"));
+  PARENT = num.toInt(A(args, "parent"));
+  var sc = call("file.read", { path: "/Demo/helicopter-24.scene" });
+  if (A(sc, "ok")) { loadFx(A(sc, "content")); }
+  LAST = sys.time();
+  while (true) {
+    var raw = sys.takeMsg();
+    if (raw != null && str.len(raw) > 0) {
+      var m = json.parse(raw);
+      var pl = A(m, "payload");
+      if (pl != null && str.len(pl) > 0) {
+        var ev = json.parse(pl);
+        if (A(ev, "type") == "tick") {
+          T = num.toInt(A(ev, "t"));
+          MODE = A(ev, "mode");
+        }
+        if (A(ev, "type") == "heli") {
+          T = num.toInt(A(ev, "t") * 100) / 100;
+          var pos = A(ev, "pos");
+          var rotor = num.toInt(A(ev, "rotor"));
+          var alt = num.toInt(A(pos, 1) * 100) / 100;
+          var parts = buildParts();
+          if (MODE == "rehearse" || T < 13.0) { addDust(parts, alt, rotor); }
+          var out = [];
+          oput(out, "type", "fx");
+          oput(out, "parts", parts);
+          oput(out, "debris", buildDebris());
+          send(PARENT, out);
+        }
+      }
+    }
+    nap(16);
+  }
+}
+
+/* ---- ������ڣ����������� main ---- */
+main();

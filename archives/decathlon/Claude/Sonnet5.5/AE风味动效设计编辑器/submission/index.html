@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>锻 · AE风味动效设计编辑器</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="menubar"></div>
+  <div id="main">
+    <div id="left" class="panel"></div>
+    <div class="vsplit" data-var="--left-w" data-dir="1"></div>
+    <div id="center" class="panel"></div>
+    <div class="vsplit" data-var="--right-w" data-dir="-1"></div>
+    <div id="right" class="panel"></div>
+  </div>
+  <div class="hsplit" data-var="--bottom-h"></div>
+  <div id="bottom">
+    <div id="timeline" class="panel"></div>
+    <div class="vsplit" data-var="--br-w" data-dir="-1"></div>
+    <div id="bottomRight" class="panel"></div>
+  </div>
+  <div id="status"></div>
+</div>
+<div id="popup" class="hidden"></div>
+<div id="toast" class="hidden"></div>
+<div id="modal" class="hidden"></div>
+<div id="drag-ghost" class="hidden"></div>
+
+<script src="js/util.js"></script>
+<script src="js/geom.js"></script>
+<script src="js/mesh.js"></script>
+<script src="js/font.js"></script>
+<script src="js/model.js"></script>
+<script src="js/expr.js"></script>
+<script src="js/evalr.js"></script>
+<script src="js/shapes.js"></script>
+<script src="js/nodes.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/gl.js"></script>
+<script src="js/render2d.js"></script>
+<script src="js/comp.js"></script>
+<script src="js/render3d.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/app.js"></script>
+<script src="js/actions.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/viewer.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/props.js"></script>
+<script src="js/projectpanel.js"></script>
+<script src="js/curves.js"></script>
+<script src="js/nodeeditor.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/export.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>
