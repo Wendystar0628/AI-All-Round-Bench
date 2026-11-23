@@ -10,6 +10,6 @@ python orchestrator/archive.py verify <专题> "<厂商>/<型号>"
 python orchestrator/archive.py verify <专题>
 ```
 
-每道题的 `submission/` 保存清单指定的交付文件。清单省略 `archive.files` 时，平台按排除规则选取作答文件，跳过题面、材料、依赖、缓存及构建产物。测试开销保存在 `cost.json`。出片素材不归档。打分评法提供的公开评分表和分段证据分别保存在 `scores/` 和 `grading/`。私有配对证据由专题插件单独保存。
+每道题的 `submission/` 保存清单指定的交付文件。清单省略 `archive.files` 时，平台按排除规则选取作答文件，跳过题面、材料、依赖、缓存及构建产物。测试开销保存在 `cost.json`。出片素材不归档。打分评法提供的公开评分表和分段证据分别保存在 `scores/` 和 `grading/`，只收 GPT 6.1 Sol 评分员的；Claude Opus 5.5 评分员的评分表和证据不公开。私有配对证据由专题插件单独保存。
 
 本目录纳入 Git。提交物内的 `.gitignore` 和 `.gitattributes` 加 `.txt` 后缀保存原文，归档根的 `.gitattributes` 禁用换行转换，保证检出后仍可校验。清理前请先核验归档，并按专题说明保留后续出片需要的工程。
