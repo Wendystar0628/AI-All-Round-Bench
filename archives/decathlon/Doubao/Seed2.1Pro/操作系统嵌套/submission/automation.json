@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": ["start", "--", "--data-dir", "{dataDir}", "--width", "{width}", "--height", "{height}", "--remote-debugging-port={port}"],
+    "cwd": "."
+  },
+  "mainWindow": { "title": "Nested OS" },
+  "bench": {
+    "location": "主渲染上下文 window.bench",
+    "version": "window.bench.version (=1)",
+    "ready": "await window.bench.ready()",
+    "reset": "await window.bench.reset()",
+    "inspect": "await window.bench.inspect()"
+  },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernel": "/System/kernel.osl",
+      "compiler": "/System/compiler.osl",
+      "flightController": "/Programs/flight.osl"
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernel": "父系统 /System/kernel.osl",
+      "flightController": "/Programs/flight.osl",
+      "programs": ["/Programs/demo-sum.osl", "/Programs/demo-sender.osl", "/Programs/demo-receiver.osl", "/Programs/demo-busy.osl"]
+    }
+  },
+  "notes": "webview 为 Chromium 内核真实网页；远程调试端口连主窗口渲染进程即可使用 window.bench。子系统标识 outer / inner-N。"
+}

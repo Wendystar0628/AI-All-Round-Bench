@@ -1,0 +1,112 @@
+嵌套图形操作系统（Nested OS）操作说明
+======================================
+
+一、总览
+根系统在主窗口中运行，提供日常桌面：文件管理器、电子表格、小组件、
+文本与程序编辑器、任务管理器、设置、可访问真实网页的 Chromium 浏览器。
+每个系统都能在“子系统管理”中创建直属子系统，至少支持四层，兄弟实例可并行。
+
+启动：npm start  （或 npm start -- --data-dir <目录> --width W --height H
+--remote-debugging-port=18101）。所有运行数据写入独立 data-dir，不写回项目目录。
+
+二、桌面与窗口
+- 桌面图标单击选中、双击打开；桌面空白处右键有菜单（Esc 关闭）。
+- 开始按钮（任务栏左侧）搜索并启动应用；任务栏中部切换、收起、恢复窗口。
+- 窗口：拖动标题栏移动，右下角缩放，最小化/最大化/关闭，双击标题栏切换最大化，
+  拖到屏幕左右边缘半屏贴靠。关闭系统窗口前会确认是否停止整个子树。
+- 子系统完整桌面显示在父桌面的“系统窗口”中，递归嵌套；其中三维视图同样被裁剪、遮挡。
+
+三、根系统应用
+文件管理器：文档/Downloads/Demo/程序/快照/回收站，新建、重命名、复制、移动、删除
+（可恢复）、按类型打开；可导出到本机/从本机导入；可与各层系统双向拖放文件。
+电子表格：行列标题、单元格与区域选择、编辑、复制粘贴、撤销重做；公式支持
++ - * / %、括号、单元格与区域引用、SUM/MIN/MAX/AVG/COUNT；除零(#除零)、
+无效引用(#无效引用)、循环引用(#循环引用)均有反馈；保存为 .sheet（JSON）。
+小组件：时钟日历、倒计时/秒表（到时产生通知）、便笺、剪贴板历史、通知中心（免打扰）、
+快捷设置（与设置应用同一状态）。
+编辑器：可打开/编辑/保存根文件与 /System/kernel.osl（直属子系统内核源文件）。
+任务管理器：根应用、子系统承载进程（区分内核自身与内部用户程序指令数）、
+Chromium 网页视图（单独列出、不计自定义指令）；可调整直属子系统拨付。
+设置：系统名称、壁纸（自制风景图）、强调色、界面缩放，实时生效并保留。
+浏览器：标签栏、地址栏、前进/后退/刷新(加载中变为停止)/新标签/关闭标签；
+真实联网加载（bilibili 等），弹窗在浏览器内部处理。网页不开放宿主文件/Node。
+
+四、子系统
+每个非根系统由父系统文件 /System/kernel.osl 这份普通程序运行（承载进程）。
+子系统桌面含：文件管理器、程序编辑器、进程管理器、子系统管理、三维场景播放器、
+图表工作台。它们全部是 /Apps、/Programs 中的 OSL 程序。
+内核、窗口管理器(wm.osl)、编译器(compiler.osl) 都可以在父系统编辑器中修改，
+保存后在“子系统管理”点“重启”即按新规则运行；内核写坏会显示“内核错误”，
+父与兄弟不受影响，改回后重启即可。
+
+五、OSL 程序与系统接口（要点）
+程序是 S 表达式文本文件。示例：
+  (defn add (a b) (return (+ a b)))
+  (defn main () (set x (add 2 3)) (return x))
+支持：数字/字符串/布尔/列表/字典，变量(set)，条件(if/when/unless)，
+循环(while/repeat/foreach)，函数(defn) 与 lambda，算术/字符串/容器内置函数。
+系统调用的唯一挂起形式：
+  (set R (sys "host-sys" "服务名" (list 参数...)))
+  以及 (sleep 毫秒) (wait-msg [超时毫秒]) (yield)。
+常用服务：
+  时间       time-now / sleep
+  进程       proc-spawn / proc-kill / proc-suspend / proc-resume /
+             proc-list / proc-run / proc-sys-result / proc-tick-waits
+  消息       msg-send(pid 目标, 值) / wait-msg；同发送者有序，收件人为具体进程
+  文件       fs-read fs-write fs-list fs-mkdir fs-delete fs-rename fs-copy
+             fs-move fs-stat fs-size fs-trash fs-restore fs-quota
+  显示       ui-submit(pid, UI数据) / wm-poll / event-poll
+  子系统     child-create child-list child-control child-advance child-step
+             child-ui child-event child-snapshot child-restore wm-open-child
+  三维       scene-load scene-resource scene-submit flight-init flight-show-state
+             flight-physics flight-sensors flight-control flight-input
+             flight-save-record project-open project-close
+  图表       chart-open chart-connect chart-poll chart-disconnect chart-set-type
+  其他       compile / compile-raw / notify / budget-get / budget-set /
+             mem-info / config-get / config-set / log-msg
+预置程序：/Programs/demo-sum.osl（累加）、demo-sender.osl/demo-receiver.osl
+（消息）、demo-busy.osl（持续计算，不主动让出，用于检验调度）。
+在编辑器中点“运行”或由进程管理器查看；新建的任意程序都可运行。
+飞控接口（排演）：flight-sensors 返回
+{t,pos,vel,rot,angvel,rotorMain,rotorTail,fault,wind,target,heading,flying}，
+flight-control 写入 {collective,pitch,roll,yaw}；控制量保持到下次写入，
+错过周期不补发。/Programs/flight.osl 是默认飞控，可改写或另写替代程序，
+排演开始时在控制器路径中指定。
+
+六、调度、预算、暂停与时间
+每个逻辑步（约 33.3ms）系统有有限总指令预算；内核、用户程序、直属子系统承载
+共享竞争，额度是上限。进程管理器可调总预算与子系统拨付上限；调低拨付或运行
+持续计算程序会拉长飞控控制周期，直升机抖动、发散直至坠毁。
+各系统有独立虚拟时钟：暂停/继续/单步(固定 33.3ms)/调速(0.25x–4x)。
+暂停一棵子树停止其全部推进，不补时；祖先暂停覆盖后代，后代各自暂停状态保留。
+浏览器网页按真实时间运行，不纳入虚拟时间、逻辑预算与快照。
+宿主实际绘制（WebGL、Chromium）不计逻辑预算；应用计算、内核、窗口管理计入。
+
+七、三维场景播放器
+场景是纯数据文件（.scene），含地形、停机坪、建筑、树木、灯光、天气、
+可损坏部件层级、相机与默认演出关键帧；播放器与设备代码中没有直升机。
+/Demo/最小场景.scene 是最小写法（一个物体、一盏灯、一台相机的简化形式）。
+控制：打开、播放/暂停/继续、停止回开头、重播、逐帧(每帧 1/30 秒)、循环、
+进度条跳转、速率(0.5/1/2/4x)，显示当前时间/总时长/速率/状态；
+镜头：演出/跟随/自由环绕（自由镜头拖动旋转、滚轮缩放）；点击部件显示名称与损坏。
+默认演出 1 倍速 15 秒：旋翼启动离地→前飞转向→故障征兆→尾桨失效失控→撞击
+（唯一高潮）→残骸烟尘落定。排演中可改变风力、目标航向、故障时机；
+飞控进程保持飞行。排演可保存为记录文件并回放/续演。
+
+八、跨层投送与实时图表
+播放器与图表有“投送到祖先”入口，可跨中间层直达根桌面；每个源窗口至多一个投送。
+投送窗口可独立移动/缩放/贴靠/最小化；计算仍属源系统，输入经接口回源进程；
+暂停源系统时投送内容冻结并提示；关闭投送只取消视图，源应用继续运行。
+图表工作台：选择根工作簿（默认 sample.sheet）、矩形区域（默认 A1:D4）、
+标签列与数值列，连接后得到完整选区；根表格每次提交编辑/粘贴/撤销/重算后发布
+新版本（版本只前进）；子系统暂停时更新在范围外排队，继续后按序处理；
+可断开/重连；柱状图/折线图可切换。
+
+九、快照、恢复、分叉
+“快照”把选中实例及全部后代在同一逻辑时点的内核位置、进程变量、消息、等待、
+未完成工作、虚拟时间、文件、桌面/播放器/图表状态保存为父系统文件；
+恢复原实例或“分叉”出新子树（新身份、互不影响）。快照可导出本机，重启后导入。
+
+十、自动化约定
+窗口标题 Nested OS；data-testid 与 automation.json 列出的标识用于定位控件；
+window.bench.version / ready() / reset() / inspect() 提供脚本接口。

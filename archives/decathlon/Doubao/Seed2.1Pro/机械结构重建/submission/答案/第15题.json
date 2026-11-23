@@ -1,0 +1,15 @@
+{
+  "problem": "15",
+  "parts": [
+    {"name": "1", "title": "双轴错层传动箱体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 170, 84]}], "depth": 16, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [15, 12, 155, 72]}], "depth": 60, "name": "箱体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [48, 42], "d": 78}], "depth": [60, 96], "name": "高轴筒"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [125, 42], "d": 74}], "depth": [46, 80], "name": "低轴筒"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 96], "at": [[48, 42]], "d": 38, "through": true, "name": "高轴孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [[125, 42]], "d": 44, "through": true, "name": "低轴孔"},
+      {"type": "hole", "plane": "YZ", "origin": [155, 42, 40], "at": [[0, 0]], "d": 32, "depth": 70, "name": "侧孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 16], "at": [[16, 16], [154, 16], [16, 68], [154, 68]], "d": 10, "through": true, "name": "安装孔"}
+    ]}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "problem": "20",
+  "parts": [
+    {"name": "1", "title": "双级迷宫旋流分离壳", "features": [
+      {"type": "revolve", "plane": "XZ", "axis": "x", "loops": [{"path": [
+        [0, 92], [20, 92], [40, 70], [70, 46], [90, 36], [110, 36], [110, 26], [130, 26], [130, 0], [0, 0]
+      ]}], "angle": 360, "name": "分离壳体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-100, -60, 100, 60], "r": 6}], "depth": 20, "name": "底板"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 130], "at": [[0, 0]], "d": 38, "depth": 100, "name": "顶颈孔"},
+      {"type": "extrude", "plane": {"origin": [0, 0, 60], "normal": [-0.5220, -0.5220, 0.6743], "x_dir": [0.7071, -0.7071, 0]}, "loops": [{"circle": [0, 0], "d": 52}], "depth": 24, "name": "分离支路1"},
+      {"type": "extrude", "plane": {"origin": [0, 0, 80], "normal": [0.5280, 0.5280, 0.6651], "x_dir": [0.7071, -0.7071, 0]}, "loops": [{"circle": [0, 0], "d": 52}], "depth": 24, "name": "分离支路2"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 20], "at": [[-80, -40], [80, -40], [-80, 40], [80, 40]], "d": 10, "depth": 26, "cbore": {"d": 18, "depth": 6}, "name": "地脚孔"}
+    ]}
+  ]
+}

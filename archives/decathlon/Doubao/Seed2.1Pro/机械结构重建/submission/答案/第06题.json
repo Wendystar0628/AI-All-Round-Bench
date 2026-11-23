@@ -1,0 +1,14 @@
+{
+  "problem": "06",
+  "parts": [
+    {"name": "1", "title": "双斜接口差压控制块", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 110, 70]}], "depth": 14, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [8, 8, 102, 62]}], "depth": 40, "name": "主体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [30, 35], "d": 40}], "depth": [40, 72], "name": "顶筒1"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [82, 35], "d": 28}], "depth": [40, 60], "name": "顶筒2"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 72], "at": [[30, 35]], "d": 18, "depth": 46, "name": "竖孔1"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [[82, 35]], "d": 10, "depth": 36, "name": "竖孔2"},
+      {"type": "hole", "plane": "YZ", "origin": [102, 35, 30], "at": [[0, 0]], "d": 18, "depth": 40, "name": "侧孔"}
+    ]}
+  ]
+}

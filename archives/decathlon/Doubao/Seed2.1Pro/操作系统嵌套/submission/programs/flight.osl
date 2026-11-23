@@ -1,0 +1,98 @@
+#| ============================================================
+   飞控程序 flight.osl —— 排演中保持直升机飞行的控制进程。
+   这是一个普通程序：可在编辑器中查看、修改、新建替代程序。
+   每个控制周期：
+     (set S (sys "host-sys" "flight-sensors" (list)))
+       -> {t, pos:[x y z], vel, rot:[pitch yaw roll], angvel,
+           rotorMain, rotorTail, fault, wind, target:[x z], heading}
+     (sys "host-sys" "flight-control" (list C))
+       C = {collective:0..100, pitch, roll, yaw}
+   控制量保持到下一次写入；错过的周期不补发。调度预算越小，
+   实际控制周期越长，机体就会抖动、发散直至坠毁。
+   ============================================================ |#
+
+(defn ctrl-main ()
+  ;; 起飞序列：先启动旋翼，离地后转入悬停/目标跟踪
+  (set phase "spinup")
+  (set t0 (sys "host-sys" "time-now" (list)))
+  (set last-err-yaw 0)
+  (while true
+    (set s (sys "host-sys" "flight-sensors" (list)))
+    (set alive (get s "flying" true))
+    (if (= alive false) (return true))
+    (set c (ctrl-compute s phase last-err-yaw))
+    (set last-err-yaw (get c "_errYaw" 0))
+    (set phase (get c "_phase" phase))
+    (sys "host-sys" "flight-control" (list c))
+    ;; 控制周期由系统调度决定：预算紧张时这个 sleep 之外的 VM 排队也会拉长周期
+    (sleep 33)))
+
+(defn ctrl-compute (s phase lastErr)
+  (set pos (get s "pos"))
+  (set vel (get s "vel"))
+  (set rot (get s "rot"))
+  (set tgt (get s "target" null))
+  (set t (get s "t"))
+  (set y (get pos 1))
+  (set collective 50)
+  (set pitch 0)
+  (set roll 0)
+  (set yaw 0)
+
+  ;; ---- 旋翼启动与离地 ----
+  (if (= phase "spinup")
+    (begin
+      (set collective (clamp (* t 45) 0 56))
+      (if (or (> y 4) (> collective 55)) (set phase "_climb"))))
+
+  (if (= phase "_climb")
+    (begin
+      (set collective 58)
+      (if (> y (get s "cruiseAlt" 12)) (set phase "_cruise"))))
+
+  ;; ---- 跟踪目标航向/目标点 ----
+  (if (= phase "_cruise")
+    (begin
+      (set collective (alt-hold y (get s "cruiseAlt" 12) vel))
+      (if (!= tgt null)
+        (begin
+          (set steer (track-target pos vel tgt (get s "heading" 0) lastErr))
+          (set pitch (get steer "pitch"))
+          (set roll (get steer "roll"))
+          (set yaw (get steer "yaw"))))
+      ;; 速度阻尼
+      (set pitch (+ pitch (* -0.02 (get vel 0))))
+      (set roll (+ roll (* 0.02 (get vel 2))))))
+
+  ;; 故障下自动增益（尾桨失效时无法稳定偏航，只能减小功率自旋降落）
+  (if (!= (get s "fault" null) null)
+    (begin
+      (set collective 22)
+      (set pitch -0.1)))
+
+  (return (dict "collective" collective "pitch" pitch "roll" roll "yaw" yaw
+                "_phase" phase "_errYaw" lastErr)))
+
+(defn alt-hold (y target vel)
+  (set e (- target y))
+  (set vy (get vel 1))
+  (return (clamp (+ 50 (* 2.2 e) (* -1.6 vy)) 0 80)))
+
+(defn track-target (pos vel tgt heading lastErr)
+  ;; 目标为 [x, z]；返回俯仰（前进）、横滚（转向）、偏航修正
+  (set dx (- (get tgt 0) (get pos 0)))
+  (set dz (- (get tgt 1) (get pos 2)))
+  (set dist (sqrt (+ (* dx dx) (* dz dz))))
+  (set desired (atan2 dz dx))
+  (set err (wrap-angle (- desired heading)))
+  (set dErr (- err lastErr))
+  (set yawCmd (clamp (+ (* 0.9 err) (* 0.25 dErr)) -0.8 0.8))
+  (set rollCmd (clamp (* -0.5 err) -0.5 0.5))
+  (set fwd (clamp (* 0.06 (min dist 30)) 0 0.35))
+  (set pitchCmd (clamp (- fwd (* 0.01 (sqrt (+ (* (get vel 0) (get vel 0)) (* (get vel 2) (get vel 2)))))) -0.3 0.35))
+  (return (dict "pitch" pitchCmd "roll" rollCmd "yaw" yawCmd "_errYaw" err)))
+
+(defn wrap-angle (a)
+  (while (> a 3.14159) (set a (- a 6.28318)))
+  (while (< a -3.14159) (set a (+ a 6.28318)))
+  (return a))

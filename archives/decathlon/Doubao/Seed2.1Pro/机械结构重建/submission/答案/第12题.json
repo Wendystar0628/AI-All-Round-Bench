@@ -1,0 +1,13 @@
+{
+  "problem": "12",
+  "parts": [
+    {"name": "1", "title": "偏轴阶梯双腔泵座", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 150, 80]}], "depth": 16, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [55, 42], "d": 76}], "depth": [16, 60], "name": "大泵腔"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [112, 40], "d": 54}], "depth": [16, 48], "name": "小泵腔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 60], "at": [[55, 42]], "d": 42, "depth": 50, "name": "大腔孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 48], "at": [[112, 40]], "d": 30, "depth": 40, "name": "小腔孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 16], "at": [[18, 15], [135, 15], [18, 65], [135, 65]], "d": 9, "through": true, "name": "安装孔"}
+    ]}
+  ]
+}

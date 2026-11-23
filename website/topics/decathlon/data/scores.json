@@ -31,11 +31,11 @@
     "gpt-6-luna",
     "grok-4-7",
     "mimo-v2-6-pro",
+    "doubao-seed-2-1-pro",
     "longcat-2-5",
     "step-5-preview",
     "dots3-note-preview",
-    "glm-5-3",
-    "doubao-seed-2-1-pro"
+    "glm-5-3"
   ],
   "scores": {
     "gpt-6-2-astra": {
@@ -3101,7 +3101,7 @@
         "drawing": 11,
         "interact": 17,
         "game": 22,
-        "physics": 24,
+        "physics": 25,
         "visual": 20,
         "system": 21
       },
@@ -3115,7 +3115,7 @@
         "drawing": 11,
         "ae-editor": 17,
         "tower-defense": 22,
-        "jelly-tank": 24,
+        "jelly-tank": 25,
         "harbor": 18,
         "starship": 20,
         "nested-os": 21
@@ -3284,7 +3284,7 @@
         "drawing": 25,
         "interact": 18,
         "game": 18,
-        "physics": 25,
+        "physics": 26,
         "visual": 18,
         "system": 16
       },
@@ -3298,7 +3298,7 @@
         "drawing": 25,
         "ae-editor": 18,
         "tower-defense": 18,
-        "jelly-tank": 25,
+        "jelly-tank": 26,
         "harbor": 17,
         "starship": 20,
         "nested-os": 16
@@ -3838,6 +3838,214 @@
         "nested-os": 26
       }
     },
+    "doubao-seed-2-1-pro": {
+      "total": 14.8,
+      "kinds": {
+        "standard": 3.5,
+        "design": 26.1
+      },
+      "categories": {
+        "reason": 3.6,
+        "algo": 0.0,
+        "battle": 0.0,
+        "spatial": 8.0,
+        "drawing": 6.0,
+        "interact": 16.9,
+        "game": 45.5,
+        "physics": 6.5,
+        "visual": 43.7,
+        "system": 17.8
+      },
+      "tasks": {
+        "formal-proof": 0.0,
+        "math-olympiad": 7.1,
+        "raytracing": 0.0,
+        "circuit": 0.0,
+        "conquest": 0.0,
+        "luban": 8.0,
+        "drawing": 6.0,
+        "ae-editor": 16.9,
+        "tower-defense": 45.5,
+        "jelly-tank": 6.5,
+        "harbor": 49.6,
+        "starship": 37.7,
+        "nested-os": 17.8
+      },
+      "status": "ranked",
+      "done": 13,
+      "task_info": {
+        "formal-proof": {
+          "anomaly": [
+            {
+              "text": "仅提交未完成的第1题，仍含 sorry；其余7题未交。"
+            }
+          ]
+        },
+        "raytracing": {
+          "anomaly": [
+            {
+              "text": "最终内核遗漏样本归约且运行超时，最近三版回溯亦未恢复正确性。"
+            }
+          ]
+        },
+        "circuit": {
+          "anomaly": [
+            {
+              "text": "触发器索引编码与主输入冲突，9个性能输入全部输出错误。"
+            }
+          ]
+        },
+        "conquest": {
+          "anomaly": [
+            {
+              "text": "提交程序频繁退出或返回协议错误，无法稳定完成对局。"
+            }
+          ]
+        },
+        "drawing": {
+          "anomaly": [
+            {
+              "text": "程序量图、换算法向并计算装配坐标，涉及七题。"
+            }
+          ]
+        },
+        "ae-editor": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 18.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 15.4
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "缺失主入口、交互和示例等七个脚本，页面仅剩空壳。"
+            }
+          ]
+        },
+        "tower-defense": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 49.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 41.4
+            }
+          ]
+        },
+        "jelly-tank": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 11.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 1.4
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "软体无冲击即自毁，水体着色器及演示、导出调用均报错。"
+            }
+          ]
+        },
+        "harbor": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 53.7
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 45.6
+            }
+          ]
+        },
+        "starship": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 44.6
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 30.8
+            }
+          ]
+        },
+        "nested-os": {
+          "graders": [
+            {
+              "name": "GPT 6.1 Sol",
+              "score": 17.5
+            },
+            {
+              "name": "Claude Opus 5.5",
+              "score": 18.1
+            }
+          ],
+          "anomaly": [
+            {
+              "text": "启动等待从未生成的素材，主窗口始终空白。"
+            }
+          ]
+        }
+      },
+      "cost": {
+        "cny": null,
+        "basis": "subscription",
+        "tokens": 243290463,
+        "tasks": 13,
+        "method": null,
+        "api_usd": 54.1,
+        "api_cny": 363.3,
+        "hours": 15.2,
+        "tps": 39.7,
+        "tps_replies": 1175,
+        "plan": {
+          "name": "火山方舟 Agent Plan Medium",
+          "name_en": "Volcengine Ark Agent Plan Medium",
+          "price": 200,
+          "currency": "CNY",
+          "period": "month",
+          "credits": 100000
+        }
+      },
+      "rank": 24,
+      "category_ranks": {
+        "reason": 21,
+        "algo": 27,
+        "battle": 25,
+        "spatial": 15,
+        "drawing": 17,
+        "interact": 26,
+        "game": 23,
+        "physics": 24,
+        "visual": 24,
+        "system": 25
+      },
+      "task_ranks": {
+        "formal-proof": 20,
+        "math-olympiad": 19,
+        "raytracing": 26,
+        "circuit": 25,
+        "conquest": 25,
+        "luban": 15,
+        "drawing": 17,
+        "ae-editor": 26,
+        "tower-defense": 23,
+        "jelly-tank": 24,
+        "harbor": 25,
+        "starship": 25,
+        "nested-os": 25
+      }
+    },
     "longcat-2-5": {
       "total": 14.4,
       "kinds": {
@@ -4018,7 +4226,7 @@
           "name_en": "LongCat API"
         }
       },
-      "rank": 24,
+      "rank": 25,
       "category_ranks": {
         "reason": 24,
         "algo": 26,
@@ -4239,7 +4447,7 @@
           "period": "month"
         }
       },
-      "rank": 25,
+      "rank": 26,
       "category_ranks": {
         "reason": 23,
         "algo": 27,
@@ -4458,7 +4666,7 @@
           "name_en": "Dots API"
         }
       },
-      "rank": 26,
+      "rank": 27,
       "category_ranks": {
         "reason": 24,
         "algo": 24,
@@ -4467,7 +4675,7 @@
         "drawing": 21,
         "interact": 28,
         "game": 28,
-        "physics": 26,
+        "physics": 27,
         "visual": 27,
         "system": 26
       },
@@ -4481,7 +4689,7 @@
         "drawing": 21,
         "ae-editor": 28,
         "tower-defense": 28,
-        "jelly-tank": 26,
+        "jelly-tank": 27,
         "harbor": 27,
         "starship": 27,
         "nested-os": 26
@@ -4631,196 +4839,6 @@
         "harbor": null,
         "starship": null,
         "nested-os": null
-      }
-    },
-    "doubao-seed-2-1-pro": {
-      "total": null,
-      "kinds": {
-        "standard": null,
-        "design": null
-      },
-      "categories": {
-        "reason": 3.6,
-        "algo": 0.0,
-        "battle": null,
-        "spatial": 8.0,
-        "drawing": 6.0,
-        "interact": 16.9,
-        "game": 45.5,
-        "physics": null,
-        "visual": 43.7,
-        "system": 17.8
-      },
-      "tasks": {
-        "formal-proof": 0.0,
-        "math-olympiad": 7.1,
-        "raytracing": 0.0,
-        "circuit": 0.0,
-        "conquest": null,
-        "luban": 8.0,
-        "drawing": 6.0,
-        "ae-editor": 16.9,
-        "tower-defense": 45.5,
-        "jelly-tank": null,
-        "harbor": 49.6,
-        "starship": 37.7,
-        "nested-os": 17.8
-      },
-      "status": "testing",
-      "done": 11,
-      "task_info": {
-        "formal-proof": {
-          "anomaly": [
-            {
-              "text": "仅提交未完成的第1题，仍含 sorry；其余7题未交。"
-            }
-          ]
-        },
-        "raytracing": {
-          "anomaly": [
-            {
-              "text": "最终内核遗漏样本归约且运行超时，最近三版回溯亦未恢复正确性。"
-            }
-          ]
-        },
-        "circuit": {
-          "anomaly": [
-            {
-              "text": "触发器索引编码与主输入冲突，9个性能输入全部输出错误。"
-            }
-          ]
-        },
-        "conquest": {
-          "state": "testing"
-        },
-        "drawing": {
-          "anomaly": [
-            {
-              "text": "程序量图、换算法向并计算装配坐标，涉及七题。"
-            }
-          ]
-        },
-        "ae-editor": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 18.5
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 15.4
-            }
-          ],
-          "anomaly": [
-            {
-              "text": "缺失主入口、交互和示例等七个脚本，页面仅剩空壳。"
-            }
-          ]
-        },
-        "tower-defense": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 49.5
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 41.4
-            }
-          ]
-        },
-        "jelly-tank": {
-          "state": "testing"
-        },
-        "harbor": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 53.7
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 45.6
-            }
-          ]
-        },
-        "starship": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 44.6
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 30.8
-            }
-          ]
-        },
-        "nested-os": {
-          "graders": [
-            {
-              "name": "GPT 6.1 Sol",
-              "score": 17.5
-            },
-            {
-              "name": "Claude Opus 5.5",
-              "score": 18.1
-            }
-          ],
-          "anomaly": [
-            {
-              "text": "启动等待从未生成的素材，主窗口始终空白。"
-            }
-          ]
-        }
-      },
-      "cost": {
-        "cny": null,
-        "basis": "subscription",
-        "tokens": 214918827,
-        "tasks": 11,
-        "method": null,
-        "api_usd": 47.8,
-        "api_cny": 320.6,
-        "hours": 13.2,
-        "tps": 40.2,
-        "tps_replies": 996,
-        "plan": {
-          "name": "火山方舟 Agent Plan Medium",
-          "name_en": "Volcengine Ark Agent Plan Medium",
-          "price": 200,
-          "currency": "CNY",
-          "period": "month",
-          "credits": 100000
-        }
-      },
-      "rank": null,
-      "category_ranks": {
-        "reason": 21,
-        "algo": 27,
-        "battle": null,
-        "spatial": 15,
-        "drawing": 17,
-        "interact": 26,
-        "game": 23,
-        "physics": null,
-        "visual": 24,
-        "system": 25
-      },
-      "task_ranks": {
-        "formal-proof": 20,
-        "math-olympiad": 19,
-        "raytracing": 26,
-        "circuit": 25,
-        "conquest": null,
-        "luban": 15,
-        "drawing": 17,
-        "ae-editor": 26,
-        "tower-defense": 23,
-        "jelly-tank": null,
-        "harbor": 25,
-        "starship": 25,
-        "nested-os": 25
       }
     }
   },

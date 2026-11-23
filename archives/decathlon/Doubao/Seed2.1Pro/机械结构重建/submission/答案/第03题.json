@@ -1,0 +1,21 @@
+{
+  "problem": "03",
+  "parts": [
+    {"name": "1", "title": "双腔斜顶分流阀壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [
+        {"path": [[0, -54], [56, -54], [64, -46], [64, 12], [56, 20], [0, 20], [-12, 20], [-27, 20], [-27, 0], [-12, 0], [-12, -39], [-27, -39], [-27, -54]]}
+      ], "depth": 8, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, -54, 64, 20]}], "depth": 56, "name": "主体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [6, -46, 64, 12]}], "depth": 6, "name": "主体顶台阶"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [42, -23], "d": 34}], "depth": [56, 74], "name": "竖筒1"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [42, -23], "d": 22}], "depth": [74, 82], "name": "竖筒1颈"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [42, -23], "d": 18}], "depth": 66, "name": "竖筒2位"},
+      {"type": "extrude", "plane": "YZ", "origin": [64, -23, 34], "loops": [{"circle": [0, 0], "d": 30}], "depth": [0, 50], "name": "水平接口筒"},
+      {"type": "extrude", "plane": "YZ", "origin": [106, -23, 34], "loops": [{"circle": [0, 0], "d": 40}], "depth": [0, 8], "name": "水平接口法兰"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 82], "at": [[42, -23]], "d": 22, "depth": 50, "name": "竖孔1"},
+      {"type": "hole", "plane": "YZ", "origin": [114, -23, 34], "at": [[0, 0]], "d": 18, "depth": 80, "name": "水平孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 8], "at": [[-20, 10], [-20, -47]], "d": 7, "through": true, "name": "耳孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 8], "at": [[12, 12], [52, 12], [12, -46], [52, -46]], "d": 7, "through": true, "name": "安装孔"}
+    ]}
+  ]
+}

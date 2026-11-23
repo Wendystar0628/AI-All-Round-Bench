@@ -1,0 +1,79 @@
+{
+  "kind": "nestedos-scene",
+  "version": 1,
+  "name": "紫黄24号 · 黄昏山谷",
+  "frameRate": 30,
+  "duration": 15.0,
+  "sky": { "top": "#2f3a78", "mid": "#9a7fb8", "bottom": "#f2b36b", "fog": "#c8a0c0", "fogNear": 120, "fogFar": 520, "sun": { "azimuth": 0.62, "elevation": 0.22, "color": "#ffe9b0", "intensity": 1.25 }, "ambient": { "color": "#5a5a8c", "intensity": 0.55 }, "hemi": { "sky": "#caa9e8", "ground": "#3a2f22", "intensity": 0.6 } },
+  "terrain": {
+    "size": 600, "segments": 96,
+    "heightNoise": [ [0.0, 0.0], [0.006, 2.2], [0.015, 4.5], [0.04, 1.6] ],
+    "flatZones": [ { "x": 0, "z": 0, "r": 26 }, { "x": 90, "z": -60, "r": 22 } ],
+    "material": { "color": "#4a6b2a", "roughness": 0.95, "texture": "grass" },
+    "collidable": true
+  },
+  "objects": [
+    { "id": "pad-a", "type": "helipad", "pos": [0, 0.15, 0], "size": 16, "material": { "color": "#9aa0ae", "texture": "concrete", "roughness": 0.9 }, "collidable": true, "label": "停机坪 A" },
+    { "id": "pad-b", "type": "helipad", "pos": [90, 0.15, -60], "size": 14, "material": { "color": "#9aa0ae", "texture": "concrete", "roughness": 0.9 }, "collidable": true, "label": "停机坪 B" },
+    { "id": "hangar", "type": "box", "pos": [-34, 4, -18], "size": [18, 8, 14], "material": { "color": "#7a6f8f", "roughness": 0.7, "metalness": 0.2 }, "collidable": true },
+    { "id": "tower", "type": "box", "pos": [-24, 7, 16], "size": [5, 14, 5], "material": { "color": "#b8a97a", "roughness": 0.8 }, "collidable": true },
+    { "id": "tower-top", "type": "box", "pos": [-24, 14.6, 16], "size": [6.4, 1.2, 6.4], "material": { "color": "#e0d4a0", "roughness": 0.6 }, "collidable": true },
+    { "id": "trees", "type": "instanced-trees", "count": 140, "exclude": [ { "x": 0, "z": 0, "r": 34 }, { "x": 90, "z": -60, "r": 28 } ], "trunk": { "color": "#5a3d22", "roughness": 0.95 }, "leaf": { "color": "#2f5320", "roughness": 0.9 }, "collidable": true, "minH": 3, "maxH": 7 }
+  ],
+  "actor": {
+    "id": "heli-24",
+    "name": "24号直升机",
+    "texture": "fuselage24",
+    "root": { "pos": [0, 1.7, 0], "rot": [0, 0, 0] },
+    "physics": {
+      "mass": 900, "radius": 2.4, "gravity": 14.0,
+      "liftFactor": 0.062, "pitchControl": 0.9, "yawControl": 1.6, "rollControl": 1.4,
+      "drag": 0.35, "angularDrag": 1.6, "instability": 0.55,
+      "maxCollective": 100, "cruiseCollective": 58, "hoverCollective": 50,
+      "groundY": 1.05, "crashSpeed": 11, "crashTilt": 1.05
+    },
+    "parts": [
+      { "id": "fuselage", "type": "compound-fuselage", "size": [6.4, 2.0, 2.2], "offset": [0, 0, 0], "hp": 100, "material": { "texture": "fuselage24", "roughness": 0.45, "metalness": 0.15 } },
+      { "id": "cockpit", "type": "cockpit", "size": [1.7, 1.1, 1.7], "offset": [2.7, 0.15, 0], "hp": 40, "material": { "color": "#1a2233", "roughness": 0.15, "metalness": 0.4, "glass": true } },
+      { "id": "tail-boom", "type": "tailboom", "length": 5.2, "r0": 0.55, "r1": 0.22, "offset": [-4.6, 0.35, 0], "hp": 60, "material": { "color": "#7c3aed", "roughness": 0.5, "metalness": 0.1 } },
+      { "id": "tail-fin", "type": "fin", "size": [0.18, 1.5, 1.1], "offset": [-9.3, 1.0, 0], "hp": 30, "material": { "color": "#facc15", "roughness": 0.6 } },
+      { "id": "main-rotor", "type": "rotor", "rotor": "main", "blades": 4, "radius": 6.2, "bladeWidth": 0.42, "axis": [0, 1, 0], "offset": [0.3, 1.55, 0], "hp": 50, "material": { "color": "#3b2b55", "roughness": 0.4 } },
+      { "id": "tail-rotor", "type": "rotor", "rotor": "tail", "blades": 2, "radius": 1.0, "bladeWidth": 0.2, "axis": [0, 0, 1], "offset": [-9.4, 1.0, 0.5], "hp": 30, "material": { "color": "#facc15", "roughness": 0.4 } },
+      { "id": "skid-l", "type": "skid", "offset": [0, -1.25, 0.95], "length": 5.0, "hp": 40, "material": { "color": "#444", "roughness": 0.5, "metalness": 0.6 } },
+      { "id": "skid-r", "type": "skid", "offset": [0, -1.25, -0.95], "length": 5.0, "hp": 40, "material": { "color": "#444", "roughness": 0.5, "metalness": 0.6 } }
+    ]
+  },
+  "cameras": {
+    "cine": [
+      { "t": 0, "pos": [16, 7, 16], "look": [0, 1.5, 0] },
+      { "t": 4, "pos": [26, 12, 22], "look": [10, 6, -8] },
+      { "t": 8, "pos": [70, 16, 20], "look": [70, 10, -45] },
+      { "t": 11, "pos": [104, 10, -24], "look": [92, 7, -52] },
+      { "t": 15, "pos": [108, 6, -34], "look": [94, 2, -56] }
+    ],
+    "follow": { "distance": 20, "height": 7, "smooth": 0.12 },
+    "free": { "pos": [30, 18, 30], "fov": 55 }
+  },
+  "performance": {
+    "keys": [
+      { "t": 0.0, "phase": "idle", "pos": [0, 1.05, 0], "vel": [0, 0, 0], "rot": [0, 0, 0], "rotorMain": 0, "rotorTail": 0, "collective": 0, "pitch": 0, "yaw": 0, "roll": 0, "controls": { "collective": 0, "pitch": 0, "roll": 0, "yaw": 0 }, "damage": {}, "fault": null, "wind": [0, 0, 0] },
+      { "t": 1.2, "phase": "spinup", "pos": [0, 1.05, 0], "vel": [0, 0, 0], "rot": [0, 0, 0], "rotorMain": 32, "rotorTail": 200, "collective": 30, "pitch": 0, "yaw": 0, "roll": 0, "controls": { "collective": 30, "pitch": 0, "roll": 0, "yaw": 0 }, "damage": {}, "fault": null, "wind": [0, 0, 0] },
+      { "t": 2.4, "phase": "liftoff", "pos": [0, 6.0, 0], "vel": [0, 2, 0], "rot": [0, 0, 0], "rotorMain": 42, "rotorTail": 260, "collective": 56, "pitch": 0, "yaw": 0, "roll": 0, "controls": { "collective": 56, "pitch": 0, "roll": 0, "yaw": 0 }, "damage": {}, "fault": null, "wind": [0, 0, 0] },
+      { "t": 4.0, "phase": "cruise", "pos": [18, 12, -8], "vel": [14, 0, -6], "rot": [0, -0.5, 0.08], "rotorMain": 44, "rotorTail": 270, "collective": 54, "pitch": 0.12, "yaw": -0.5, "roll": 0.08, "controls": { "collective": 54, "pitch": 0.12, "roll": 0.08, "yaw": -0.5 }, "damage": {}, "fault": null, "wind": [1.2, 0, 0.6] },
+      { "t": 6.5, "phase": "turn", "pos": [48, 16, -30], "vel": [16, 1, -10], "rot": [0, -1.1, -0.14], "rotorMain": 44, "rotorTail": 270, "collective": 55, "pitch": 0.1, "yaw": -1.1, "roll": -0.14, "controls": { "collective": 55, "pitch": 0.1, "roll": -0.14, "yaw": -1.1 }, "damage": {}, "fault": null, "wind": [1.2, 0, 0.6] },
+      { "t": 8.2, "phase": "omense", "pos": [70, 15, -46], "vel": [15, 0, -8], "rot": [0.02, -0.7, -0.05], "rotorMain": 43, "rotorTail": 268, "collective": 55, "pitch": 0.1, "yaw": -0.7, "roll": -0.05, "controls": { "collective": 55, "pitch": 0.1, "roll": -0.05, "yaw": -0.7 }, "damage": {}, "fault": "vibration", "wind": [2.0, 0, 1.0] },
+      { "t": 8.9, "phase": "failure", "pos": [80, 14.5, -50], "vel": [14, -0.5, -8], "rot": [0.08, -0.5, 0.18], "rotorMain": 30, "rotorTail": 120, "collective": 40, "pitch": 0.05, "yaw": -0.5, "roll": 0.18, "controls": { "collective": 40, "pitch": 0.05, "roll": 0.18, "yaw": -0.5 }, "damage": { "tail-rotor": 60 }, "fault": "tail-loss", "wind": [2.0, 0, 1.0] },
+      { "t": 9.8, "phase": "loss", "pos": [88, 12, -52], "vel": [10, -2.5, -7], "rot": [0.35, -0.2, 0.7], "rotorMain": 26, "rotorTail": 30, "collective": 35, "pitch": -0.1, "yaw": 0.4, "roll": 0.7, "controls": { "collective": 35, "pitch": -0.1, "roll": 0.7, "yaw": 0.4 }, "damage": { "tail-rotor": 100, "tail-fin": 40 }, "fault": "tail-loss", "wind": [2.0, 0, 1.0] },
+      { "t": 10.6, "phase": "spin", "pos": [93, 8, -54], "vel": [6, -5, -5], "rot": [0.7, 1.6, 1.05], "rotorMain": 22, "rotorTail": 0, "collective": 30, "pitch": -0.2, "yaw": 1.6, "roll": 1.05, "controls": { "collective": 30, "pitch": -0.2, "roll": 1.05, "yaw": 1.6 }, "damage": { "tail-rotor": 100, "tail-fin": 70 }, "fault": "tail-loss", "wind": [2.0, 0, 1.0] },
+      { "t": 11.15, "phase": "impact", "pos": [95.5, 1.05, -55.5], "vel": [5, -12, -4], "rot": [1.05, 2.3, 1.2], "rotorMain": 8, "rotorTail": 0, "collective": 20, "pitch": -0.3, "yaw": 2.3, "roll": 1.2, "controls": { "collective": 20, "pitch": -0.3, "roll": 1.2, "yaw": 2.3 }, "damage": { "tail-rotor": 100, "tail-fin": 90, "skid-l": 100, "skid-r": 80, "fuselage": 45, "main-rotor": 70, "cockpit": 30 }, "fault": "crashed", "wind": [2.0, 0, 1.0], "impact": { "at": 11.15, "pos": [95.5, 0, -55.5], "speed": 14.2, "parts": ["skid-l", "fuselage", "main-rotor"] } },
+      { "t": 11.6, "phase": "aftermath", "pos": [95.5, 0.7, -55.5], "vel": [1, -1, 0], "rot": [1.15, 2.5, 1.3], "rotorMain": 2, "rotorTail": 0, "collective": 0, "pitch": -0.3, "yaw": 2.5, "roll": 1.3, "controls": { "collective": 0, "pitch": -0.3, "roll": 1.3, "yaw": 2.5 }, "damage": { "tail-rotor": 100, "tail-fin": 90, "skid-l": 100, "skid-r": 100, "fuselage": 60, "main-rotor": 100, "cockpit": 45, "tail-boom": 35 }, "fault": "crashed", "wind": [2.0, 0, 1.0] },
+      { "t": 13.0, "phase": "settle", "pos": [95.5, 0.55, -55.5], "vel": [0, 0, 0], "rot": [1.18, 2.5, 1.32], "rotorMain": 0, "rotorTail": 0, "collective": 0, "pitch": 0, "yaw": 2.5, "roll": 1.32, "controls": { "collective": 0, "pitch": 0, "roll": 1.32, "yaw": 2.5 }, "damage": { "tail-rotor": 100, "tail-fin": 90, "skid-l": 100, "skid-r": 100, "fuselage": 60, "main-rotor": 100, "cockpit": 45, "tail-boom": 35 }, "fault": "crashed", "wind": [2.0, 0, 1.0] },
+      { "t": 15.0, "phase": "end", "pos": [95.5, 0.55, -55.5], "vel": [0, 0, 0], "rot": [1.18, 2.5, 1.32], "rotorMain": 0, "rotorTail": 0, "collective": 0, "pitch": 0, "yaw": 2.5, "roll": 1.32, "controls": { "collective": 0, "pitch": 0, "roll": 1.32, "yaw": 2.5 }, "damage": { "tail-rotor": 100, "tail-fin": 90, "skid-l": 100, "skid-r": 100, "fuselage": 60, "main-rotor": 100, "cockpit": 45, "tail-boom": 35 }, "fault": "crashed", "wind": [2.0, 0, 1.0] }
+    ]
+  },
+  "effects": {
+    "downwash": { "dust": true, "grassBend": true, "radius": 9, "strengthByHeight": [ [0, 1.0], [8, 0.7], [20, 0.15] ] },
+    "impact": { "smoke": 40, "fire": 18, "debris": 26, "dust": 60 },
+    "smokeColor": "#3a3a42", "fireColor": "#ff8a2a"
+  }
+}

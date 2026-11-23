@@ -1,0 +1,17 @@
+{
+  "problem": "11",
+  "parts": [
+    {"name": "1", "title": "三腔分层伺服分配箱", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 150, 80]}], "depth": 14, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [10, 10, 140, 70]}], "depth": 30, "name": "下层腔"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [20, 18, 130, 62]}], "depth": 26, "name": "中层腔"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [30, 24, 118, 56]}], "depth": 22, "name": "上层腔"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [42, 40], "d": 32}], "depth": [48, 86], "name": "顶筒1"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [105, 40], "d": 28}], "depth": [48, 82], "name": "顶筒2"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 86], "at": [[42, 40]], "d": 22, "depth": 56, "name": "孔1"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 82], "at": [[105, 40]], "d": 18, "depth": 52, "name": "孔2"},
+      {"type": "hole", "plane": "YZ", "origin": [140, 40, 35], "at": [[0, 0]], "d": 16, "depth": 60, "name": "侧孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[18, 16], [132, 16], [18, 64], [132, 64]], "d": 9, "through": true, "name": "安装孔"}
+    ]}
+  ]
+}

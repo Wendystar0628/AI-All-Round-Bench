@@ -1,0 +1,11 @@
+#| 消息发送程序：向指定 pid 发送 5 条带序号消息。
+   用法：(proc-spawn "/Programs/demo-sender.osl" "main" (list 目标PID))
+   可修改消息内容与次数。 |#
+(defn main (targetPid)
+  (set i 0)
+  (while (< i 5)
+    (set msg (dict "seq" i "text" (concat "第 " (str (+ i 1)) " 条消息，来自发送进程")))
+    (set r (sys "host-sys" "msg-send" (list 0 targetPid msg)))
+    (sleep 400)
+    (set i (+ i 1)))
+  (return true))

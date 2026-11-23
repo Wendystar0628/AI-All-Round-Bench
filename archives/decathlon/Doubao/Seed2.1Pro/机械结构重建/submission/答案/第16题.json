@@ -1,0 +1,16 @@
+{
+  "problem": "16",
+  "parts": [
+    {"name": "1", "title": "双蜗室异面三通泵壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 220, 140], "r": 6}], "depth": 22, "name": "地脚底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [80, 70], "d": 132}], "depth": [22, 110], "name": "左蜗室"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [150, 70], "d": 112}], "depth": [22, 100], "name": "右蜗室"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [80, 70], "d": 86}], "depth": [110, 130], "name": "左轴承沉台"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 130], "at": [[80, 70]], "d": 36, "depth": 90, "name": "左轴封孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [[150, 70]], "d": 34, "depth": 70, "name": "右过流孔"},
+      {"type": "extrude", "plane": "YZ", "origin": [200, 70, 70], "loops": [{"circle": [0, 0], "d": 64}], "depth": [0, 24], "name": "侧接口"},
+      {"type": "hole", "plane": "YZ", "origin": [200, 70, 70], "at": [[0, 0]], "d": 32, "depth": 80, "name": "侧通道"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 22], "at": [[20, 20], [200, 20], [20, 120], [200, 120]], "d": 10, "depth": 30, "cbore": {"d": 18, "depth": 6}, "name": "地脚孔"}
+    ]}
+  ]
+}

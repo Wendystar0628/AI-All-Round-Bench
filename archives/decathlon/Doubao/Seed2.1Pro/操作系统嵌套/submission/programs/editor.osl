@@ -1,0 +1,65 @@
+#| ============================================================
+   文本与程序编辑器 editor.osl
+   新建/编辑/保存文本与 .osl 程序；可以打开直属子系统内核源文件，
+   也可以打开本系统飞控程序；“运行”启动一个进程执行程序。
+   ============================================================ |#
+
+(defn editor-main ()
+  (set S (dict "path" "" "text" "" "dirty" false "msg" "" "runPid" null)))
+  (while true
+    (set drain true)
+    (while drain
+      (set m (sys "host-sys" "wait-msg" (list 0)))
+      (if (= m null) (set drain false) (editor-msg S m)))
+    (set ui (dict "kind" "app" "app" "editor"
+                  "path" (get S "path") "text" (get S "text")
+                  "dirty" (get S "dirty") "msg" (get S "msg")
+                  "runPid" (get S "runPid" null)
+                  "savedAt" (sys "host-sys" "time-now" (list))))
+    (sys "host-sys" "ui-submit" (list 4 ui))
+    (sleep 200))
+
+(defn editor-msg (S m)
+  (set b (get m "value" m))
+  (set part (get b "part"))
+  (set value (get b "value"))
+  (if (= part "open") (editor-open S value))
+  (if (= part "new") (begin (set-key! S "path" "") (set-key! S "text" "") (set-key! S "dirty" false)))
+  (if (= part "edit") (begin (set-key! S "text" value) (set-key! S "dirty" true)))
+  (if (= part "save") (editor-save S value))
+  (if (= part "run") (editor-run S))
+  (if (= part "compile-check") (editor-check S)))
+
+(defn editor-open (S path)
+  (set r (sys "host-sys" "fs-read" (list path)))
+  (if (!= (get r "__error" null) null)
+    (set-key! S "msg" (get r "__error"))
+    (begin
+      (set-key! S "path" path)
+      (set-key! S "text" (get r "content"))
+      (set-key! S "dirty" false))))
+
+(defn editor-save (S path)
+  (if (!= path null) (set-key! S "path" path))
+  (if (= (get S "path") "") (begin (set-key! S "msg" "请先选择保存路径") (return)))
+  (set r (sys "host-sys" "fs-write" (list (get S "path") (get S "text"))))
+  (if (!= (get r "__error" null) null)
+    (set-key! S "msg" (get r "__error"))
+    (begin (set-key! S "dirty" false) (set-key! S "msg" "已保存"))))
+
+(defn editor-run (S)
+  (set path (get S "path"))
+  (if (and (get S "dirty") (!= path "")) (editor-save S path))
+  (set entry (get-in (dict) "x" null))
+  (set r (sys "host-sys" "proc-spawn" (list path "main" (list) (dict))))
+  (if (!= (get r "__error" null) null)
+    (set-key! S "msg" (get r "__error"))
+    (begin (set-key! S "runPid" (get r "pid")) (set-key! S "msg" (concat "已启动进程 " (str (get r "pid")))))))
+
+(defn editor-check (S)
+  (set r (sys "host-sys" "compile" (list (get S "text") (get S "path"))))
+  (if (!= (get r "__error" null) null)
+    (set-key! S "msg" (get r "__error"))
+    (set-key! S "msg" "语法检查通过")))
+
+(defn get-in (d k dflt) (return dflt))

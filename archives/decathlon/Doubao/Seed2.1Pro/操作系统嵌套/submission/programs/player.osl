@@ -1,0 +1,170 @@
+#| ============================================================
+   三维场景播放器 player.osl
+   职责进程：
+     本播放器进程（时序与控制） + flight.osl（排演飞控，由本进程启动）
+     宿主飞行服务负责“环境/特效”状态采样（同一取样时刻提交）。
+   打开的场景是纯数据文件（.scene.json），播放器中没有任何特定模型。
+   ============================================================ |#
+
+(defn player-main ()
+  (set S (dict
+    "path" "" "loaded" false "playing" false "loop" false
+    "time" 0 "duration" 15 "rate" 1 "mode" "show"
+    "camera" "cine" "selection" null
+    "wind" 0 "faultAt" null "recording" null
+    "lastTick" 0 "ctrlPid" null))
+  (player-loop S))
+
+(defn player-loop (S)
+  (while true
+    ;; 1. 处理输入消息（打开/控制/镜头/点选/排演）
+    (set got true)
+    (while got
+      (set m (sys "host-sys" "wait-msg" (list 0)))
+      (if (= m null) (set got false) (player-msg S m)))
+    ;; 2. 时序推进：按系统虚拟时间
+    (set now (sys "host-sys" "time-now" (list)))
+    (player-tick S now)
+    ;; 3. 提交 UI 与 3D 场景状态（同一取样时刻）
+    (if (get S "loaded") (player-submit S now))
+    (set ui (player-ui S))
+    (sys "host-sys" "ui-submit" (list 6 ui))
+    (sleep 33)))
+
+(defn player-msg (S m)
+  (set body (get m "value" m))
+  (set kind (get body "part"))
+  (set data (get body "value"))
+  (if (= kind "open") (player-open S data))
+  (if (= kind "play") (set-key! S "playing" true))
+  (if (= kind "pause") (set-key! S "playing" false))
+  (if (= kind "stop") (player-stop S))
+  (if (= kind "step") (player-step-frame S))
+  (if (= kind "loop") (set-key! S "loop" data))
+  (if (= kind "seek") (player-seek S data))
+  (if (= kind "rate") (set-key! S "rate" data))
+  (if (= kind "camera") (set-key! S "camera" data))
+  (if (= kind "rehearse") (player-start-rehearsal S data))
+  (if (= kind "wind") (player-set-wind S data))
+  (if (= kind "heading") (player-set-heading S data))
+  (if (= kind "fault") (player-trigger-fault S))
+  (if (= kind "save-record") (player-save-record S data))
+  (if (= kind "project") (player-project S data))
+  (if (= kind "pick") (player-pick S body)))
+
+(defn player-open (S path)
+  (set r (sys "host-sys" "scene-load" (list path)))
+  (if (!= (get r "__error" null) null)
+    (begin (set-key! S "error" (get r "__error")) (return)))
+  (set res (sys "host-sys" "scene-resource" (list path)))
+  (set-key! S "path" path)
+  (set-key! S "duration" (get res "duration" 15))
+  (set-key! S "loaded" true)
+  (set-key! S "time" 0)
+  (set-key! S "playing" false)
+  (set-key! S "mode" "show")
+  (set-key! S "error" null)
+  (set st0 (sys "host-sys" "flight-init" (list path (dict))))
+  (set-key! S "state" st0))
+
+(defn player-stop (S)
+  (set-key! S "playing" false)
+  (set-key! S "time" 0)
+  (set st0 (sys "host-sys" "flight-init" (list (get S "path") (dict))))
+  (set-key! S "state" st0))
+
+(defn player-seek (S t)
+  (set-key! S "time" (clamp t 0 (get S "duration")))
+  (if (= (get S "mode") "show")
+    ;; 演出：跳转到记录关键帧对应状态（宿主服务按记录求值）
+    (set st (sys "host-sys" "flight-show-state" (list (get S "path") (get S "time"))))
+    (set st (sys "host-sys" "flight-state-at" (list (get S "path") (get S "time") (get S "recording" null)))))
+  (set-key! S "state" st))
+
+(defn player-step-frame (S)
+  (set h (/ 1000 30))
+  (player-seek S (+ (get S "time") h)))
+
+(defn player-tick (S now)
+  (if (not (get S "loaded")) (return))
+  (set last (get S "lastTick"))
+  (if (= last 0) (begin (set-key! S "lastTick" now) (return)))
+  (set dt (* (- now last) (get S "rate")))
+  (set-key! S "lastTick" now)
+  (if (not (get S "playing")) (return))
+  (set t (+ (get S "time") (/ dt 1000)))
+  (if (>= t (get S "duration"))
+    (if (get S "loop") (set t (- t (get S "duration")))
+      (begin (set t (get S "duration")) (set-key! S "playing" false)))
+  (set-key! S "time" t)
+  (if (= (get S "mode") "show")
+    (set st (sys "host-sys" "flight-show-state" (list (get S "path") t)))
+    (set st (sys "host-sys" "flight-physics" (list (* dt 1) t (get S "recording" null)))))
+  (set-key! S "state" st))
+  (if (get st "crashed") (set-key! S "playing" (get S "loop"))))
+
+(defn player-submit (S now)
+  (set st (get S "state"))
+  (set cam (dict "mode" (get S "camera") "t" (get S "time") "pos" null "target" null))
+  (set payload (dict "scenePath" (get S "path") "state" st "camera" cam "time" (get S "time")))
+  (sys "host-sys" "scene-submit" (list 6 "main" payload)))
+
+(defn player-start-rehearsal (S opts)
+  (set-key! S "mode" "rehearse")
+  (set-key! S "time" 0)
+  (set init (sys "host-sys" "flight-init" (list (get S "path") opts)))
+  (set-key! S "state" init)
+  ;; 启动飞控进程（普通程序文件，可替换）
+  (if (= (get S "ctrlPid") null)
+    (begin
+      (set r (sys "host-sys" "proc-spawn" (list (get opts "controller" "/Programs/flight.osl") "ctrl-main" (list) (dict))))
+      (set-key! S "ctrlPid" (get r "pid"))))
+  (set-key! S "playing" true))
+
+(defn player-set-wind (S v)
+  (set-key! S "wind" v)
+  (sys "host-sys" "flight-input" (list (dict "wind" v))))
+(defn player-set-heading (S v)
+  (set-key! S "heading" v)
+  (sys "host-sys" "flight-input" (list (dict "heading" v))))
+(defn player-trigger-fault (S)
+  (sys "host-sys" "flight-input" (list (dict "fault" true))))
+
+(defn player-save-record (S path)
+  (set r (sys "host-sys" "flight-save-record" (list path)))
+  (set-key! S "recordMsg" (get r "__error" "已保存排演记录")))
+
+(defn player-project (S targetId)
+  (sys "host-sys" "project-open" (list 6 "player" targetId)))
+
+(defn player-pick (S body)
+  (set r (sys "host-sys" "scene-pick" (list "main" (get body "ndc"))))
+  (set-key! S "selection" r))
+
+;; ---------- UI 提交 ----------
+(defn player-ui (S)
+  (set info (dict
+    "kind" "app" "app" "player" "loaded" (get S "loaded")
+    "path" (get S "path")
+    "time" (round (* (get S "time") 100)) "duration" (round (* (get S "duration") 100))
+    "rate" (get S "rate") "playing" (get S "playing") "loop" (get S "loop")
+    "mode" (get S "mode") "camera" (get S "camera")
+    "selection" (get S "selection") "error" (get S "error")
+    "recordMsg" (get S "recordMsg")
+    "stateLine" (state-line S)))
+  (return info))
+
+(defn state-line (S)
+  (set st (get S "state"))
+  (if (= st null) (return "未装载场景"))
+  (return (concat "高度 " (fmt1 (get (get st "pos") 1))
+                  "m  主旋翼 " (str (round (get st "rotorMain" 0)))
+                  "  " (phase-text st))))
+
+(defn phase-text (st)
+  (if (get st "crashed" false) (return "已坠毁"))
+  (if (!= (get st "fault" null) null) (return "故障！"))
+  (if (get st "flying" false) (return "飞行中"))
+  (return "地面"))
+
+(defn fmt1 (x) (return (str (/ (round (* x 10)) 10))))

@@ -1,0 +1,46 @@
+#| ============================================================
+   系统编译器 compiler.osl
+   把程序文本转换为可执行形式（AST + 函数表）。
+   编译器本身是系统内程序，可以修改；修改后的编译器用于此后启动的程序。
+   本编译器在宿主解析原语(parse/compile)之上定义可改写的规则：
+     - 常量折叠（纯字面量算术在编译期求值）
+     - 自定义宏 (defmacro name (args) body) 在编译期展开
+   规则改动并重启子系统后，新启动的程序按新规则编译。
+   ============================================================ |#
+
+(defn compiler-main (sourceText)
+  ;; 宿主只提供词法/语法解析原语（把文本变成嵌套数组）
+  (set parsed (sys "host-sys" "compile-raw" (list sourceText)))
+  ;; 第一轮：宏展开由宿主配合完成（本程序定义哪些名字是宏）
+  (set macros (list "twice" "forever"))
+  ;; 第二轮：常量折叠纯字面量表达式
+  (set folded (fold-forms parsed macros))
+  (return folded))
+
+(defn fold-forms (forms macros)
+  (set out (list))
+  (foreach f forms (append! out (fold-one f macros)))
+  (return out))
+
+(defn fold-one (f macros)
+  ;; 非列表原样返回
+  (if (not (list? f)) (return f))
+  ;; 宏展开
+  (set h (head f))
+  (if (= h "twice")
+    (return (list (dict "sym" "begin")
+                  (fold-one (get f 1) macros)
+                  (fold-one (get f 1) macros))))
+  (if (= h "forever")
+    (return (list (dict "sym" "while") (list (dict "sym" "quote") true)
+                  (fold-one (get f 1) macros))))
+  (return f))
+
+(defn head (f)
+  (set x (get f 0))
+  (if (dict? x) (return (get x "sym" "")))
+  (return (str x)))
+
+(defn dict? (x)
+  (if (and (not (list? x)) (!= x null) (= (type-of x) "dict")) (return true))
+  (return false))

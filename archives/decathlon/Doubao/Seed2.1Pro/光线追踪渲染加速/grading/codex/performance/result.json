@@ -1,0 +1,186 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 0,
+      "reason": "最终版本和按时间倒序回溯的三个历史交付版本正式得分均为 0。计分报告 q=0、c=0、h=0，官方 score=0。提交在公开边界输入超时，官方两次设备失败保护跳过后续运行，各次计时及隐藏判定均记 0；基线运行全部通过。"
+    }
+  ],
+  "metrics": {
+    "R_ms": 510.8596,
+    "C_ms": null,
+    "s": null,
+    "q": 0,
+    "c": 0,
+    "h": 0,
+    "timing_factors": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "hidden_factors": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "official_score": 0,
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\final_eval\\results.json",
+    "version_scores": {
+      "final_eval": 0,
+      "previous_1_eval": 0,
+      "previous_2_eval": 0,
+      "previous_3_eval": 0
+    },
+    "version_reports": {
+      "final_eval": {
+        "score": 0,
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\final_eval\\results.json",
+        "R_ms": 510.8596,
+        "C_ms": null,
+        "s": null,
+        "q": 0,
+        "c": 0,
+        "h": 0,
+        "boundary": [
+          {
+            "id": "boundary_01",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_02",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_03",
+            "status": "skipped",
+            "timeout": null,
+            "factor": 0,
+            "reason": "earlier device failure"
+          }
+        ]
+      },
+      "previous_1_eval": {
+        "score": 0,
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\previous_1_eval\\results.json",
+        "R_ms": 512.1022,
+        "C_ms": null,
+        "s": null,
+        "q": 0,
+        "c": 0,
+        "h": 0,
+        "boundary": [
+          {
+            "id": "boundary_01",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_02",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_03",
+            "status": "skipped",
+            "timeout": null,
+            "factor": 0,
+            "reason": "earlier device failure"
+          }
+        ]
+      },
+      "previous_2_eval": {
+        "score": 0,
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\previous_2_eval\\results.json",
+        "R_ms": 523.7214,
+        "C_ms": null,
+        "s": null,
+        "q": 0,
+        "c": 0,
+        "h": 0,
+        "boundary": [
+          {
+            "id": "boundary_01",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_02",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_03",
+            "status": "skipped",
+            "timeout": null,
+            "factor": 0,
+            "reason": "earlier device failure"
+          }
+        ]
+      },
+      "previous_3_eval": {
+        "score": 0,
+        "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\previous_3_eval\\results.json",
+        "R_ms": 513.0148,
+        "C_ms": null,
+        "s": null,
+        "q": 0,
+        "c": 0,
+        "h": 0,
+        "boundary": [
+          {
+            "id": "boundary_01",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_02",
+            "status": "fail",
+            "timeout": true,
+            "factor": 0,
+            "reason": "process failed, timed out, or did not report a positive time"
+          },
+          {
+            "id": "boundary_03",
+            "status": "skipped",
+            "timeout": null,
+            "factor": 0,
+            "reason": "earlier device failure"
+          }
+        ]
+      }
+    }
+  },
+  "notes": "评的是作答结束时工作目录中的 solution.cu 副本，不看 Git 提交。最终版本来源：E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\submission\\solution.cu；正式报告：E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\final_eval\\results.json。无 versions 快照目录；历史版本由受测 run-4e54fc9ed7304eba82e58c0f72069981/session.log 中成功的 write/edit 逐次重放还原，重放终态与最终提交文本完全一致；来源详见 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\historical_versions\\provenance.json。final_eval: score=0, report=E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\final_eval\\results.json；previous_1_eval: score=0, report=E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\previous_1_eval\\results.json；previous_2_eval: score=0, report=E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\previous_2_eval\\results.json；previous_3_eval: score=0, report=E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\previous_3_eval\\results.json。计分版本为 final_eval；所有编译与正式测量均经 process_job.py --cpus 16-27 包装，官方 --cpus 16-27 保留。历史回溯首次启动曾因 PowerShell 脚本编码未找到评测入口，改为 UTF-8 BOM 后重新启动；该次未编译或测量，不计入评分。源码核对：主机线程均 join/get，render 每次重建并上传场景；射线和着色在 GPU 执行，未发现读取答案、篡改评测、干扰计时或其他作弊证据。最终源码第 382–387 行只输出 lane 0 的累加值，未汇总其他 lane 样本；第 347 行可能以未命中的 hid=-1 访问 ex。",
+  "anomaly": "最终内核遗漏样本归约且运行超时，最近三版回溯亦未恢复正确性。"
+}

@@ -1,0 +1,72 @@
+{
+    "task":  "数字电路仿真器加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "score":  0.0,
+                      "name":  "总分",
+                      "reason":  "官方 evaluate.py：隐藏正确性 7/7 通过，9 个性能输入全部 WRONG_ANSWER，各记 0 分；performance_score=0，按公式总分 0。源码将 -100-f 的触发器编码在 f\u003e=100 时误判为主输入编码，破坏完整电路仿真。",
+                      "max":  100
+                  }
+              ],
+    "metrics":  {
+                    "performance_score":  0.0,
+                    "correctness_passed":  7,
+                    "report_path":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Doubao\\Seed2.1Pro\\数字电路仿真器加速\\codex\\performance\\work\\evaluation_report.json",
+                    "correctness_total":  7,
+                    "performance_total":  9,
+                    "G":  null,
+                    "performance_passed":  0,
+                    "input_points":  [
+                                         {
+                                             "case":  "input_01",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_02",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_03",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_04",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_05",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_06",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_07",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_08",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         },
+                                         {
+                                             "case":  "input_09",
+                                             "status":  "WRONG_ANSWER",
+                                             "points":  0.0
+                                         }
+                                     ],
+                    "solution_sha256":  "E5E503DF22DD75619FCA57A3FCB0F2E30D890E1F30FD3E4F818076198950A8A7"
+                },
+    "notes":  "评的是作答结束时工作目录的副本，不看 git 提交；原提交只读，solution.cpp 副本哈希与原件一致。提交与官方源码基线均按题定参数编译成功，全部编译及一次完整 evaluate.py 均经指定 Python 3.12 process_job.py --cpus 0-15 包装，评测保留官方亲和性、高优先级及 OMP_NUM_THREADS=16。基线所有运行通过，session_errors 为空。9 个性能输入首次提交运行均 WRONG_ANSWER，官方脚本按规定跳过后续无意义提交运行，每个基线仍测 3 次取中位数；失败输入无有效加速比，G=null。源码自然检查未见预存答案、篡改计时或绕过评测。所有本会话启动的编译及评测进程已退出，无遗留服务。报告、编译日志与进程清理记录均在 work 内。",
+    "anomaly":  "触发器索引编码与主输入冲突，9个性能输入全部输出错误。"
+}

@@ -1,0 +1,11 @@
+#| 累加计算程序：演示变量、循环与系统调用。可修改循环次数后运行。 |#
+(defn main ()
+  (set n 100)
+  (set s 0)
+  (set i 1)
+  (while (<= i n)
+    (set s (+ s i))
+    (set i (+ i 1)))
+  (set r (sys "host-sys" "log-msg" (list (concat "累加 1.." (str n) " = " (str s)))))
+  (set f (sys "host-sys" "fs-write" (list "/Documents/累加结果.txt" (concat "1 到 " (str n) " 的和是 " (str s)))))
+  (return s))

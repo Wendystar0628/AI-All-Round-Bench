@@ -1,0 +1,15 @@
+{
+  "problem": "05",
+  "parts": [
+    {"name": "1", "title": "双层交汇混流阀箱", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 120, 70]}], "depth": 14, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [10, 8, 110, 62]}], "depth": 40, "name": "下腔"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [18, 16, 104, 54]}], "depth": 24, "name": "上腔"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [35, 35], "d": 34}], "depth": [40, 84], "name": "顶部接口1"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [87, 35], "d": 26}], "depth": [40, 78], "name": "顶部接口2"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 84], "at": [[30, 35]], "d": 20, "depth": 50, "name": "孔1"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 78], "at": [[90, 35]], "d": 14, "depth": 44, "name": "孔2"},
+      {"type": "hole", "plane": "YZ", "origin": [110, 35, 40], "at": [[0, 0]], "d": 16, "depth": 40, "name": "侧孔"}
+    ]}
+  ]
+}

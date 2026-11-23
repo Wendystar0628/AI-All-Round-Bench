@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>果冻冲击与造浪水槽 · 三维物理模拟</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="webgl"></canvas>
+
+  <div id="ui">
+    <header id="topbar">
+      <div class="brand">
+        <span class="logo"></span>
+        <span class="title">果冻冲击 · 造浪水槽</span>
+      </div>
+      <nav id="sceneTabs">
+        <button class="tab active" data-scene="jelly">场景一 · 重球冲击果冻</button>
+        <button class="tab" data-scene="tank">场景二 · 多密度球造浪水槽</button>
+      </nav>
+      <div class="topactions">
+        <button id="btnSound" class="ghost on" title="开关声音">声音 开</button>
+      </div>
+    </header>
+
+    <aside id="sidepanel">
+      <section class="demo-block">
+        <h3>演示</h3>
+        <div class="demo-grid">
+          <button class="demo" data-run="jelly-center">正中单击</button>
+          <button class="demo" data-run="jelly-multi">连击开裂</button>
+          <button class="demo" data-run="jelly-offset">偏击滑移</button>
+          <button class="demo" data-run="tank-full">风浪全片</button>
+        </div>
+      </section>
+
+      <section class="transport">
+        <button id="btnPause">暂停</button>
+        <button id="btnSlow">慢放 ×0.25</button>
+        <button id="btnReset">重置</button>
+        <button id="btnRerun">重新运行</button>
+      </section>
+
+      <div id="paramJelly" class="params">
+        <section>
+          <h3>果冻参数</h3>
+          <label>软硬 <input type="range" id="jSoft" min="0" max="1" step="0.01" value="0.5"><span id="jSoftV"></span></label>
+          <label>结实程度 <input type="range" id="jTough" min="0" max="1" step="0.01" value="0.55"><span id="jToughV"></span></label>
+        </section>
+        <section>
+          <h3>重球</h3>
+          <label>质量 <input type="range" id="bMass" min="2" max="36" step="0.5" value="14"><span id="bMassV"></span></label>
+          <label>下落高度 <input type="range" id="bHeight" min="0.6" max="4.5" step="0.1" value="2.6"><span id="bHeightV"></span></label>
+          <div class="trig-grid">
+            <button id="trigCenter">正中</button>
+            <button id="trigOffset">偏心</button>
+            <button id="trigCont">连续</button>
+          </div>
+        </section>
+      </div>
+
+      <div id="paramTank" class="params" style="display:none">
+        <section>
+          <h3>各组小球密度（相对水）</h3>
+          <div id="densityRows"></div>
+        </section>
+        <section>
+          <h3>造浪装置</h3>
+          <label>幅度 <input type="range" id="wAmp" min="0" max="1" step="0.01" value="0.35"><span id="wAmpV"></span></label>
+          <label>频率 <input type="range" id="wFreq" min="0.25" max="1.6" step="0.01" value="0.7"><span id="wFreqV"></span></label>
+          <div class="trig-grid">
+            <button id="btnWave">开始造浪</button>
+            <button id="btnDrop">释放小球</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="hint">鼠标拖拽旋转视角 · 滚轮缩放 · 右键平移</div>
+    </aside>
+
+    <div id="demoBadge"></div>
+    <div id="loading"><div class="card"><div class="spin"></div><div id="loadingText">正在初始化…</div></div></div>
+  </div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script src="src/common.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/jelly.js"></script>
+<script src="src/jelly-scene.js"></script>
+<script src="src/tank-wgsl.js"></script>
+<script src="src/tank-scene.js"></script>
+<script src="src/tank.js"></script>
+<script src="src/director.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>

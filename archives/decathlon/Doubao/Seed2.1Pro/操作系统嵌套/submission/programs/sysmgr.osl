@@ -1,0 +1,48 @@
+#| ============================================================
+   子系统管理 sysmgr.osl —— 新建/暂停/继续/单步/调速/重启/关闭/快照/分叉。
+   创建直属子系统后，通过 wm 命令 open-child-window 打开其远程桌面窗口。
+   ============================================================ |#
+
+(defn sysmgr-main ()
+  (set S (dict "msg" "" "snapPath" "/Snapshots"))
+  (sys "host-sys" "fs-mkdir" (list "/Snapshots"))
+  (while true
+    (set drain true)
+    (while drain
+      (set m (sys "host-sys" "wait-msg" (list 0)))
+      (if (= m null) (set drain false) (sysmgr-msg S m)))
+    (set kids (sys "host-sys" "child-list" (list)))
+    (set ui (dict "kind" "app" "app" "sysmgr"
+                  "children" kids "msg" (get S "msg")
+                  "self" (sys "host-sys" "self-id" (list))
+                  "time" (sys "host-sys" "time-now" (list))))
+    (sys "host-sys" "ui-submit" (list 8 ui))
+    (sleep 200)))
+
+(defn sysmgr-msg (S m)
+  (set b (get m "value" m))
+  (set part (get b "part"))
+  (set id (get b "id"))
+  (set value (get b "value"))
+  (if (= part "new")
+    (begin
+      (set r (sys "host-sys" "child-create" (list (dict "name" value))))
+      (if (!= (get r "__error" null) null)
+        (set-key! S "msg" (get r "__error"))
+        (begin
+          (set-key! S "msg" (concat "已创建 " (get r "id")))
+          (sys "host-sys" "wm-open-child" (list (get r "id")))))))
+  (if (= part "pause") (sys "host-sys" "child-control" (list id "pause" null)))
+  (if (= part "resume") (sys "host-sys" "child-control" (list id "resume" null)))
+  (if (= part "stop") (sys "host-sys" "child-control" (list id "stop" null)))
+  (if (= part "close") (sys "host-sys" "child-control" (list id "close" null)))
+  (if (= part "rate") (sys "host-sys" "child-control" (list id "rate" value)))
+  (if (= part "snapshot")
+    (set r (sys "host-sys" "child-snapshot" (list id (concat "/Snapshots/" id ".snap")))))
+  (if (= part "restore")
+    (set r (sys "host-sys" "child-restore" (list id value "restore"))))
+  (if (= part "fork")
+    (set r (sys "host-sys" "child-restore" (list id value "fork"))))
+  (if (= part "step") (sys "host-sys" "child-step" (list id 30000)))
+  (if (= part "kernel-open") (sys "host-sys" "kernel-open-request" (list id)))
+  (if (= part "restart") (sys "host-sys" "child-control" (list id "restart" null))))

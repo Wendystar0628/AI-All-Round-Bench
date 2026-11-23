@@ -1,0 +1,16 @@
+{
+  "problem": "09",
+  "parts": [
+    {"name": "1", "title": "跨腔三向斜流道歧管", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 140, 70]}], "depth": 14, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [10, 8, 130, 62]}], "depth": 44, "name": "主体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [30, 35], "d": 40}], "depth": [40, 70], "name": "接口1"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [105, 35], "d": 34}], "depth": [40, 64], "name": "接口2"},
+      {"type": "extrude", "plane": "YZ", "origin": [130, 35, 35], "loops": [{"circle": [0, 0], "d": 30}], "depth": [0, 16], "name": "侧接口"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [[30, 35]], "d": 26, "depth": 50, "name": "孔1"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 64], "at": [[105, 35]], "d": 22, "depth": 44, "name": "孔2"},
+      {"type": "hole", "plane": "YZ", "origin": [130, 35, 35], "at": [[0, 0]], "d": 16, "depth": 60, "name": "侧孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[18, 15], [122, 15], [18, 55], [122, 55]], "d": 8, "through": true, "name": "安装孔"}
+    ]}
+  ]
+}

@@ -1,0 +1,1489 @@
+{
+ "problem": "24",
+ "parts": [
+  {
+   "name": "1",
+   "title": "壳体",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        220,
+        160
+       ],
+       "r": 6
+      }
+     ],
+     "depth": 22,
+     "name": "底座"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        110,
+        80
+       ],
+       "d": 130
+      }
+     ],
+     "depth": [
+      22,
+      112
+     ],
+     "name": "主阀体"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        110,
+        80
+       ],
+       "d": 90
+      }
+     ],
+     "depth": [
+      112,
+      128
+     ],
+     "name": "前凸缘"
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      128
+     ],
+     "at": [
+      [
+       110,
+       80
+      ]
+     ],
+     "d": 32,
+     "depth": 104,
+     "cbore": {
+      "d": 50,
+      "depth": 8
+     },
+     "name": "前接口孔"
+    },
+    {
+     "type": "extrude",
+     "plane": {
+      "origin": [
+       110,
+       80,
+       108
+      ],
+      "normal": [
+       -0.3039,
+       -0.4341,
+       0.848
+      ],
+      "x_dir": [
+       -0.5736,
+       -0.8192,
+       0.0
+      ]
+     },
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 64
+      }
+     ],
+     "depth": 32,
+     "name": "斜座1"
+    },
+    {
+     "type": "extrude",
+     "plane": {
+      "origin": [
+       110,
+       80,
+       108
+      ],
+      "normal": [
+       -0.0,
+       -0.7193,
+       0.6947
+      ],
+      "x_dir": [
+       -0.0,
+       -1.0,
+       0.0
+      ]
+     },
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 64
+      }
+     ],
+     "depth": 32,
+     "name": "斜座2"
+    },
+    {
+     "type": "extrude",
+     "plane": {
+      "origin": [
+       110,
+       80,
+       108
+      ],
+      "normal": [
+       0.5155,
+       -0.361,
+       0.7771
+      ],
+      "x_dir": [
+       0.8192,
+       -0.5736,
+       0.0
+      ]
+     },
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 64
+      }
+     ],
+     "depth": 32,
+     "name": "斜座3"
+    },
+    {
+     "type": "extrude",
+     "plane": {
+      "origin": [
+       110,
+       80,
+       108
+      ],
+      "normal": [
+       -0.569,
+       0.3984,
+       0.7193
+      ],
+      "x_dir": [
+       -0.8192,
+       0.5736,
+       0.0
+      ]
+     },
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 64
+      }
+     ],
+     "depth": 32,
+     "name": "斜座4"
+    },
+    {
+     "type": "extrude",
+     "plane": {
+      "origin": [
+       110,
+       80,
+       108
+      ],
+      "normal": [
+       0.4815,
+       0.3371,
+       0.809
+      ],
+      "x_dir": [
+       0.8192,
+       0.5736,
+       0.0
+      ]
+     },
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 64
+      }
+     ],
+     "depth": 32,
+     "name": "斜座5"
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      22
+     ],
+     "at": [
+      [
+       24,
+       24
+      ],
+      [
+       196,
+       24
+      ],
+      [
+       24,
+       136
+      ],
+      [
+       196,
+       136
+      ]
+     ],
+     "d": 10,
+     "depth": 30,
+     "cbore": {
+      "d": 18,
+      "depth": 6
+     },
+     "name": "地脚孔"
+    }
+   ]
+  },
+  {
+   "name": "2",
+   "title": "1号斜阀套",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         20
+        ],
+        [
+         40,
+         20
+        ],
+        [
+         40,
+         16
+        ],
+        [
+         48,
+         16
+        ],
+        [
+         48,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "阀套"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 18,
+     "through": true,
+     "name": "内孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     91.76599999999999,
+     53.954,
+     158.88
+    ]
+   }
+  },
+  {
+   "name": "3",
+   "title": "1号阀芯",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0,
+      56
+     ],
+     "name": "阀芯"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "origin": [
+      10,
+      3,
+      0
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 30
+      }
+     ],
+     "depth": [
+      0,
+      12
+     ],
+     "name": "偏心轮"
+    }
+   ],
+   "placement": {
+    "translate": [
+     89.33479999999999,
+     50.4812,
+     165.664
+    ]
+   }
+  },
+  {
+   "name": "4",
+   "title": "1号阀端盖",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         25
+        ],
+        [
+         10,
+         25
+        ],
+        [
+         10,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "端盖"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 12,
+     "through": true,
+     "name": "中心孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     82.64899999999999,
+     40.931,
+     184.32
+    ]
+   }
+  },
+  {
+   "name": "5",
+   "title": "2号斜阀套",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         20
+        ],
+        [
+         40,
+         20
+        ],
+        [
+         40,
+         16
+        ],
+        [
+         48,
+         16
+        ],
+        [
+         48,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "阀套"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 18,
+     "through": true,
+     "name": "内孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     110.0,
+     36.842,
+     149.68200000000002
+    ]
+   }
+  },
+  {
+   "name": "6",
+   "title": "2号阀芯",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0,
+      56
+     ],
+     "name": "阀芯"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "origin": [
+      10,
+      3,
+      0
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 30
+      }
+     ],
+     "depth": [
+      0,
+      12
+     ],
+     "name": "偏心轮"
+    }
+   ],
+   "placement": {
+    "translate": [
+     110.0,
+     31.0876,
+     155.23960000000002
+    ]
+   }
+  },
+  {
+   "name": "7",
+   "title": "2号阀端盖",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         25
+        ],
+        [
+         10,
+         25
+        ],
+        [
+         10,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "端盖"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 12,
+     "through": true,
+     "name": "中心孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     110.0,
+     15.262999999999998,
+     170.52300000000002
+    ]
+   }
+  },
+  {
+   "name": "8",
+   "title": "3号斜阀套",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         20
+        ],
+        [
+         40,
+         20
+        ],
+        [
+         40,
+         16
+        ],
+        [
+         48,
+         16
+        ],
+        [
+         48,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "阀套"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 18,
+     "through": true,
+     "name": "内孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     140.93,
+     58.34,
+     154.626
+    ]
+   }
+  },
+  {
+   "name": "9",
+   "title": "3号阀芯",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0,
+      56
+     ],
+     "name": "阀芯"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "origin": [
+      10,
+      3,
+      0
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 30
+      }
+     ],
+     "depth": [
+      0,
+      12
+     ],
+     "name": "偏心轮"
+    }
+   ],
+   "placement": {
+    "translate": [
+     145.054,
+     55.452000000000005,
+     160.8428
+    ]
+   }
+  },
+  {
+   "name": "10",
+   "title": "3号阀端盖",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         25
+        ],
+        [
+         10,
+         25
+        ],
+        [
+         10,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "端盖"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 12,
+     "through": true,
+     "name": "中心孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     156.395,
+     47.510000000000005,
+     177.939
+    ]
+   }
+  },
+  {
+   "name": "11",
+   "title": "4号斜阀套",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         20
+        ],
+        [
+         40,
+         20
+        ],
+        [
+         40,
+         16
+        ],
+        [
+         48,
+         16
+        ],
+        [
+         48,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "阀套"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 18,
+     "through": true,
+     "name": "内孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     75.86,
+     103.904,
+     151.15800000000002
+    ]
+   }
+  },
+  {
+   "name": "12",
+   "title": "4号阀芯",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0,
+      56
+     ],
+     "name": "阀芯"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "origin": [
+      10,
+      3,
+      0
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 30
+      }
+     ],
+     "depth": [
+      0,
+      12
+     ],
+     "name": "偏心轮"
+    }
+   ],
+   "placement": {
+    "translate": [
+     71.30799999999999,
+     107.0912,
+     156.91240000000002
+    ]
+   }
+  },
+  {
+   "name": "13",
+   "title": "4号阀端盖",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         25
+        ],
+        [
+         10,
+         25
+        ],
+        [
+         10,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "端盖"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 12,
+     "through": true,
+     "name": "中心孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     58.79,
+     115.856,
+     172.73700000000002
+    ]
+   }
+  },
+  {
+   "name": "14",
+   "title": "5号斜阀套",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         20
+        ],
+        [
+         40,
+         20
+        ],
+        [
+         40,
+         16
+        ],
+        [
+         48,
+         16
+        ],
+        [
+         48,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "阀套"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 18,
+     "through": true,
+     "name": "内孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     138.89,
+     100.226,
+     156.54000000000002
+    ]
+   }
+  },
+  {
+   "name": "15",
+   "title": "5号阀芯",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      0,
+      56
+     ],
+     "name": "阀芯"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "origin": [
+      10,
+      3,
+      0
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 30
+      }
+     ],
+     "depth": [
+      0,
+      12
+     ],
+     "name": "偏心轮"
+    }
+   ],
+   "placement": {
+    "translate": [
+     142.742,
+     102.9228,
+     163.01200000000003
+    ]
+   }
+  },
+  {
+   "name": "16",
+   "title": "5号阀端盖",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         25
+        ],
+        [
+         10,
+         25
+        ],
+        [
+         10,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "端盖"
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 12,
+     "through": true,
+     "name": "中心孔"
+    }
+   ],
+   "placement": {
+    "translate": [
+     153.33499999999998,
+     110.339,
+     180.81000000000003
+    ]
+   }
+  },
+  {
+   "name": "17",
+   "title": "前接口阶梯盖",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         25
+        ],
+        [
+         8,
+         25
+        ],
+        [
+         8,
+         16
+        ],
+        [
+         20,
+         16
+        ],
+        [
+         20,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "阶梯盖"
+    }
+   ],
+   "placement": {
+    "rotate": [
+     {
+      "axis": "Y",
+      "angle": 90
+     }
+    ],
+    "translate": [
+     110,
+     80,
+     128
+    ]
+   }
+  },
+  {
+   "name": "18",
+   "title": "前密封定位环",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         25
+        ],
+        [
+         8,
+         25
+        ],
+        [
+         8,
+         16
+        ],
+        [
+         0,
+         16
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "密封环"
+    }
+   ],
+   "placement": {
+    "rotate": [
+     {
+      "axis": "Y",
+      "angle": 90
+     }
+    ],
+    "translate": [
+     110,
+     80,
+     120
+    ]
+   }
+  },
+  {
+   "name": "19",
+   "title": "1号阶梯定位销",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         5
+        ],
+        [
+         16,
+         5
+        ],
+        [
+         16,
+         4
+        ],
+        [
+         28,
+         4
+        ],
+        [
+         28,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "定位销"
+    }
+   ],
+   "placement": {
+    "translate": [
+     70,
+     40,
+     22
+    ]
+   }
+  },
+  {
+   "name": "20",
+   "title": "2号阶梯定位销",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         5
+        ],
+        [
+         16,
+         5
+        ],
+        [
+         16,
+         4
+        ],
+        [
+         28,
+         4
+        ],
+        [
+         28,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "定位销"
+    }
+   ],
+   "placement": {
+    "translate": [
+     110,
+     40,
+     22
+    ]
+   }
+  },
+  {
+   "name": "21",
+   "title": "3号阶梯定位销",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         5
+        ],
+        [
+         16,
+         5
+        ],
+        [
+         16,
+         4
+        ],
+        [
+         28,
+         4
+        ],
+        [
+         28,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "定位销"
+    }
+   ],
+   "placement": {
+    "translate": [
+     150,
+     40,
+     22
+    ]
+   }
+  },
+  {
+   "name": "22",
+   "title": "4号阶梯定位销",
+   "features": [
+    {
+     "type": "revolve",
+     "plane": "XZ",
+     "axis": "x",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         5
+        ],
+        [
+         16,
+         5
+        ],
+        [
+         16,
+         4
+        ],
+        [
+         28,
+         4
+        ],
+        [
+         28,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ]
+      }
+     ],
+     "angle": 360,
+     "name": "定位销"
+    }
+   ],
+   "placement": {
+    "translate": [
+     190,
+     40,
+     22
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>网络安全攻防战 · 动态路由塔防</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="scene"></canvas>
+
+  <!-- 顶部常驻栏 -->
+  <div id="hud-top" class="hud hidden">
+    <div class="hud-group resources">
+      <div class="res-chip" id="chip-compute"><span class="res-ico">◈</span><b id="res-compute">0</b><em>算力</em></div>
+      <div class="res-chip intel" id="chip-intel"><span class="res-ico">✦</span><b id="res-intel">0</b><em>情报</em></div>
+    </div>
+    <div class="hud-group integrity">
+      <span class="integrity-label">中枢完整度</span>
+      <div class="integrity-bar"><div id="integrity-fill"></div><b id="integrity-text">100%</b></div>
+    </div>
+    <div class="hud-group wave-info">
+      <span id="wave-text">第 0 / 14 波</span>
+    </div>
+    <div class="hud-group speedctl">
+      <button class="ctl-btn" id="btn-pause" title="暂停 (空格)">❚❚</button>
+      <button class="ctl-btn" id="btn-speed">1×</button>
+      <button class="ctl-btn" id="btn-camera" title="回到默认视角 (N)">⌂</button>
+      <button class="ctl-btn" id="btn-menu" title="菜单">≡</button>
+    </div>
+  </div>
+
+  <!-- 部署栏 -->
+  <div id="build-bar" class="hud hidden">
+    <div class="build-title">部署进程 <span class="dim">拖放到链路 / 节点 / 平台</span></div>
+    <div id="tower-cards" class="cards"></div>
+    <div class="build-title second">情报道具</div>
+    <div id="item-cards" class="cards"></div>
+  </div>
+
+  <!-- 流量预报 -->
+  <div id="forecast" class="hud hidden">
+    <div class="fc-title">流量预报 · <span id="fc-wave"></span></div>
+    <div id="fc-list"></div>
+    <button id="btn-next-wave">开始下一波 ▶</button>
+  </div>
+
+  <!-- 系统日志 -->
+  <div id="log-console" class="hud hidden"></div>
+
+  <!-- 选中面板 -->
+  <div id="inspect" class="panel hidden"></div>
+
+  <!-- 通用提示 toast -->
+  <div id="toast-layer"></div>
+  <div id="float-tip" class="hidden"></div>
+  <div id="subtitle" class="hidden"></div>
+
+  <!-- 模态层：主菜单 / 选关 / 图鉴 / 报告 / 暂停菜单 -->
+  <div id="modal-layer"></div>
+
+  <!-- 演示退出条 -->
+  <div id="demo-bar" class="hidden">
+    <span id="demo-title"></span>
+    <button id="btn-demo-exit">退出演示 ✕</button>
+  </div>
+
+  <!-- 音量 -->
+  <div id="audio-ctl">
+    <button id="btn-mute" title="静音">🔊</button>
+    <input id="volume" type="range" min="0" max="100" value="70">
+  </div>
+</div>
+
+<script src="js/lib/three.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/world.js"></script>
+<script src="js/units.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

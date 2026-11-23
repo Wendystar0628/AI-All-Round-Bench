@@ -1,0 +1,138 @@
+{
+    "task":  "攻城略地",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  0.0,
+                      "reason":  "规定命令编译通过，官方材料比对一致，源码初审未发现规则归零或作弊行为。官方480局共3胜0平477负，438局因程序退出或协议错误判负；实力值r=-200落在下界，按evaluate.py输出计0.0分。"
+                  }
+              ],
+    "metrics":  {
+                    "score_ci95":  [
+                                       0.0,
+                                       0.0
+                                   ],
+                    "r":  -200.0,
+                    "rating_ci95":  [
+                                        -200.0,
+                                        -200.0
+                                    ],
+                    "total_games":  480,
+                    "total_points":  3.0,
+                    "wins":  3,
+                    "draws":  0,
+                    "losses":  477,
+                    "by_opponent":  [
+                                        {
+                                            "id":  "tier1",
+                                            "name":  "第1档",
+                                            "rating":  0.0,
+                                            "score_anchor":  10.0,
+                                            "games":  96,
+                                            "wins":  3,
+                                            "draws":  0,
+                                            "losses":  93,
+                                            "points":  3.0,
+                                            "cpu_timeout_turns":  0,
+                                            "forfeit_losses":  87,
+                                            "penalty_games":  87,
+                                            "opponent_cpu_timeout_turns":  0,
+                                            "opponent_forfeit_losses":  0,
+                                            "opponent_penalty_games":  0,
+                                            "simultaneous_forfeit_draws":  0
+                                        },
+                                        {
+                                            "id":  "tier2",
+                                            "name":  "第2档",
+                                            "rating":  232.72971403075087,
+                                            "score_anchor":  20.0,
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96,
+                                            "points":  0.0,
+                                            "cpu_timeout_turns":  0,
+                                            "forfeit_losses":  91,
+                                            "penalty_games":  91,
+                                            "opponent_cpu_timeout_turns":  0,
+                                            "opponent_forfeit_losses":  0,
+                                            "opponent_penalty_games":  0,
+                                            "simultaneous_forfeit_draws":  0
+                                        },
+                                        {
+                                            "id":  "tier3",
+                                            "name":  "第3档",
+                                            "rating":  374.02562493412154,
+                                            "score_anchor":  40.0,
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96,
+                                            "points":  0.0,
+                                            "cpu_timeout_turns":  0,
+                                            "forfeit_losses":  88,
+                                            "penalty_games":  88,
+                                            "opponent_cpu_timeout_turns":  0,
+                                            "opponent_forfeit_losses":  0,
+                                            "opponent_penalty_games":  0,
+                                            "simultaneous_forfeit_draws":  0
+                                        },
+                                        {
+                                            "id":  "tier4",
+                                            "name":  "第4档",
+                                            "rating":  581.4837730581465,
+                                            "score_anchor":  60.0,
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96,
+                                            "points":  0.0,
+                                            "cpu_timeout_turns":  0,
+                                            "forfeit_losses":  88,
+                                            "penalty_games":  88,
+                                            "opponent_cpu_timeout_turns":  0,
+                                            "opponent_forfeit_losses":  0,
+                                            "opponent_penalty_games":  0,
+                                            "simultaneous_forfeit_draws":  0
+                                        },
+                                        {
+                                            "id":  "tier5",
+                                            "name":  "第5档",
+                                            "rating":  825.1484030205629,
+                                            "score_anchor":  80.0,
+                                            "games":  96,
+                                            "wins":  0,
+                                            "draws":  0,
+                                            "losses":  96,
+                                            "points":  0.0,
+                                            "cpu_timeout_turns":  0,
+                                            "forfeit_losses":  84,
+                                            "penalty_games":  84,
+                                            "opponent_cpu_timeout_turns":  0,
+                                            "opponent_forfeit_losses":  0,
+                                            "opponent_penalty_games":  0,
+                                            "simultaneous_forfeit_draws":  0
+                                        }
+                                    ],
+                    "cpu_timeout_turns":  0,
+                    "forfeit_losses":  438,
+                    "penalty_reasons":  {
+                                            "bot":  {
+                                                        "process_exit":  310,
+                                                        "protocol_error":  128
+                                                    },
+                                            "opponents":  {
+
+                                                          }
+                                        },
+                    "opponent_penalty_games":  0,
+                    "simultaneous_forfeit_draws":  0,
+                    "is_official_configuration":  true,
+                    "report":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Doubao\\Seed2.1Pro\\攻城略地\\codex\\performance\\work\\official_report.json"
+                },
+    "notes":  "评的是作答结束时的工作目录副本 work\\submission，不看 git 提交。官方 evaluate.py 仅运行一次，全部编译及评测经 process_job.py --cpus 0-15 包装，保留官方8局并行配置；未补跑、剔除或改动任何对局。原始提交除本评分表外未修改。已确认本次包装进程、评测进程和记录的子进程全部退出，见 work\\cleanup.json。",
+    "anomaly":  "提交程序频繁退出或返回协议错误，无法稳定完成对局。"
+}

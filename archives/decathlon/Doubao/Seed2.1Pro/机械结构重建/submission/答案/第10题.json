@@ -1,0 +1,15 @@
+{
+  "problem": "10",
+  "parts": [
+    {"name": "1", "title": "双斜座多腔阀体铸件", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 150, 80], "r": 6}], "depth": 16, "name": "底座"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [15, 12, 135, 68]}], "depth": 50, "name": "主体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [40, 40], "d": 72}], "depth": [50, 80], "name": "大筒"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [110, 40], "d": 64}], "depth": [50, 76], "name": "筒2"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 80], "at": [[40, 40]], "d": 30, "depth": 56, "name": "大孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 76], "at": [[110, 40]], "d": 24, "depth": 52, "name": "孔2"},
+      {"type": "hole", "plane": "YZ", "origin": [135, 40, 35], "at": [[0, 0]], "d": 20, "depth": 60, "name": "侧孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 16], "at": [[20, 18], [130, 18], [20, 62], [130, 62]], "d": 8, "through": true, "name": "安装孔"}
+    ]}
+  ]
+}

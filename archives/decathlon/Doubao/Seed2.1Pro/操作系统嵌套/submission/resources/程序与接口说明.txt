@@ -1,0 +1,112 @@
+程序格式、系统接口、场景资源与数据格式说明
+============================================
+
+一、OSL 程序格式（S 表达式）
+文件扩展名 .osl，UTF-8 文本。注释：行注释 “;” 或 “#”，块注释 “#| ... |#”。
+字面量：数字 12 / -3.5，字符串 "..."（\n \t \\ \"），true/false/nil，
+列表 (1 2 3)，字典 (dict "a" 1 "b" 2)，符号 'x。
+顶层形式：
+  (defn 名称 (参数...) 语句...)   定义函数
+  (def 名称 值)                  顶层常量
+语句：
+  (set 变量 表达式) / (set-global 变量 表达式)
+  (if 条件 一条语句 [另一条])  多条语句必须 (begin ...) 包裹
+  (when 条件 语句) (unless 条件 语句)
+  (while 条件 语句...) (repeat 次数 语句...) (foreach 变量 列表 语句...)
+  (return 值) (sleep 毫秒) (wait-msg [超时]) (yield)
+  (do 变量 (函数名 参数...))  —— 调用可能等待的函数（系统调用只能出现在这种语句内）
+表达式：
+  算术 + - * / % mod，比较 = == != < > <= >=，逻辑 and or not
+  内置：len get/set-key! keys values append! pop! slice concat str num bool
+  round floor ceil abs min max pow sqrt sin cos atan2 substr index-of split join
+  replace upper lower type-of equal? to-json from-json format sort! clamp lerp
+  random-float random-int hash-str list-range find-first sum-list array-fill assert
+系统调用（挂起点）：
+  (set R (sys "host-sys" "服务名" (list 参数...)))
+  注：系统调用必须直接出现在 set 的右侧（或等待语句），不能写在普通表达式里；
+  需要在函数中等待时，用 (do R (f args)) 语句调用该函数。
+
+编译器：/System/compiler.osl 是系统内程序；宿主提供 compile-raw（文本->AST 数组），
+编译器定义 twice/forever 两个编译期宏与常量折叠规则。修改它并重启后，新启动程序
+按新规则编译。
+
+二、系统服务（host-sys）参数与返回
+进程：
+ proc-spawn (路径 入口 参数 选项{priority,quota}) -> {pid} | {__error}
+ proc-kill(procSuspend/proc-resume (pid)
+ proc-list() -> [{pid,name,path,state,usedTotal,usedStep,inbox,error,mem,waiting,quota}]
+ proc-run(pid, 预算) -> {state,consumed,wait}
+ proc-sys-result(pid)  完成等待中的系统调用
+ proc-tick-waits(dt) -> [到期pid...]   proc-wake(pid,值)
+消息：
+ msg-send(from, to, value) 同发送者有序；目标不存在返回 {__error}
+ wait-msg 内置于语言（值为 {from,to,value,time,seq}）
+文件：
+ fs-read/write/list/mkdir/exists/delete/rename/copy/move/stat/fs-size/fs-quota
+ fs-trash() / fs-restore(index)
+显示：
+ ui-submit(pid, 树)  pid=1 是内核提交的整桌面；应用进程提交各自 UI 数据
+ wm-poll() 窗口管理器事件队列；event-poll() 内核事件队列
+ notify(标题,内容)
+子系统：
+ child-create({name,budget}) -> {id,state,error}
+ child-list() / child-control(id, action, arg)
+   action: pause resume stop close rate grant budget restart
+ child-advance(id,dt,grant) / child-step(id,grant)
+ child-ui(id) / child-event(id,ev)
+ child-snapshot(id,保存路径) / child-restore(id,路径,模式 restore|fork)
+ wm-open-child(id)
+三维：
+ scene-load(路径) -> {work,size}；scene-resource(路径)
+ scene-submit(pid,key,{scenePath,state,camera})
+ flight-init(路径,选项) / flight-show-state(路径,t秒)
+ flight-physics(dt,t,记录路径) / flight-sensors()
+ flight-control({collective,pitch,roll,yaw})
+ flight-input({wind,target,heading,fault})
+ flight-save-record(路径) / flight-state-at(路径,t,记录路径)
+ project-open(pid,appId,目标系统id) / project-close(id)
+图表：
+ chart-open(pid,规格) chart-connect(pid,规格) chart-poll(pid)
+ chart-disconnect(pid) chart-set-type(pid,bar|line)
+资源/其他：
+ compile(文本) / compile-raw(文本)
+ budget-get()/budget-set(k,v) mem-info() rate-set()
+ config-get/config-set time-now rng-state log-msg
+
+三、场景资源格式 .scene（JSON，纯数据）
+{
+ "kind":"nestedos-scene","version":1,"name","frameRate":30,"duration":15,
+ "sky":{top,mid,bottom,fog,fogNear,fogFar,sun{azimuth,elevation,color,intensity},
+        ambient, hemi},
+ "terrain":{size,segments,heightNoise:[[频率,振幅]...],flatZones:[{x,z,r}],
+            "material":{"color","texture","roughness"},collidable},
+ "objects":[
+   {"type":"helipad","pos","size","material"},
+   {"type":"box","pos","size","material","collidable"},
+   {"type":"instanced-trees","count","exclude","trunk","leaf","minH","maxH"} ],
+ "actor":{
+   "id","name","texture","root":{pos,rot},
+   "physics":{mass,gravity,liftFactor,hoverCollective,groundY,crashSpeed,...},
+   "parts":[
+     {"id","type":"compound-fuselage|cockpit|tailboom|fin|rotor|skid",
+      "size|radius|blades|axis","offset","hp","material"} ]},
+ "cameras":{"cine":[{t,pos,look}...],"follow":{distance,height,smooth},"free":{pos,fov}},
+ "performance":{"keys":[ 关键帧：t,phase,pos,vel,rot,rotorMain,rotorTail,
+            collective,pitch,yaw,roll,controls,damage,fault,wind,impact ]},
+ "effects":{"downwash":{dust,grassBend,strengthByHeight},
+            "impact":{smoke,fire,debris,dust},smokeColor,fireColor}
+}
+最小场景见 /Demo/最小场景.scene：一个地形、一盏方向光、一个可旋转部件、
+一条 6 秒关键帧记录。
+
+四、其他格式
+工作簿 .sheet：{kind:"nestedos-sheet",v:1,rows,cols,cells:{A1:{f:"=B2*C2"}}}
+  f 是原始输入；= 开头为公式。区域 A1:D4。
+快照 .snap：JSON，整棵子树序列化（内核 VM 帧、进程、邮箱、等待、VFS、桌面、
+  场景/图表状态、随机状态）。
+排演记录：{kind:"nestedos-record",v:1,scenePath,events:[{t,state,controls,inputs}]}
+
+五、计量边界
+逻辑指令：执行一个 AST 节点计 1；文件/场景/编译/快照等服务按数据规模计费
+（fs-read 每 64 字符 1，scene 装载每 128 字符 1，快照每 256 字符 1，等）。
+宿主 WebGL 绘制与 Chromium 网页执行不计预算；根系统由宿主直接实现。

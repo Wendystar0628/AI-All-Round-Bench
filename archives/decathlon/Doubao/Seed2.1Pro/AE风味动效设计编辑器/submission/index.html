@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>锻 · AE风味动效设计编辑器</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="titlebar">
+    <div class="tb-left">
+      <span id="app-logo">锻</span>
+      <span class="tb-title">AE风味动效设计编辑器</span>
+      <span id="project-name" class="tb-project">未命名工程.aep</span>
+    </div>
+    <div class="tb-center">
+      <button class="toolbtn" id="tb-save" title="保存工程 (Ctrl+S)">保存</button>
+      <button class="toolbtn" id="tb-open" title="打开工程 (Ctrl+O)">打开</button>
+      <button class="toolbtn" id="tb-new" title="新建工程">新建</button>
+      <span class="tb-sep"></span>
+      <button class="toolbtn" id="tb-undo" title="撤销 (Ctrl+Z)">撤销</button>
+      <button class="toolbtn" id="tb-redo" title="重做 (Ctrl+Shift+Z)">重做</button>
+    </div>
+    <div class="tb-right">
+      <span id="render-stat" class="tb-stat"></span>
+    </div>
+  </div>
+  <div id="menubar">
+    <div class="menu-group" id="mg-file">
+      <button class="menubtn" data-menu="file">文件</button>
+      <div class="menudrop" id="menu-file">
+        <div data-act="new">新建工程</div>
+        <div data-act="open">打开工程…</div>
+        <div data-act="save">保存工程…</div>
+        <div data-act="saveas">另存为…</div>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menubtn" data-menu="edit">编辑</button>
+      <div class="menudrop" id="menu-edit">
+        <div data-act="undo">撤销</div>
+        <div data-act="redo">重做</div>
+        <div data-act="dup">复制图层 (Ctrl+D)</div>
+        <div data-act="split">拆分图层 (Ctrl+Shift+D)</div>
+        <div data-act="precomp">预合成 (Ctrl+Shift+C)</div>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menubtn" data-menu="layer">图层</button>
+      <div class="menudrop" id="menu-layer">
+        <div data-act="add-shape">新建 ▸ 形状图层</div>
+        <div data-act="add-text">新建 ▸ 文字</div>
+        <div data-act="add-null">新建 ▸ 空对象</div>
+        <div data-act="add-solid">新建 ▸ 纯色</div>
+        <div data-act="add-adjust">新建 ▸ 调整层</div>
+        <div data-act="add-cam">新建 ▸ 摄像机</div>
+        <div data-act="add-light">新建 ▸ 灯光</div>
+        <div data-act="add-geo">新建 ▸ 三维几何</div>
+        <div data-act="add-particle">新建 ▸ 粒子</div>
+        <div data-act="add-field">新建 ▸ 空间场</div>
+        <div data-act="add-tone">新建 ▸ 音色</div>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menubtn" data-menu="comp">合成</button>
+      <div class="menudrop" id="menu-comp">
+        <div data-act="new-comp">新建合成</div>
+        <div data-act="comp-settings">合成设置…</div>
+      </div>
+    </div>
+    <div class="menu-group">
+      <button class="menubtn" data-menu="help">帮助</button>
+      <div class="menudrop" id="menu-help">
+        <div data-act="shortcuts">快捷键一览</div>
+        <div data-act="about">关于</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="leftpanel">
+      <div class="panel-tabs">
+        <button class="ptab active" data-tab="project">项目</div>
+        <button class="ptab" data-tab="effects">效果</button>
+      </div>
+      <div class="panel-body" id="project-panel">
+        <div id="project-tree"></div>
+      </div>
+      <div class="panel-body hidden" id="effects-panel">
+        <div class="fx-search">拖动效果到图层，或点击添加</div>
+        <div class="fx-list" id="fx-list"></div>
+      </div>
+    </div>
+
+    <div id="center">
+      <div id="comp-tabs" class="comp-tabs"></div>
+      <div id="canvas-wrap">
+        <canvas id="canvas"></canvas>
+        <canvas id="overlay"></canvas>
+        <div id="canvas-empty" class="canvas-empty hidden">
+          <div class="empty-glyph">锻</div>
+          <div class="empty-title">空合成</div>
+          <div class="empty-hint">从「图层」菜单创建形状、文字、摄像机、灯光……</div>
+        </div>
+        <div id="canvas-hud">
+          <span id="hud-view">100%</span>
+          <span id="hud-time">0:00:0000</span>
+          <span id="hud-select"></span>
+        </div>
+      </div>
+      <div id="timeline-wrap">
+        <div id="tl-toolbar">
+          <button id="tl-first" title="到工作区起点">⏮</button>
+          <button id="tl-prev" title="上一帧">◀</button>
+          <button id="tl-play" title="播放/暂停 (空格)">▶</button>
+          <button id="tl-next" title="下一帧">▶</button>
+          <button id="tl-last" title="到工作区终点">⏭</button>
+          <button id="tl-loop" class="active" title="循环工作区">↻</button>
+          <span class="tl-sep"></span>
+          <label class="tl-time"><input id="tl-time-input" value="0:00:0000" spellcheck="false"></label>
+          <span class="tl-sep"></span>
+          <div class="tl-zoom">
+            <span>缩放</span>
+            <input type="range" id="tl-zoom-slider" min="2" max="200" value="20">
+          </div>
+          <div class="tl-spacer"></div>
+          <button id="tl-mblur" class="active" title="合成运动模糊总开关">运动模糊</button>
+          <span class="tl-comp-info" id="tl-comp-info"></span>
+        </div>
+        <div id="tl-body">
+          <div id="tl-layers">
+            <div id="tl-layers-head">
+              <div class="tlh tlh-name">图层名</div>
+              <div class="tlh tlh-flags"><span title="独奏">独</span><span title="显示">显</span><span title="锁定">锁</span><span title="模糊">模</span><span title="三维">3D</span></div>
+              <div class="tlh tlh-in">入</div>
+              <div class="tlh tlh-out">出</div>
+              <div class="tlh tlh-dur">时长</div>
+              <div class="tlh tlh-parent">父级</div>
+            </div>
+            <div id="tl-layer-list"></div>
+          </div>
+          <div id="tl-tracks">
+            <div id="tl-ruler"></div>
+            <div id="tl-track-scroll"><div id="tl-track-area"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="rightpanel">
+      <div class="panel-tabs">
+        <button class="ptab active" data-tab="props">属性</button>
+        <button class="ptab" data-tab="curve">曲线</button>
+        <button class="ptab" data-tab="node">节点</button>
+        <button class="ptab" data-tab="audio">音频</button>
+      </div>
+      <div class="panel-body" id="props-panel">
+        <div id="props-empty" class="props-empty">未选择图层<br><span>点击画布或时间轴图层进行选择，可框选多选</span></div>
+        <div id="props-list"></div>
+      </div>
+      <div class="panel-body hidden" id="curve-panel">
+        <div id="curve-toolbar">
+          <select id="curve-prop"></select>
+          <label class="chk"><input type="checkbox" id="curve-speed">速度曲线</label>
+          <label class="chk"><input type="checkbox" id="curve-expr" checked>显示表达式结果</label>
+        </div>
+        <canvas id="curve-canvas"></canvas>
+      </div>
+      <div class="panel-body hidden" id="node-panel">
+        <div id="node-toolbar">
+          <button id="node-add">＋节点</button>
+          <button id="node-group">封装组</button>
+          <button id="node-fit">适配视图</button>
+          <span class="node-hint">拖动端口连线；右键节点删除/断开</span>
+        </div>
+        <canvas id="node-canvas"></canvas>
+      </div>
+      <div class="panel-body hidden" id="audio-panel">
+        <div id="audio-list"></div>
+        <div class="audio-master">
+          <label>主音量 <input type="range" id="master-vol" min="0" max="100" value="80"></label>
+          <div id="audio-meter"><div id="audio-meter-fill"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="statusbar">
+    <span id="status-msg">就绪</span>
+    <span id="status-fps"></span>
+    <span id="status-mode"></span>
+    <span class="sb-right">字体：SimHei（黑体）· 覆盖 GB2312 常用汉字 · WebGL2</span>
+  </div>
+
+  <input type="file" id="file-input" accept=".json" class="hidden">
+</div>
+
+<div id="modal-mask" class="hidden">
+  <div id="modal-box">
+    <div id="modal-title"></div>
+    <div id="modal-body"></div>
+    <div id="modal-btns"></div>
+  </div>
+</div>
+
+<script src="assets/fonts/simhei-b64.js"></script>
+<script src="js/model.js"></script>
+<script src="js/undo.js"></script>
+<script src="js/expr.js"></script>
+<script src="js/ttf.js"></script>
+<script src="js/shape.js"></script>
+<script src="js/text.js"></script>
+<script src="js/nodes.js"></script>
+<script src="js/field.js"></script>
+<script src="js/render2d.js"></script>
+<script src="js/gl3d.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/comp.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/curve.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

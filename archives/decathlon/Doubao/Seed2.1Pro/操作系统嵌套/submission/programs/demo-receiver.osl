@@ -1,0 +1,12 @@
+#| 消息接收程序：循环等待消息并写入日志。 |#
+(defn main ()
+  (set got 0)
+  (set last-null 0)
+  (while (< got 5)
+    (wait-msg 2000)
+    (if (= __msg null)
+      (set last-null (+ last-null 1))
+      (begin
+        (set got (+ got 1))
+        (sys "host-sys" "log-msg" (list (concat "收到: " (get (get __msg "value") "text" "?")))))))
+  (return got))

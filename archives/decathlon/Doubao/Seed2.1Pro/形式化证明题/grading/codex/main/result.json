@@ -1,0 +1,60 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "Problem1.lean 单独编译退出码为 1，有未解决目标、类型不匹配及无效字段错误。追加 #check @problem1 和 #print axioms problem1 再编译后，确认命题与题面一致，但主定理依赖 sorryAx，源文件第111行仍有 sorry，不满足有效证明条件。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录的副本中无 Problem2.lean，其他文件亦无主定理 problem2，按缺题计分。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录的副本中无 Problem3.lean，其他文件亦无主定理 problem3，按缺题计分。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录的副本中无 Problem4.lean，其他文件亦无主定理 problem4，按缺题计分。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录的副本中无 Problem5.lean，其他文件亦无主定理 problem5，按缺题计分。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录的副本中无 Problem6.lean，其他文件亦无主定理 problem6，按缺题计分。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录的副本中无 Problem7.lean，其他文件亦无主定理 problem7，按缺题计分。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录的副本中无 Problem8.lean，其他文件亦无主定理 problem8，按缺题计分。"
+    }
+  ],
+  "metrics": {
+    "total_score": 0
+  },
+  "notes": "评的是作答结束时工作目录中的内容，不看 git 提交。原始作品已复制至 work/submission（排除评分表），仅含 Problem1.lean、Test.lean 和题面；Test.lean 只有一个对数不等式 example，无任何题目的主定理。第1题原文件及追加核查指令的副本均已单独编译，退出码均为 1；日志见 work/logs/Problem1_original.log 和 work/logs/Problem1_check.log，命题核对见 work/source_checks.json。源码自然检查未见绕过检查、篡改评测或伪造输出。未运行性能基准或采集性能数据；本会话启动的编译进程均已退出。",
+  "anomaly": "仅提交未完成的第1题，仍含 sorry；其余7题未交。"
+}

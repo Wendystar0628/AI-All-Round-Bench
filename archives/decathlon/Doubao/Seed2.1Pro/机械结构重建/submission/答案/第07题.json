@@ -1,0 +1,14 @@
+{
+  "problem": "07",
+  "parts": [
+    {"name": "1", "title": "双轴错层回油支承座", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 120, 60]}], "depth": 14, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [8, 8, 112, 52]}], "depth": 46, "name": "主体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [32, 30], "d": 70}], "depth": [50, 70], "name": "高轴承座"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [88, 30], "d": 50}], "depth": [38, 56], "name": "低轴承座"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [[32, 30]], "d": 32, "through": true, "name": "高轴孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 56], "at": [[88, 30]], "d": 24, "through": true, "name": "低轴孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[20, 15], [100, 15], [20, 45], [100, 45]], "d": 13, "through": true, "name": "安装孔"}
+    ]}
+  ]
+}

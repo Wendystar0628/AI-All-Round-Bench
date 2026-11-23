@@ -1,0 +1,246 @@
+#| ============================================================
+   窗口管理器 wm.osl
+   维护窗口表、叠放次序、焦点、命中与输入分发；提交桌面描述数据，
+   宿主显示设备据此绘制桌面、任务栏、开始菜单与窗口外框。
+   修改本文件的叠放/焦点/命中/启动规则并重启子系统，行为随之改变。
+   ============================================================ |#
+
+(defn wm-main (sys-id)
+  (set W (dict
+    "order" (list) "wins" (dict) "focus" null "next" 1
+    "start-open" false "notif-open" false
+    "size" (dict "w" 1100 "h" 680) "time" 0
+    "launches" (build-launch-table)))
+  (wm-loop W))
+
+(defn build-launch-table ()
+  ;; 应用启动表：testid -> (app 标题 pid 宽 高)
+  (return (dict
+    "launch-files"  (dict "app" "files"  "title" "文件管理器"       "pid" 3 "w" 780 "h" 500)
+    "launch-editor" (dict "app" "editor" "title" "文本与程序编辑器" "pid" 4 "w" 760 "h" 520)
+    "launch-tasks"  (dict "app" "tasks"  "title" "进程管理器"       "pid" 5 "w" 720 "h" 480)
+    "launch-player" (dict "app" "player" "title" "三维场景播放器"   "pid" 6 "w" 820 "h" 560)
+    "launch-charts" (dict "app" "charts" "title" "图表工作台"       "pid" 7 "w" 760 "h" 520)
+    "launch-system" (dict "app" "sysmgr" "title" "子系统管理"       "pid" 8 "w" 640 "h" 460))))
+
+(defn wm-loop (W)
+  (while true
+    (set drain true)
+    (while drain
+      (set ev (sys "host-sys" "wm-poll" (list)))
+      (if (= ev null) (set drain false) (wm-event W ev)))
+    (set t (sys "host-sys" "time-now" (list)))
+    (set-key! W "time" t)
+    (set tree (build-desktop W))
+    (sys "host-sys" "ui-submit" (list 1 tree))
+    (yield)))
+
+(defn new-wid (W)
+  (set i (get W "next"))
+  (set-key! W "next" (+ i 1))
+  (return (concat "w" (str i))))
+
+(defn win-order-index (W wid)
+  (set order (get W "order"))
+  (set i 0) (set found -1)
+  (foreach x order (if (= x wid) (set found i)) (set i (+ i 1)))
+  (return found))
+
+(defn focus-win (W wid)
+  ;; 叠放规则：聚焦窗口移到次序末尾（最前）
+  (set out (list))
+  (foreach x (get W "order") (if (!= x wid) (append! out x)))
+  (if (>= (win-order-index W wid) 0) (append! out wid))
+  (set-key! W "order" out)
+  (set-key! W "focus" wid))
+
+(defn close-win (W wid)
+  (set out (list))
+  (foreach x (get W "order") (if (!= x wid) (append! out x)))
+  (set-key! W "order" out)
+  (set-key! (get W "wins") wid null)
+  (if (= (get W "focus") wid)
+    (set-key! W "focus" (if (> (len out) 0) (get out (- (len out) 1)) null))))
+
+(defn open-win (W spec)
+  ;; 同应用单实例：存在则聚焦
+  (set app (get spec "app"))
+  (set found null)
+  (foreach wid (get W "order")
+    (set w (get (get W "wins") wid))
+    (if (and (!= w null) (= (get w "app") app)) (set found wid)))
+  (if (!= found null) (begin (set-key! (get (get W "wins") found) "min" false) (focus-win W found) (return found)))
+  (set wid (new-wid W))
+  (set n (len (get W "order")))
+  (set w (dict
+    "id" wid "app" app "title" (get spec "title") "pid" (get spec "pid")
+    "x" (+ 40 (* n 26)) "y" (+ 30 (* n 22))
+    "w" (get spec "w" 720) "h" (get spec "h" 460)
+    "state" "normal" "min" false))
+  (set-key! (get W "wins") wid w)
+  (append! (get W "order") wid)
+  (focus-win W wid)
+  (return wid))
+
+;; ---------- 输入事件 ----------
+(defn wm-event (W ev)
+  (set type (get ev "type"))
+  (if (= type "resize") (begin
+    (set-key! (get W "size") "w" (get ev "w"))
+    (set-key! (get W "size") "h" (get ev "h"))))
+  (if (= type "wm-command") (wm-command W ev))
+  (if (= type "pointer") (wm-pointer W ev))
+  (if (= type "key") (wm-key W ev))
+  (if (= type "app-event") (wm-app-event W ev))
+  (if (= type "projection-close") (wm-proj-close W ev)))
+
+(defn wm-pointer (W ev)
+  (set action (get ev "action"))
+  (set wid (get ev "winId"))
+  (set part (get ev "part"))
+  (if (= action "down")
+    (begin
+      (if (= wid null)
+        (begin (set-key! W "start-open" false) (set-key! W "notif-open" false))
+        (begin
+          (focus-win W wid)
+          (if (!= part null)
+            (if (or (= part "client") (= part "titlebar"))
+              false
+              (forward-app W wid ev))))))))
+
+(defn wm-app-event (W ev)
+  (set wid (get ev "winId"))
+  (if (!= wid null) (forward-app W wid ev)))
+
+(defn wm-proj-close (W ev)
+  ;; 投送关闭由宿主处理；此处仅记录
+  (set-key! W "lastProjClose" (get ev "id")))
+
+(defn forward-app (W wid ev)
+  (set w (get (get W "wins") wid))
+  (if (= w null) (return))
+  (set pid (get w "pid"))
+  (set msg (dict "kind" "ui-event" "part" (get ev "part") "action" (get ev "action")
+                 "id" (get ev "id") "value" (get ev "value")
+                 "x" (get ev "x") "y" (get ev "y")
+                 "lx" (get ev "lx") "ly" (get ev "ly")
+                 "key" (get ev "key") "mods" (get ev "mods")))
+  (sys "host-sys" "msg-send" (list 2 pid msg)))
+
+(defn wm-key (W ev)
+  (set fid (get W "focus"))
+  (if (= (get ev "key") "Escape")
+    (begin (set-key! W "start-open" false) (set-key! W "notif-open" false)))
+  (if (!= fid null) (forward-app W fid ev)))
+
+;; ---------- 控件命令（窗口外框按钮、开始菜单、任务栏） ----------
+(defn wm-command (W ev)
+  (set cmd (get ev "cmd"))
+  (set arg (get ev "arg"))
+  (if (!= (get (get W "launches") cmd null) null)
+    (open-win W (get (get W "launches") cmd)))
+  (if (= cmd "toggle-start") (set-key! W "start-open" (not (get W "start-open"))))
+  (if (= cmd "open-child-window") (open-child-window W arg))
+  (if (= cmd "win-min") (set-key! (get (get W "wins") arg) "min" true))
+  (if (= cmd "win-max") (toggle-max W arg))
+  (if (= cmd "win-close") (close-app W arg))
+  (if (= cmd "win-move") (move-win W arg (get ev "x") (get ev "y")))
+  (if (= cmd "win-resize") (resize-win W arg (get ev "w") (get ev "h")))
+  (if (= cmd "win-snap") (snap-win W arg (get ev "side")))
+  (if (= cmd "task-activate") (task-activate W arg))
+  (if (= cmd "toggle-notif") (set-key! W "notif-open" (not (get W "notif-open")))))
+
+(defn open-child-window (W spec)
+  ;; 直属子系统的“远程桌面”窗口（spec: {id,title}）
+  (set wid (new-wid W))
+  (set n (len (get W "order")))
+  (set w (dict "id" wid "app" "remote" "title" (get spec "title")
+               "childId" (get spec "id") "pid" 0
+               "x" (+ 60 (* n 24)) "y" (+ 40 (* n 18)) "w" 880 "h" 560
+               "state" "normal" "min" false))
+  (set-key! (get W "wins") wid w)
+  (append! (get W "order") wid)
+  (focus-win W wid))
+
+(defn toggle-max (W wid)
+  (set w (get (get W "wins") wid))
+  (if (= w null) (return))
+  (if (= (get w "state") "max")
+    (begin
+      (set-key! w "state" "normal")
+      (set-key! w "x" (get (get w "prev") "x"))
+      (set-key! w "y" (get (get w "prev") "y"))
+      (set-key! w "w" (get (get w "prev") "w"))
+      (set-key! w "h" (get (get w "prev") "h")))
+    (begin
+      (set-key! w "prev" (dict "x" (get w "x") "y" (get w "y") "w" (get w "w") "h" (get w "h")))
+      (set-key! w "state" "max"))))
+
+(defn move-win (W wid x y)
+  (set w (get (get W "wins") wid))
+  (if (and (!= w null) (!= (get w "state") "max"))
+    (begin (set-key! w "x" x) (set-key! w "y" y))))
+(defn resize-win (W wid ww hh)
+  (set w (get (get W "wins") wid))
+  (if (!= w null) (begin (set-key! w "w" ww) (set-key! w "h" hh))))
+(defn snap-win (W wid side)
+  (set w (get (get W "wins") wid))
+  (if (= w null) (return))
+  (set sz (get W "size"))
+  (set hw (/ (get sz "w") 2))
+  (set-key! w "state" "snap") (set-key! w "y" 0)
+  (set-key! w "h" (- (get sz "h") 56)) (set-key! w "w" hw)
+  (if (= side "left") (set-key! w "x" 0))
+  (if (= side "right") (set-key! w "x" hw)))
+
+(defn task-activate (W wid)
+  (set w (get (get W "wins") wid))
+  (if (= w null) (return))
+  (if (get w "min") (begin (set-key! w "min" false) (focus-win W wid))
+    (if (= (get W "focus") wid) (set-key! w "min" true) (focus-win W wid))))
+
+(defn close-app (W wid)
+  (set w (get (get W "wins") wid))
+  (if (= w null) (return))
+  (set pid (get w "pid"))
+  (if (> pid 2) (sys "host-sys" "proc-kill" (list pid)))
+  (close-win W wid))
+
+;; ---------- 组装桌面描述 ----------
+(defn build-desktop (W)
+  (set wins (list))
+  (foreach wid (get W "order")
+    (set w (get (get W "wins") wid))
+    (if (!= w null) (append! wins (dict
+      "id" (get w "id") "app" (get w "app") "title" (get w "title")
+      "pid" (get w "pid") "childId" (get w "childId" null)
+      "x" (get w "x") "y" (get w "y") "w" (get w "w") "h" (get w "h")
+      "state" (get w "state") "min" (get w "min")
+      "focus" (= (get W "focus") (get w "id"))))))
+  (return (dict
+    "kind" "desktop" "time" (get W "time")
+    "w" (get (get W "size") "w") "h" (get (get W "size") "h")
+    "focus" (get W "focus")
+    "startOpen" (get W "start-open") "notifOpen" (get W "notif-open")
+    "launchIds" (keys (get W "launches"))
+    "windows" wins
+    "icons" (desktop-icons)
+    "taskbar" (taskbar-items W))))
+
+(defn desktop-icons ()
+  (return (list
+    (dict "cmd" "launch-files" "label" "文件管理器" "glyph" "folder")
+    (dict "cmd" "launch-player" "label" "三维播放器" "glyph" "scene")
+    (dict "cmd" "launch-charts" "label" "图表工作台" "glyph" "chart")
+    (dict "cmd" "launch-editor" "label" "程序编辑器" "glyph" "code")
+    (dict "cmd" "launch-tasks" "label" "进程管理器" "glyph" "tasks")
+    (dict "cmd" "launch-system" "label" "子系统" "glyph" "system"))))
+
+(defn taskbar-items (W)
+  (set items (list))
+  (foreach wid (get W "order")
+    (set w (get (get W "wins") wid))
+    (append! items (dict "wid" wid "title" (get w "title") "app" (get w "app")
+                         "min" (get w "min") "focus" (= (get W "focus") wid))))
+  (return items))

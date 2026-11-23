@@ -1,0 +1,16 @@
+{
+  "problem": "21",
+  "parts": [
+    {"name": "1", "title": "双回路桥接伺服总壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 240, 150], "r": 6}], "depth": 22, "name": "底座"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [110, 75], "d": 120}], "depth": [22, 110], "name": "主阀体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [60, 40, 200, 110]}], "depth": [70, 96], "name": "桥接块"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [110, 75], "d": 86}], "depth": [110, 132], "name": "前凸缘"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 132], "at": [[110, 75]], "d": 32, "depth": 100, "name": "前接口孔"},
+      {"type": "extrude", "plane": "YZ", "origin": [200, 75, 80], "loops": [{"circle": [0, 0], "d": 64}], "depth": [0, 24], "name": "侧向斜座"},
+      {"type": "hole", "plane": "YZ", "origin": [200, 75, 80], "at": [[0, 0]], "d": 32, "depth": 80, "name": "侧通道"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 96], "at": [[80, 55], [140, 55], [80, 95], [140, 95]], "d": 12, "depth": 60, "name": "竖接孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 22], "at": [[22, 22], [218, 22], [22, 128], [218, 128]], "d": 10, "depth": 30, "cbore": {"d": 18, "depth": 6}, "name": "地脚孔"}
+    ]}
+  ]
+}

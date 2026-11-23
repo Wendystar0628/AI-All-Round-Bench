@@ -1,0 +1,64 @@
+#| ============================================================
+   图表工作台 charts.osl
+   数据接收进程（本进程拉取版本）与图形提交职责可区分：
+   chart-poll 负责接收，chart-render 由宿主按提交数据绘制 2D。
+   从根系统电子表格显式建立实时数据连接（经系统服务的副本）。
+   ============================================================ |#
+
+(defn charts-main ()
+  (set S (dict
+    "source" "sample.sheet" "range" "A1:D4"
+    "labelCol" 0 "seriesCols" (list 3)
+    "type" "bar" "state" "idle" "version" 0
+    "data" null "msg" "" "transition" 0)))
+  (while true
+    (set drain true)
+    (while drain
+      (set m (sys "host-sys" "wait-msg" (list 0)))
+      (if (= m null) (set drain false) (charts-msg S m)))
+    ;; 拉取新版本（接收进程职责），有数据才更新
+    (set v (sys "host-sys" "chart-poll" (list 7)))
+    (if (!= v null)
+      (begin
+        (set-key! S "data" v)
+        (set-key! S "version" (+ (get S "version") 1))))
+    ;; 初始化图表句柄（宿主侧）
+    (if (= (get S "inited" false) false)
+      (begin
+        (sys "host-sys" "chart-open" (list 7 (dict "sourceTitle" (get S "source") "range" (get S "range") "type" (get S "type"))))
+        (set-key! S "inited" true)))
+    (set ui (charts-ui S))
+    (sys "host-sys" "ui-submit" (list 7 ui))
+    (sleep 120))
+
+(defn charts-msg (S m)
+  (set b (get m "value" m))
+  (set part (get b "part"))
+  (set value (get b "value"))
+  (if (= part "source") (set-key! S "source" value))
+  (if (= part "range") (set-key! S "range" value))
+  (if (= part "label-col") (set-key! S "labelCol" value))
+  (if (= part "series") (set-key! S "seriesCols" value))
+  (if (= part "type") (begin (set-key! S "type" value) (sys "host-sys" "chart-set-type" (list 7 value))))
+  (if (= part "connect") (charts-connect S))
+  (if (= part "disconnect") (begin (sys "host-sys" "chart-disconnect" (list 7)) (set-key! S "state" "disconnected")))
+  (if (= part "project") (sys "host-sys" "project-open" (list 7 "charts" value))))
+
+(defn charts-connect (S)
+  (set r (sys "host-sys" "chart-connect" (list 7 (dict
+    "sourceTitle" (get S "source") "range" (get S "range")
+    "labelCol" (get S "labelCol") "seriesCols" (get S "seriesCols")))))
+  (if (!= (get r "__error" null) null)
+    (set-key! S "msg" (get r "__error"))
+    (begin
+      (set-key! S "state" "connected")
+      (set-key! S "data" (get r "initial"))
+      (set-key! S "version" (+ (get S "version") 1)))))
+
+(defn charts-ui (S)
+  (return (dict "kind" "app" "app" "charts"
+                "source" (get S "source") "range" (get S "range")
+                "labelCol" (get S "labelCol") "seriesCols" (get S "seriesCols")
+                "type" (get S "type") "state" (get S "state")
+                "version" (get S "version")
+                "data" (get S "data") "msg" (get S "msg"))))

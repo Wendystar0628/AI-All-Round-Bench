@@ -1,0 +1,12 @@
+#| 持续计算程序：循环中不主动等待或让出执行权。
+   用于检验调度——即使有这样的进程，其他程序与系统控制仍持续获得执行机会。
+   可修改总循环次数。 |#
+(defn main ()
+  (set total 20000000)
+  (set i 0)
+  (set acc 0)
+  (while (< i total)
+    (set acc (+ acc (* (mod i 7) 3)))
+    (set i (+ i 1)))
+  (set r (sys "host-sys" "log-msg" (list (concat "持续计算完成 acc=" (str acc)))))
+  (return acc))

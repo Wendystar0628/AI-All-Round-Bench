@@ -1,0 +1,124 @@
+#| ============================================================
+   文件管理器 files.osl —— 子系统文件系统的目录导航与文件操作。
+   修改本文件的排序/操作规则并重启，应用按新规则工作。
+   ============================================================ |#
+
+(defn files-main ()
+  (set S (dict "path" "/" "selected" (list) "clipboard" null "msg" "" "renaming" null))
+  (while true
+    (set drain true)
+    (while drain
+      (set m (sys "host-sys" "wait-msg" (list 0)))
+      (if (= m null) (set drain false) (files-msg S m)))
+    (set ui (files-ui S))
+    (sys "host-sys" "ui-submit" (list 3 ui))
+    (sleep 200)))
+
+(defn files-msg (S m)
+  (set b (get m "value" m))
+  (set part (get b "part"))
+  (set id (get b "id"))
+  (set value (get b "value"))
+  (if (= part "nav") (files-nav S id))
+  (if (= part "open") (files-open S id))
+  (if (= part "select") (files-select S id (get b "mods")))
+  (if (= part "new-file") (files-new S false value))
+  (if (= part "new-folder") (files-new S true value))
+  (if (= part "rename") (set-key! S "renaming" id))
+  (if (= part "rename-do") (files-rename S (get b "id") value))
+  (if (= part "copy") (set-key! S "clipboard" (get S "selected")))
+  (if (= part "paste") (files-paste S))
+  (if (= part "delete") (files-delete S))
+  (if (= part "trash-restore") (sys "host-sys" "fs-restore" (list id)))
+  (if (= part "trash-open") (set-key! S "path" "/.trash"))
+  (if (= part "import-host") (set-key! S "msg" "请从桌面拖入或用导入按钮"))
+  (if (= part "export-host") (files-export S)))
+
+(defn files-nav (S target)
+  (if (= target "up") (set target (parent-path (get S "path"))))
+  (set r (sys "host-sys" "fs-list" (list target)))
+  (if (!= (get r "__error" null) null) (set-key! S "msg" (get r "__error"))
+    (begin (set-key! S "path" target) (set-key! S "selected" (list)))))
+
+(defn files-open (S name)
+  (set full (join-path (get S "path") name))
+  (set st (sys "host-sys" "fs-stat" (list full)))
+  (if (and (!= st null) (get st "dir" false))
+    (begin (set-key! S "path" full) (set-key! S "selected" (list)))
+    (begin
+      ;; 按类型打开：场景 -> 播放器；程序 -> 编辑器；记录/工作簿 -> 相应应用
+      (set ext (ext-of name))
+      (if (or (= ext "scene") (= ext "json")) (set-key! S "openRequest" (dict "app" "player" "path" full)))
+      (if (or (= ext "osl") (= ext "txt")) (set-key! S "openRequest" (dict "app" "editor" "path" full)))
+      (set-key! S "msg" (concat "打开 " full)))))
+
+(defn files-select (S id mods)
+  (if (= mods "ctrl")
+    (toggle-list (get S "selected") id)
+    (set-key! S "selected" (list id))))
+
+(defn files-new (S isDir name)
+  (if (= name null) (set name (if isDir "新建文件夹" "新建文件.txt")))
+  (set full (join-path (get S "path") name))
+  (if isDir (sys "host-sys" "fs-mkdir" (list full))
+    (sys "host-sys" "fs-write" (list full ""))))
+
+(defn files-rename (S oldName newName)
+  (sys "host-sys" "fs-rename" (list (join-path (get S "path") oldName) newName))
+  (set-key! S "renaming" null))
+
+(defn files-paste (S)
+  (set clip (get S "clipboard"))
+  (if (= clip null) (return))
+  (foreach src clip
+    (set r (sys "host-sys" "fs-copy" (list src (get S "path") null)))
+    (if (!= (get r "__error" null) null) (set-key! S "msg" (get r "__error"))))
+  (set-key! S "clipboard" null))
+
+(defn files-delete (S)
+  (foreach p (get S "selected")
+    (sys "host-sys" "fs-delete" (list p)))
+  (set-key! S "selected" (list)))
+
+(defn files-export (S)
+  (set-key! S "msg" "已提交宿主导出/导入由界面按钮处理"))
+
+(defn files-ui (S)
+  (set trash (= (get S "path") "/.trash"))
+  (set listing null)
+  (if trash
+    (set listing (sys "host-sys" "fs-trash" (list)))
+    (set listing (get (sys "host-sys" "fs-list" (list (get S "path"))) "items" (list))))
+  (set quota (sys "host-sys" "fs-quota" (list)))
+  ;; 打开请求只发一次
+  (set openRequest (get S "openRequest" null))
+  (set-key! S "openRequest" null)
+  (return (dict "kind" "app" "app" "files" "path" (get S "path")
+                "items" listing "trash" trash
+                "selected" (get S "selected") "msg" (get S "msg")
+                "renaming" (get S "renaming" null)
+                "openRequest" openRequest
+                "quota" quota)))
+
+(defn parent-path (p)
+  (if (= p "/") (return "/"))
+  (set i (last-index p "/"))
+  (if (<= i 0) (return "/"))
+  (return (slice p 0 i)))
+
+(defn join-path (a b) (return (concat (if (= a "/") "" a) "/" b)))
+(defn ext-of (n)
+  (set i (last-index n "."))
+  (if (< i 0) (return ""))
+  (return (lower (slice n (+ i 1)))))
+(defn last-index (s ch)
+  (set i (- (len s) 1)) (set r -1)
+  (while (>= i 0)
+    (if (= (slice s i (+ i 1)) ch) (begin (set r i) (set i -1)))
+    (set i (- i 1)))
+  (return r))
+(defn toggle-list (lst x)
+  (set found false) (set out (list))
+  (foreach y lst (if (= y x) (set found true) (append! out y)))
+  (if (not found) (append! out x))
+  (return out))

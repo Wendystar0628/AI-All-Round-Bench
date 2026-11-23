@@ -1,0 +1,39 @@
+#| ============================================================
+   进程管理器 tasks.osl —— 本系统自己的进程表视图。
+   查看状态、工作量(指令数)、内存、邮箱、错误；挂起/继续/结束；
+   调整总预算、内存/存储配额与直属子系统拨付上限。
+   ============================================================ |#
+
+(defn tasks-main ()
+  (set S (dict "msg" "" "filter" ""))
+  (while true
+    (set drain true)
+    (while drain
+      (set m (sys "host-sys" "wait-msg" (list 0)))
+      (if (= m null) (set drain false) (tasks-msg S m)))
+    (set plist (sys "host-sys" "proc-list" (list)))
+    (set budget (sys "host-sys" "budget-get" (list)))
+    (set mem (sys "host-sys" "mem-info" (list)))
+    (set kids (sys "host-sys" "child-list" (list)))
+    (set ui (dict "kind" "app" "app" "tasks"
+                  "procs" plist "budget" budget "mem" mem
+                  "children" kids "msg" (get S "msg")
+                  "time" (sys "host-sys" "time-now" (list))))
+    (sys "host-sys" "ui-submit" (list 5 ui))
+    (sleep 250)))
+
+(defn tasks-msg (S m)
+  (set b (get m "value" m))
+  (set part (get b "part"))
+  (set id (get b "id"))
+  (set value (get b "value"))
+  (if (= part "suspend") (sys "host-sys" "proc-suspend" (list id)))
+  (if (= part "resume") (sys "host-sys" "proc-resume" (list id)))
+  (if (= part "kill") (sys "host-sys" "proc-kill" (list id)))
+  (if (= part "budget-total") (sys "host-sys" "budget-set" (list "total" value)))
+  (if (= part "budget-mem") (sys "host-sys" "budget-set" (list "mem" value)))
+  (if (= part "budget-storage") (sys "host-sys" "budget-set" (list "storage" value)))
+  (if (= part "child-cap") (sys "host-sys" "budget-set" (list "childCap" value)))
+  (if (= part "child-grant") (sys "host-sys" "child-control" (list id "grant" value)))
+  (if (= part "kill-child") (sys "host-sys" "child-control" (list id "close" null)))
+  (set-key! S "msg" "操作已提交"))

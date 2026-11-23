@@ -1,0 +1,16 @@
+{
+  "problem": "13",
+  "parts": [
+    {"name": "1", "title": "斜耳叉架减速箱体", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 160, 80], "r": 6}], "depth": 16, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [20, 12, 130, 68]}], "depth": 56, "name": "箱体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [45, 40], "d": 66}], "depth": [50, 92], "name": "高速轴筒"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [115, 40], "d": 66}], "depth": [50, 88], "name": "低速轴筒"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [-10, 20, 20, 60]}], "depth": [20, 50], "name": "叉耳1"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 92], "at": [[45, 40]], "d": 30, "through": true, "name": "高速轴孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 88], "at": [[115, 40]], "d": 44, "through": true, "name": "低速轴孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 16], "at": [[15, 16], [145, 16], [15, 64], [145, 64]], "d": 9, "through": true, "name": "安装孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 50], "at": [[5, 40]], "d": 16, "through": true, "name": "叉耳孔"}
+    ]}
+  ]
+}

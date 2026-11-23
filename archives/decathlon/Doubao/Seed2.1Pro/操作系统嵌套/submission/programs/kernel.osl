@@ -1,0 +1,86 @@
+#| ============================================================
+   NestedOS 子系统内核程序  (kernel.osl)
+   每个非根系统由这份程序运行：进程表、调度、等待唤醒、消息投递、
+   文件系统调用分发、窗口管理启动、直属子系统承载推进。
+   本文件是父系统文件系统中的普通程序，可在编辑器中修改，重启后生效。
+   系统调用形式：(set R (sys "host-sys" NAME ARGS))
+   ============================================================ |#
+
+(defn kernel-main (sys-id depth)
+  (set self-id sys-id)
+  (set self-depth depth)
+  (set tick-ms 33)
+  (set boot-time (sys "host-sys" "time-now" (list)))
+  ;; ---- 启动窗口管理器与初始应用 ----
+  (set wm (sys "host-sys" "proc-spawn" (list "/System/wm.osl" "wm-main" (list sys-id) (dict))))
+  (set files-app (sys "host-sys" "proc-spawn" (list "/Apps/files.osl" "files-main" (list) (dict))))
+  (set sysmgr (sys "host-sys" "proc-spawn" (list "/Apps/sysmgr.osl" "sysmgr-main" (list) (dict))))
+  (set kernel-ready (sys "host-sys" "log-msg" (list (concat "kernel boot " sys-id))))
+  (kernel-loop))
+
+(defn kernel-loop ()
+  (set running true)
+  (while running
+    ;; 0. 处理宿主直达内核的控制事件
+    (set kd true)
+    (while kd
+      (set kev (sys "host-sys" "event-poll" (list)))
+      (if (= kev null) (set kd false) (kernel-control kev)))
+    (set now (sys "host-sys" "time-now" (list)))
+    ;; 1. 推进所有计时等待
+    (set woke (sys "host-sys" "proc-tick-waits" (list tick-ms)))
+    (foreach pid woke
+      (sys "host-sys" "proc-wake" (list pid null)))
+    ;; 2. 调度：轮转运行所有就绪用户进程（内核自身 pid=1 之外）
+    (set plist (sys "host-sys" "proc-list" (list)))
+    (set budget (sys "host-sys" "budget-get" (list)))
+    (set total (get budget "total"))
+    (set nuser (count-user-procs plist))
+    ;; 策略：用户进程平分总预算的 70%，子系统承载最多 25%，内核保留 5%
+    (set share 0)
+    (if (> nuser 0) (set share (floor (* total 0.70) nuser)))
+    (foreach p plist
+      (if (!= (get p "pid") 1)
+        (begin
+          (set st (get p "state"))
+          (if (or (= st "ready") (= st "waiting") (= st "running"))
+            (begin
+              (set run-slice share)
+              (if (= run-slice 0) (set run-slice 200))
+              (set rr (sys "host-sys" "proc-run" (list (get p "pid") run-slice)))
+              ;; 立即完成该进程发起的系统调用（消息/文件/设备）
+              (if (= (get rr "state") "waiting")
+                (if (= (get rr "wait") "syscall")
+                  (sys "host-sys" "proc-sys-result" (list (get p "pid"))))))
+            ))))
+    ;; 2b. 等待中的系统调用在条件满足时也再尝试一次
+    (foreach p plist
+      (if (= (get p "state") "waiting")
+        (sys "host-sys" "proc-sys-result" (list (get p "pid")))))
+    ;; 3. 收集各应用 UI，合并提交给窗口管理器显示由 wm 负责；内核每步确认存活
+    ;; 4. 推进直属子系统承载：预算按配置的拨付上限切分
+    (set kids (sys "host-sys" "child-list" (list)))
+    (set kn (len kids))
+    (if (> kn 0)
+      (begin
+        (set kid-grant (floor (* total 0.25) kn))
+        (foreach k kids
+          (if (= (get k "state") "running")
+            (sys "host-sys" "child-advance" (list (get k "id") tick-ms kid-grant)))
+          (set kui (sys "host-sys" "child-ui" (list (get k "id")))))))
+    ;; 5. 内核每逻辑步等待一次（由虚拟时间唤醒），保证不在调度之外推进
+    (yield)
+    )
+  )
+
+(defn kernel-control (ev)
+  (set type (get ev "type"))
+  ;; wm 事件不处理（wm 自己有邮箱）；这里只处理需要内核级动作的
+  (if (= type "snapshot-request")
+    (sys "host-sys" "child-snapshot" (list (get ev "id") (get ev "path")))))
+
+(defn count-user-procs (plist)
+  (set n 0)
+  (foreach p plist
+    (if (!= (get p "pid") 1) (set n (+ n 1))))
+  (return n))

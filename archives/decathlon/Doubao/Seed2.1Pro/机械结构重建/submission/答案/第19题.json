@@ -1,0 +1,17 @@
+{
+  "problem": "19",
+  "parts": [
+    {"name": "1", "title": "斜交三轴变速箱壳", "features": [
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 230, 150], "r": 6}], "depth": 22, "name": "底板"},
+      {"type": "extrude", "plane": "XY", "loops": [{"rect": [20, 18, 210, 132]}], "depth": 80, "name": "箱体"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [70, 75], "d": 90}], "depth": [80, 120], "name": "低速筒"},
+      {"type": "extrude", "plane": "XY", "loops": [{"circle": [160, 75], "d": 60}], "depth": [60, 100], "name": "高速筒"},
+      {"type": "extrude", "plane": "YZ", "origin": [210, 75, 60], "loops": [{"circle": [0, 0], "d": 64}], "depth": [0, 24], "name": "前筒"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 120], "at": [[70, 75]], "d": 38, "through": true, "name": "低速轴孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [[160, 75]], "d": 30, "through": true, "name": "高速轴孔"},
+      {"type": "hole", "plane": "YZ", "origin": [210, 75, 60], "at": [[0, 0]], "d": 32, "depth": 90, "name": "前孔"},
+      {"type": "hole", "plane": {"origin": [130, 75, 100], "normal": [0.4182, 0.2992, 0.8580], "x_dir": [0.581, -0.814, 0]}, "at": [[0, 0]], "d": 28, "depth": 80, "name": "第三轴斜孔"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 22], "at": [[22, 22], [208, 22], [22, 128], [208, 128]], "d": 10, "depth": 30, "cbore": {"d": 18, "depth": 6}, "name": "地脚孔"}
+    ]}
+  ]
+}
