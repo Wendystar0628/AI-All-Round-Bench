@@ -1,0 +1,168 @@
+{
+  "problem": "09",
+  "parts": [
+    {
+      "name": "1",
+      "title": "跨腔三向斜流道歧管",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [-10, -10, 150, 102]}],
+          "depth": 12
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "斜肩主体",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"path": [[0, 12], [140, 12], [140, 50], [104, 86], [0, 86]]}],
+          "depth": [-92, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右侧口加强板",
+          "plane": "YZ",
+          "origin": [140, 0, 0],
+          "loops": [{"rect": [26, 20, 66, 68]}],
+          "depth": 6
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左下旁通方腔",
+          "plane": "XY",
+          "origin": [0, 0, 16],
+          "loops": [{"rect": [8, 28, 34, 64]}],
+          "depth": 18
+        },
+        {
+          "type": "hole",
+          "name": "主横向Φ18通孔",
+          "plane": "YZ",
+          "origin": [-2, 0, 0],
+          "at": [46, 44],
+          "d": 18,
+          "depth": 152,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右端Φ28沉孔",
+          "plane": "YZ",
+          "origin": [148, 0, 0],
+          "at": [46, 44],
+          "d": 28,
+          "depth": 8
+        },
+        {
+          "type": "hole",
+          "name": "顶面中心Φ16/Φ30竖向阶梯孔",
+          "plane": "XY",
+          "origin": [0, 0, 86],
+          "at": [64, 46],
+          "d": 16,
+          "depth": 50,
+          "cbore": {"d": 30, "depth": 10}
+        },
+        {
+          "type": "hole",
+          "name": "前上Φ22/Φ34阶梯孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [36, 64],
+          "d": 22,
+          "depth": 54,
+          "cbore": {"d": 34, "depth": 14}
+        },
+        {
+          "type": "hole",
+          "name": "前左下Φ12孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [16, 26],
+          "d": 12,
+          "depth": 32
+        },
+        {
+          "type": "hole",
+          "name": "前右下Φ26通孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [94, 26],
+          "d": 26,
+          "depth": 54
+        },
+        {
+          "type": "hole",
+          "name": "前上Φ8仪表盲孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [64, 72],
+          "d": 8,
+          "depth": 14
+        },
+        {
+          "type": "hole",
+          "name": "后上Φ8仪表盲孔",
+          "plane": "XZ",
+          "origin": [0, 94, 0],
+          "at": [64, 72],
+          "d": 8,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "斜面Φ14斜孔",
+          "plane": {
+            "origin": [122, 46, 68],
+            "normal": [0.707106781, 0, 0.707106781],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 14,
+          "depth": 64
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ10斜孔",
+          "plane": {
+            "origin": [64, 20, 88],
+            "normal": [0, 0.5, 0.866025404],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 40
+        },
+        {
+          "type": "hole",
+          "name": "底板四个Φ8安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 12],
+          "at": [[-5, -5], [145, -5], [-5, 97], [145, 97]],
+          "d": 8,
+          "through": true
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[70, -10, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[-10, -10, 6]]
+        }
+      ]
+    }
+  ]
+}

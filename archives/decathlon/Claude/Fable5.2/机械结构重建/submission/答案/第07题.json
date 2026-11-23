@@ -1,0 +1,23 @@
+{
+  "problem": "07",
+  "parts": [
+    {"name": "1", "title": "双轴错层回油支承座", "features": [
+      {"type": "extrude", "name": "地脚板", "plane": "XY", "loops": [{"rect": [0, 0, 160, 96]}], "depth": 14},
+      {"type": "extrude", "name": "加强桥(梯形)", "plane": "XZ", "loops": [{"path": [[18, 14], [34, 30], [126, 30], [142, 14]]}], "depth": [-76, -20]},
+      {"type": "extrude", "name": "左支座", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [12, 27, 48, 69]}], "depth": 46},
+      {"type": "extrude", "name": "右支座", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [104, 24, 148, 72]}], "depth": 56},
+      {"type": "extrude", "name": "左支承凸台Φ62", "plane": "YZ", "loops": [{"circle": [48, 60], "d": 62}], "depth": [12, 48]},
+      {"type": "extrude", "name": "右支承凸台Φ70", "plane": "YZ", "loops": [{"circle": [48, 70], "d": 70}], "depth": [104, 148]},
+      {"type": "extrude", "name": "后侧三角肋", "plane": "XZ", "loops": [{"path": [[74, 30], [104, 30], [104, 48]]}], "depth": [-76, -68]},
+      {"type": "hole", "name": "左轴孔Φ32+沉台Φ42", "plane": "ZY", "origin": [12, 0, 0], "at": [60, 48], "d": 32, "depth": 36, "cbore": {"d": 42, "depth": 8}},
+      {"type": "hole", "name": "右轴孔Φ38+沉台Φ50", "plane": "YZ", "origin": [148, 0, 0], "at": [48, 70], "d": 38, "depth": 44, "cbore": {"d": 50, "depth": 10}},
+      {"type": "hole", "name": "左回油立孔Φ8", "plane": "XY", "origin": [0, 0, 60], "at": [30, 48], "d": 8, "depth": 42},
+      {"type": "hole", "name": "右回油立孔Φ8", "plane": "XY", "origin": [0, 0, 70], "at": [124, 48], "d": 8, "depth": 52},
+      {"type": "extrude", "op": "cut", "name": "回油槽", "plane": "XY", "origin": [0, 0, 18], "loops": [{"rect": [35, 42, 124, 54]}], "depth": 8},
+      {"type": "hole", "name": "前侧泄油孔Φ10", "plane": "XZ", "origin": [0, 20, 0], "at": [80, 22], "d": 10, "depth": 28},
+      {"type": "hole", "name": "地脚沉孔4-Φ8/Φ13", "plane": "XY", "origin": [0, 0, 14], "at": [[7, 9], [153, 9], [7, 87], [153, 87]], "d": 8, "through": true, "cbore": {"d": 13, "depth": 5}},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 7]], "name": "底板左前外竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[80, 0, 0]], "name": "前下直棱C1"}
+    ]}
+  ]
+}

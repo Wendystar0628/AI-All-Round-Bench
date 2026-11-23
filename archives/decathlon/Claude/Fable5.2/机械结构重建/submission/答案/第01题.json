@@ -1,0 +1,13 @@
+{"problem":"01","parts":[
+{"name":"1","title":"滑阀驱动底座(初稿)","features":[
+{"type":"extrude","plane":"XY","loops":[{"rect":[0,0,180,120]}],"depth":16},
+{"type":"hole","plane":"XY","origin":[0,0,16],"at":[[10,10],[170,10],[10,110],[170,110]],"d":9,"through":true}]},
+{"name":"2","title":"前轴承架(初稿,按装配坐标)","features":[
+{"type":"extrude","plane":"XZ","loops":[{"path":[[24,16],[76,16],[76,58],[66,72],[34,72],[24,58]]}],"depth":[-34,-16]},
+{"type":"hole","plane":"XZ","origin":[0,16,0],"at":[50,54],"d":28,"depth":18}]},
+{"name":"3","title":"后轴承架(初稿,按装配坐标)","features":[
+{"type":"extrude","plane":"XZ","loops":[{"path":[[24,16],[76,16],[76,58],[66,72],[34,72],[24,58]]}],"depth":[-104,-86]},
+{"type":"hole","plane":"XZ","origin":[0,86,0],"at":[50,54],"d":28,"depth":18}]},
+{"name":"6","title":"偏心轴(初稿,按装配坐标)","features":[
+{"type":"extrude","plane":"XZ","loops":[{"circle":[50,54],"d":18}],"depth":[-112,-8]}]}
+]}

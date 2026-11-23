@@ -1,0 +1,135 @@
+{
+  "problem": "03",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双腔斜顶分流阀壳",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [-12, -10, 98, 66]}],
+          "depth": 8
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "斜顶阀壳主体",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"path": [[0, 8], [86, 8], [86, 32], [62, 56], [0, 56]]}],
+          "depth": [-56, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前接口Φ34凸台",
+          "plane": "XZ",
+          "origin": [0, -6, 0],
+          "loops": [{"circle": [26, 28], "d": 34}],
+          "depth": [-8, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左工作腔",
+          "plane": "XY",
+          "origin": [0, 0, 8],
+          "loops": [{"rect": [8, 8, 44, 48]}],
+          "depth": 42
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "右工作腔",
+          "plane": "XY",
+          "origin": [0, 0, 8],
+          "loops": [{"rect": [50, 8, 78, 48]}],
+          "depth": 30
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "底部排放槽",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [20, 21, 32, 35]}],
+          "depth": 10
+        },
+        {
+          "type": "hole",
+          "name": "前接口Φ22通孔",
+          "plane": "XZ",
+          "origin": [0, -6, 0],
+          "at": [26, 28],
+          "d": 22,
+          "depth": 20
+        },
+        {
+          "type": "hole",
+          "name": "隔板Φ18连孔",
+          "plane": "YZ",
+          "origin": [52, 0, 0],
+          "at": [28, 24],
+          "d": 18,
+          "depth": 12
+        },
+        {
+          "type": "hole",
+          "name": "后壁Φ18出口孔",
+          "plane": "XZ",
+          "origin": [0, 56, 0],
+          "at": [64, 20],
+          "d": 18,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "斜面Φ12斜孔",
+          "plane": {
+            "origin": [74, 28, 44],
+            "normal": [0.7071068, 0, 0.7071068],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 12,
+          "depth": 42
+        },
+        {
+          "type": "hole",
+          "name": "顶盖Φ5螺孔",
+          "plane": "XY",
+          "origin": [0, 0, 56],
+          "at": [[6, 12], [6, 44]],
+          "d": 5,
+          "depth": 12
+        },
+        {
+          "type": "hole",
+          "name": "底板四角Φ7安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 8],
+          "at": [[-6, -4], [-6, 60], [92, -4], [92, 60]],
+          "d": 7,
+          "through": true
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[40, -10, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[-12, -10, 4]]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+// 消息发送：启动接收程序，每隔一段时间给它发一条消息。可以改 COUNT 和 TEXT 再运行。
+var COUNT = 5;
+var TEXT = "你好";
+var target = sys("spawn", "/Programs/recv.nx", null, true);
+sys("print", "发送进程 pid=" + sys("pid") + "，接收进程 pid=" + target);
+var i = 1;
+while (i <= COUNT) {
+  var ok = sys("send", target, TEXT + " #" + i);
+  sys("print", "发送 #" + i + " → " + ok);
+  sys("sleep", 300);
+  i = i + 1;
+}
+sys("send", target, "bye");
+sys("sleep", 300);
+sys("print", "向已结束的进程发送 → " + sys("send", target, "迟到的消息"));
+sys("exit", 0);

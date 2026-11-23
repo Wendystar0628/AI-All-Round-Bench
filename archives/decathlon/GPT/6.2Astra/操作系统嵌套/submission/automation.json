@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": [
+      "start",
+      "--",
+      "--data-dir",
+      "{dataDir}",
+      "--width",
+      "{width}",
+      "--height",
+      "{height}",
+      "--remote-debugging-port={port}"
+    ],
+    "cwd": "."
+  },
+  "mainWindow": {
+    "title": "Nested OS"
+  },
+  "connection": {
+    "protocol": "CDP",
+    "port": 19106,
+    "context": "主窗口顶层 document，所有自制控件位于同一 DOM；网页内容为 webview guest。"
+  },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernel": "/System/inner-{N}.str",
+      "compiler": "/System/compiler.str",
+      "controller": "/Programs/flight.str"
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernel": "父系统 /System/inner-{N}.str",
+      "compiler": "/System/compiler.str",
+      "controller": "/Programs/flight.str"
+    }
+  }
+}

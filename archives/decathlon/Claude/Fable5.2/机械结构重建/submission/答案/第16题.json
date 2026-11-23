@@ -1,0 +1,10 @@
+{"problem":"16","parts":[{"name":"1","title":"双蜗室异面三通泵壳(初稿)","features":[
+{"type":"extrude","name":"地脚法兰","plane":"XY","loops":[{"rect":[0,0,280,180]}],"depth":18},
+{"type":"extrude","name":"左蜗室外壳Φ132","plane":"XZ","loops":[{"circle":[78,84],"d":132}],"depth":[-164,-16]},
+{"type":"extrude","name":"右蜗室外壳Φ112","plane":"XZ","loops":[{"circle":[206,95],"d":112}],"depth":[-164,-16]},
+{"type":"extrude","name":"左支座","plane":"XZ","loops":[{"path":[[28,18],[128,18],[112,60],[44,60]]}],"depth":[-164,-16]},
+{"type":"extrude","name":"右支座","plane":"XZ","loops":[{"path":[[164,18],[248,18],[206,95]]}],"depth":[-164,-16]},
+{"type":"extrude","name":"左前凸缘Φ92","plane":"XZ","loops":[{"circle":[78,84],"d":92}],"depth":[-16,0]},
+{"type":"extrude","name":"左后凸缘Φ92","plane":"XZ","loops":[{"circle":[78,84],"d":92}],"depth":[-180,-164]},
+{"type":"hole","name":"左轴封孔Φ36+沉台Φ52","plane":"XZ","origin":[0,0,0],"at":[78,84],"d":36,"depth":40,"cbore":{"d":52,"depth":10}}
+]}]}

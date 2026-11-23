@@ -1,0 +1,242 @@
+// ===========================================================================
+//  Flight.nsl —— 飞行场景进程（播放器启动的协作进程）
+//  职责：按记录或实时物理计算机体状态、旋翼与碎片，提交三维场景状态
+//  记录回放：从最近的检查点按记录的控制时序积分到当前时刻（结果与预算无关）
+//  飞行排演：按飞控写入的控制量实时积分
+// ===========================================================================
+var scenePath = "/Demo/helicopter-24.scene"
+var rec = null
+var duration = 15
+var t = 0
+var mode = "record"
+var state = null
+var cam = { mode: "follow", theta: 0.55, phi: 0.3, dist: 30 }
+var ctrl = { coll: 0, cyc: 0, tail: 0 }
+var ctrlT = 0
+var wind = [0, 0]
+var faultAt = -1
+var fault = 0
+var debris = []
+var crashed = false
+var targetHeading = 0
+var W = 640
+var H = 400
+
+func initState() {
+  return { pos: [0, 0.55, 0], vel: [0, 0, 0], yaw: 0, pitch: 0, roll: 0, rpm: 0, rotor: 0, damage: 0, crashed: false }
+}
+func ctlAt(tt) {
+  // 按记录中的控制时序线性取值
+  var cs = rec.controls
+  if (cs.length == 0) { return [0, 0, 0] }
+  var i = 0
+  while (i < cs.length - 1 && cs[i + 1][0] <= tt) { i = i + 1 }
+  var a = cs[i]
+  var b = cs[i]
+  if (i < cs.length - 1) { b = cs[i + 1] }
+  var span = b[0] - a[0]
+  var k = 0
+  if (span > 0) { k = (tt - a[0]) / span }
+  if (k < 0) { k = 0 }
+  if (k > 1) { k = 1 }
+  return [a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, a[3] + (b[3] - a[3]) * k]
+}
+func nearestCp(tt) {
+  var cps = rec.checkpoints
+  var idx = 0
+  for (var i = 0; i < cps.length; i++) { if (cps[i][0] <= tt) { idx = i } }
+  return idx
+}
+func snapTo(cp) {
+  state.pos = [cp[1][0], cp[1][1], cp[1][2]]
+  state.vel = [cp[2][0], cp[2][1], cp[2][2]]
+  state.yaw = cp[3]
+  state.pitch = cp[4]
+  state.roll = cp[5]
+  state.rpm = cp[6]
+  state.rotor = cp[7]
+  state.damage = cp[8]
+  state.crashed = cp[9]
+  debris = cp[10]
+  if (debris == null) { debris = [] }
+}
+func applyPhysics(dt, coll, cyc, tail) {
+  var p = state
+  var windX = wind[0]
+  var windZ = wind[1]
+  p.rotor = p.rotor + p.rpm * 22 * dt
+  p.rpm = p.rpm + (coll * 34 - p.rpm) * dt * 1.6
+  if (p.rpm < 0) { p.rpm = 0 }
+  var eff = 1
+  if (fault > 0) { eff = 1 - fault * 0.75 }
+  var lift = p.rpm * p.rpm * 0.019 * coll * eff - 9.8
+  p.pitch = p.pitch + ((cyc * 0.9) - p.pitch) * dt * 3.2
+  p.roll = p.roll + ((tail * 0.55) - p.roll) * dt * 3.2
+  if (fault > 0) {
+    p.pitch = p.pitch + Math.sin(t * 7.3) * fault * dt * 2.2
+    p.roll = p.roll + Math.cos(t * 6.1) * fault * dt * 2.6
+    p.yaw = p.yaw + fault * dt * 1.6
+  }
+  var ax = Math.sin(p.yaw) * p.pitch * 11 + windX
+  var az = -Math.cos(p.yaw) * p.pitch * 11 + windZ
+  var ay = lift
+  p.vel[0] = p.vel[0] + ax * dt
+  p.vel[1] = p.vel[1] + ay * dt
+  p.vel[2] = p.vel[2] + az * dt
+  p.vel[0] = p.vel[0] * (1 - 0.12 * dt)
+  p.vel[2] = p.vel[2] * (1 - 0.12 * dt)
+  p.pos[0] = p.pos[0] + p.vel[0] * dt
+  p.pos[1] = p.pos[1] + p.vel[1] * dt
+  p.pos[2] = p.pos[2] + p.vel[2] * dt
+  // 地面
+  var g = groundAt(p.pos[0], p.pos[2])
+  if (p.pos[1] < g + 0.55) {
+    p.pos[1] = g + 0.55
+    var sp = Math.abs(p.vel[0]) + Math.abs(p.vel[1]) + Math.abs(p.vel[2])
+    if (sp > 6 || fault > 0.2) { crash(sp) } else { p.vel[1] = 0; p.vel[0] = p.vel[0] * 0.8; p.vel[2] = p.vel[2] * 0.8 }
+  }
+  if (p.pos[1] > 90) { p.pos[1] = 90; p.vel[1] = 0 }
+}
+func groundAt(x, z) {
+  // 与场景资源一致的地形高度（简化：平坦场地 + 缓坡）
+  var d = Math.sqrt(x * x + z * z)
+  if (d < 60) { return 0 }
+  return (d - 60) * 0.02
+}
+func crash(sp) {
+  if (state.crashed) { return }
+  state.crashed = true
+  state.damage = 1
+  debris = []
+  var n = 14
+  for (var i = 0; i < n; i++) {
+    var a = i * 2.399
+    var r = 0.6 + (i % 5) * 0.35
+    debris.push({
+      p: [state.pos[0] + Math.cos(a) * r, state.pos[1] + 0.4 + (i % 3) * 0.3, state.pos[2] + Math.sin(a) * r],
+      v: [Math.cos(a) * (2 + (i % 4)), 2 + (i % 5) * 1.2, Math.sin(a) * (2 + (i % 3))],
+      r: [a, a * 0.7, a * 1.3],
+      s: [0.25 + (i % 4) * 0.12, 0.08, 0.5 + (i % 3) * 0.3],
+      k: i % 3,
+      rest: false
+    })
+  }
+  state.vel = [0, 0, 0]
+  state.rpm = 0
+}
+func updateDebris(dt) {
+  for (var i = 0; i < debris.length; i++) {
+    var d = debris[i]
+    if (d.rest) { continue }
+    d.v[1] = d.v[1] - 9.8 * dt
+    d.p[0] = d.p[0] + d.v[0] * dt
+    d.p[1] = d.p[1] + d.v[1] * dt
+    d.p[2] = d.p[2] + d.v[2] * dt
+    d.r[0] = d.r[0] + dt * 3
+    d.r[1] = d.r[1] + dt * 4
+    var g = groundAt(d.p[0], d.p[2]) + 0.12
+    if (d.p[1] < g) {
+      d.p[1] = g
+      if (Math.abs(d.v[1]) < 1.2) { d.rest = true; d.v = [0, 0, 0] } else { d.v[1] = -d.v[1] * 0.32; d.v[0] = d.v[0] * 0.6; d.v[2] = d.v[2] * 0.6 }
+    }
+  }
+}
+func submit() {
+  var p = state
+  var camPos = [0, 0, 0]
+  var camTarget = [p.pos[0], p.pos[1] + 1.2, p.pos[2]]
+  if (cam.mode == "follow") {
+    var d = cam.dist
+    camPos = [p.pos[0] + Math.sin(cam.theta) * Math.cos(cam.phi) * d, p.pos[1] + Math.sin(cam.phi) * d + 3, p.pos[2] + Math.cos(cam.theta) * Math.cos(cam.phi) * d]
+  } else if (cam.mode == "show") {
+    var k = t / duration
+    camPos = [Math.sin(t * 0.22) * 26, 9 + Math.sin(t * 0.31) * 3, Math.cos(t * 0.22) * 26]
+    camTarget = [p.pos[0] * 0.6, p.pos[1] * 0.6 + 2, p.pos[2] * 0.6]
+  } else {
+    var d2 = cam.dist
+    camPos = [p.pos[0] + Math.sin(cam.theta) * Math.cos(cam.phi) * d2, p.pos[1] + Math.sin(cam.phi) * d2 + 2, p.pos[2] + Math.cos(cam.theta) * Math.cos(cam.phi) * d2]
+  }
+  var st = {
+    scene: scenePath,
+    t: t,
+    aircraft: { pos: p.pos, yaw: p.yaw, pitch: p.pitch, roll: p.roll },
+    anim: { rotor: p.rotor, tail: p.rotor * 4.2, damage: p.damage, crashed: p.crashed },
+    debris: debris,
+    cam: { pos: camPos, target: camTarget, fov: 46 },
+    wind: wind,
+    mode: mode,
+    fault: fault
+  }
+  sys.scene("scene", st)
+  sys.publish("aircraft", { pos: p.pos, vel: p.vel, yaw: p.yaw, pitch: p.pitch, roll: p.roll, rotor: p.rotor, rpm: p.rpm, t: t, crashed: p.crashed })
+}
+func main() {
+  var first = sys.recv()
+  if (first != null && first.type == "open") { scenePath = first.path }
+  if (first != null && first.type == "resize") { W = first.w; H = first.h }
+  rec = sys.scene_load(scenePath)
+  if (rec != null) {
+    duration = rec.duration
+    if (rec.record != null && rec.record.faultAt != null) { faultAt = rec.record.faultAt }
+  }
+  state = initState()
+  if (rec != null && rec.record != null && rec.record.init != null) {
+    var ini = rec.record.init
+    state.pos = [ini.pos[0], ini.pos[1], ini.pos[2]]
+    state.vel = [ini.vel[0], ini.vel[1], ini.vel[2]]
+    state.yaw = ini.yaw
+    state.rpm = ini.rpm
+  }
+  submit()
+  while (true) {
+    var m = sys.recv()
+    if (m == null) { sys.sleep(0.05) } else if (m.type == "tick") {
+      if (m.playing) {
+        var steps = 1
+        var dt = m.dt * m.rate
+        if (dt > 0.1) { dt = 0.1 }
+        // 记录回放：跨越检查点时对齐，保证结果与预算无关
+        if (mode == "record" && rec != null && rec.record != null) {
+          var before = nearestCp(t)
+          var after = nearestCp(t + dt)
+          var c = ctlAt(t)
+          applyPhysics(dt, c[0], c[1], c[2])
+          if (after > before) { snapTo(rec.record.checkpoints[after]) }
+          if (faultAt > 0 && t >= faultAt) { fault = Math.min(1, (t - faultAt) * 0.8) }
+        } else {
+          if (m.ctrl != null) { ctrl = m.ctrl }
+          applyPhysics(dt, ctrl.coll, ctrl.cyc, ctrl.tail)
+          if (faultAt > 0 && t >= faultAt && fault == 0) { fault = 1 }
+        }
+        t = t + dt
+        if (t > duration) { if (m.loop) { t = 0; state = initState(); debris = []; fault = 0 } else { t = duration } }
+        updateDebris(dt)
+        submit()
+      }
+    } else if (m.type == "seek") {
+      t = m.t
+      if (t < 0) { t = 0 }
+      if (t > duration) { t = duration }
+      if (mode == "record" && rec != null && rec.record != null) {
+        var ci = nearestCp(t)
+        snapTo(rec.record.checkpoints[ci])
+        fault = 0
+        if (faultAt > 0 && t >= faultAt) { fault = Math.min(1, (t - faultAt) * 0.8) }
+        var tt = rec.record.checkpoints[ci][0]
+        while (tt < t) {
+          var c2 = ctlAt(tt)
+          var d2 = t - tt
+          if (d2 > 0.05) { d2 = 0.05 }
+          applyPhysics(d2, c2[0], c2[1], c2[2])
+          tt = tt + d2
+        }
+      }
+      submit()
+    } else if (m.type == "camera") { cam.mode = m.mode; if (m.theta != null) { cam.theta = m.theta }; if (m.phi != null) { cam.phi = m.phi }; if (m.dist != null) { cam.dist = m.dist }; submit() }
+    else if (m.type == "wind") { wind = [m.x, m.z] }
+    else if (m.type == "mode") { mode = m.mode; if (m.mode == "rehearsal") { t = 0; state = initState(); debris = []; fault = 0; faultAt = -1; if (rec != null && rec.record != null) { var ini = rec.record.init; state.pos = [ini.pos[0], ini.pos[1], ini.pos[2]]; state.yaw = ini.yaw; state.rpm = 0 } } }
+    else if (m.type == "fault") { faultAt = m.t }
+    else if (m.type == "target") { targetHeading = m.heading }
+    else if (m.type == "resize") { W = m.w; H = m.h }
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "task": "攻城略地",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "score": 48.0,
+      "name": "总分",
+      "reason": "官方 evaluate.py 唯一一次正式评测完成480局；实力值 r=457.2498121495511，总战绩266胜/0平/214负；按官方输出计48.0分。编译通过，数据目录与官方一致，源码未见计分规则所列违规。",
+      "max": 100
+    }
+  ],
+  "metrics": {
+    "score_ci95": [
+      43.6,
+      52.7
+    ],
+    "r": 457.2498121495511,
+    "total_games": 480,
+    "wins": 266,
+    "draws": 0,
+    "losses": 214,
+    "by_opponent": [
+      {
+        "id": "tier1",
+        "name": "第1档",
+        "rating": 0.0,
+        "score_anchor": 10.0,
+        "games": 96,
+        "wins": 90,
+        "draws": 0,
+        "losses": 6,
+        "points": 90.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier2",
+        "name": "第2档",
+        "rating": 232.72971403075087,
+        "score_anchor": 20.0,
+        "games": 96,
+        "wins": 75,
+        "draws": 0,
+        "losses": 21,
+        "points": 75.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier3",
+        "name": "第3档",
+        "rating": 374.02562493412154,
+        "score_anchor": 40.0,
+        "games": 96,
+        "wins": 52,
+        "draws": 0,
+        "losses": 44,
+        "points": 52.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier4",
+        "name": "第4档",
+        "rating": 581.4837730581465,
+        "score_anchor": 60.0,
+        "games": 96,
+        "wins": 34,
+        "draws": 0,
+        "losses": 62,
+        "points": 34.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier5",
+        "name": "第5档",
+        "rating": 825.1484030205629,
+        "score_anchor": 80.0,
+        "games": 96,
+        "wins": 15,
+        "draws": 0,
+        "losses": 81,
+        "points": 15.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      }
+    ],
+    "cpu_timeout_turns": 0,
+    "forfeit_losses": 0,
+    "penalty_reasons": {
+      "bot": {},
+      "opponents": {}
+    },
+    "report": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Claude\\Fable5.2\\攻城略地\\codex\\performance\\work\\official_report.json"
+  },
+  "notes": "评的是作答结束时工作目录中的内容，复制到 work/submission 后评分，不看 git 提交。按指定命令和 Job 包装器在逻辑处理器0–15编译并运行官方 evaluate.py；唯一一次正式评测完成480局，8局并行，未重跑或剔除对局。数据目录12个文件与官方材料一致。评分过程中未见作弊行为。所有本会话启动的评测程序及记录后代均已退出。",
+  "total": 48.0
+}

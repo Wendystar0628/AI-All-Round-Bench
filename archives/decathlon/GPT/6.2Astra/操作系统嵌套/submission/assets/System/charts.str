@@ -1,0 +1,54 @@
+display({"surface":"charts","sections":["toolbar","toolbar","apphead","chartbox","status"]})
+@loop
+receive event
+if event.action != "command" goto input
+invoke(event)
+goto loop
+@input
+if event.action != "packet" goto command
+if event.token != app("token") goto loop
+if event.version < app("ver") goto loop
+rows = []
+low = 0
+high = 0
+i = 0
+@row
+if i >= length(event.rows) goto layout
+r = at(event.rows,i)
+v = [at(r,0)]
+j = 1
+@series
+if j >= length(r) goto store
+n = numeric(at(r,j)) * 1
+v = push(v,n)
+low = min(low,n)
+high = max(high,n)
+j = j + 1
+goto series
+@store
+rows = push(rows,v)
+i = i + 1
+goto row
+@layout
+span = max(1,high-low)
+points = []
+i = 0
+@group
+if i >= length(rows) goto submit
+r = at(rows,i)
+j = 1
+@point
+if j >= length(r) goto next
+n = at(r,j)
+points = push(points,{group:i,series:j-1,x:(i+0.5)/length(rows),y:(high-n)/span,value:n})
+j = j + 1
+goto point
+@next
+i = i + 1
+goto group
+@submit
+display({kind:"chart",rows:rows,labels:event.labels,version:event.version,points:points,low:low,high:high,baseline:high/span})
+goto loop
+@command
+chart(event,1)
+goto loop

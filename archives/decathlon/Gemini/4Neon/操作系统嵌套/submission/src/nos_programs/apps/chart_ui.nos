@@ -1,0 +1,375 @@
+// /apps/chart_ui.nos — 图表工作台计算与绘图进程
+// 接收 chart_recv.nos 发来的数据版本，执行取值、坐标映射与虚拟时间过渡插值，提交矢量二维图表。
+// 可修改下方取值与坐标映射函数并重新打开图表工作台以更改绘图规则。
+
+// ==================== 可修改策略区 ====================
+
+// 取值规则：从选区二维数组提取标签与数值系列（默认首行为表头）
+fn extract_chart_series(rows, startColIdx, labelColLetter, seriesColLetters) {
+  if (rows == null || len(rows) == 0) {
+    return { labels: [], series: [], maxVal: 100 };
+  }
+  let colMap = { A:0, B:1, C:2, D:3, E:4, F:5, G:6, H:7, I:8, J:9, K:10, L:11 };
+  let lblAbs = has(colMap, upper(labelColLetter)) ? colMap[upper(labelColLetter)] : 0;
+  let lblRel = lblAbs - startColIdx;
+  if (lblRel < 0) lblRel = 0;
+
+  let hasHeader = len(rows) > 1;
+  let dataStart = hasHeader ? 1 : 0;
+  let labels = [];
+  for (let r = dataStart; r < len(rows); r += 1) {
+    let row = rows[r];
+    let v = (row != null && lblRel < len(row) && row[lblRel] != null) ? str(row[lblRel]) : ("行" + str(r + 1));
+    push(labels, v);
+  }
+
+  let palette = ["#38bdf8", "#a855f7", "#f59e0b", "#10b981", "#f43f5e", "#6366f1"];
+  let series = [];
+  let maxVal = 1;
+  for (let s = 0; s < len(seriesColLetters); s += 1) {
+    let letter = upper(trim(seriesColLetters[s]));
+    if (letter == "") continue;
+    let cAbs = has(colMap, letter) ? colMap[letter] : 3;
+    let cRel = cAbs - startColIdx;
+    let title = "列 " + letter;
+    if (hasHeader && rows[0] != null && cRel >= 0 && cRel < len(rows[0]) && rows[0][cRel] != null && str(rows[0][cRel]) != "") {
+      title = str(rows[0][cRel]);
+    }
+    let vals = [];
+    for (let r = dataStart; r < len(rows); r += 1) {
+      let row = rows[r];
+      let raw = (row != null && cRel >= 0 && cRel < len(row)) ? row[cRel] : 0;
+      let n = num(raw);
+      if (n > maxVal) maxVal = n;
+      push(vals, n);
+    }
+    push(series, {
+      col: letter,
+      name: title,
+      color: palette[s % len(palette)],
+      values: vals
+    });
+  }
+  return { labels: labels, series: series, maxVal: maxVal };
+}
+
+fn parse_range_start_col(rangeStr) {
+  let s = upper(trim(str(rangeStr)));
+  if (len(s) == 0) return 0;
+  let cc = char_code(s, 0);
+  if (cc >= 65 && cc <= 90) return cc - 65;
+  return 0;
+}
+
+// ==================== 应用状态 ====================
+
+let winId = ARGS.windowId;
+let recvPid = 0;
+
+let selectedDocId = "";
+let sourceTitle = "";
+let rangeStr = "A1:D4";
+let labelCol = "A";
+let seriesColsStr = "D";
+let chartType = "bar"; // bar | line
+let connectionState = "disconnected";
+let dataVersion = 0;
+let rawRows = null;
+
+let targetModel = { labels: [], series: [], maxVal: 100 };
+let animValues = []; // animValues[s][i] 随虚拟时间平滑过渡
+let selectedPoint = null; // { seriesIdx, itemIdx }
+let lastTime = syscall("time");
+let dirty = true;
+let animating = false;
+
+fn rebuild_model() {
+  let startCol = parse_range_start_col(rangeStr);
+  let sCols = split(seriesColsStr, ",");
+  targetModel = extract_chart_series(rawRows, startCol, labelCol, sCols);
+
+  // 对齐过渡数组
+  let newAnim = [];
+  for (let s = 0; s < len(targetModel.series); s += 1) {
+    let vals = targetModel.series[s].values;
+    let curRow = (s < len(animValues)) ? animValues[s] : [];
+    let row = [];
+    for (let i = 0; i < len(vals); i += 1) {
+      let prev = (i < len(curRow)) ? curRow[i] : 0;
+      push(row, prev);
+    }
+    push(newAnim, row);
+  }
+  animValues = newAnim;
+  animating = true;
+  dirty = true;
+}
+
+fn step_animation(dt) {
+  if (!animating || len(targetModel.series) == 0) return;
+  let alpha = clamp(dt * 9.0, 0.0, 1.0);
+  let stillMoving = false;
+  for (let s = 0; s < len(targetModel.series); s += 1) {
+    let vals = targetModel.series[s].values;
+    for (let i = 0; i < len(vals); i += 1) {
+      let cur = animValues[s][i];
+      let tgt = vals[i];
+      let diff = tgt - cur;
+      if (abs(diff) > 0.05) {
+        animValues[s][i] = cur + diff * alpha;
+        stillMoving = true;
+      } else {
+        animValues[s][i] = tgt;
+      }
+    }
+  }
+  animating = stillMoving;
+  dirty = true;
+}
+
+fn build_vector_geometry() {
+  // 在子系统进程内实际计算柱状图/折线图坐标、刻度与标签
+  let svgW = 560;
+  let svgH = 260;
+  let padL = 52;
+  let padR = 24;
+  let padT = 26;
+  let padB = 42;
+  let plotW = svgW - padL - padR;
+  let plotH = svgH - padT - padB;
+
+  let maxV = targetModel.maxVal;
+  if (maxV <= 0) maxV = 10;
+  let niceMax = ceil(maxV / 10) * 10;
+  if (niceMax < maxV) niceMax = maxV * 1.15;
+  if (niceMax <= 0) niceMax = 10;
+
+  let yTicks = [];
+  for (let k = 0; k <= 4; k += 1) {
+    let v = (niceMax * k) / 4;
+    let y = padT + plotH - (plotH * k) / 4;
+    push(yTicks, { value: round(v * 10) / 10, y: y });
+  }
+
+  let labels = targetModel.labels;
+  let nItems = len(labels);
+  let nSeries = len(targetModel.series);
+  let xLabels = [];
+  let bars = [];
+  let lines = [];
+
+  if (nItems > 0 && nSeries > 0) {
+    let groupW = plotW / nItems;
+    for (let i = 0; i < nItems; i += 1) {
+      push(xLabels, { text: labels[i], x: padL + (i + 0.5) * groupW, y: padT + plotH + 18 });
+    }
+    if (chartType == "bar") {
+      let barPad = max(4, groupW * 0.16);
+      let availW = max(8, groupW - barPad * 2);
+      let bw = max(6, (availW - max(0, nSeries - 1) * 4) / nSeries);
+      for (let s = 0; s < nSeries; s += 1) {
+        let ser = targetModel.series[s];
+        for (let i = 0; i < nItems; i += 1) {
+          let val = animValues[s][i];
+          let tgt = ser.values[i];
+          let h = clamp((val / niceMax) * plotH, 0, plotH);
+          let bx = padL + i * groupW + barPad + s * (bw + 4);
+          let by = padT + plotH - h;
+          push(bars, {
+            seriesIdx: s,
+            itemIdx: i,
+            seriesName: ser.name,
+            label: labels[i],
+            value: round(tgt * 100) / 100,
+            displayVal: round(val * 10) / 10,
+            color: ser.color,
+            x: bx, y: by, w: bw, h: h
+          });
+        }
+      }
+    } else {
+      for (let s = 0; s < nSeries; s += 1) {
+        let ser = targetModel.series[s];
+        let pts = [];
+        for (let i = 0; i < nItems; i += 1) {
+          let val = animValues[s][i];
+          let tgt = ser.values[i];
+          let px = padL + (i + 0.5) * groupW;
+          let py = padT + plotH - clamp((val / niceMax) * plotH, 0, plotH);
+          push(pts, {
+            seriesIdx: s,
+            itemIdx: i,
+            seriesName: ser.name,
+            label: labels[i],
+            value: round(tgt * 100) / 100,
+            x: px, y: py
+          });
+        }
+        push(lines, { seriesIdx: s, name: ser.name, color: ser.color, points: pts });
+      }
+    }
+  }
+
+  let legend = [];
+  for (let s = 0; s < nSeries; s += 1) {
+    push(legend, { name: targetModel.series[s].name, color: targetModel.series[s].color, col: targetModel.series[s].col });
+  }
+
+  return {
+    svgW: svgW, svgH: svgH,
+    padL: padL, padR: padR, padT: padT, padB: padB,
+    plotW: plotW, plotH: plotH,
+    yTicks: yTicks,
+    xLabels: xLabels,
+    bars: bars,
+    lines: lines,
+    legend: legend
+  };
+}
+
+fn render_ui(env) {
+  let workbooks = env != null && env.openWorkbooks != null ? env.openWorkbooks : [];
+  if (selectedDocId == "" && len(workbooks) > 0) {
+    selectedDocId = workbooks[0].docId;
+    sourceTitle = workbooks[0].title;
+  }
+  let geom = build_vector_geometry();
+  let connLabel = "未连接";
+  if (connectionState == "connected") connLabel = "已实时连接 (v" + str(dataVersion) + ")";
+  else if (connectionState == "source_closed") connLabel = "数据源已关闭（保留最后数据）";
+  else if (connectionState == "restored_pending_reconnect") connLabel = "已恢复，待重新连接";
+
+  let selInfo = null;
+  if (selectedPoint != null && selectedPoint.seriesIdx < len(targetModel.series)) {
+    let ser = targetModel.series[selectedPoint.seriesIdx];
+    if (selectedPoint.itemIdx < len(ser.values)) {
+      selInfo = {
+        seriesName: ser.name,
+        label: targetModel.labels[selectedPoint.itemIdx],
+        value: ser.values[selectedPoint.itemIdx]
+      };
+    }
+  }
+
+  let ui = {
+    kind: "charts_app",
+    workbooks: workbooks,
+    selectedDocId: selectedDocId,
+    sourceTitle: sourceTitle,
+    rangeStr: rangeStr,
+    labelCol: labelCol,
+    seriesColsStr: seriesColsStr,
+    chartType: chartType,
+    connectionState: connectionState,
+    connLabel: connLabel,
+    dataVersion: dataVersion,
+    selectedPoint: selectedPoint,
+    selInfo: selInfo,
+    geom: geom
+  };
+  let meta = {
+    kind: "chart",
+    windowId: winId,
+    systemId: env != null ? env.systemId : "",
+    sourceTitle: sourceTitle,
+    range: rangeStr,
+    chartType: chartType,
+    connectionState: connectionState
+  };
+  syscall("app_present", winId, ui, null, meta);
+}
+
+while (true) {
+  let msg = syscall("recv", animating ? 0.03 : 0.15);
+  let env = syscall("wm_get_env");
+
+  if (msg != null && msg.data != null) {
+    let d = msg.data;
+    if (d.type == "bind_recv") {
+      recvPid = d.recvPid;
+    } else if (d.type == "conn_status") {
+      connectionState = d.connectionState;
+      if (d.sourceTitle != null) sourceTitle = d.sourceTitle;
+      if (d.range != null) rangeStr = d.range;
+      dirty = true;
+    } else if (d.type == "data_version") {
+      connectionState = d.connectionState;
+      sourceTitle = d.sourceTitle;
+      rangeStr = d.range;
+      dataVersion = d.version;
+      rawRows = d.rows;
+      rebuild_model();
+    } else if (d.type == "ui_event" && d.event != null) {
+      let ev = d.event;
+      let pl = ev.payload != null ? ev.payload : {};
+      if (ev.action == "select_source") {
+        selectedDocId = str(ev.value);
+        if (env != null && env.openWorkbooks != null) {
+          for (let i = 0; i < len(env.openWorkbooks); i += 1) {
+            if (env.openWorkbooks[i].docId == selectedDocId) {
+              sourceTitle = env.openWorkbooks[i].title;
+              break;
+            }
+          }
+        }
+        dirty = true;
+      } else if (ev.action == "edit_range") {
+        rangeStr = str(ev.value);
+        dirty = true;
+      } else if (ev.action == "select_label_col") {
+        labelCol = upper(trim(str(ev.value)));
+        if (rawRows != null) rebuild_model();
+        dirty = true;
+      } else if (ev.action == "edit_series_cols") {
+        seriesColsStr = upper(str(ev.value));
+        if (rawRows != null) rebuild_model();
+        dirty = true;
+      } else if (ev.action == "connect") {
+        if (selectedDocId == "" && env != null && env.openWorkbooks != null && len(env.openWorkbooks) > 0) {
+          selectedDocId = env.openWorkbooks[0].docId;
+          sourceTitle = env.openWorkbooks[0].title;
+        }
+        if (recvPid > 0 && selectedDocId != "") {
+          syscall("send", recvPid, {
+            type: "cmd_connect",
+            docId: selectedDocId,
+            sourceTitle: sourceTitle,
+            range: rangeStr
+          });
+        }
+        dirty = true;
+      } else if (ev.action == "disconnect") {
+        if (recvPid > 0) {
+          syscall("send", recvPid, { type: "cmd_disconnect" });
+        }
+        dirty = true;
+      } else if (ev.action == "toggle_type") {
+        if (ev.value != null && (ev.value == "bar" || ev.value == "line")) {
+          chartType = ev.value;
+        } else {
+          chartType = (chartType == "bar") ? "line" : "bar";
+        }
+        dirty = true;
+      } else if (ev.action == "select_point") {
+        selectedPoint = { seriesIdx: num(pl.seriesIdx), itemIdx: num(pl.itemIdx) };
+        dirty = true;
+      }
+    }
+  }
+
+  let now = syscall("time");
+  let dt = now - lastTime;
+  lastTime = now;
+  if (dt > 0 && animating) {
+    step_animation(dt);
+  }
+  // 当根系统打开的工作簿列表变化时自动刷新下拉框
+  if (env != null && env.openWorkbooks != null && len(env.openWorkbooks) > 0 && selectedDocId == "") {
+    dirty = true;
+  }
+
+  if (dirty) {
+    render_ui(env);
+    dirty = false;
+  }
+}

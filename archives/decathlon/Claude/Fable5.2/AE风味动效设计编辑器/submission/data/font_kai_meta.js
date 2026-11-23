@@ -1,0 +1,1 @@
+MF_FONT_META("kai",{"label":"锻楷（含笔画）","upm":1024,"asc":900,"desc":124,"strokes":true,"auxUpm":1000,"license":"Make Me a Hanzi / Arphic PL KaitiM · Arphic Public License；拉丁与标点取自 Noto Sans SC · OFL","count":9574,"parts":6});

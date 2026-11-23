@@ -1,0 +1,12 @@
+// /Programs/busy.nos — 持续计算程序（不主动等待或让出执行权）
+// 用于检验时间片抢占调度、预算竞争以及对飞行控制回路的实际影响。
+
+let iter = 0;
+let acc = 0;
+while (true) {
+  iter += 1;
+  acc = (acc + (iter * 17) % 97) % 1000003;
+  if (iter % 50000 == 0) {
+    syscall("set_result", { iter: iter, acc: acc, t: syscall("time") });
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "problem": "10",
+  "parts": [
+    {
+      "name": "1", "title": "双斜座多腔阀体铸件",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 96, 58], "r": 6}], "depth": 6},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 4, 0], "loops": [{"path": [[10, 6], [86, 6], [86, 30], [66, 66], [30, 66], [10, 30]]}], "depth": -50},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [-2, 0, 0], "loops": [{"circle": [29, 42], "d": 72}], "depth": 12},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [86, 0, 0], "loops": [{"circle": [29, 42], "d": 64}], "depth": 12},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 48], "loops": [{"rect": [24, 14, 48, 44]}], "depth": -42},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 42], "loops": [{"rect": [52, 14, 76, 44]}], "depth": -36},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [[34, 30]], "d": 10, "through": true},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [[62, 24]], "d": 12, "through": true},
+        {"type": "hole", "plane": "YZ", "origin": [-2, 0, 0], "at": [[29, 42]], "d": 20, "through": true, "reverse": true, "cbore": {"d": 30, "depth": 12}},
+        {"type": "hole", "plane": "YZ", "origin": [98, 0, 0], "at": [[29, 42]], "d": 20, "through": true, "cbore": {"d": 34, "depth": 12}},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 66], "at": [[48, 29]], "d": 8, "through": true},
+        {
+          "type": "hole",
+          "plane": {"origin": [69.3333333333, 29, 60], "normal": [0.6427876097, 0, 0.7660444431], "x_dir": [0.7660444431, 0, -0.6427876097]},
+          "at": [[0, 0]], "d": 24, "depth": 64
+        },
+        {
+          "type": "extrude", "op": "cut",
+          "plane": {"origin": [26.6666666667, 29, 60], "normal": [-0.7660444431, 0, 0.6427876097], "x_dir": [-0.6427876097, 0, -0.7660444431]},
+          "loops": [{"circle": [0, 0], "d": 22}], "depth": -58
+        },
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[6, 6], [90, 6], [6, 52], [90, 52], [34, 14], [62, 46]], "d": 8, "through": true},
+        {"type": "chamfer", "distance": 2, "edges": [[-2, 39.6066017178, 52.6066017178]], "name": "左进水孔口整圈C2"}
+      ]
+    }
+  ]
+}

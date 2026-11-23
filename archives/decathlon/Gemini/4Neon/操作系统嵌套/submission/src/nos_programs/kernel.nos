@@ -1,0 +1,2248 @@
+// /sys/kernel.nos — Nested OS 子系统内核程序
+// 存放在父系统的 /Systems/<子系统ID>/kernel.nos，可在父系统编辑器中直接修改并重启生效。
+// 进程调度、系统调用分发、消息投递、虚拟文件系统、资源计量与子系统承载全部由本程序执行。
+
+// ==================== 可修改策略区（修改并重启子系统后直接生效） ====================
+
+// 1. 调度策略：从就绪进程中选择下一个执行的进程与时间片大小
+fn schedule_pick(st) {
+  let n = len(st.procs);
+  if (n == 0) return null;
+  let checked = 0;
+  let idx = st.rrCursor % n;
+  while (checked < n) {
+    let p = st.procs[idx];
+    if (p.state == "ready" && p.sliceRem > 0) {
+      st.rrCursor = (idx + 1) % n;
+      let quantum = 2500;
+      if (p.kind == "wm") quantum = 4000;
+      else if (p.kind == "carrier") quantum = 12000;
+      else if (p.kind == "flight_ctrl") quantum = 3000;
+      if (p.quota > 0 && p.sliceRem < quantum) quantum = p.sliceRem;
+      return { proc: p, quantum: quantum };
+    }
+    idx = (idx + 1) % n;
+    checked += 1;
+  }
+  return null;
+}
+
+// 2. 消息投递策略：校验目标实例身份、克隆值快照、写入收件箱并唤醒等待接收方
+fn deliver_message(st, fromPid, fromGen, toPid, toGen, payload) {
+  let target = find_proc_by_pid(st, toPid);
+  if (target == null) {
+    return { ok: false, error: "目标进程不存在 (PID " + str(toPid) + ")" };
+  }
+  if (target.state == "exited" || target.state == "error") {
+    return { ok: false, error: "目标进程已结束 (PID " + str(toPid) + ")" };
+  }
+  if (toGen != null && target.gen != toGen) {
+    return { ok: false, error: "目标进程实例身份已变更" };
+  }
+  let copyData = clone(payload);
+  let msg = {
+    fromPid: fromPid,
+    fromGen: fromGen,
+    toPid: toPid,
+    toGen: target.gen,
+    sentAt: st.vtime,
+    data: copyData,
+    bytes: mem_size(copyData)
+  };
+  push(target.inbox, msg);
+  target.inboxBytes += msg.bytes;
+  if (target.state == "waiting_msg") {
+    let popped = pop_inbox(target);
+    target.state = "ready";
+    target.wakeAt = -1;
+    vm_reply(target.ctx, popped);
+  }
+  return { ok: true, delivered: true };
+}
+
+// 3. 扩展系统调用钩子：在此添加新系统调用，重启后程序即可调用
+fn handle_custom_syscall(st, proc, name, args) {
+  if (name == "sys_version") {
+    return { kernel: "NOS-Kernel-1.0", systemId: st.systemId, depth: st.depth };
+  }
+  return { __unhandled: true };
+}
+
+// ==================== 工具函数 ====================
+
+fn find_proc_by_pid(st, pid) {
+  for (let i = 0; i < len(st.procs); i += 1) {
+    if (st.procs[i].pid == pid) return st.procs[i];
+  }
+  return null;
+}
+
+fn find_child_by_id(st, childId) {
+  for (let i = 0; i < len(st.procs); i += 1) {
+    if (st.procs[i].kind == "carrier" && st.procs[i].childId == childId) {
+      return st.procs[i];
+    }
+  }
+  return null;
+}
+
+fn pop_inbox(proc) {
+  if (len(proc.inbox) == 0) return null;
+  let first = proc.inbox[0];
+  let rest = [];
+  for (let i = 1; i < len(proc.inbox); i += 1) {
+    push(rest, proc.inbox[i]);
+  }
+  proc.inbox = rest;
+  proc.inboxBytes -= first.bytes;
+  if (proc.inboxBytes < 0) proc.inboxBytes = 0;
+  return first;
+}
+
+fn norm_path(p) {
+  if (p == null || p == "") return "/";
+  let s = trim(str(p));
+  if (substr(s, 0, 1) != "/") s = "/" + s;
+  let parts = split(s, "/");
+  let out = [];
+  for (let i = 0; i < len(parts); i += 1) {
+    let seg = parts[i];
+    if (seg == "" || seg == ".") continue;
+    if (seg == "..") {
+      if (len(out) > 0) pop(out);
+    } else {
+      push(out, seg);
+    }
+  }
+  if (len(out) == 0) return "/";
+  return "/" + join(out, "/");
+}
+
+fn parent_dir(p) {
+  let np = norm_path(p);
+  if (np == "/") return "/";
+  let parts = split(np, "/");
+  pop(parts);
+  if (len(parts) <= 1) return "/";
+  return join(parts, "/");
+}
+
+fn base_name(p) {
+  let np = norm_path(p);
+  if (np == "/") return "/";
+  let parts = split(np, "/");
+  return parts[len(parts) - 1];
+}
+
+// ==================== 虚拟文件系统 (VFS) ====================
+
+fn vfs_recalc_storage(st) {
+  let total = 0;
+  let ks = keys(st.vfs);
+  for (let i = 0; i < len(ks); i += 1) {
+    let node = st.vfs[ks[i]];
+    if (node != null && node.kind == "file") {
+      total += node.size;
+    }
+  }
+  st.storageUsed = total;
+  return total;
+}
+
+fn eff_storage_quota(st) {
+  if (st.parentStorageCap > 0 && st.parentStorageCap < st.storageQuota) {
+    return st.parentStorageCap;
+  }
+  return st.storageQuota;
+}
+
+fn eff_mem_quota(st) {
+  if (st.parentMemCap > 0 && st.parentMemCap < st.memQuota) {
+    return st.parentMemCap;
+  }
+  return st.memQuota;
+}
+
+fn vfs_ensure_dir(st, dirPath) {
+  let np = norm_path(dirPath);
+  if (has(st.vfs, np)) return true;
+  let parts = split(np, "/");
+  let cur = "";
+  for (let i = 1; i < len(parts); i += 1) {
+    cur = cur + "/" + parts[i];
+    if (!has(st.vfs, cur)) {
+      st.vfs[cur] = { kind: "dir", size: 0, mtime: st.vtime };
+    }
+  }
+  return true;
+}
+
+fn vfs_list(st, dirPath) {
+  let np = norm_path(dirPath);
+  if (!has(st.vfs, np) || st.vfs[np].kind != "dir") {
+    return { ok: false, error: "目录不存在: " + np, entries: [] };
+  }
+  let entries = [];
+  let ks = keys(st.vfs);
+  for (let i = 0; i < len(ks); i += 1) {
+    let p = ks[i];
+    if (p == np || p == "/") continue;
+    if (parent_dir(p) == np) {
+      let node = st.vfs[p];
+      push(entries, {
+        name: base_name(p),
+        path: p,
+        kind: node.kind,
+        size: node.size,
+        mtime: node.mtime,
+        origPath: node.origPath
+      });
+    }
+  }
+  entries = sort_by(entries, "name", 1);
+  return { ok: true, path: np, entries: entries };
+}
+
+fn vfs_read(st, path) {
+  let np = norm_path(path);
+  if (!has(st.vfs, np)) return { ok: false, error: "文件不存在: " + np };
+  let node = st.vfs[np];
+  if (node.kind != "file") return { ok: false, error: "不是文件: " + np };
+  return { ok: true, path: np, content: node.content, size: node.size, mtime: node.mtime };
+}
+
+fn vfs_write(st, path, content) {
+  let np = norm_path(path);
+  let text = str(content);
+  let newSize = len(text);
+  let oldSize = 0;
+  if (has(st.vfs, np) && st.vfs[np].kind == "file") {
+    oldSize = st.vfs[np].size;
+  }
+  let delta = newSize - oldSize;
+  let cap = eff_storage_quota(st);
+  if (cap > 0 && st.storageUsed + delta > cap) {
+    return { ok: false, error: "存储配额不足 (" + str(st.storageUsed + delta) + " / " + str(cap) + " 字节)" };
+  }
+  vfs_ensure_dir(st, parent_dir(np));
+  st.vfs[np] = { kind: "file", content: text, size: newSize, mtime: st.vtime };
+  st.storageUsed += delta;
+  if (st.storageUsed < 0) st.storageUsed = 0;
+  return { ok: true, path: np, size: newSize };
+}
+
+fn vfs_mkdir(st, path) {
+  let np = norm_path(path);
+  if (has(st.vfs, np)) return { ok: true, path: np };
+  vfs_ensure_dir(st, np);
+  return { ok: true, path: np };
+}
+
+fn vfs_delete(st, path) {
+  let np = norm_path(path);
+  if (np == "/" || !has(st.vfs, np)) return { ok: false, error: "路径不存在" };
+  let node = st.vfs[np];
+  if (substr(np, 0, 7) == "/Trash/") {
+    // 永久删除
+    if (node.kind == "file") st.storageUsed -= node.size;
+    del(st.vfs, np);
+    if (st.storageUsed < 0) st.storageUsed = 0;
+    return { ok: true, permanent: true };
+  }
+  if (node.kind == "dir") {
+    let ks = keys(st.vfs);
+    let prefix = np + "/";
+    for (let i = 0; i < len(ks); i += 1) {
+      let k = ks[i];
+      if (k == np || substr(k, 0, len(prefix)) == prefix) {
+        if (st.vfs[k].kind == "file") st.storageUsed -= st.vfs[k].size;
+        del(st.vfs, k);
+      }
+    }
+    if (st.storageUsed < 0) st.storageUsed = 0;
+    return { ok: true };
+  }
+  // 文件移入回收站
+  vfs_ensure_dir(st, "/Trash");
+  let tname = base_name(np);
+  let tpath = "/Trash/" + tname;
+  let seq = 1;
+  while (has(st.vfs, tpath)) {
+    tpath = "/Trash/" + str(seq) + "_" + tname;
+    seq += 1;
+  }
+  st.vfs[tpath] = {
+    kind: "file",
+    content: node.content,
+    size: node.size,
+    mtime: st.vtime,
+    origPath: np
+  };
+  del(st.vfs, np);
+  return { ok: true, trashPath: tpath };
+}
+
+fn vfs_restore(st, trashPath) {
+  let np = norm_path(trashPath);
+  if (!has(st.vfs, np)) return { ok: false, error: "回收站文件不存在" };
+  let node = st.vfs[np];
+  let orig = node.origPath;
+  if (orig == null || orig == "") orig = "/Documents/" + base_name(np);
+  vfs_ensure_dir(st, parent_dir(orig));
+  st.vfs[orig] = { kind: "file", content: node.content, size: node.size, mtime: st.vtime };
+  del(st.vfs, np);
+  return { ok: true, path: orig };
+}
+
+fn vfs_copy(st, srcPath, dstPath) {
+  let r = vfs_read(st, srcPath);
+  if (!r.ok) return r;
+  return vfs_write(st, dstPath, r.content);
+}
+
+fn vfs_move(st, srcPath, dstPath) {
+  let s = norm_path(srcPath);
+  let d = norm_path(dstPath);
+  if (!has(st.vfs, s)) return { ok: false, error: "源文件不存在" };
+  if (s == d) return { ok: true, path: d };
+  let node = st.vfs[s];
+  if (node.kind == "file") {
+    vfs_ensure_dir(st, parent_dir(d));
+    st.vfs[d] = node;
+    del(st.vfs, s);
+    return { ok: true, path: d };
+  }
+  // 目录重命名/移动
+  let ks = keys(st.vfs);
+  let prefix = s + "/";
+  let moves = [];
+  for (let i = 0; i < len(ks); i += 1) {
+    let k = ks[i];
+    if (k == s) push(moves, { oldK: k, newK: d });
+    else if (substr(k, 0, len(prefix)) == prefix) {
+      push(moves, { oldK: k, newK: d + substr(k, len(s), len(k) - len(s)) });
+    }
+  }
+  for (let i = 0; i < len(moves); i += 1) {
+    st.vfs[moves[i].newK] = st.vfs[moves[i].oldK];
+    del(st.vfs, moves[i].oldK);
+  }
+  return { ok: true, path: d };
+}
+
+// ==================== 编译与进程管理 ====================
+
+fn load_compiler_bc(st) {
+  let r = vfs_read(st, "/sys/compiler.bc");
+  if (r.ok) {
+    try {
+      st.compilerBc = json_decode(r.content);
+      st.compilerHash = hash_str(r.content);
+      st.compileCache = {};
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: "编译器字节码损坏: " + str(e) };
+    }
+  }
+  return { ok: false, error: "缺少 /sys/compiler.bc" };
+}
+
+fn compile_with_os_compiler(st, src, budgetHint) {
+  let srcHash = hash_str(src);
+  let cacheKey = st.compilerHash + ":" + srcHash;
+  if (has(st.compileCache, cacheKey)) {
+    return { ok: true, bytecode: st.compileCache[cacheKey], cached: true };
+  }
+  // 首次启动时若源码与编译器均未修改，允许命中预编译镜像缓存加速四层启动
+  if (!st.compilerModified && st.bootPrecompiled != null && has(st.bootPrecompiled, srcHash)) {
+    let bc = st.bootPrecompiled[srcHash];
+    st.compileCache[cacheKey] = bc;
+    return { ok: true, bytecode: bc, cached: true };
+  }
+  if (st.compilerBc == null) {
+    let lr = load_compiler_bc(st);
+    if (!lr.ok) return lr;
+  }
+  // 在本系统 VM 中运行 /sys/compiler.bc 进行真实编译！
+  let cvm = vm_create(st.compilerBc, { COMPILE_SRC: src });
+  let maxTotal = 40000000;
+  let used = 0;
+  while (used < maxTotal) {
+    let step = vm_run(cvm, 1000000, eff_mem_quota(st));
+    used += step.stepsUsed;
+    if (step.status == "exited") {
+      if (step.value != null && step.value.ok) {
+        st.compileCache[cacheKey] = step.value.bytecode;
+        return { ok: true, bytecode: step.value.bytecode, steps: used };
+      }
+      let err = "编译错误";
+      if (step.value != null && step.value.error != null) err = str(step.value.error);
+      return { ok: false, error: err };
+    }
+    if (step.status == "error") {
+      return { ok: false, error: "编译器运行时错误: " + str(step.error) };
+    }
+    if (step.status == "syscall") {
+      vm_reply(cvm, null);
+    }
+    if (step.stepsUsed == 0) {
+      return { ok: false, error: "编译预算不足，稍后重试" };
+    }
+  }
+  return { ok: false, error: "编译超时" };
+}
+
+fn calc_total_mem(st) {
+  let total = st.gpuMemBytes + st.kernelSelfMem;
+  for (let i = 0; i < len(st.procs); i += 1) {
+    let p = st.procs[i];
+    if (p.state != "exited" && p.state != "error") {
+      total += p.memBytes + p.inboxBytes;
+    }
+  }
+  return total;
+}
+
+fn spawn_process(st, path, argsObj, opts) {
+  let np = norm_path(path);
+  let r = vfs_read(st, np);
+  if (!r.ok) return { ok: false, error: r.error };
+
+  let comp = compile_with_os_compiler(st, r.content, 0);
+  if (!comp.ok) return { ok: false, error: comp.error };
+
+  let pid = st.nextPid;
+  st.nextPid += 1;
+  let gen = st.nextGen;
+  st.nextGen += 1;
+
+  let kind = "user";
+  let appId = null;
+  let windowId = null;
+  let name = base_name(np);
+  let quota = 0;
+  let childId = null;
+
+  if (opts != null && type(opts) == "object") {
+    if (opts.kind != null) kind = opts.kind;
+    if (opts.appId != null) appId = opts.appId;
+    if (opts.windowId != null) windowId = opts.windowId;
+    if (opts.name != null) name = opts.name;
+    if (opts.quota != null) quota = opts.quota;
+    if (opts.childId != null) childId = opts.childId;
+  }
+
+  let initGlobals = { ARGS: argsObj };
+  if (opts != null && opts.initGlobals != null) {
+    initGlobals = opts.initGlobals;
+  }
+  let ctx = vm_create(comp.bytecode, initGlobals);
+  let info = vm_info(ctx);
+  let mem = 4096;
+  if (info != null) mem = info.memBytes;
+
+  let mCap = eff_mem_quota(st);
+  if (mCap > 0 && calc_total_mem(st) + mem > mCap) {
+    return { ok: false, error: "内存配额不足，无法启动进程 " + name };
+  }
+
+  let proc = {
+    pid: pid,
+    gen: gen,
+    name: name,
+    path: np,
+    kind: kind,
+    appId: appId,
+    windowId: windowId,
+    childId: childId,
+    state: "ready",     // ready | running | waiting | waiting_msg | suspended | exited | error
+    prevState: "ready",
+    wakeAt: -1,
+    ctx: ctx,
+    inbox: [],
+    inboxBytes: 0,
+    quota: quota,       // 0 表示按总预算公平共享，>0 表示单步可用上限
+    sliceRem: 0,
+    stepsTick: 0,
+    stepsTotal: 0,
+    selfStepsTick: 0,
+    childStepsTick: 0,
+    memBytes: mem,
+    pendingSyscall: null,
+    pendingWork: 0,
+    logs: [],
+    result: null,
+    error: null,
+    // 仅承载进程 (kind == "carrier") 使用：
+    childPaused: false,
+    childStepReq: 0,
+    childTimeRate: 1.0,
+    childGrantCap: 0,
+    childMemCap: 0,
+    childStorageCap: 0,
+    childViewport: { w: 760, h: 480 },
+    childRawEvents: [],
+    childCommands: [],
+    childLastMetrics: null,
+    childLastDisplay: null,
+    childName: name
+  };
+  push(st.procs, proc);
+  return { ok: true, pid: pid, gen: gen, proc: proc };
+}
+
+fn kill_process(st, pid, reason) {
+  let p = find_proc_by_pid(st, pid);
+  if (p == null) return { ok: false, error: "进程不存在" };
+  p.state = "exited";
+  p.inbox = [];
+  p.inboxBytes = 0;
+  p.pendingSyscall = null;
+  p.pendingWork = 0;
+  p.memBytes = 0;
+  p.ctx = null;
+  if (reason != null) p.error = reason;
+
+  // 若为承载进程，停止其子系统显示与投送
+  if (p.kind == "carrier" && p.childId != null) {
+    del(st.childDisplays, p.childId);
+    del(st.childProjections, p.childId);
+    // 通知 WM 关闭该子系统窗口
+    if (st.wmPid > 0) {
+      deliver_message(st, 0, 0, st.wmPid, null, { type: "child_stopped", childId: p.childId });
+    }
+    push(st.outbound, { type: "subtree_stopped", systemId: p.childId });
+  }
+  // 若为应用窗口关联进程，释放 GPU 资源内存与投送
+  if (p.windowId != null) {
+    if (has(st.windowGpuMem, p.windowId)) {
+      st.gpuMemBytes -= st.windowGpuMem[p.windowId];
+      if (st.gpuMemBytes < 0) st.gpuMemBytes = 0;
+      del(st.windowGpuMem, p.windowId);
+    }
+  }
+  return { ok: true };
+}
+
+fn kill_window_group(st, windowId) {
+  for (let i = 0; i < len(st.procs); i += 1) {
+    let p = st.procs[i];
+    if (p.windowId == windowId && p.state != "exited") {
+      kill_process(st, p.pid, null);
+    }
+  }
+  if (has(st.appDisplays, windowId)) del(st.appDisplays, windowId);
+  if (has(st.appScenes, windowId)) del(st.appScenes, windowId);
+  if (has(st.activeProjections, windowId)) {
+    let proj = st.activeProjections[windowId];
+    push(st.outbound, {
+      type: "projection_ended",
+      sourceSystemId: st.systemId,
+      sourceWindowId: windowId,
+      targetSystemId: proj.targetSystemId,
+      reason: "源窗口已关闭"
+    });
+    del(st.activeProjections, windowId);
+  }
+  if (has(st.flightSensors, windowId)) del(st.flightSensors, windowId);
+  if (has(st.flightControls, windowId)) del(st.flightControls, windowId);
+  if (has(st.liveSubs, windowId)) {
+    push(st.outbound, { type: "live_unsubscribe", systemId: st.systemId, windowId: windowId });
+    del(st.liveSubs, windowId);
+  }
+}
+
+fn suspend_process(st, pid) {
+  let p = find_proc_by_pid(st, pid);
+  if (p == null) return { ok: false, error: "进程不存在" };
+  if (p.state == "exited" || p.state == "error" || p.state == "suspended") return { ok: true };
+  p.prevState = p.state;
+  p.state = "suspended";
+  return { ok: true };
+}
+
+fn resume_process(st, pid) {
+  let p = find_proc_by_pid(st, pid);
+  if (p == null) return { ok: false, error: "进程不存在" };
+  if (p.state != "suspended") return { ok: true };
+  p.state = p.prevState;
+  if (p.state == "waiting_msg" && len(p.inbox) > 0) {
+    let msg = pop_inbox(p);
+    p.state = "ready";
+    p.wakeAt = -1;
+    vm_reply(p.ctx, msg);
+  }
+  return { ok: true };
+}
+
+// ==================== 子系统生命周期（新建 / 重启 / 快照 / 恢复 / 分叉） ====================
+
+fn build_child_seed_vfs(st) {
+  // 复制本系统的系统程序、预置示例程序与直升机场景作为新建子系统的初始文件系统
+  let seed = {};
+  let ks = keys(st.vfs);
+  for (let i = 0; i < len(ks); i += 1) {
+    let k = ks[i];
+    if (k == "/" || k == "/sys" || k == "/apps" || k == "/Programs" || k == "/Demo" ||
+        k == "/Documents" || k == "/Downloads" || k == "/Systems" || k == "/Trash" ||
+        substr(k, 0, 5) == "/sys/" || substr(k, 0, 6) == "/apps/" ||
+        substr(k, 0, 10) == "/Programs/" || k == "/Demo/helicopter-24.scene") {
+      seed[k] = clone(st.vfs[k]);
+    }
+  }
+  return seed;
+}
+
+fn create_child_system(st, customName) {
+  let childId = syscall("host_alloc_id");
+  if (childId == null || childId == "") {
+    childId = st.systemId + "-c" + str(st.nextChildLocal);
+    st.nextChildLocal += 1;
+  }
+  let cname = customName;
+  if (cname == null || cname == "") cname = "子系统 " + childId;
+
+  // 把内核源文件写入父系统文件系统 /Systems/<childId>/kernel.nos
+  let ktpl = vfs_read(st, "/sys/kernel.nos");
+  if (!ktpl.ok) return { ok: false, error: "找不到内核模板 /sys/kernel.nos" };
+  let kpath = "/Systems/" + childId + "/kernel.nos";
+  let wr = vfs_write(st, kpath, ktpl.content);
+  if (!wr.ok) return { ok: false, error: wr.error };
+
+  let seedVfs = build_child_seed_vfs(st);
+  let childGrant = floor(st.budgetConfig * 0.62);
+  if (childGrant < 30000) childGrant = 30000;
+  let childMem = floor(eff_mem_quota(st) * 0.65);
+  let childStore = floor(eff_storage_quota(st) * 0.65);
+
+  let bootPayload = {
+    systemId: childId,
+    parentId: st.systemId,
+    name: cname,
+    depth: st.depth + 1,
+    budgetConfig: childGrant,
+    memQuota: childMem,
+    storageQuota: childStore,
+    seedVfs: seedVfs,
+    precompiled: st.bootPrecompiled
+  };
+
+  let sp = spawn_process(st, kpath, null, {
+    kind: "carrier",
+    name: cname + " (内核)",
+    childId: childId,
+    quota: childGrant,
+    initGlobals: { BOOT: bootPayload }
+  });
+  if (!sp.ok) {
+    // 即使内核编译错误，也保留错误状态的承载记录，便于展示 kernel-error 并在编辑器修复
+    let errProc = {
+      pid: st.nextPid,
+      gen: st.nextGen,
+      name: cname + " (内核)",
+      path: kpath,
+      kind: "carrier",
+      appId: null,
+      windowId: null,
+      childId: childId,
+      state: "error",
+      prevState: "error",
+      wakeAt: -1,
+      ctx: null,
+      inbox: [],
+      inboxBytes: 0,
+      quota: childGrant,
+      sliceRem: 0,
+      stepsTick: 0,
+      stepsTotal: 0,
+      selfStepsTick: 0,
+      childStepsTick: 0,
+      memBytes: 0,
+      pendingSyscall: null,
+      pendingWork: 0,
+      logs: [],
+      result: null,
+      error: sp.error,
+      childPaused: false,
+      childStepReq: 0,
+      childTimeRate: 1.0,
+      childGrantCap: childGrant,
+      childMemCap: childMem,
+      childStorageCap: childStore,
+      childViewport: { w: 760, h: 480 },
+      childRawEvents: [],
+      childCommands: [],
+      childLastMetrics: null,
+      childLastDisplay: null,
+      childName: cname,
+      savedVfs: seedVfs
+    };
+    st.nextPid += 1;
+    st.nextGen += 1;
+    push(st.procs, errProc);
+    if (st.wmPid > 0) {
+      deliver_message(st, 0, 0, st.wmPid, null, { type: "child_created", childId: childId, name: cname, error: sp.error });
+    }
+    return { ok: false, childId: childId, error: sp.error };
+  }
+
+  let p = sp.proc;
+  p.childGrantCap = childGrant;
+  p.childMemCap = childMem;
+  p.childStorageCap = childStore;
+  p.childName = cname;
+  p.savedVfs = null;
+
+  if (st.wmPid > 0) {
+    deliver_message(st, 0, 0, st.wmPid, null, { type: "child_created", childId: childId, name: cname });
+  }
+  return { ok: true, childId: childId, pid: p.pid };
+}
+
+fn extract_child_preserved_state(childProc) {
+  // 重启时保留子系统已保存的文件与直属子系统结构
+  if (childProc.ctx != null && childProc.ctx.globals != null) {
+    // 从子内核全局 st 中读取 vfs 与子系统表
+    let mod = childProc.ctx.module;
+    let stIdx = -1;
+    for (let i = 0; i < len(mod.globals); i += 1) {
+      if (mod.globals[i] == "KSTATE") {
+        stIdx = i;
+        break;
+      }
+    }
+    if (stIdx >= 0) {
+      let cst = childProc.ctx.globals[stIdx];
+      if (cst != null && cst.vfs != null) {
+        let subChildren = [];
+        if (cst.procs != null) {
+          for (let j = 0; j < len(cst.procs); j += 1) {
+            let cp = cst.procs[j];
+            if (cp.kind == "carrier" && cp.state != "exited" && cp.childId != null) {
+              let subPreserved = extract_child_preserved_state(cp);
+              push(subChildren, {
+                childId: cp.childId,
+                name: cp.childName,
+                savedVfs: subPreserved.vfs,
+                subChildren: subPreserved.children
+              });
+            }
+          }
+        }
+        return { vfs: clone(cst.vfs), children: subChildren };
+      }
+    }
+  }
+  return { vfs: childProc.savedVfs, children: [] };
+}
+
+fn restart_child_system(st, childId) {
+  let cp = find_child_by_id(st, childId);
+  if (cp == null) return { ok: false, error: "未找到直属子系统: " + str(childId) };
+
+  let preserved = extract_child_preserved_state(cp);
+  let kpath = "/Systems/" + childId + "/kernel.nos";
+  let kr = vfs_read(st, kpath);
+  if (!kr.ok) {
+    cp.state = "error";
+    cp.ctx = null;
+    cp.error = "找不到内核源文件 " + kpath;
+    return { ok: false, error: cp.error };
+  }
+
+  // 清除旧子系统投送
+  del(st.childDisplays, childId);
+  del(st.childProjections, childId);
+  push(st.outbound, { type: "subtree_restarted", systemId: childId });
+
+  let comp = compile_with_os_compiler(st, kr.content, 0);
+  if (!comp.ok) {
+    cp.state = "error";
+    cp.ctx = null;
+    cp.error = "内核编译错误: " + comp.error;
+    cp.savedVfs = preserved.vfs;
+    return { ok: false, error: cp.error };
+  }
+
+  let seedVfs = preserved.vfs;
+  if (seedVfs == null) seedVfs = build_child_seed_vfs(st);
+
+  let bootPayload = {
+    systemId: childId,
+    parentId: st.systemId,
+    name: cp.childName,
+    depth: st.depth + 1,
+    budgetConfig: cp.childGrantCap,
+    memQuota: cp.childMemCap,
+    storageQuota: cp.childStorageCap,
+    seedVfs: seedVfs,
+    restartChildren: preserved.children,
+    precompiled: st.bootPrecompiled
+  };
+
+  let newCtx = vm_create(comp.bytecode, { BOOT: bootPayload });
+  cp.ctx = newCtx;
+  cp.state = "ready";
+  cp.error = null;
+  cp.pendingSyscall = null;
+  cp.pendingWork = 0;
+  cp.inbox = [];
+  cp.inboxBytes = 0;
+  cp.childPaused = false;
+  cp.childCommands = [];
+  cp.childRawEvents = [];
+  cp.savedVfs = seedVfs;
+  return { ok: true };
+}
+
+fn remap_fork_subtree_ctx(ctx, newId, newParentId, newName) {
+  if (ctx == null || ctx.module == null || ctx.globals == null) return;
+  let stIdx = -1;
+  for (let i = 0; i < len(ctx.module.globals); i += 1) {
+    if (ctx.module.globals[i] == "KSTATE") {
+      stIdx = i;
+      break;
+    }
+  }
+  if (stIdx < 0) return;
+  let cst = ctx.globals[stIdx];
+  if (cst == null) return;
+  let oldId = cst.systemId;
+  cst.systemId = newId;
+  cst.parentId = newParentId;
+  if (newName != null && newName != "") cst.name = newName;
+  // 断开指向快照范围外的实时数据源与外部投送，保留内部状态
+  cst.activeProjections = {};
+  cst.outbound = [];
+  // 通知图表进程进入“已恢复，待重新连接”状态
+  let lks = keys(cst.liveSubs);
+  for (let i = 0; i < len(lks); i += 1) {
+    let winId = lks[i];
+    let sub = cst.liveSubs[winId];
+    if (sub != null && sub.recvPid > 0) {
+      deliver_message(cst, 0, 0, sub.recvPid, null, { type: "live_restored_pending" });
+    }
+  }
+  cst.liveSubs = {};
+
+  // 递归为分叉内全部后代重新分配全局 ID
+  let childMap = {};
+  if (cst.procs != null) {
+    for (let i = 0; i < len(cst.procs); i += 1) {
+      let cp = cst.procs[i];
+      if (cp.kind == "carrier" && cp.state != "exited" && cp.childId != null) {
+        let oldChildId = cp.childId;
+        let freshChildId = syscall("host_alloc_id");
+        cp.childId = freshChildId;
+        childMap[oldChildId] = freshChildId;
+        // 同步内核文件路径
+        let oldK = "/Systems/" + oldChildId + "/kernel.nos";
+        let newK = "/Systems/" + freshChildId + "/kernel.nos";
+        if (has(cst.vfs, oldK)) {
+          vfs_ensure_dir(cst, "/Systems/" + freshChildId);
+          cst.vfs[newK] = cst.vfs[oldK];
+          del(cst.vfs, oldK);
+        }
+        cp.path = newK;
+        if (has(cst.childDisplays, oldChildId)) {
+          cst.childDisplays[freshChildId] = cst.childDisplays[oldChildId];
+          del(cst.childDisplays, oldChildId);
+        }
+        remap_fork_subtree_ctx(cp.ctx, freshChildId, newId, null);
+      }
+    }
+  }
+  if (cst.wmDisplay != null && cst.wmDisplay.windows != null) {
+    cst.wmDisplay.systemId = newId;
+    for (let i = 0; i < len(cst.wmDisplay.windows); i += 1) {
+      let dw = cst.wmDisplay.windows[i];
+      if (dw.appId == "subsystem" && dw.childId != null && has(childMap, dw.childId)) {
+        dw.childId = childMap[dw.childId];
+      }
+    }
+  }
+  // 通知分叉内的 WM 刷新自身系统 ID 与子系统窗口 ID
+  if (cst.wmPid > 0) {
+    deliver_message(cst, 0, 0, cst.wmPid, null, { type: "system_id_remapped", oldId: oldId, newId: newId, childMap: childMap });
+  }
+}
+
+fn mark_restored_subtree_ctx(ctx) {
+  if (ctx == null || ctx.module == null || ctx.globals == null) return;
+  let stIdx = -1;
+  for (let i = 0; i < len(ctx.module.globals); i += 1) {
+    if (ctx.module.globals[i] == "KSTATE") {
+      stIdx = i;
+      break;
+    }
+  }
+  if (stIdx < 0) return;
+  let cst = ctx.globals[stIdx];
+  if (cst == null) return;
+  cst.outbound = [];
+  // 标记本层图表连接为“已恢复，待重新连接”
+  let lks = keys(cst.liveSubs);
+  for (let i = 0; i < len(lks); i += 1) {
+    let winId = lks[i];
+    let sub = cst.liveSubs[winId];
+    if (sub != null && sub.recvPid > 0) {
+      deliver_message(cst, 0, 0, sub.recvPid, null, { type: "live_restored_pending" });
+    }
+  }
+  cst.liveSubs = {};
+  // 递归处理后代
+  if (cst.procs != null) {
+    for (let i = 0; i < len(cst.procs); i += 1) {
+      let cp = cst.procs[i];
+      if (cp.kind == "carrier" && cp.ctx != null) {
+        mark_restored_subtree_ctx(cp.ctx);
+      }
+    }
+  }
+}
+
+fn take_child_snapshot(st, childId, snapPath) {
+  let cp = find_child_by_id(st, childId);
+  if (cp == null || cp.ctx == null) return { ok: false, error: "无法创建快照：目标子系统未运行" };
+  let ksrc = vfs_read(st, cp.path);
+  let snapObj = {
+    format: "nos-snapshot-v1",
+    childId: childId,
+    childName: cp.childName,
+    savedAt: st.vtime,
+    kernelSource: ksrc.ok ? ksrc.content : "",
+    childTimeRate: cp.childTimeRate,
+    childPaused: cp.childPaused,
+    childGrantCap: cp.childGrantCap,
+    childMemCap: cp.childMemCap,
+    childStorageCap: cp.childStorageCap,
+    carrierCtx: clone(cp.ctx)
+  };
+  let text = json_encode(snapObj);
+  let targetPath = snapPath;
+  if (targetPath == null || targetPath == "") {
+    targetPath = "/Systems/" + childId + "_snap_" + str(floor(st.vtime * 10)) + ".snap";
+  }
+  let wr = vfs_write(st, targetPath, text);
+  if (!wr.ok) return wr;
+  return { ok: true, path: targetPath, size: wr.size };
+}
+
+fn restore_child_snapshot(st, childId, snapPath) {
+  let cp = find_child_by_id(st, childId);
+  if (cp == null) return { ok: false, error: "目标子系统不存在" };
+  let rd = vfs_read(st, snapPath);
+  if (!rd.ok) return rd;
+  try {
+    let snap = json_decode(rd.content);
+    if (snap == null || snap.format != "nos-snapshot-v1") {
+      return { ok: false, error: "无效的快照文件格式" };
+    }
+    if (snap.kernelSource != null && snap.kernelSource != "") {
+      vfs_write(st, cp.path, snap.kernelSource);
+    }
+    cp.ctx = snap.carrierCtx;
+    cp.state = "ready";
+    cp.error = null;
+    cp.pendingSyscall = null;
+    cp.pendingWork = 0;
+    cp.childTimeRate = snap.childTimeRate;
+    cp.childPaused = snap.childPaused;
+    cp.childRawEvents = [];
+    cp.childCommands = [];
+    mark_restored_subtree_ctx(cp.ctx);
+    return { ok: true, childId: childId };
+  } catch (e) {
+    return { ok: false, error: "快照解析失败: " + str(e) };
+  }
+}
+
+fn fork_child_snapshot(st, snapPath, newName) {
+  let rd = vfs_read(st, snapPath);
+  if (!rd.ok) return rd;
+  try {
+    let snap = json_decode(rd.content);
+    if (snap == null || snap.format != "nos-snapshot-v1") {
+      return { ok: false, error: "无效的快照文件格式" };
+    }
+    let freshId = syscall("host_alloc_id");
+    let cname = newName;
+    if (cname == null || cname == "") cname = "分叉 " + freshId;
+    let kpath = "/Systems/" + freshId + "/kernel.nos";
+    let wr = vfs_write(st, kpath, snap.kernelSource);
+    if (!wr.ok) return wr;
+
+    let ctxCopy = snap.carrierCtx;
+    remap_fork_subtree_ctx(ctxCopy, freshId, st.systemId, cname);
+
+    let pid = st.nextPid;
+    st.nextPid += 1;
+    let gen = st.nextGen;
+    st.nextGen += 1;
+    let proc = {
+      pid: pid,
+      gen: gen,
+      name: cname + " (内核)",
+      path: kpath,
+      kind: "carrier",
+      appId: null,
+      windowId: null,
+      childId: freshId,
+      state: "ready",
+      prevState: "ready",
+      wakeAt: -1,
+      ctx: ctxCopy,
+      inbox: [],
+      inboxBytes: 0,
+      quota: snap.childGrantCap,
+      sliceRem: 0,
+      stepsTick: 0,
+      stepsTotal: 0,
+      selfStepsTick: 0,
+      childStepsTick: 0,
+      memBytes: mem_size(ctxCopy),
+      pendingSyscall: null,
+      pendingWork: 0,
+      logs: [],
+      result: null,
+      error: null,
+      childPaused: snap.childPaused,
+      childStepReq: 0,
+      childTimeRate: snap.childTimeRate,
+      childGrantCap: snap.childGrantCap,
+      childMemCap: snap.childMemCap,
+      childStorageCap: snap.childStorageCap,
+      childViewport: { w: 760, h: 480 },
+      childRawEvents: [],
+      childCommands: [],
+      childLastMetrics: null,
+      childLastDisplay: null,
+      childName: cname
+    };
+    push(st.procs, proc);
+    if (st.wmPid > 0) {
+      deliver_message(st, 0, 0, st.wmPid, null, { type: "child_created", childId: freshId, name: cname });
+    }
+    return { ok: true, childId: freshId, pid: pid };
+  } catch (e) {
+    return { ok: false, error: "分叉快照失败: " + str(e) };
+  }
+}
+
+// ==================== 多进程应用启动 ====================
+
+fn launch_app_window(st, appId, launchArgs) {
+  let winId = "w-" + st.systemId + "-" + str(st.nextWinSeq);
+  st.nextWinSeq += 1;
+
+  if (appId == "files") {
+    let sp = spawn_process(st, "/apps/files.nos", { windowId: winId, launch: launchArgs }, { kind: "app", appId: "files", windowId: winId, name: "文件管理器" });
+    if (!sp.ok) return sp;
+    return { ok: true, windowId: winId, mainPid: sp.pid, title: "文件管理器", appId: "files" };
+  }
+  if (appId == "editor") {
+    let sp = spawn_process(st, "/apps/editor.nos", { windowId: winId, launch: launchArgs }, { kind: "app", appId: "editor", windowId: winId, name: "文本与程序编辑器" });
+    if (!sp.ok) return sp;
+    return { ok: true, windowId: winId, mainPid: sp.pid, title: "编辑器", appId: "editor" };
+  }
+  if (appId == "tasks") {
+    let sp = spawn_process(st, "/apps/tasks.nos", { windowId: winId, launch: launchArgs }, { kind: "app", appId: "tasks", windowId: winId, name: "进程与系统管理器" });
+    if (!sp.ok) return sp;
+    return { ok: true, windowId: winId, mainPid: sp.pid, title: "进程管理器", appId: "tasks" };
+  }
+  if (appId == "charts") {
+    let spUi = spawn_process(st, "/apps/chart_ui.nos", { windowId: winId, launch: launchArgs }, { kind: "app", appId: "charts", windowId: winId, name: "图表绘图进程" });
+    if (!spUi.ok) return spUi;
+    let spRecv = spawn_process(st, "/apps/chart_recv.nos", { windowId: winId, uiPid: spUi.pid, launch: launchArgs }, { kind: "app", appId: "charts", windowId: winId, name: "图表数据接收进程" });
+    if (!spRecv.ok) {
+      kill_process(st, spUi.pid, null);
+      return spRecv;
+    }
+    deliver_message(st, 0, 0, spUi.pid, null, { type: "bind_recv", recvPid: spRecv.pid });
+    st.liveSubs[winId] = { recvPid: spRecv.pid, uiPid: spUi.pid, docId: null, range: null };
+    return { ok: true, windowId: winId, mainPid: spUi.pid, recvPid: spRecv.pid, title: "图表工作台", appId: "charts" };
+  }
+  if (appId == "player") {
+    let spFx = spawn_process(st, "/apps/player_fx.nos", { windowId: winId, launch: launchArgs }, { kind: "app", appId: "player", windowId: winId, name: "环境特效进程" });
+    if (!spFx.ok) return spFx;
+    let spScene = spawn_process(st, "/apps/player_scene.nos", { windowId: winId, fxPid: spFx.pid, launch: launchArgs }, { kind: "app", appId: "player", windowId: winId, name: "飞行场景进程" });
+    if (!spScene.ok) {
+      kill_process(st, spFx.pid, null);
+      return spScene;
+    }
+    let spTimer = spawn_process(st, "/apps/player_timer.nos", { windowId: winId, scenePid: spScene.pid, fxPid: spFx.pid, launch: launchArgs }, { kind: "app", appId: "player", windowId: winId, name: "场景时序进程" });
+    if (!spTimer.ok) {
+      kill_process(st, spFx.pid, null);
+      kill_process(st, spScene.pid, null);
+      return spTimer;
+    }
+    deliver_message(st, 0, 0, spScene.pid, null, { type: "bind_peers", timerPid: spTimer.pid, fxPid: spFx.pid });
+    deliver_message(st, 0, 0, spFx.pid, null, { type: "bind_peers", timerPid: spTimer.pid, scenePid: spScene.pid });
+    return { ok: true, windowId: winId, mainPid: spTimer.pid, scenePid: spScene.pid, fxPid: spFx.pid, title: "三维场景播放器", appId: "player" };
+  }
+  return { ok: false, error: "未知应用: " + str(appId) };
+}
+
+// ==================== 系统调用计费与分发 ====================
+
+fn estimate_syscall_work(name, args) {
+  if (name == "fs_write" && len(args) >= 2) {
+    return 25 + floor(len(str(args[1])) / 64);
+  }
+  if (name == "fs_copy") return 60;
+  if (name == "app_present") {
+    let uiCost = 20;
+    if (len(args) >= 2 && args[1] != null) uiCost += floor(mem_size(args[1]) / 128);
+    if (len(args) >= 3 && args[2] != null) uiCost += 40 + floor(mem_size(args[2]) / 256);
+    return uiCost;
+  }
+  if (name == "wm_present") {
+    return 30;
+  }
+  if (name == "send" && len(args) >= 2) {
+    return 10 + floor(mem_size(args[1]) / 128);
+  }
+  if (name == "sys_snapshot") {
+    return 600;
+  }
+  return 0;
+}
+
+fn execute_syscall(st, proc, name, args) {
+  // ---- 承载子内核宿主接口 ----
+  if (name == "host_alloc_id") {
+    return syscall("host_alloc_id");
+  }
+  if (name == "host_poll") {
+    if (proc.kind != "carrier") return null;
+    let cdt = 0;
+    let allowRun = false;
+    if (!proc.childPaused) {
+      cdt = st.stepDt;
+      allowRun = true;
+    } else if (proc.childStepReq > 0) {
+      cdt = 0.0333333333;
+      proc.childStepReq -= 1;
+      allowRun = true;
+    }
+    let grant = proc.childGrantCap;
+    if (grant <= 0 || grant > st.budgetRem) grant = st.budgetRem;
+    if (!allowRun) grant = 0;
+    let rawEvs = proc.childRawEvents;
+    let cmds = proc.childCommands;
+    proc.childRawEvents = [];
+    proc.childCommands = [];
+    let anc = clone(st.ancestors);
+    push(anc, { id: st.systemId, name: st.name, depth: st.depth });
+    return {
+      dt: cdt,
+      allowRun: allowRun,
+      budget: grant,
+      memCap: proc.childMemCap,
+      storageCap: proc.childStorageCap,
+      viewport: proc.childViewport,
+      rawEvents: rawEvs,
+      commands: cmds,
+      ancestors: anc,
+      openWorkbooks: st.openWorkbooks
+    };
+  }
+  if (name == "host_present") {
+    if (proc.kind != "carrier") return { ok: false };
+    let pkt = args[0];
+    if (pkt != null) {
+      st.childDisplays[proc.childId] = pkt.display;
+      proc.childLastMetrics = pkt.metrics;
+      proc.childLastDisplay = pkt.display;
+      proc.childTimeRate = pkt.timeRate;
+      if (pkt.name != null) proc.childName = pkt.name;
+      // 处理来自后代的投送视图
+      if (pkt.projections != null) {
+        let upProjs = [];
+        for (let i = 0; i < len(pkt.projections); i += 1) {
+          let pj = pkt.projections[i];
+          if (pj.targetSystemId == st.systemId) {
+            // 投送到本层桌面！通知本层 WM 承载投送外框
+            st.localProjections[pj.sourceSystemId + ":" + pj.sourceWindowId] = pj;
+            if (st.wmPid > 0) {
+              deliver_message(st, 0, 0, st.wmPid, null, { type: "projection_update", proj: pj });
+            }
+          } else {
+            push(upProjs, pj);
+          }
+        }
+        st.childProjections[proc.childId] = upProjs;
+      }
+      // 转发跨层上行消息
+      if (pkt.outbound != null) {
+        for (let i = 0; i < len(pkt.outbound); i += 1) {
+          let ob = pkt.outbound[i];
+          if (ob.type == "projection_ended" && ob.targetSystemId == st.systemId) {
+            let key = ob.sourceSystemId + ":" + ob.sourceWindowId;
+            del(st.localProjections, key);
+            if (st.wmPid > 0) {
+              deliver_message(st, 0, 0, st.wmPid, null, { type: "projection_ended", key: key, reason: ob.reason });
+            }
+          } else {
+            push(st.outbound, ob);
+          }
+        }
+      }
+    }
+    return { ok: true };
+  }
+
+  // ---- 时间与调度 ----
+  if (name == "time") return st.vtime;
+  if (name == "sleep") {
+    let sec = num(args[0]);
+    if (sec <= 0) return true;
+    proc.state = "waiting";
+    proc.wakeAt = st.vtime + sec;
+    return { __block: true };
+  }
+  if (name == "yield") {
+    proc.sliceRem = 0;
+    return true;
+  }
+  if (name == "getpid") {
+    return { pid: proc.pid, gen: proc.gen, systemId: st.systemId, name: proc.name, appId: proc.appId, windowId: proc.windowId };
+  }
+  if (name == "log") {
+    let line = str(args[0]);
+    push(proc.logs, { t: st.vtime, text: line });
+    if (len(proc.logs) > 60) del(proc.logs, 0);
+    push(st.sysLogs, { t: st.vtime, pid: proc.pid, name: proc.name, text: line });
+    if (len(st.sysLogs) > 80) del(st.sysLogs, 0);
+    return true;
+  }
+  if (name == "set_result") {
+    proc.result = clone(args[0]);
+    return true;
+  }
+
+  // ---- 进程管理 ----
+  if (name == "spawn") {
+    return spawn_process(st, args[0], args[1], args[2]);
+  }
+  if (name == "kill") {
+    return kill_process(st, num(args[0]), args[1]);
+  }
+  if (name == "suspend") {
+    return suspend_process(st, num(args[0]));
+  }
+  if (name == "resume") {
+    return resume_process(st, num(args[0]));
+  }
+  if (name == "set_quota") {
+    let tp = find_proc_by_pid(st, num(args[0]));
+    if (tp == null) return { ok: false, error: "进程不存在" };
+    tp.quota = max(0, floor(num(args[1])));
+    return { ok: true };
+  }
+  if (name == "find_proc") {
+    let needle = lower(str(args[0]));
+    let out = [];
+    for (let i = 0; i < len(st.procs); i += 1) {
+      let p = st.procs[i];
+      if (p.state == "exited" || p.state == "error") continue;
+      if (index_of(lower(p.name), needle) >= 0 || index_of(lower(p.path), needle) >= 0 ||
+          (p.appId != null && lower(p.appId) == needle)) {
+        push(out, { pid: p.pid, gen: p.gen, name: p.name, path: p.path, state: p.state, windowId: p.windowId });
+      }
+    }
+    return out;
+  }
+  if (name == "ps") {
+    return build_metrics_snapshot(st);
+  }
+
+  // ---- 消息通信 ----
+  if (name == "send") {
+    return deliver_message(st, proc.pid, proc.gen, num(args[0]), args[2], args[1]);
+  }
+  if (name == "recv") {
+    if (len(proc.inbox) > 0) {
+      return pop_inbox(proc);
+    }
+    let timeout = -1;
+    if (len(args) >= 1 && args[0] != null) timeout = num(args[0]);
+    if (timeout == 0) return null;
+    proc.state = "waiting_msg";
+    if (timeout > 0) proc.wakeAt = st.vtime + timeout;
+    else proc.wakeAt = -1;
+    return { __block: true };
+  }
+
+  // ---- 虚拟文件系统 ----
+  if (name == "fs_list") return vfs_list(st, args[0]);
+  if (name == "fs_read") return vfs_read(st, args[0]);
+  if (name == "fs_write") return vfs_write(st, args[0], args[1]);
+  if (name == "fs_mkdir") return vfs_mkdir(st, args[0]);
+  if (name == "fs_delete") return vfs_delete(st, args[0]);
+  if (name == "fs_restore") return vfs_restore(st, args[0]);
+  if (name == "fs_copy") return vfs_copy(st, args[0], args[1]);
+  if (name == "fs_move") return vfs_move(st, args[0], args[1]);
+  if (name == "fs_stat") {
+    let np = norm_path(args[0]);
+    if (!has(st.vfs, np)) return { ok: false };
+    let nd = st.vfs[np];
+    return { ok: true, path: np, kind: nd.kind, size: nd.size, mtime: nd.mtime };
+  }
+  if (name == "fs_transfer_out") {
+    let rd = vfs_read(st, args[0]);
+    if (!rd.ok) return rd;
+    push(st.outbound, {
+      type: "fs_transfer",
+      fromSystemId: st.systemId,
+      targetSystemId: str(args[1]),
+      targetDir: str(args[2]),
+      fileName: base_name(args[0]),
+      content: rd.content
+    });
+    return { ok: true };
+  }
+
+  // ---- 编译器自举重载 ----
+  if (name == "reload_compiler") {
+    st.compilerModified = true;
+    return load_compiler_bc(st);
+  }
+
+  // ---- 窗口管理与显示 ----
+  if (name == "wm_register") {
+    st.wmPid = proc.pid;
+    return { ok: true, systemId: st.systemId, name: st.name, depth: st.depth };
+  }
+  if (name == "wm_get_env") {
+    let childList = [];
+    for (let i = 0; i < len(st.procs); i += 1) {
+      let p = st.procs[i];
+      if (p.kind == "carrier" && p.state != "exited") {
+        push(childList, {
+          childId: p.childId,
+          name: p.childName,
+          state: p.state == "error" ? "error" : (p.childPaused ? "paused" : "running"),
+          error: p.error,
+          timeRate: p.childTimeRate,
+          vtime: p.childLastMetrics != null ? p.childLastMetrics.vtime : 0,
+          display: st.childDisplays[p.childId]
+        });
+      }
+    }
+    return {
+      systemId: st.systemId,
+      parentId: st.parentId,
+      name: st.name,
+      depth: st.depth,
+      vtime: st.vtime,
+      timeRate: st.timeRate,
+      viewport: st.viewport,
+      ancestors: st.ancestors,
+      openWorkbooks: st.openWorkbooks,
+      appDisplays: st.appDisplays,
+      appScenes: st.appScenes,
+      children: childList,
+      localProjections: st.localProjections
+    };
+  }
+  if (name == "wm_present") {
+    st.wmDisplay = args[0];
+    if (len(args) >= 2 && args[1] != null) {
+      st.wmWindowsMeta = args[1];
+    }
+    return { ok: true };
+  }
+  if (name == "wm_open_app") {
+    let r = launch_app_window(st, str(args[0]), args[1]);
+    if (r.ok && st.wmPid > 0 && proc.pid != st.wmPid) {
+      deliver_message(st, proc.pid, proc.gen, st.wmPid, null, { type: "register_window", info: r });
+    }
+    return r;
+  }
+  if (name == "wm_close_window") {
+    kill_window_group(st, str(args[0]));
+    return { ok: true };
+  }
+  if (name == "wm_route_child_event") {
+    let cp = find_child_by_id(st, str(args[0]));
+    if (cp != null && cp.state != "exited" && cp.state != "error") {
+      push(cp.childRawEvents, args[1]);
+      if (len(args) >= 3 && args[2] != null) cp.childViewport = args[2];
+    }
+    return { ok: true };
+  }
+  if (name == "wm_set_child_viewport") {
+    let cp = find_child_by_id(st, str(args[0]));
+    if (cp != null) cp.childViewport = args[1];
+    return { ok: true };
+  }
+  if (name == "wm_route_proj_input") {
+    // 将本地投送窗口内的交互输入路由回源系统
+    let key = str(args[0]);
+    let ev = args[1];
+    if (has(st.localProjections, key)) {
+      let pj = st.localProjections[key];
+      route_command_to_descendant(st, pj.sourceSystemId, {
+        type: "proj_input",
+        windowId: pj.sourceWindowId,
+        event: ev
+      });
+    }
+    return { ok: true };
+  }
+  if (name == "wm_close_local_proj") {
+    let key = str(args[0]);
+    if (has(st.localProjections, key)) {
+      let pj = st.localProjections[key];
+      route_command_to_descendant(st, pj.sourceSystemId, {
+        type: "proj_stop",
+        windowId: pj.sourceWindowId
+      });
+      del(st.localProjections, key);
+    }
+    return { ok: true };
+  }
+  if (name == "wm_project_start") {
+    let winId = str(args[0]);
+    let targetSysId = str(args[1]);
+    let appId = str(args[2]);
+    let title = str(args[3]);
+    st.activeProjections[winId] = {
+      sourceSystemId: st.systemId,
+      sourceWindowId: winId,
+      sourceAppId: appId,
+      sourceTitle: title,
+      sourceDepth: st.depth,
+      targetSystemId: targetSysId
+    };
+    return { ok: true };
+  }
+  if (name == "wm_project_stop") {
+    let winId = str(args[0]);
+    if (has(st.activeProjections, winId)) {
+      let pj = st.activeProjections[winId];
+      push(st.outbound, {
+        type: "projection_ended",
+        sourceSystemId: st.systemId,
+        sourceWindowId: winId,
+        targetSystemId: pj.targetSystemId,
+        reason: "用户取消投送"
+      });
+      del(st.activeProjections, winId);
+    }
+    return { ok: true };
+  }
+  if (name == "app_present") {
+    let winId = str(args[0]);
+    let uiTree = args[1];
+    let scenePkt = args[2];
+    let meta = args[3];
+
+    if (scenePkt != null && scenePkt.gpuBytes != null) {
+      let newGpu = floor(num(scenePkt.gpuBytes));
+      let oldGpu = 0;
+      if (has(st.windowGpuMem, winId)) oldGpu = st.windowGpuMem[winId];
+      let mCap = eff_mem_quota(st);
+      if (mCap > 0 && calc_total_mem(st) - oldGpu + newGpu > mCap) {
+        return { ok: false, error: "内存配额不足，无法载入三维场景资源" };
+      }
+      st.gpuMemBytes = st.gpuMemBytes - oldGpu + newGpu;
+      if (st.gpuMemBytes < 0) st.gpuMemBytes = 0;
+      st.windowGpuMem[winId] = newGpu;
+    }
+
+    if (uiTree != null) st.appDisplays[winId] = uiTree;
+    if (scenePkt != null) {
+      if (scenePkt.resource != null && scenePkt.resourceId != null) {
+        st.appResources[scenePkt.resourceId] = scenePkt.resource;
+      }
+      st.appScenes[winId] = scenePkt;
+    }
+    if (meta != null) {
+      if (meta.kind == "player") st.playerMetas[winId] = meta;
+      else if (meta.kind == "chart") st.chartMetas[winId] = meta;
+    }
+    if (st.wmPid > 0) {
+      deliver_message(st, proc.pid, proc.gen, st.wmPid, null, { type: "app_dirty", windowId: winId });
+    }
+    return { ok: true };
+  }
+  if (name == "is_proc_suspended") {
+    let tp = find_proc_by_pid(st, num(args[0]));
+    return tp != null && tp.state == "suspended";
+  }
+  if (name == "wm_focus_parent") {
+    push(st.outbound, { type: "focus_parent", fromSystemId: st.systemId, targetSystemId: st.parentId });
+    return { ok: true };
+  }
+
+  // ---- 子系统管理与配置 ----
+  if (name == "sys_new") {
+    return create_child_system(st, args[0]);
+  }
+  if (name == "sys_cmd") {
+    return handle_child_control(st, str(args[0]), args[1]);
+  }
+  if (name == "sys_snapshot") {
+    return take_child_snapshot(st, str(args[0]), args[1]);
+  }
+  if (name == "sys_restore") {
+    return restore_child_snapshot(st, str(args[0]), str(args[1]));
+  }
+  if (name == "sys_fork") {
+    return fork_child_snapshot(st, str(args[0]), args[1]);
+  }
+  if (name == "sys_set_config") {
+    let cfg = args[0];
+    if (cfg != null) {
+      if (cfg.budgetConfig != null) st.budgetConfig = max(1000, floor(num(cfg.budgetConfig)));
+      if (cfg.memQuota != null) st.memQuota = max(131072, floor(num(cfg.memQuota)));
+      if (cfg.storageQuota != null) st.storageQuota = max(16384, floor(num(cfg.storageQuota)));
+      if (cfg.timeRate != null) st.timeRate = clamp(num(cfg.timeRate), 0.1, 8.0);
+    }
+    return { ok: true };
+  }
+
+  // ---- 飞控接口 (2.14) ----
+  if (name == "flight_publish_sensors") {
+    let winId = str(args[0]);
+    st.flightSensors[winId] = clone(args[1]);
+    return { ok: true };
+  }
+  if (name == "flight_read_sensors") {
+    let winId = str(args[0]);
+    if (!has(st.flightSensors, winId)) return null;
+    return clone(st.flightSensors[winId]);
+  }
+  if (name == "flight_write_controls") {
+    let winId = str(args[0]);
+    let ctrl = clone(args[1]);
+    ctrl.writtenAt = st.vtime;
+    ctrl.writerPid = proc.pid;
+    st.flightControls[winId] = ctrl;
+    return { ok: true };
+  }
+  if (name == "flight_read_controls") {
+    let winId = str(args[0]);
+    if (!has(st.flightControls, winId)) return null;
+    return clone(st.flightControls[winId]);
+  }
+
+  // ---- 实时数据订阅 (2.16) ----
+  if (name == "live_subscribe") {
+    let winId = str(args[0]);
+    let docId = str(args[1]);
+    let range = str(args[2]);
+    if (!has(st.liveSubs, winId)) st.liveSubs[winId] = { recvPid: proc.pid };
+    st.liveSubs[winId].recvPid = proc.pid;
+    st.liveSubs[winId].docId = docId;
+    st.liveSubs[winId].range = range;
+    push(st.outbound, {
+      type: "live_subscribe",
+      systemId: st.systemId,
+      windowId: winId,
+      docId: docId,
+      range: range
+    });
+    return { ok: true };
+  }
+  if (name == "live_unsubscribe") {
+    let winId = str(args[0]);
+    if (has(st.liveSubs, winId)) {
+      st.liveSubs[winId].docId = null;
+      st.liveSubs[winId].range = null;
+    }
+    push(st.outbound, {
+      type: "live_unsubscribe",
+      systemId: st.systemId,
+      windowId: winId
+    });
+    return { ok: true };
+  }
+
+  // ---- 扩展钩子 ----
+  let custom = handle_custom_syscall(st, proc, name, args);
+  if (custom != null && type(custom) == "object" && custom.__unhandled) {
+    return { ok: false, error: "未知系统调用: " + name };
+  }
+  return custom;
+}
+
+fn handle_child_control(st, childId, cmd) {
+  let cp = find_child_by_id(st, childId);
+  if (cp == null) return { ok: false, error: "找不到直属子系统 " + childId };
+  if (cmd == null) return { ok: false, error: "空命令" };
+  let act = cmd.action;
+  if (act == "pause") {
+    cp.childPaused = true;
+    return { ok: true };
+  }
+  if (act == "resume") {
+    cp.childPaused = false;
+    return { ok: true };
+  }
+  if (act == "step") {
+    if (cp.childPaused) cp.childStepReq += 1;
+    return { ok: true };
+  }
+  if (act == "set_rate") {
+    let r = clamp(num(cmd.rate), 0.1, 8.0);
+    cp.childTimeRate = r;
+    push(cp.childCommands, { type: "set_rate", rate: r });
+    return { ok: true };
+  }
+  if (act == "set_grant") {
+    cp.childGrantCap = max(2000, floor(num(cmd.grant)));
+    cp.quota = cp.childGrantCap;
+    return { ok: true };
+  }
+  if (act == "set_mem_cap") {
+    cp.childMemCap = max(131072, floor(num(cmd.memCap)));
+    return { ok: true };
+  }
+  if (act == "set_storage_cap") {
+    cp.childStorageCap = max(16384, floor(num(cmd.storageCap)));
+    return { ok: true };
+  }
+  if (act == "restart") {
+    return restart_child_system(st, childId);
+  }
+  if (act == "close" || act == "stop") {
+    return kill_process(st, cp.pid, "用户关闭子系统");
+  }
+  if (act == "open_kernel") {
+    // 在本系统的编辑器中打开该子系统的内核源文件
+    let kpath = "/Systems/" + childId + "/kernel.nos";
+    let r = launch_app_window(st, "editor", { openPath: kpath });
+    if (r.ok && st.wmPid > 0) {
+      deliver_message(st, 0, 0, st.wmPid, null, { type: "register_window", info: r });
+    }
+    return r;
+  }
+  return { ok: false, error: "未知控制操作: " + str(act) };
+}
+
+fn route_command_to_descendant(st, targetSystemId, cmd) {
+  if (targetSystemId == st.systemId) {
+    process_incoming_command(st, cmd);
+    return true;
+  }
+  // 转发给直属子系统（若为更深后代，直属子系统会继续转发）
+  for (let i = 0; i < len(st.procs); i += 1) {
+    let p = st.procs[i];
+    if (p.kind == "carrier" && p.state != "exited" && p.state != "error") {
+      if (p.childId == targetSystemId || descendant_contains(p.childLastMetrics, targetSystemId)) {
+        push(p.childCommands, { type: "route", targetSystemId: targetSystemId, cmd: cmd });
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+fn descendant_contains(metrics, targetId) {
+  if (metrics == null || metrics.children == null) return false;
+  for (let i = 0; i < len(metrics.children); i += 1) {
+    let c = metrics.children[i];
+    if (c.systemId == targetId) return true;
+    if (descendant_contains(c, targetId)) return true;
+  }
+  return false;
+}
+
+fn process_incoming_command(st, cmd) {
+  if (cmd == null) return;
+  if (cmd.type == "route") {
+    route_command_to_descendant(st, cmd.targetSystemId, cmd.cmd);
+    return;
+  }
+  if (cmd.type == "inject_raw") {
+    if (st.wmPid > 0) {
+      deliver_message(st, 0, 0, st.wmPid, null, { type: "raw_input", event: cmd.event });
+    }
+    return;
+  }
+  if (cmd.type == "set_rate") {
+    st.timeRate = clamp(num(cmd.rate), 0.1, 8.0);
+    return;
+  }
+  if (cmd.type == "open_app") {
+    let r = launch_app_window(st, cmd.appId, cmd.launchArgs);
+    if (r.ok && st.wmPid > 0) {
+      deliver_message(st, 0, 0, st.wmPid, null, { type: "register_window", info: r });
+    }
+    return;
+  }
+  if (cmd.type == "proj_input") {
+    // 投送窗口发回的交互事件 -> 找到目标窗口主进程投递消息！
+    let winId = cmd.windowId;
+    for (let i = 0; i < len(st.procs); i += 1) {
+      let p = st.procs[i];
+      if (p.windowId == winId && p.state != "exited" && p.state != "error") {
+        if (p.appId == "player" && p.path == "/apps/player_timer.nos") {
+          deliver_message(st, 0, 0, p.pid, p.gen, { type: "ui_event", event: cmd.event, fromProjection: true });
+          break;
+        }
+        if (p.appId == "charts" && p.path == "/apps/chart_ui.nos") {
+          deliver_message(st, 0, 0, p.pid, p.gen, { type: "ui_event", event: cmd.event, fromProjection: true });
+          break;
+        }
+      }
+    }
+    return;
+  }
+  if (cmd.type == "proj_stop") {
+    del(st.activeProjections, cmd.windowId);
+    return;
+  }
+  if (cmd.type == "live_data") {
+    let winId = cmd.windowId;
+    if (has(st.liveSubs, winId) && st.liveSubs[winId].recvPid > 0) {
+      deliver_message(st, 0, 0, st.liveSubs[winId].recvPid, null, {
+        type: "live_update",
+        docId: cmd.docId,
+        sourceTitle: cmd.sourceTitle,
+        range: cmd.range,
+        version: cmd.version,
+        rows: cmd.rows,
+        status: cmd.status
+      });
+    }
+    return;
+  }
+  if (cmd.type == "fs_transfer_in") {
+    let dir = norm_path(cmd.targetDir);
+    let dest = dir == "/" ? "/" + cmd.fileName : dir + "/" + cmd.fileName;
+    if (has(st.vfs, dest) && !cmd.overwrite) {
+      // 存在同名文件，通知 WM 弹出覆盖确认框
+      if (st.wmPid > 0) {
+        deliver_message(st, 0, 0, st.wmPid, null, {
+          type: "overwrite_prompt",
+          destPath: dest,
+          fileName: cmd.fileName,
+          content: cmd.content,
+          fromSystemId: cmd.fromSystemId
+        });
+      }
+      return;
+    }
+    let wr = vfs_write(st, dest, cmd.content);
+    if (st.wmPid > 0) {
+      deliver_message(st, 0, 0, st.wmPid, null, {
+        type: "transfer_done",
+        ok: wr.ok,
+        path: dest,
+        error: wr.error
+      });
+    }
+    // 刷新打开的文件管理器窗口
+    for (let i = 0; i < len(st.procs); i += 1) {
+      let p = st.procs[i];
+      if (p.appId == "files" && p.state != "exited") {
+        deliver_message(st, 0, 0, p.pid, p.gen, { type: "refresh" });
+      }
+    }
+    return;
+  }
+}
+
+// ==================== 遥测数据收集 ====================
+
+fn build_metrics_snapshot(st) {
+  let procList = [];
+  let childMetrics = [];
+  let totalPending = 0;
+  for (let i = 0; i < len(st.procs); i += 1) {
+    let p = st.procs[i];
+    let pw = p.pendingWork;
+    if (p.pendingSyscall != null) pw += p.pendingSyscall.remaining;
+    totalPending += pw;
+    let item = {
+      pid: p.pid,
+      gen: p.gen,
+      name: p.name,
+      path: p.path,
+      kind: p.kind,
+      appId: p.appId,
+      windowId: p.windowId,
+      childId: p.childId,
+      state: p.state,
+      quota: p.quota,
+      stepsTick: p.stepsTick,
+      stepsTotal: p.stepsTotal,
+      selfStepsTick: p.selfStepsTick,
+      childStepsTick: p.childStepsTick,
+      pendingWork: pw,
+      memBytes: p.memBytes + p.inboxBytes,
+      inboxCount: len(p.inbox),
+      logs: p.logs,
+      result: p.result,
+      error: p.error
+    };
+    if (p.kind == "carrier" && p.state != "exited") {
+      item.childPaused = p.childPaused;
+      item.childGrantCap = p.childGrantCap;
+      item.childTimeRate = p.childTimeRate;
+      item.childName = p.childName;
+      if (p.childLastMetrics != null) {
+        let cm = clone(p.childLastMetrics);
+        cm.state = p.state == "error" ? "error" : (p.childPaused ? "paused" : "running");
+        cm.error = p.error;
+        push(childMetrics, cm);
+      } else {
+        push(childMetrics, {
+          systemId: p.childId,
+          parentId: st.systemId,
+          name: p.childName,
+          depth: st.depth + 1,
+          state: p.state == "error" ? "error" : (p.childPaused ? "paused" : "running"),
+          error: p.error,
+          vtime: 0,
+          timeRate: p.childTimeRate,
+          procs: [],
+          windows: [],
+          players: [],
+          charts: [],
+          children: []
+        });
+      }
+    }
+    push(procList, item);
+  }
+
+  let playersArr = [];
+  let pks = keys(st.playerMetas);
+  for (let i = 0; i < len(pks); i += 1) {
+    let wid = pks[i];
+    if (has(st.appDisplays, wid)) {
+      push(playersArr, st.playerMetas[wid]);
+    }
+  }
+  let chartsArr = [];
+  let cks = keys(st.chartMetas);
+  for (let i = 0; i < len(cks); i += 1) {
+    let wid = cks[i];
+    if (has(st.appDisplays, wid)) {
+      push(chartsArr, st.chartMetas[wid]);
+    }
+  }
+
+  return {
+    systemId: st.systemId,
+    parentId: st.parentId,
+    name: st.name,
+    depth: st.depth,
+    state: "running",
+    vtime: st.vtime,
+    timeRate: st.timeRate,
+    budgetConfig: st.budgetConfig,
+    budgetGranted: st.lastGrantedBudget,
+    kernelSelfSteps: st.kernelSelfStepsTick,
+    childSteps: st.childStepsTick,
+    pendingWork: totalPending,
+    memUsed: calc_total_mem(st),
+    memQuota: eff_mem_quota(st),
+    gpuMemBytes: st.gpuMemBytes,
+    storageUsed: st.storageUsed,
+    storageQuota: eff_storage_quota(st),
+    compilerTag: st.compilerBc != null ? st.compilerBc.compilerTag : "unknown",
+    procs: procList,
+    windows: st.wmWindowsMeta,
+    players: playersArr,
+    charts: chartsArr,
+    children: childMetrics,
+    sysLogs: st.sysLogs
+  };
+}
+
+// ==================== 内核引导与主调度循环 ====================
+
+let KSTATE = {
+  systemId: BOOT.systemId,
+  parentId: BOOT.parentId,
+  name: BOOT.name,
+  depth: BOOT.depth,
+  vtime: 0,
+  stepDt: 0,
+  timeRate: 1.0,
+  budgetConfig: BOOT.budgetConfig,
+  lastGrantedBudget: BOOT.budgetConfig,
+  budgetRem: 0,
+  memQuota: BOOT.memQuota,
+  storageQuota: BOOT.storageQuota,
+  parentMemCap: BOOT.memQuota,
+  parentStorageCap: BOOT.storageQuota,
+  storageUsed: 0,
+  gpuMemBytes: 0,
+  kernelSelfMem: 32768,
+  kernelSelfStepsTick: 0,
+  childStepsTick: 0,
+  viewport: { w: 960, h: 600 },
+  ancestors: [],
+  openWorkbooks: [],
+  vfs: BOOT.seedVfs,
+  compilerBc: null,
+  compilerHash: "",
+  compilerModified: false,
+  compileCache: {},
+  bootPrecompiled: BOOT.precompiled,
+  procs: [],
+  nextPid: 1,
+  nextGen: 1,
+  nextWinSeq: 1,
+  nextChildLocal: 1,
+  rrCursor: 0,
+  wmPid: 0,
+  wmDisplay: null,
+  wmWindowsMeta: [],
+  appDisplays: {},
+  appScenes: {},
+  appResources: {},
+  windowGpuMem: {},
+  playerMetas: {},
+  chartMetas: {},
+  childDisplays: {},
+  childProjections: {},
+  activeProjections: {},
+  localProjections: {},
+  flightSensors: {},
+  flightControls: {},
+  liveSubs: {},
+  outbound: [],
+  sysLogs: [],
+  rng: { s: 240824 + BOOT.depth * 1337 }
+};
+
+vfs_recalc_storage(KSTATE);
+load_compiler_bc(KSTATE);
+
+// 启动窗口管理器程序 /sys/wm.nos
+let wmRes = spawn_process(KSTATE, "/sys/wm.nos", { systemId: KSTATE.systemId }, { kind: "wm", name: "窗口管理器 (WM)" });
+if (!wmRes.ok) {
+  throw "无法启动窗口管理器 /sys/wm.nos: " + str(wmRes.error);
+}
+KSTATE.wmPid = wmRes.pid;
+
+// 若为系统重启，按保留的系统树结构重新启动直属子系统
+if (BOOT.restartChildren != null && len(BOOT.restartChildren) > 0) {
+  for (let i = 0; i < len(BOOT.restartChildren); i += 1) {
+    let rc = BOOT.restartChildren[i];
+    let kpath = "/Systems/" + rc.childId + "/kernel.nos";
+    let kr = vfs_read(KSTATE, kpath);
+    if (kr.ok) {
+      let cGrant = floor(KSTATE.budgetConfig * 0.62);
+      let cMem = floor(KSTATE.memQuota * 0.65);
+      let cStore = floor(KSTATE.storageQuota * 0.65);
+      let subBoot = {
+        systemId: rc.childId,
+        parentId: KSTATE.systemId,
+        name: rc.name,
+        depth: KSTATE.depth + 1,
+        budgetConfig: cGrant,
+        memQuota: cMem,
+        storageQuota: cStore,
+        seedVfs: rc.savedVfs != null ? rc.savedVfs : build_child_seed_vfs(KSTATE),
+        restartChildren: rc.subChildren,
+        precompiled: KSTATE.bootPrecompiled
+      };
+      let sp = spawn_process(KSTATE, kpath, null, {
+        kind: "carrier",
+        name: rc.name + " (内核)",
+        childId: rc.childId,
+        quota: cGrant,
+        initGlobals: { BOOT: subBoot }
+      });
+      if (sp.ok) {
+        sp.proc.childGrantCap = cGrant;
+        sp.proc.childMemCap = cMem;
+        sp.proc.childStorageCap = cStore;
+        sp.proc.childName = rc.name;
+        deliver_message(KSTATE, 0, 0, KSTATE.wmPid, null, { type: "child_created", childId: rc.childId, name: rc.name });
+      } else {
+        let ep = {
+          pid: KSTATE.nextPid,
+          gen: KSTATE.nextGen,
+          name: rc.name + " (内核)",
+          path: kpath,
+          kind: "carrier",
+          appId: "subsystem",
+          windowId: null,
+          childId: rc.childId,
+          childName: rc.name,
+          childGrantCap: cGrant,
+          childMemCap: cMem,
+          childStorageCap: cStore,
+          childPaused: false,
+          childStepCount: 0,
+          childViewport: { w: 460, h: 300 },
+          childRawEvents: [],
+          childCommands: [],
+          savedVfs: rc.savedVfs != null ? rc.savedVfs : build_child_seed_vfs(KSTATE),
+          state: "error",
+          error: "内核编译错误: " + str(sp.error),
+          quota: cGrant,
+          sliceRem: 0,
+          stepsTick: 0,
+          stepsTotal: 0,
+          selfStepsTick: 0,
+          childStepsTick: 0,
+          pendingWork: 0,
+          memBytes: 0,
+          inbox: [],
+          inboxBytes: 0,
+          wakeAt: -1,
+          pendingSyscall: null,
+          result: null,
+          ctx: null
+        };
+        KSTATE.nextPid += 1;
+        KSTATE.nextGen += 1;
+        push(KSTATE.procs, ep);
+        deliver_message(KSTATE, 0, 0, KSTATE.wmPid, null, { type: "child_created", childId: rc.childId, name: rc.name });
+      }
+    }
+  }
+}
+
+// 内核主循环：每个逻辑步接收父系统拨付、推进虚拟时钟、调度本层全部进程、提交画面
+while (true) {
+  let env = syscall("host_poll");
+  if (env == null) continue;
+
+  if (env.viewport != null) KSTATE.viewport = env.viewport;
+  if (env.ancestors != null) KSTATE.ancestors = env.ancestors;
+  if (env.openWorkbooks != null) KSTATE.openWorkbooks = env.openWorkbooks;
+  if (env.memCap != null && env.memCap > 0) KSTATE.parentMemCap = env.memCap;
+  if (env.storageCap != null && env.storageCap > 0) KSTATE.parentStorageCap = env.storageCap;
+
+  // 处理来自父系统的控制指令
+  if (env.commands != null) {
+    for (let i = 0; i < len(env.commands); i += 1) {
+      process_incoming_command(KSTATE, env.commands[i]);
+    }
+  }
+
+  // 将原始指针与键盘事件投入窗口管理器收件箱
+  if (env.rawEvents != null && len(env.rawEvents) > 0 && KSTATE.wmPid > 0) {
+    for (let i = 0; i < len(env.rawEvents); i += 1) {
+      deliver_message(KSTATE, 0, 0, KSTATE.wmPid, null, { type: "raw_input", event: env.rawEvents[i] });
+    }
+  }
+
+  // 推进本系统虚拟时钟
+  let dt = num(env.dt) * KSTATE.timeRate;
+  KSTATE.stepDt = dt;
+  KSTATE.vtime += dt;
+
+  // 唤醒到时的睡眠进程与超时消息等待进程
+  for (let i = 0; i < len(KSTATE.procs); i += 1) {
+    let p = KSTATE.procs[i];
+    if (p.state == "waiting" && p.wakeAt >= 0 && KSTATE.vtime >= p.wakeAt) {
+      p.state = "ready";
+      p.wakeAt = -1;
+      vm_reply(p.ctx, true);
+    } else if (p.state == "waiting_msg" && p.wakeAt >= 0 && KSTATE.vtime >= p.wakeAt) {
+      p.state = "ready";
+      p.wakeAt = -1;
+      vm_reply(p.ctx, null);
+    }
+  }
+
+  // 计算本逻辑步实际可用预算（受本系统配置与父系统实际拨付双重约束）
+  let avail = min(KSTATE.budgetConfig, floor(num(env.budget)));
+  if (avail < 0) avail = 0;
+  KSTATE.lastGrantedBudget = avail;
+  KSTATE.budgetRem = avail;
+  KSTATE.childStepsTick = 0;
+  let kOverhead = 180;
+
+  // 重置各进程本步统计与可用额度上限
+  for (let i = 0; i < len(KSTATE.procs); i += 1) {
+    let p = KSTATE.procs[i];
+    p.stepsTick = 0;
+    p.selfStepsTick = 0;
+    p.childStepsTick = 0;
+    if (p.quota > 0) p.sliceRem = min(p.quota, avail);
+    else p.sliceRem = avail;
+  }
+
+  // 调度主循环：在共享预算内轮转运行全部就绪进程（内核、WM、应用、飞控、用户程序、子系统承载）
+  let guard = 0;
+  while (KSTATE.budgetRem > 0 && guard < 240) {
+    guard += 1;
+    let pick = schedule_pick(KSTATE);
+    if (pick == null) break;
+    let p = pick.proc;
+    let slice = min(pick.quantum, min(p.sliceRem, KSTATE.budgetRem));
+    if (slice <= 0) break;
+
+    kOverhead += 25;
+
+    // 1) 若进程有未付清的系统调用工作，先按进度付费，付清后再提交结果！
+    if (p.pendingSyscall != null) {
+      let need = p.pendingSyscall.remaining;
+      let pay = min(slice, need);
+      let burned = vm_burn(pay);
+      p.pendingSyscall.remaining -= burned;
+      p.stepsTick += burned;
+      p.stepsTotal += burned;
+      p.selfStepsTick += burned;
+      p.sliceRem -= burned;
+      KSTATE.budgetRem -= burned;
+      KSTATE.childStepsTick += burned;
+      if (p.pendingSyscall.remaining <= 0) {
+        let sc = p.pendingSyscall;
+        p.pendingSyscall = null;
+        let reply = execute_syscall(KSTATE, p, sc.name, sc.args);
+        if (!(reply != null && type(reply) == "object" && reply.__block)) {
+          vm_reply(p.ctx, reply);
+        }
+      }
+      continue;
+    }
+
+    // 2) 运行进程字节码（受共享预算与内存配额双重限制）
+    let mCap = eff_mem_quota(KSTATE);
+    let pMemLimit = 0;
+    if (mCap > 0) {
+      let otherMem = calc_total_mem(KSTATE) - p.memBytes;
+      if (p.kind == "carrier") {
+        let cCap = p.childMemCap != null && p.childMemCap > 0 ? min(mCap, p.childMemCap) : mCap;
+        pMemLimit = floor(cCap * 1.35) + 4194304;
+      } else {
+        pMemLimit = mCap - otherMem;
+        if (pMemLimit < 8192) pMemLimit = 8192;
+      }
+    }
+
+    let res = vm_run(p.ctx, slice, pMemLimit);
+    let used = res.stepsUsed;
+    p.stepsTick += used;
+    p.stepsTotal += used;
+    p.selfStepsTick += res.selfSteps;
+    p.childStepsTick += res.childSteps;
+    p.pendingWork = res.pendingWork;
+    p.memBytes = res.memBytes;
+    p.sliceRem -= used;
+    KSTATE.budgetRem -= used;
+    KSTATE.childStepsTick += used;
+
+    if (res.status == "syscall") {
+      let scCost = estimate_syscall_work(res.name, res.args);
+      if (scCost > 0) {
+        let canPay = min(KSTATE.budgetRem, min(p.sliceRem, scCost));
+        let burned = vm_burn(canPay);
+        p.stepsTick += burned;
+        p.stepsTotal += burned;
+        p.selfStepsTick += burned;
+        p.sliceRem -= burned;
+        KSTATE.budgetRem -= burned;
+        KSTATE.childStepsTick += burned;
+        if (burned < scCost) {
+          p.pendingSyscall = {
+            name: res.name,
+            args: res.args,
+            total: scCost,
+            remaining: scCost - burned
+          };
+          continue;
+        }
+      }
+      let reply = execute_syscall(KSTATE, p, res.name, res.args);
+      if (!(reply != null && type(reply) == "object" && reply.__block)) {
+        vm_reply(p.ctx, reply);
+      }
+    } else if (res.status == "exited") {
+      p.state = "exited";
+      if (res.value != null && p.result == null) p.result = res.value;
+      p.ctx = null;
+      p.memBytes = 0;
+    } else if (res.status == "error") {
+      p.state = "error";
+      p.error = str(res.error);
+      p.ctx = null;
+      p.memBytes = 0;
+      p.inbox = [];
+      p.inboxBytes = 0;
+      if (p.kind == "carrier" && p.childId != null) {
+        del(KSTATE.childDisplays, p.childId);
+      }
+    }
+    // 承载进程在完成一次 host_present 后本步不再重复空转
+    if (p.kind == "carrier" && res.status == "syscall" && res.name == "host_present") {
+      p.sliceRem = 0;
+    }
+  }
+
+  KSTATE.kernelSelfStepsTick = kOverhead;
+
+  // 在提交给宿主显示设备前，将本步已付清并提交的最新 appDisplays/appScenes/childDisplays 同步进 wmDisplay，
+  // 确保单步推进与快照恢复后的第一帧呈现与程序状态、读数 100% 同一时刻！
+  if (KSTATE.wmDisplay != null && KSTATE.wmDisplay.windows != null) {
+    KSTATE.wmDisplay.vtime = KSTATE.vtime;
+    KSTATE.wmDisplay.timeRate = KSTATE.timeRate;
+    for (let i = 0; i < len(KSTATE.wmDisplay.windows); i += 1) {
+      let dw = KSTATE.wmDisplay.windows[i];
+      if (dw.appId == "subsystem" && dw.childId != null) {
+        if (has(KSTATE.childDisplays, dw.childId)) dw.childDisplay = KSTATE.childDisplays[dw.childId];
+      } else if (dw.appId != "projection") {
+        if (has(KSTATE.appDisplays, dw.id)) dw.ui = KSTATE.appDisplays[dw.id];
+        if (has(KSTATE.appScenes, dw.id)) dw.scene3d = KSTATE.appScenes[dw.id];
+      }
+    }
+  }
+
+  // 组装本层与后代需要上送祖先桌面的投送包（数据副本传递）
+  let outProjs = [];
+  let apks = keys(KSTATE.activeProjections);
+  for (let i = 0; i < len(apks); i += 1) {
+    let winId = apks[i];
+    let pj = KSTATE.activeProjections[winId];
+    if (has(KSTATE.appDisplays, winId)) {
+      let scCopy = null;
+      if (has(KSTATE.appScenes, winId)) {
+        scCopy = clone(KSTATE.appScenes[winId]);
+        if (scCopy.resourceId != null && pj.sentResId != scCopy.resourceId && has(KSTATE.appResources, scCopy.resourceId)) {
+          scCopy.resource = clone(KSTATE.appResources[scCopy.resourceId]);
+          pj.sentResId = scCopy.resourceId;
+        }
+      }
+      push(outProjs, {
+        sourceSystemId: pj.sourceSystemId,
+        sourceWindowId: pj.sourceWindowId,
+        sourceAppId: pj.sourceAppId,
+        sourceTitle: pj.sourceTitle,
+        sourceDepth: pj.sourceDepth,
+        targetSystemId: pj.targetSystemId,
+        ui: clone(KSTATE.appDisplays[winId]),
+        scene3d: scCopy
+      });
+    }
+  }
+  let cpks = keys(KSTATE.childProjections);
+  for (let i = 0; i < len(cpks); i += 1) {
+    let arr = KSTATE.childProjections[cpks[i]];
+    if (arr != null) {
+      for (let j = 0; j < len(arr); j += 1) {
+        push(outProjs, arr[j]);
+      }
+    }
+  }
+
+  let outboundBatch = KSTATE.outbound;
+  KSTATE.outbound = [];
+
+  syscall("host_present", {
+    systemId: KSTATE.systemId,
+    name: KSTATE.name,
+    depth: KSTATE.depth,
+    state: "running",
+    vtime: KSTATE.vtime,
+    timeRate: KSTATE.timeRate,
+    display: KSTATE.wmDisplay,
+    projections: outProjs,
+    outbound: outboundBatch,
+    metrics: build_metrics_snapshot(KSTATE)
+  });
+}

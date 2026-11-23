@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>星际战舰编队 · 旗舰与护卫舰</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html, body { margin: 0; height: 100%; background: #020308; overflow: hidden; }
+  canvas#view { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; display: block; }
+  #boot { position: fixed; left: 0; right: 0; bottom: 9vh; text-align: center; color: #6fd6e6; font: 300 15px/1.6 "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; letter-spacing: .5em; text-indent: .5em; opacity: .85; pointer-events: none; transition: opacity .8s; }
+  #boot i { display: block; margin: 10px auto 0; width: 220px; height: 2px; background: rgba(111,214,230,.16); position: relative; overflow: hidden; }
+  #boot i b { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #6fd6e6; transition: width .25s; }
+</style>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="boot"><span id="bootText">编队集结中</span><i><b id="bootBar"></b></i></div>
+<script src="js/core.js"></script>
+<script src="js/materials.js"></script>
+<script src="js/voxel.js"></script>
+<script src="js/shaders.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ships.js"></script>
+<script src="js/flagship.js"></script>
+<script src="js/interiors.js"></script>
+<script src="js/asteroids.js"></script>
+<script src="js/fleet.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

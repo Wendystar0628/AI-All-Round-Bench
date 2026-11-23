@@ -1,0 +1,9 @@
+{"problem":"13","parts":[{"name":"1","title":"斜耳叉架减速箱体(初稿)","features":[
+{"type":"extrude","name":"底板R6","plane":"XY","loops":[{"rect":[0,0,188,132],"r":6}],"depth":16},
+{"type":"extrude","name":"箱体","plane":"XZ","loops":[{"path":[[16,16],[172,16],[163,98],[142,116],[49,116],[24,95]]}],"depth":[-114,-18]},
+{"type":"extrude","name":"前凸缘Φ66","plane":"XZ","loops":[{"circle":[66,65],"d":66}],"depth":[-18,-6]},
+{"type":"extrude","name":"后凸缘Φ66","plane":"XZ","loops":[{"circle":[66,65],"d":66}],"depth":[-126,-114]},
+{"type":"extrude","name":"右凸缘","plane":"YZ","loops":[{"circle":[66,82],"d":54}],"depth":[160,186]},
+{"type":"hole","name":"前后轴孔(估)","plane":"XZ","origin":[0,6,0],"at":[66,65],"d":40,"depth":120},
+{"type":"hole","name":"地脚孔","plane":"XY","origin":[0,0,16],"at":[[10,10],[178,10],[10,122],[178,122]],"d":9,"through":true}
+]}]}

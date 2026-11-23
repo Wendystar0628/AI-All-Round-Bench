@@ -1,0 +1,8 @@
+display({"surface":"help","sections":["apphead","panel"]})
+@loop
+receive event
+if event.action != "command" goto input
+invoke(event)
+goto loop
+@input
+goto loop

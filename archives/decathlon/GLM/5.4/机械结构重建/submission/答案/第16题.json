@@ -1,0 +1,38 @@
+{
+  "problem": "16",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双蜗室异面三通泵壳",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0],
+         "loops": [{"rect": [0, 0, 150, 110]}], "depth": 10},
+
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 10],
+         "loops": [{"rect": [8, 8, 142, 102]}], "depth": 55},
+
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 65],
+         "loops": [{"circle": [45, 35], "d": 60}], "depth": -50},
+
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 65],
+         "loops": [{"circle": [105, 75], "d": 55}], "depth": -40},
+
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 65],
+         "loops": [{"rect": [75, 8, 142, 102]}], "depth": -30},
+
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [142, 55, 40],
+         "loops": [{"circle": [0, 0], "d": 55}], "depth": 12},
+
+        {"type": "hole", "plane": "YZ", "origin": [154, 55, 40], "at": [[0, 0]], "d": 30, "depth": 40},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 10], "at": [[8, 8], [142, 8], [8, 102], [142, 102]], "d": 10, "through": true},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 65], "at": [[45, 35]], "d": 18, "through": true},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 65], "at": [[105, 75]], "d": 18, "through": true},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 65], "at": [[45, 35]], "d": 40, "depth": 15}
+      ]
+    }
+  ]
+}

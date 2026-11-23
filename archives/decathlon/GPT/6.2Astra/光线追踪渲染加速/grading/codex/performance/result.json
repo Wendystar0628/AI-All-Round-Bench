@@ -1,0 +1,55 @@
+{
+    "task":  "光线追踪渲染加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "渲染加速",
+                      "max":  100,
+                      "score":  97.0,
+                      "reason":  "官方 evaluate.py 正式评测：基线最短 509.5824 ms，提交最短 53.6588 ms，加速 9.496716289 倍，速度分 q=96.991590842。5 次计时画面与 12 个隐藏输入全部通过，c=h=1，最终得分保留一位小数为 97.0；编译成功，规则扫描结合源码未发现实质性违规。"
+                  }
+              ],
+    "metrics":  {
+                    "R_ms":  509.5824,
+                    "C_ms":  53.6588,
+                    "speedup":  9.49671628884731,
+                    "q":  96.99159084215889,
+                    "c":  1,
+                    "h":  1,
+                    "score_unrounded":  96.99159084215889,
+                    "timing_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "hidden_factors":  [
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1,
+                                           1
+                                       ],
+                    "boundary_pass":  3,
+                    "performance_exception_pixels":  [
+                                                         796,
+                                                         796,
+                                                         796,
+                                                         796,
+                                                         796
+                                                     ],
+                    "performance_exception_limit":  3232,
+                    "performance_rmse":  3.8318754427672E-05,
+                    "official_results":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GPT\\6.2Astra\\光线追踪渲染加速\\codex\\performance\\work\\evaluation\\results.json"
+                },
+    "notes":  "评分版本：评的是作答结束时工作目录的副本 work\\submission，不看 git 提交；复制时排除评分表与 .git。仅审查本次提交 solution.cu，未查看其他评分员记录。正式 evaluate.py 仅运行一次，所有编译和测量均经 process_job.py --cpus 16-27 包装，官方入口保留 --cpus 16-27，高优先级、各 5 次交错取最小值；结果 valid=true、formal=true，无环境报错。源码规则扫描 7 处数据回传均为工作量、包围盒或计数等少量控制信息；未见答案读取、预存图像、跨调用场景缓存、外部进程/网络访问或计时干扰。 已确认记录的 28 个本次评测相关 PID 全部退出；未启动浏览器或网页服务器，未结束任何其他会话进程。评分表与结果文件得分一致。"
+}

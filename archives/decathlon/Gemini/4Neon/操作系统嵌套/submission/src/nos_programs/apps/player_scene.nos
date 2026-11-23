@@ -1,0 +1,1009 @@
+// /apps/player_scene.nos — 三维场景播放器进程 2：场景解析、六自由度飞行物理、碰撞损坏、碎片与 3D 点选
+// 严守数据驱动边界：代码中不包含硬编码直升机模型，全部几何、地形、障碍与演出记录来自打开的 .scene / .replay 文件。
+
+let winId = ARGS.windowId;
+let fxPid = ARGS.fxPid;
+let timerPid = 0;
+
+let scenePath = "";
+let sceneDoc = null;
+let sceneResourceId = "";
+let sceneGpuBytes = 0;
+let resourceSentSeq = 0;
+let isFlightScene = false;
+let isReplayDoc = false;
+
+// 仿真与回放状态
+let sim = null;
+let initSimTemplate = null;
+let checkpoints = []; // 每 0.5 秒保存一次确定性状态快照，用于任意位置精确无漂移跳转
+let recordEvents = [];
+let recordControls = [];
+let activeMode = "performance"; // performance | rehearsal | replay
+let selection = null; // { partId, partName, integrity, damaged, worldPos }
+
+// 实时排演输入
+let liveWindStrength = 0.0;
+let liveWindAngleDeg = 35.0;
+let liveTargetPos = [38, 2.2, -26];
+let liveTargetHeadingDeg = 0.0;
+let liveLandAtTarget = true;
+
+// ==================== 地形与障碍碰撞（严格读取自场景资源） ====================
+
+fn sample_terrain_y(terrain, x, z) {
+  if (terrain == null) return 0.0;
+  let h = 0.0;
+  if (terrain.waves != null) {
+    for (let i = 0; i < len(terrain.waves); i += 1) {
+      let w = terrain.waves[i];
+      h += num(w.amp) * sin(x * num(w.fx) + num(w.phase)) * cos(z * num(w.fz) - num(w.phase) * 0.5);
+    }
+  }
+  if (terrain.flatPads != null) {
+    for (let i = 0; i < len(terrain.flatPads); i += 1) {
+      let pad = terrain.flatPads[i];
+      let dx = x - num(pad.x);
+      let dz = z - num(pad.z);
+      let d = sqrt(dx * dx + dz * dz);
+      let r = num(pad.radius);
+      let b = max(0.5, num(pad.blend));
+      if (d <= r) {
+        h = num(pad.y);
+      } else if (d < r + b) {
+        let u = (d - r) / b;
+        let sm = u * u * (3.0 - 2.0 * u);
+        h = num(pad.y) * (1.0 - sm) + h * sm;
+      }
+    }
+  }
+  return h;
+}
+
+fn check_obstacle_hit(obstacles, px, py, pz, radius) {
+  if (obstacles == null) return null;
+  for (let i = 0; i < len(obstacles); i += 1) {
+    let ob = obstacles[i];
+    if (ob.collider == null) continue;
+    let c = ob.collider;
+    let cx = num(c.pos[0]);
+    let cy = num(c.pos[1]);
+    let cz = num(c.pos[2]);
+    let hx = num(c.size[0]) * 0.5 + radius;
+    let hy = num(c.size[1]) * 0.5 + radius * 0.7;
+    let hz = num(c.size[2]) * 0.5 + radius;
+    if (abs(px - cx) < hx && abs(py - cy) < hy && abs(pz - cz) < hz) {
+      return ob;
+    }
+  }
+  return null;
+}
+
+// ==================== 飞行状态初始化与确定性物理步进 ====================
+
+fn make_initial_sim(doc) {
+  let fm = doc.flightModel != null ? doc.flightModel : {};
+  let init = fm.initialState != null ? fm.initialState : {};
+  let p0 = init.pos != null ? clone(init.pos) : [0, 0, 0];
+  let gy = sample_terrain_y(doc.terrain, p0[0], p0[2]);
+  if (p0[1] < gy) p0[1] = gy;
+  let r0 = init.rot != null ? clone(init.rot) : [0, -0.55, 0];
+  let v0 = init.vel != null ? clone(init.vel) : [0, 0, 0];
+
+  let damage = {};
+  if (doc.parts != null) {
+    for (let i = 0; i < len(doc.parts); i += 1) {
+      damage[doc.parts[i].id] = { integrity: 100, detached: false };
+    }
+  }
+
+  return {
+    t: 0.0,
+    pos: p0,
+    vel: v0,
+    rot: r0,       // [pitch, yaw, roll]
+    angVel: [0, 0, 0],
+    rotorRpm: init.rotorRpm != null ? num(init.rotorRpm) : 0.28,
+    tailRpm: init.tailRpm != null ? num(init.tailRpm) : 0.28,
+    rotorAngle: 0.0,
+    tailAngle: 0.0,
+    groundY: gy,
+    altitude: max(0.0, p0[1] - gy),
+    windX: 0.0,
+    windZ: 0.0,
+    faultType: "none",   // none | tail_rotor | engine
+    faultStartT: -1.0,
+    faultSevere: false,
+    crashed: false,
+    crashTime: -1.0,
+    crashPos: null,
+    crashEnergy: 0.0,
+    landed: true,
+    hitObstacleName: null,
+    damage: damage,
+    debris: [],
+    lastCtrl: { collective: 0.15, pitch: 0.0, roll: 0.0, yaw: 0.35 },
+    rng: { s: 242424 }
+  };
+}
+
+fn eval_recorded_control(track, t) {
+  if (track == null || len(track) == 0) {
+    return { collective: 0.52, pitch: 0.0, roll: 0.0, yaw: 0.35, rotorTarget: 1.0 };
+  }
+  let n = len(track);
+  if (t <= num(track[0].t)) return track[0];
+  if (t >= num(track[n - 1].t)) return track[n - 1];
+  // 30Hz 等间隔录制轨道 O(1) 精确索引，确保零误差还原
+  if (n > 20 && abs((num(track[1].t) - num(track[0].t)) - (1.0 / 30.0)) < 0.002) {
+    let idx = clamp(floor((t - num(track[0].t)) * 30.0 + 0.001), 0, n - 1);
+    return track[idx];
+  }
+  let i = 0;
+  while (i < n - 1 && num(track[i + 1].t) < t) i += 1;
+  let a = track[i];
+  let b = track[i + 1];
+  let span = max(0.0001, num(b.t) - num(a.t));
+  if (span <= 0.06) return a;
+  let u = clamp((t - num(a.t)) / span, 0.0, 1.0);
+  let rtA = a.rotorTarget != null ? num(a.rotorTarget) : 1.0;
+  let rtB = b.rotorTarget != null ? num(b.rotorTarget) : 1.0;
+  return {
+    collective: num(a.collective) + (num(b.collective) - num(a.collective)) * u,
+    pitch: num(a.pitch) + (num(b.pitch) - num(a.pitch)) * u,
+    roll: num(a.roll) + (num(b.roll) - num(a.roll)) * u,
+    yaw: num(a.yaw) + (num(b.yaw) - num(a.yaw)) * u,
+    rotorTarget: rtA + (rtB - rtA) * u
+  };
+}
+
+fn trigger_crash(st, doc, energy, hitObs) {
+  if (st.crashed) return;
+  st.crashed = true;
+  st.crashTime = st.t;
+  st.crashPos = [st.pos[0], st.pos[1], st.pos[2]];
+  st.crashEnergy = clamp(energy, 4.0, 28.0);
+  if (hitObs != null) st.hitObstacleName = hitObs.name;
+
+  // 按实际接触位置、速度与姿态损坏对应部件并生成有厚度的刚体三维碎片
+  let breakCandidates = [
+    { id: "main_rotor_blades", name: "断裂主旋翼桨叶 A", color: "#2b2538", accent: "#FDB927", size: [3.6, 0.08, 0.34] },
+    { id: "main_rotor_hub", name: "断裂主旋翼桨叶 B", color: "#2b2538", accent: "#FDB927", size: [3.2, 0.08, 0.32] },
+    { id: "tail_fin", name: "脱落垂直尾翼", color: "#552583", accent: "#FDB927", size: [0.22, 1.45, 0.95] },
+    { id: "tail_rotor", name: "受损尾桨总成", color: "#3a3548", accent: "#FDB927", size: [0.24, 0.92, 0.26] },
+    { id: "skids_left", name: "折断起落架滑橇", color: "#4b5563", accent: "#9ca3af", size: [0.18, 0.2, 2.5] },
+    { id: "engine_cowling", name: "掀开引擎整流罩", color: "#552583", accent: "#FDB927", size: [0.95, 0.42, 1.25] }
+  ];
+
+  for (let i = 0; i < len(breakCandidates); i += 1) {
+    let bc = breakCandidates[i];
+    if (has(st.damage, bc.id)) {
+      st.damage[bc.id].integrity = clamp(floor(22 - energy * 0.8 + i * 5), 0, 45);
+      st.damage[bc.id].detached = (i < 5);
+    }
+    let ang = (i * 1.12) + st.rot[1] + rand_next(st.rng) * 0.6;
+    let spd = (3.4 + rand_next(st.rng) * 4.8) * clamp(energy / 10.0, 0.7, 1.6);
+    let vy = 3.2 + rand_next(st.rng) * 4.5;
+    push(st.debris, {
+      id: "debris_" + str(i),
+      partId: bc.id,
+      name: bc.name,
+      color: bc.color,
+      accent: bc.accent,
+      size: bc.size,
+      pos: [st.pos[0] + cos(ang) * 0.8, st.pos[1] + 0.9 + (i % 3) * 0.3, st.pos[2] + sin(ang) * 0.8],
+      vel: [st.vel[0] * 0.35 + cos(ang) * spd, vy, st.vel[2] * 0.35 + sin(ang) * spd],
+      rot: [rand_next(st.rng) * 3.1, rand_next(st.rng) * 3.1, rand_next(st.rng) * 3.1],
+      angVel: [(rand_next(st.rng) - 0.5) * 11.0, (rand_next(st.rng) - 0.5) * 9.0, (rand_next(st.rng) - 0.5) * 11.0],
+      settled: false
+    });
+  }
+  if (has(st.damage, "fuselage")) st.damage["fuselage"].integrity = 32;
+  if (has(st.damage, "cockpit")) st.damage["cockpit"].integrity = 18;
+  if (has(st.damage, "tail_boom")) st.damage["tail_boom"].integrity = 25;
+
+  // 机身撞击后侧倾滑行
+  st.vel[0] *= 0.28;
+  st.vel[1] = max(0.0, -st.vel[1] * 0.14);
+  st.vel[2] *= 0.28;
+  st.angVel[0] = (rand_next(st.rng) - 0.5) * 1.4;
+  st.angVel[1] *= 0.25;
+  st.angVel[2] = 0.9;
+  st.rotorRpm = 0.0;
+  st.tailRpm = 0.0;
+}
+
+fn step_physics(st, doc, ctrl, dt, isLiveRehearsal) {
+  let fm = doc.flightModel != null ? doc.flightModel : {};
+  let gravity = fm.gravity != null ? num(fm.gravity) : 9.81;
+  let maxThrust = fm.maxThrust != null ? num(fm.maxThrust) : 18.8;
+  let instab = fm.instability != null ? num(fm.instability) : 1.45;
+  let drag = fm.drag != null ? num(fm.drag) : 0.34;
+
+  st.t += dt;
+
+  // 1) 更新碎片三维刚体翻滚、弹跳与停稳
+  for (let i = 0; i < len(st.debris); i += 1) {
+    let d = st.debris[i];
+    if (d.settled) continue;
+    d.vel[1] -= gravity * dt;
+    d.pos[0] += d.vel[0] * dt;
+    d.pos[1] += d.vel[1] * dt;
+    d.pos[2] += d.vel[2] * dt;
+    d.rot[0] += d.angVel[0] * dt;
+    d.rot[1] += d.angVel[1] * dt;
+    d.rot[2] += d.angVel[2] * dt;
+    let dgy = sample_terrain_y(doc.terrain, d.pos[0], d.pos[2]) + max(0.06, d.size[1] * 0.5);
+    if (d.pos[1] <= dgy) {
+      d.pos[1] = dgy;
+      if (abs(d.vel[1]) > 1.2) {
+        d.vel[1] = -d.vel[1] * 0.32;
+        d.vel[0] *= 0.58;
+        d.vel[2] *= 0.58;
+        d.angVel[0] *= 0.52;
+        d.angVel[1] *= 0.52;
+        d.angVel[2] *= 0.52;
+      } else {
+        d.vel[1] = 0.0;
+        d.vel[0] *= max(0.0, 1.0 - 6.5 * dt);
+        d.vel[2] *= max(0.0, 1.0 - 6.5 * dt);
+        d.angVel[0] *= max(0.0, 1.0 - 8.0 * dt);
+        d.angVel[1] *= max(0.0, 1.0 - 8.0 * dt);
+        d.angVel[2] *= max(0.0, 1.0 - 8.0 * dt);
+        let spd2 = d.vel[0]*d.vel[0] + d.vel[2]*d.vel[2] + d.angVel[0]*d.angVel[0] + d.angVel[2]*d.angVel[2];
+        if (spd2 < 0.04) {
+          d.vel = [0, 0, 0];
+          d.angVel = [0, 0, 0];
+          d.settled = true;
+        }
+      }
+    }
+  }
+
+  // 2) 若已坠毁，残骸快速滑行停稳于地形表面
+  if (st.crashed) {
+    let gy = sample_terrain_y(doc.terrain, st.pos[0], st.pos[2]);
+    st.groundY = gy;
+    if (st.pos[1] > gy + 0.02 || st.vel[1] > 0.05) {
+      st.vel[1] -= gravity * dt;
+      st.pos[1] += st.vel[1] * dt;
+      if (st.pos[1] < gy) { st.pos[1] = gy; st.vel[1] = 0; }
+    } else {
+      st.pos[1] = gy;
+      st.vel[1] = 0;
+    }
+    st.pos[0] += st.vel[0] * dt;
+    st.pos[2] += st.vel[2] * dt;
+    let fric = max(0.0, 1.0 - 4.2 * dt);
+    st.vel[0] *= fric;
+    st.vel[2] *= fric;
+    if (abs(st.vel[0]) < 0.04) st.vel[0] = 0;
+    if (abs(st.vel[2]) < 0.04) st.vel[2] = 0;
+    // 残骸停在侧倾姿态
+    let tgtPitch = 0.16;
+    let tgtRoll = 0.42;
+    st.rot[0] += (tgtPitch - st.rot[0]) * clamp(dt * 3.5, 0, 1);
+    st.rot[2] += (tgtRoll - st.rot[2]) * clamp(dt * 3.5, 0, 1);
+    st.rot[1] += st.angVel[1] * dt;
+    st.angVel[1] *= max(0.0, 1.0 - 5.0 * dt);
+    st.altitude = max(0.0, st.pos[1] - gy);
+    return;
+  }
+
+  // 3) 正常/故障中六自由度机体演化
+  let coll = clamp(num(ctrl.collective), 0.0, 1.6);
+  let pCmd = clamp(num(ctrl.pitch), -1.0, 1.0);
+  let rCmd = clamp(num(ctrl.roll), -1.0, 1.0);
+  let yCmd = clamp(num(ctrl.yaw), -1.0, 1.0);
+  let rTarget = ctrl.rotorTarget != null ? num(ctrl.rotorTarget) : 1.0;
+
+  // 故障阶段演化（征兆阶段 -> 彻底失控阶段）
+  let tailAuth = 1.0;
+  let engineScale = 1.0;
+  let faultShudder = 0.0;
+  if (st.faultType != "none" && st.faultStartT >= 0) {
+    let fAge = st.t - st.faultStartT;
+    if (st.faultType == "tail_rotor") {
+      if (fAge < 1.65) {
+        // 征兆阶段：火花、黑烟与轻微偏航抖动，尚未完全失控
+        tailAuth = 1.0 - 0.35 * (fAge / 1.65);
+        faultShudder = sin(st.t * 28.0) * 0.45 * (fAge / 1.65);
+      } else {
+        // 彻底失控阶段：尾桨停转，主旋翼反扭矩驱动剧烈自旋下坠
+        st.faultSevere = true;
+        tailAuth = 0.0;
+        rTarget = 0.72;
+        engineScale = 0.62;
+      }
+    } else if (st.faultType == "engine") {
+      if (fAge < 1.4) {
+        engineScale = 1.0 - 0.45 * (fAge / 1.4);
+        faultShudder = sin(st.t * 22.0) * 0.5;
+      } else {
+        st.faultSevere = true;
+        engineScale = 0.22;
+        rTarget = 0.35;
+      }
+    }
+  }
+
+  st.rotorRpm += (rTarget - st.rotorRpm) * clamp(dt * 2.2, 0, 1);
+  let tailTgt = st.faultSevere && st.faultType == "tail_rotor" ? 0.0 : st.rotorRpm;
+  st.tailRpm += (tailTgt - st.tailRpm) * clamp(dt * 4.5, 0, 1);
+  st.rotorAngle += st.rotorRpm * 34.0 * dt;
+  st.tailAngle += st.tailRpm * 52.0 * dt;
+
+  let pitch = st.rot[0];
+  let yaw = st.rot[1];
+  let roll = st.rot[2];
+
+  // 机体是不稳定的被控对象：无控制输入或控制周期拉长时固有姿态迅速发散倾覆
+  let liveInstab = isLiveRehearsal ? (instab * 2.2) : instab;
+  let dampPR = isLiveRehearsal ? 0.55 : 1.05;
+  let instabPitch = liveInstab * pitch + (isLiveRehearsal ? 0.24 : 0.0);
+  let instabRoll = liveInstab * roll + (isLiveRehearsal ? -0.19 : 0.0);
+
+  // 旋转力矩（在故障严重时主旋翼反扭矩使机体高速偏航并翻滚）
+  let mainTorque = -2.45 * st.rotorRpm * (0.45 + 0.55 * coll);
+  let tailTorque = 6.95 * tailAuth * yCmd * st.tailRpm;
+  let yawAcc = mainTorque + tailTorque - st.angVel[1] * 0.85 + faultShudder * 2.4;
+
+  let pitchAcc = pCmd * 5.8 * st.rotorRpm + instabPitch - st.angVel[0] * dampPR + faultShudder * 0.9;
+  let rollAcc = rCmd * 5.8 * st.rotorRpm + instabRoll - st.angVel[2] * dampPR;
+
+  if (st.faultSevere) {
+    // 严重失控时，旋翼陀螺进动导致明显俯冲与滚转
+    pitchAcc += -1.35;
+    rollAcc += 0.95 * sin(st.t * 3.1);
+  }
+
+  let gy0 = sample_terrain_y(doc.terrain, st.pos[0], st.pos[2]);
+  let onGround = (st.pos[1] <= gy0 + 0.06);
+
+  if (onGround && coll * maxThrust * st.rotorRpm * engineScale <= gravity * 0.95) {
+    // 停放在地面上时起落架提供支撑力矩
+    st.angVel[0] *= 0.6;
+    st.angVel[1] *= 0.7;
+    st.angVel[2] *= 0.6;
+    st.rot[0] *= 0.85;
+    st.rot[2] *= 0.85;
+    st.landed = true;
+  } else {
+    st.landed = false;
+    st.angVel[0] += pitchAcc * dt;
+    st.angVel[1] += yawAcc * dt;
+    st.angVel[2] += rollAcc * dt;
+    st.rot[0] = clamp(st.rot[0] + st.angVel[0] * dt, -1.45, 1.45);
+    st.rot[1] = st.rot[1] + st.angVel[1] * dt;
+    st.rot[2] = clamp(st.rot[2] + st.angVel[2] * dt, -1.45, 1.45);
+  }
+
+  // 主旋翼推力矢量（沿机体局部 +Y 轴经 pitch/roll/yaw 旋转至世界系）
+  let thrust = coll * maxThrust * st.rotorRpm * st.rotorRpm * engineScale;
+  let cp = cos(st.rot[0]);
+  let sp = sin(st.rot[0]);
+  let cr = cos(st.rot[2]);
+  let sr = sin(st.rot[2]);
+  let cy = cos(st.rot[1]);
+  let sy = sin(st.rot[1]);
+
+  // 局部推力方向 (lx, ly, lz) = (-sr, cp*cr, sp*cr)
+  let lx = -sr;
+  let ly = cp * cr;
+  let lz = sp * cr;
+  // 绕 Y 轴旋转 yaw
+  let wx = lx * cy + lz * sy;
+  let wy = ly;
+  let wz = -lx * sy + lz * cy;
+
+  // 风场作用力
+  let relVx = st.vel[0] - st.windX;
+  let relVz = st.vel[2] - st.windZ;
+  let ax = thrust * wx - relVx * drag;
+  let ay = thrust * wy - gravity - st.vel[1] * (drag * 0.6);
+  let az = thrust * wz - relVz * drag;
+
+  st.vel[0] += ax * dt;
+  st.vel[1] += ay * dt;
+  st.vel[2] += az * dt;
+
+  st.pos[0] += st.vel[0] * dt;
+  st.pos[1] += st.vel[1] * dt;
+  st.pos[2] += st.vel[2] * dt;
+
+  // 限制在场景有效半径内
+  st.pos[0] = clamp(st.pos[0], -105.0, 105.0);
+  st.pos[2] = clamp(st.pos[2], -105.0, 105.0);
+
+  // 碰撞检测 1：三维障碍物（机库、塔台、信号塔等）
+  let hitObs = check_obstacle_hit(doc.obstacles, st.pos[0], st.pos[1] + 1.4, st.pos[2], 2.2);
+  if (hitObs != null) {
+    let spd = sqrt(st.vel[0]*st.vel[0] + st.vel[1]*st.vel[1] + st.vel[2]*st.vel[2]);
+    trigger_crash(st, doc, max(8.0, spd), hitObs);
+    return;
+  }
+
+  // 碰撞检测 2：起伏地形表面
+  let gy = sample_terrain_y(doc.terrain, st.pos[0], st.pos[2]);
+  st.groundY = gy;
+  if (st.pos[1] <= gy) {
+    let vImpact = -st.vel[1];
+    let hSpd = sqrt(st.vel[0]*st.vel[0] + st.vel[2]*st.vel[2]);
+    let tilt = sqrt(st.rot[0]*st.rot[0] + st.rot[2]*st.rot[2]);
+    st.pos[1] = gy;
+    if (vImpact > 4.2 || tilt > 0.58 || (hSpd > 7.5 && vImpact > 2.0) || st.faultSevere) {
+      trigger_crash(st, doc, vImpact + hSpd * 0.5 + tilt * 6.0, null);
+    } else {
+      st.vel[1] = 0.0;
+      st.vel[0] *= max(0.0, 1.0 - 5.0 * dt);
+      st.vel[2] *= max(0.0, 1.0 - 5.0 * dt);
+      st.landed = true;
+    }
+  }
+  st.altitude = max(0.0, st.pos[1] - gy);
+}
+
+// ==================== 确定性回放取样与检查点 ====================
+
+fn apply_record_events_between(st, tPrev, tNow) {
+  for (let i = 0; i < len(recordEvents); i += 1) {
+    let ev = recordEvents[i];
+    let et = num(ev.t);
+    if (et > tPrev && et <= tNow) {
+      if (ev.type == "fault") {
+        st.faultType = str(ev.fault);
+        st.faultStartT = et;
+        st.faultSevere = false;
+      } else if (ev.type == "wind") {
+        let ang = num(ev.angleDeg) * 0.01745329;
+        st.windX = cos(ang) * num(ev.strength);
+        st.windZ = sin(ang) * num(ev.strength);
+      }
+    }
+  }
+}
+
+fn sample_recorded_at(targetT) {
+  let t = max(0.0, targetT);
+  // 从最近的 <= t 的检查点开始积分，保证任意跳转和逐帧完全确定且无历史残留
+  let best = initSimTemplate;
+  for (let i = len(checkpoints) - 1; i >= 0; i -= 1) {
+    if (checkpoints[i].t <= t + 0.0001) {
+      best = checkpoints[i];
+      break;
+    }
+  }
+  let cur = clone(best);
+  let fixedDt = 1.0 / 30.0;
+  let guard = 0;
+  while (cur.t + 0.0005 < t && guard < 1200) {
+    guard += 1;
+    let step = min(fixedDt, t - cur.t);
+    let prevT = cur.t;
+    apply_record_events_between(cur, prevT, prevT + step);
+    let ctrl = eval_recorded_control(recordControls, prevT);
+    cur.lastCtrl = ctrl;
+    step_physics(cur, sceneDoc, ctrl, step, false);
+    // 每 0.5 秒写入新检查点加速后续跳转
+    if (len(checkpoints) == 0 || cur.t - checkpoints[len(checkpoints) - 1].t >= 0.49) {
+      if (len(checkpoints) < 120) {
+        push(checkpoints, clone(cur));
+      }
+    }
+  }
+  sim = cur;
+}
+
+// ==================== 相机计算与 3D 射线点选 ====================
+
+fn compute_camera_pose(doc, st, camCfg) {
+  if (!isFlightScene || st == null) {
+    let cc = (doc != null && doc.cameras != null && doc.cameras.cinematic != null) ? doc.cameras.cinematic : null;
+    if (camCfg.mode == "orbit") {
+      let cy = cos(camCfg.orbitYaw);
+      let sy = sin(camCfg.orbitYaw);
+      let cp = cos(camCfg.orbitPitch);
+      let sp = sin(camCfg.orbitPitch);
+      let d = camCfg.orbitDist;
+      return { pos: [sy * cp * d, max(1.0, sp * d + 1.5), cy * cp * d], target: [0, 1.2, 0], fov: 46 };
+    }
+    if (cc != null) return { pos: cc.pos, target: cc.target, fov: cc.fov != null ? cc.fov : 46 };
+    return { pos: [0, 4, 12], target: [0, 1, 0], fov: 46 };
+  }
+
+  let hx = st.pos[0];
+  let hy = st.pos[1] + 1.55;
+  let hz = st.pos[2];
+
+  if (camCfg.mode == "orbit") {
+    let cy = cos(camCfg.orbitYaw);
+    let sy = sin(camCfg.orbitYaw);
+    let cp = cos(camCfg.orbitPitch);
+    let sp = sin(camCfg.orbitPitch);
+    let d = camCfg.orbitDist;
+    let px = hx + sy * cp * d;
+    let py = hy + sp * d;
+    let pz = hz + cy * cp * d;
+    let gCam = sample_terrain_y(doc.terrain, px, pz) + 0.9;
+    if (py < gCam) py = gCam;
+    return { pos: [px, py, pz], target: [hx, hy, hz], fov: 46 };
+  }
+
+  if (camCfg.mode == "follow") {
+    let y = st.rot[1];
+    let backX = sin(y) * 14.5;
+    let backZ = cos(y) * 14.5;
+    let px = hx + backX + cos(y) * 4.2;
+    let pz = hz + backZ - sin(y) * 4.2;
+    let py = hy + 5.2;
+    let gCam = sample_terrain_y(doc.terrain, px, pz) + 1.4;
+    if (py < gCam) py = gCam;
+    return { pos: [px, py, pz], target: [hx, hy + 0.3, hz], fov: 48 };
+  }
+
+  // 默认演出镜头 (cinematic)：特写跟踪 24 号紫黄机身，确保主要阶段“24”清晰可辨且全程连续跟拍
+  let t = st.t;
+  let angle = 0.62;
+  let dist = 12.8;
+  let elev = 2.6;
+  if (t < 3.0) {
+    // 停机坪起飞阶段：侧前特写，紫黄机身与数字 24 占据画面主体
+    let u = t / 3.0;
+    angle = 0.52 + u * 0.48;
+    dist = 11.4 + u * 2.2;
+    elev = 2.1 + u * 1.4;
+  } else if (t < 7.5) {
+    // 盘旋前飞阶段：伴飞侧面镜头，清晰展示机身两侧 24 与起伏地形投影
+    let u = (t - 3.0) / 4.5;
+    angle = 1.0 + u * 0.95;
+    dist = 13.6 + sin(u * 3.14159) * 2.2;
+    elev = 3.5 + u * 1.0;
+  } else if (t < 11.6) {
+    // 故障征兆 -> 失控旋转 -> 俯冲撞击：连续紧跟不丢主体
+    let u = (t - 7.5) / 4.1;
+    angle = 1.95 - u * 0.65;
+    dist = 14.8 + u * 3.0;
+    elev = 4.6 + u * 2.2;
+  } else {
+    // 撞击高潮与余波落定：略微拉高并缓慢环绕残骸、碎片与升腾烟火
+    let u = clamp((t - 11.6) / 3.4, 0.0, 1.0);
+    angle = 1.30 + u * 0.55;
+    dist = 17.8 + u * 2.2;
+    elev = 6.2 - u * 0.8;
+  }
+  let px = hx + cos(angle) * dist;
+  let pz = hz + sin(angle) * dist;
+  let py = hy + elev;
+  let gCam = sample_terrain_y(doc.terrain, px, pz) + 1.5;
+  if (py < gCam) py = gCam;
+  return { pos: [px, py, pz], target: [hx, hy, hz], fov: 45 };
+}
+
+fn handle_pick_3d(nx, ny, aspect, camCfg) {
+  if (sceneDoc == null) return;
+  let cam = compute_camera_pose(sceneDoc, sim, camCfg);
+  // 构建相机基向量 (forward, right, up)
+  let fx = cam.target[0] - cam.pos[0];
+  let fy = cam.target[1] - cam.pos[1];
+  let fz = cam.target[2] - cam.pos[2];
+  let fl = max(0.0001, sqrt(fx*fx + fy*fy + fz*fz));
+  fx /= fl; fy /= fl; fz /= fl;
+
+  // right = normalize(cross(forward, [0,1,0]))
+  let rx = -fz;
+  let ry = 0.0;
+  let rz = fx;
+  let rl = max(0.0001, sqrt(rx*rx + rz*rz));
+  rx /= rl; rz /= rl;
+
+  // up = cross(right, forward)
+  let ux = ry * fz - rz * fy;
+  let uy = rz * fx - rx * fz;
+  let uz = rx * fy - ry * fx;
+
+  let tanHalf = tan((cam.fov * 0.5) * 0.01745329);
+  let ndcX = (nx * 2.0 - 1.0) * aspect * tanHalf;
+  let ndcY = (1.0 - ny * 2.0) * tanHalf;
+
+  let dx = fx + rx * ndcX + ux * ndcY;
+  let dy = fy + ry * ndcX + uy * ndcY;
+  let dz = fz + rz * ndcX + uz * ndcY;
+  let dl = max(0.0001, sqrt(dx*dx + dy*dy + dz*dz));
+  dx /= dl; dy /= dl; dz /= dl;
+
+  // 1) 检测是否点中场景部件（直升机部件或自定义场景部件）
+  let bestT = 9999.0;
+  let bestHit = null;
+  if (sceneDoc.parts != null) {
+    let basePos = (isFlightScene && sim != null) ? sim.pos : [0, 0, 0];
+    let yaw = (isFlightScene && sim != null) ? sim.rot[1] : 0;
+    let cy = cos(yaw);
+    let sy = sin(yaw);
+    for (let i = 0; i < len(sceneDoc.parts); i += 1) {
+      let part = sceneDoc.parts[i];
+      let lp = part.pos != null ? part.pos : [0, 0, 0];
+      let wx = basePos[0] + num(lp[0]) * cy + num(lp[2]) * sy;
+      let wy = basePos[1] + num(lp[1]);
+      let wz = basePos[2] - num(lp[0]) * sy + num(lp[2]) * cy;
+      let rad = part.pickRadius != null ? num(part.pickRadius) : 1.15;
+      // 射线-球相交
+      let ocx = cam.pos[0] - wx;
+      let ocy = cam.pos[1] - wy;
+      let ocz = cam.pos[2] - wz;
+      let b = ocx * dx + ocy * dy + ocz * dz;
+      let c = ocx*ocx + ocy*ocy + ocz*ocz - rad*rad;
+      let disc = b*b - c;
+      if (disc >= 0) {
+        let tHit = -b - sqrt(disc);
+        if (tHit > 0.2 && tHit < bestT) {
+          bestT = tHit;
+          let dmg = (sim != null && has(sim.damage, part.id)) ? sim.damage[part.id] : { integrity: 100, detached: false };
+          bestHit = {
+            partId: part.id,
+            partName: part.name != null ? part.name : part.id,
+            integrity: dmg.integrity,
+            detached: dmg.detached,
+            status: dmg.detached ? "已脱落" : (dmg.integrity < 60 ? "严重受损" : (dmg.integrity < 95 ? "轻度受损" : "完好"))
+          };
+        }
+      }
+    }
+  }
+
+  if (bestHit != null) {
+    selection = bestHit;
+    return;
+  }
+
+  // 2) 未点中部件且处于排演模式：射线步进求地形交点，设为新目标航向与航路点
+  if (isFlightScene && sim != null && activeMode == "rehearsal") {
+    let stepT = 1.0;
+    while (stepT < 160.0) {
+      let px = cam.pos[0] + dx * stepT;
+      let py = cam.pos[1] + dy * stepT;
+      let pz = cam.pos[2] + dz * stepT;
+      let gy = sample_terrain_y(sceneDoc.terrain, px, pz);
+      if (py <= gy) {
+        liveTargetPos = [clamp(px, -85, 85), gy, clamp(pz, -85, 85)];
+        liveLandAtTarget = false;
+        let hRad = atan2(-(liveTargetPos[0] - sim.pos[0]), -(liveTargetPos[2] - sim.pos[2]));
+        liveTargetHeadingDeg = hRad * 57.29578;
+        selection = {
+          partId: "terrain",
+          partName: "地面航路点 (" + str(round(liveTargetPos[0])) + ", " + str(round(liveTargetPos[2])) + ")",
+          integrity: 100,
+          detached: false,
+          status: "已设目标航向"
+        };
+        if (timerPid > 0) {
+          syscall("send", timerPid, {
+            type: "heading_picked",
+            headingDeg: liveTargetHeadingDeg,
+            targetPos: liveTargetPos
+          });
+        }
+        return;
+      }
+      stepT += 1.5;
+    }
+  }
+
+  selection = null;
+}
+
+// ==================== 载入场景 / 排演记录 ====================
+
+fn load_resource_file(path) {
+  let rd = syscall("fs_read", path);
+  if (rd == null || !rd.ok) {
+    if (timerPid > 0) syscall("send", timerPid, { type: "scene_loaded", ok: false, error: rd != null ? rd.error : "文件不存在" });
+    return;
+  }
+  try {
+    let parsed = json_decode(rd.content);
+    isReplayDoc = false;
+    if (parsed.format == "nos-replay-v1") {
+      isReplayDoc = true;
+      let baseScenePath = parsed.scenePath != null ? parsed.scenePath : "/Demo/helicopter-24.scene";
+      let srd = syscall("fs_read", baseScenePath);
+      if (srd == null || !srd.ok) {
+        if (timerPid > 0) syscall("send", timerPid, { type: "scene_loaded", ok: false, error: "找不到引用的场景文件 " + baseScenePath });
+        return;
+      }
+      sceneDoc = json_decode(srd.content);
+      scenePath = path;
+      recordControls = parsed.controlLog != null ? parsed.controlLog : [];
+      recordEvents = parsed.events != null ? parsed.events : [];
+      if (parsed.initialState != null) {
+        initSimTemplate = clone(parsed.initialState);
+      } else {
+        initSimTemplate = make_initial_sim(sceneDoc);
+      }
+      let dur = parsed.duration != null ? num(parsed.duration) : 15.0;
+      isFlightScene = (sceneDoc.flightModel != null);
+      sceneResourceId = path + ":" + hash_str(srd.content);
+      sceneGpuBytes = 65536 + len(srd.content) * 8;
+      resourceSentSeq += 1;
+      checkpoints = [clone(initSimTemplate)];
+      sim = clone(initSimTemplate);
+      selection = null;
+      if (timerPid > 0) {
+        syscall("send", timerPid, { type: "scene_loaded", ok: true, name: parsed.name != null ? parsed.name : "排演记录", duration: dur, fps: 30, isReplay: true });
+      }
+      return;
+    }
+
+    // 标准 .scene 场景资源
+    sceneDoc = parsed;
+    scenePath = path;
+    isFlightScene = (sceneDoc.flightModel != null);
+    let defRec = sceneDoc.defaultRecord != null ? sceneDoc.defaultRecord : {};
+    recordControls = defRec.controlTrack != null ? clone(defRec.controlTrack) : [];
+    recordEvents = defRec.events != null ? clone(defRec.events) : [];
+    initSimTemplate = make_initial_sim(sceneDoc);
+    checkpoints = [clone(initSimTemplate)];
+    sim = clone(initSimTemplate);
+    selection = null;
+    sceneResourceId = path + ":" + hash_str(rd.content);
+    sceneGpuBytes = 65536 + len(rd.content) * 8;
+    resourceSentSeq += 1;
+
+    let dur = sceneDoc.duration != null ? num(sceneDoc.duration) : 15.0;
+    let fps = sceneDoc.fps != null ? num(sceneDoc.fps) : 30.0;
+    if (timerPid > 0) {
+      syscall("send", timerPid, { type: "scene_loaded", ok: true, name: sceneDoc.name != null ? sceneDoc.name : path, duration: dur, fps: fps, isReplay: false });
+    }
+  } catch (e) {
+    if (timerPid > 0) syscall("send", timerPid, { type: "scene_loaded", ok: false, error: "JSON 解析错误: " + str(e) });
+  }
+}
+
+fn save_replay_file(outPath) {
+  if (sceneDoc == null || initSimTemplate == null) return;
+  let replayObj = {
+    format: "nos-replay-v1",
+    name: "飞行排演记录 (" + str(round((sim != null ? sim.t : 0) * 10) / 10) + "s)",
+    scenePath: sceneDoc.sourceScenePath != null ? sceneDoc.sourceScenePath : "/Demo/helicopter-24.scene",
+    duration: sim != null ? max(1.0, sim.t) : 15.0,
+    fps: 30,
+    initialState: initSimTemplate,
+    events: recordEvents,
+    controlLog: recordControls
+  };
+  let wr = syscall("fs_write", outPath, json_encode(replayObj));
+  if (timerPid > 0) {
+    syscall("send", timerPid, { type: "replay_saved", ok: wr != null && wr.ok, path: outPath, error: wr != null ? wr.error : "" });
+  }
+}
+
+// ==================== 主消息循环 ====================
+
+while (true) {
+  let msg = syscall("recv", 0.15);
+  if (msg == null || msg.data == null) continue;
+  let d = msg.data;
+
+  if (d.type == "bind_peers") {
+    timerPid = d.timerPid;
+    fxPid = d.fxPid;
+    continue;
+  }
+  if (d.type == "load_scene") {
+    load_resource_file(d.path);
+    continue;
+  }
+  if (d.type == "save_replay") {
+    save_replay_file(d.path);
+    continue;
+  }
+  if (d.type == "enter_rehearsal") {
+    // 从当前播放位置无缝切入闭环排演，保留历史控制轨道并从此刻续演！
+    activeMode = "rehearsal";
+    if (isFlightScene && sim != null) {
+      let curT = num(d.fromTime);
+      sample_recorded_at(curT);
+      // 截断未来记录，将当前时刻之前的控制历史保留在 recordControls 中以便完整保存回放
+      let keptCtrl = [];
+      for (let i = 0; i < len(recordControls); i += 1) {
+        if (num(recordControls[i].t) <= curT) push(keptCtrl, recordControls[i]);
+      }
+      recordControls = keptCtrl;
+      let keptEv = [];
+      for (let i = 0; i < len(recordEvents); i += 1) {
+        if (num(recordEvents[i].t) <= curT) push(keptEv, recordEvents[i]);
+      }
+      recordEvents = keptEv;
+      liveWindStrength = num(d.windStrength);
+      liveWindAngleDeg = num(d.windAngleDeg);
+      let ang = liveWindAngleDeg * 0.01745329;
+      sim.windX = cos(ang) * liveWindStrength;
+      sim.windZ = sin(ang) * liveWindStrength;
+      if (d.targetPos != null) liveTargetPos = clone(d.targetPos);
+      if (d.targetHeadingDeg != null) liveTargetHeadingDeg = num(d.targetHeadingDeg);
+      if (d.landAtTarget != null) liveLandAtTarget = d.landAtTarget;
+      // 立即发布首帧传感器供新启动的飞控进程读取
+      syscall("flight_publish_sensors", winId, {
+        t: sim.t,
+        pos: clone(sim.pos),
+        vel: clone(sim.vel),
+        rot: clone(sim.rot),
+        angVel: clone(sim.angVel),
+        groundY: sim.groundY,
+        altitude: sim.altitude,
+        rpm: sim.rotorRpm,
+        targetPos: clone(liveTargetPos),
+        targetHeading: liveTargetHeadingDeg * 0.01745329,
+        landAtTarget: liveLandAtTarget,
+        crashed: sim.crashed
+      });
+    }
+    continue;
+  }
+  if (d.type == "rehearsal_input") {
+    if (sim != null) {
+      if (d.windStrength != null) {
+        liveWindStrength = num(d.windStrength);
+        let ang = liveWindAngleDeg * 0.01745329;
+        sim.windX = cos(ang) * liveWindStrength;
+        sim.windZ = sin(ang) * liveWindStrength;
+        push(recordEvents, { t: sim.t, type: "wind", strength: liveWindStrength, angleDeg: liveWindAngleDeg });
+      }
+      if (d.targetHeadingDeg != null) {
+        liveTargetHeadingDeg = num(d.targetHeadingDeg);
+      }
+      if (d.targetPos != null) {
+        liveTargetPos = clone(d.targetPos);
+      }
+      if (d.landAtTarget != null) {
+        liveLandAtTarget = d.landAtTarget;
+      }
+      if (d.triggerFault != null) {
+        if (d.triggerFault == "none") {
+          sim.faultType = "none";
+          sim.faultStartT = -1;
+          sim.faultSevere = false;
+        } else {
+          sim.faultType = str(d.triggerFault);
+          sim.faultStartT = sim.t;
+          sim.faultSevere = false;
+          push(recordEvents, { t: sim.t, type: "fault", fault: sim.faultType });
+        }
+      }
+    }
+    continue;
+  }
+  if (d.type == "pick_3d") {
+    handle_pick_3d(num(d.nx), num(d.ny), num(d.aspect), d.camera);
+    // 立即发送一次最新选区给 FX/UI 呈现
+    if (sim != null && sceneDoc != null) {
+      syscall("send", fxPid, {
+        type: "selection_update",
+        selection: selection
+      });
+    }
+    continue;
+  }
+  if (d.type == "frame_tick") {
+    if (sceneDoc == null || sim == null) continue;
+    activeMode = d.mode;
+    let targetT = num(d.targetTime);
+
+    if (isFlightScene) {
+      if (activeMode == "rehearsal") {
+        // 排演模式：推进物理至 targetT，严格采用飞控进程最近写入的控制量（零阶保持，落后不变成慢动作）
+        let fixedDt = 1.0 / 30.0;
+        let maxSubSteps = 4; // 单次最多补算 4 步，避免极端卡顿；落后时画面停在已算完的时刻 sim.t
+        let steps = 0;
+        while (sim.t + 0.0005 < targetT && steps < maxSubSteps) {
+          steps += 1;
+          let step = min(fixedDt, targetT - sim.t);
+          let ctrl = syscall("flight_read_controls", winId);
+          if (ctrl == null) {
+            // 尚未收到飞控写入：使用上一周期控制量（无输入则不稳定发散！）
+            ctrl = sim.lastCtrl;
+          } else {
+            sim.lastCtrl = ctrl;
+          }
+          push(recordControls, {
+            t: sim.t,
+            collective: ctrl.collective,
+            pitch: ctrl.pitch,
+            roll: ctrl.roll,
+            yaw: ctrl.yaw,
+            rotorTarget: 1.0
+          });
+          step_physics(sim, sceneDoc, ctrl, step, true);
+          // 发布最新带时间戳的传感器给飞控进程
+          syscall("flight_publish_sensors", winId, {
+            t: sim.t,
+            pos: clone(sim.pos),
+            vel: clone(sim.vel),
+            rot: clone(sim.rot),
+            angVel: clone(sim.angVel),
+            groundY: sim.groundY,
+            altitude: sim.altitude,
+            rpm: sim.rotorRpm,
+            targetPos: clone(liveTargetPos),
+            targetHeading: liveTargetHeadingDeg * 0.01745329,
+            landAtTarget: liveLandAtTarget,
+            crashed: sim.crashed
+          });
+        }
+      } else {
+        // 默认演出或记录回放：从检查点精确确定性取样
+        sample_recorded_at(targetT);
+      }
+    } else {
+      // 非直升机普通场景（例如最小示例场景）：仅更新场景时刻
+      sim.t = targetT;
+    }
+
+    let camPose = compute_camera_pose(sceneDoc, sim, d.camera);
+    let sendResource = null;
+    if (resourceSentSeq > 0) {
+      sendResource = sceneDoc;
+      resourceSentSeq = 0;
+    }
+
+    let frameMsg = {
+      type: "scene_frame",
+      seq: d.seq,
+      frameTime: sim.t,
+      resourceId: sceneResourceId,
+      gpuBytes: sceneGpuBytes,
+      resource: sendResource,
+      isFlightScene: isFlightScene,
+      sim: clone(sim),
+      camera: camPose,
+      selection: selection,
+      targetPos: clone(liveTargetPos),
+      uiMeta: d.uiMeta
+    };
+    syscall("send", fxPid, frameMsg);
+
+    // 若环境特效进程 (player_fx.nos) 被单独挂起，飞行场景进程仍保持机体运动更新并提交（特效粒子保持挂起前冻结状态）
+    if (fxPid > 0 && syscall("is_proc_suspended", fxPid)) {
+      let env = syscall("wm_get_env");
+      let sceneOnlyPkt = {
+        resourceId: sceneResourceId,
+        gpuBytes: sceneGpuBytes,
+        resource: sendResource,
+        frameTime: sim.t,
+        isFlightScene: isFlightScene,
+        camera: camPose,
+        aircraft: {
+          pos: sim.pos, rot: sim.rot,
+          rotorAngle: sim.rotorAngle, tailAngle: sim.tailAngle,
+          rotorRpm: sim.rotorRpm, tailRpm: sim.tailRpm,
+          crashed: sim.crashed, damage: sim.damage, altitude: sim.altitude
+        },
+        debris: sim.debris,
+        particles: [],
+        downwash: null,
+        flash: null,
+        fxFrozen: true,
+        targetMarker: (d.uiMeta != null && d.uiMeta.mode == "rehearsal") ? liveTargetPos : null
+      };
+      let tel = isFlightScene ? {
+        altitude: round(sim.altitude * 10) / 10,
+        speed: round(sqrt(sim.vel[0]*sim.vel[0] + sim.vel[1]*sim.vel[1] + sim.vel[2]*sim.vel[2]) * 10) / 10,
+        rpm: round(sim.rotorRpm * 100),
+        heading: round(((sim.rot[1] * 57.29578) % 360 + 360) % 360),
+        crashed: sim.crashed, landed: sim.landed, faultType: sim.faultType,
+        frameTime: round(sim.t * 100) / 100
+      } : null;
+      let uiObj = { kind: "player_app", meta: d.uiMeta, telemetry: tel, selection: selection, frameTime: sim.t };
+      let pMeta = {
+        kind: "player", windowId: winId, systemId: env != null ? env.systemId : "",
+        state: d.uiMeta != null ? d.uiMeta.playState : "paused",
+        mode: d.uiMeta != null ? d.uiMeta.mode : "performance",
+        position: d.uiMeta != null ? round(d.uiMeta.position * 1000) / 1000 : 0,
+        duration: d.uiMeta != null ? d.uiMeta.duration : 15,
+        rate: d.uiMeta != null ? d.uiMeta.rate : 1,
+        scene: d.uiMeta != null ? d.uiMeta.scenePath : scenePath,
+        frameTime: round(sim.t * 1000) / 1000
+      };
+      syscall("app_present", winId, uiObj, sceneOnlyPkt, pMeta);
+    }
+  }
+}

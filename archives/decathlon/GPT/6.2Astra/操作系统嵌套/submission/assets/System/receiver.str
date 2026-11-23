@@ -1,0 +1,4 @@
+@loop
+receive packet
+forward(packet)
+goto loop

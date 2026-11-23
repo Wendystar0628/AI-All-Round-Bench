@@ -1,0 +1,81 @@
+{
+  "task": "鲁班锁拆解",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第01题",
+      "max": 8,
+      "score": 8,
+      "reason": "官方 grade.py 对出题端原始结构验证：整棵拆解树完整合法，8 步完成 3 次分离，N=B=8，得满分。"
+    },
+    {
+      "name": "第02题",
+      "max": 8,
+      "score": 2.4,
+      "reason": "官方 grade.py 验证从初态起合法完成 1 次分离，断在 plan.remaining 仍有 3 件未拆。参考阶段比例为 6/10，按 8×0.5×0.6 得 2.40 分。"
+    },
+    {
+      "name": "第03题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时未提交答案/第03题.json，合法完成分离数为 0，按缺文件规则记 0 分。"
+    },
+    {
+      "name": "第04题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时未提交答案/第04题.json，合法完成分离数为 0，按缺文件规则记 0 分。"
+    },
+    {
+      "name": "第05题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时未提交答案/第05题.json，合法完成分离数为 0，按缺文件规则记 0 分。"
+    },
+    {
+      "name": "第06题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时未提交答案/第06题.json，合法完成分离数为 0，按缺文件规则记 0 分。"
+    },
+    {
+      "name": "第07题",
+      "max": 18,
+      "score": 0.0,
+      "reason": "作答结束时未提交答案/第07题.json，合法完成分离数为 0，按缺文件规则记 0 分。"
+    },
+    {
+      "name": "第08题",
+      "max": 18,
+      "score": 0.0,
+      "reason": "作答结束时未提交答案/第08题.json，合法完成分离数为 0，按缺文件规则记 0 分。"
+    }
+  ],
+  "metrics": {
+    "total_score": 10.4,
+    "max_score": 100,
+    "submitted_answer_files": 2,
+    "fully_valid_puzzles": 1,
+    "partial_credit_puzzles": 1,
+    "missing_answer_files": 6,
+    "separations_by_puzzle": {
+      "01": 3,
+      "02": 1,
+      "03": 0,
+      "04": 0,
+      "05": 0,
+      "06": 0,
+      "07": 0,
+      "08": 0
+    },
+    "puzzle01_moves": 8,
+    "puzzle02_partial_ratio": 0.6,
+    "audited_tool_calls": 35,
+    "prohibited_tool_use_observed": false,
+    "started_long_running_processes": 0,
+    "allowed_check_calls": 6,
+    "allowed_positions_calls": 1
+  },
+  "notes": "评分版本：评作答结束时工作目录内容的副本 work/submission，不看 git 提交。原始答案目录仅有第01题.json与第02题.json，共2份可计分提交；第01题完整合法得8分，第02题合法完成一次分离得2.4分，其余6题缺交。使用出题端 Grading/空间推理/鲁班锁拆解/grade.py 对全部八题评定，按原始结构及固定参考阶段计分，详见 work/official-grade.json。当前 mailbox 的 session.log 不存在，按 prompt 指定读取该题最新归档会话 run-0be2b7f7e98b46059489a9e30920d7ec/session.log，核查35次工具调用：仅本题文件读取、文字/JSON编辑、文件列举、删除自行建立的临时记录，以及题目自带 check.py（6次）和 positions.py（1次）；未见自编结构计算、搜索、碰撞模拟、求解器或改工具。两份工具文件SHA-256与出题端公开原件一致；工作副本23份文件均与提交源文件一致。会话工具审计与副本核对分别见 work/session-tool-audit.json、work/snapshot-verification.json。本次未启动浏览器、服务器或其他常驻进程，全部同步评分命令均已退出；未做媒体或性能测试，未提交Git。"
+}

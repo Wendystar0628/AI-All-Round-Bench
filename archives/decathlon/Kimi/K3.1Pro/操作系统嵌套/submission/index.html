@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https: http:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self' https: http:; frame-src https: http:">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nested OS</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="boot-screen">
+    <div class="boot-mark"><i></i><i></i><i></i><i></i></div>
+    <div class="boot-name">NEXUS</div>
+    <div class="boot-copy">正在唤醒嵌合世界</div>
+    <div class="boot-progress"><span></span></div>
+  </div>
+  <div id="os-root"></div>
+  <div id="toast-layer" aria-live="polite"></div>
+  <div id="modal-layer"></div>
+  <script src="kernel.js"></script>
+  <script src="scene.js"></script>
+  <script src="spreadsheet.js"></script>
+  <script src="apps.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>

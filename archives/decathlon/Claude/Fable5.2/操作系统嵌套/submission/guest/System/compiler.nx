@@ -1,0 +1,634 @@
+// /System/compiler.nx —— 系统内的编译器：把 .nx 源程序编译成可执行形式（.nxb）。
+// 编译器本身也是一个 .nx 程序，由系统调度运行；修改本文件后用“编译自身”即可得到新的编译器，
+// 之后启动的程序都由新编译器编译。
+//
+// 用法（由内核启动）：sys("args") 返回 {src: 源文件路径, out: 输出路径}
+// 输出：out（可执行文本）与 out + ".dep"（依赖文件及其内容哈希，用于判断缓存是否过期）
+
+var O_CONST = 1; var O_NUM = 2; var O_NULL = 3; var O_TRUE = 4; var O_FALSE = 5;
+var O_LOADL = 6; var O_STOREL = 7; var O_LOADG = 8; var O_STOREG = 9; var O_POP = 10;
+var O_DUP = 11; var O_DUP2 = 12; var O_NEG = 18; var O_NOT = 19;
+var O_JMP = 26; var O_JF = 27; var O_JT = 28; var O_JFK = 29; var O_JTK = 30;
+var O_CALL = 31; var O_CALLV = 32; var O_RET = 33; var O_BUILTIN = 34; var O_SYS = 35;
+var O_NEWARR = 36; var O_NEWMAP = 37; var O_GETI = 38; var O_SETI = 39; var O_GETF = 40; var O_SETF = 41;
+var O_FUNC = 42; var O_HALT = 43;
+
+// 二元运算符：优先级与指令
+var PREC = { "||": 1, "&&": 2, "==": 3, "!=": 3, "===": 3, "!==": 3, "<": 4, "<=": 4, ">": 4, ">=": 4, "+": 5, "-": 5, "*": 6, "/": 6, "%": 6 };
+var BINOP = { "==": 20, "!=": 21, "===": 20, "!==": 21, "<": 22, "<=": 23, ">": 24, ">=": 25, "+": 13, "-": 14, "*": 15, "/": 16, "%": 17 };
+var ASSIGNOP = { "+=": 13, "-=": 14, "*=": 15, "/=": 16, "%=": 17 };
+var KEYWORDS = { "var": 1, "let": 1, "const": 1, "function": 1, "if": 1, "else": 1, "while": 1, "for": 1, "return": 1, "break": 1, "continue": 1, "true": 1, "false": 1, "null": 1, "import": 1 };
+
+// 词法单元（并行数组）：类型 0 结束 1 数字 2 字符串 3 标识符 4 符号 5 关键字
+var TT = []; var TV = []; var TL = []; var P = 0;
+var FILE = ""; var CURLINE = 0;
+
+// 全局表
+var CONSTS = []; var CONSTMAP = {};
+var GNAMES = []; var GLOBALS = {};
+var FUNCS = {}; var FDEFS = [];
+var BN = []; var BNMAP = {};
+var DEPS = []; var IMPORTED = {};
+
+// 当前函数的代码缓冲
+var CODE = []; var LINES = []; var LASTLINE = -1;
+var LOCALS = null; var NLOCALS = 0; var NPARAMS = 0; var INFUNC = false;
+var BRK = []; var CNT = [];
+
+// 表达式描述：0 值已在栈上 1 局部变量 2 全局变量 3 下标（对象与下标在栈上） 4 字段（对象在栈上）
+var DK = 0; var DA = 0;
+
+function fail(msg) {
+  sys("fail", FILE + " 第 " + CURLINE + " 行：" + msg);
+}
+
+function isIdStart(c) { return (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || c == 95 || c == 36 || c > 127; }
+function isDigit(c) { return c >= 48 && c <= 57; }
+function isHex(c) { return (c >= 48 && c <= 57) || (c >= 97 && c <= 102) || (c >= 65 && c <= 70); }
+
+function addTok(t, v, line) { push(TT, t); push(TV, v); push(TL, line); }
+
+function lex(src) {
+  var i = 0; var n = len(src); var line = 1;
+  while (i < n) {
+    var c = ord(src, i);
+    if (c == 32 || c == 9 || c == 13) { i = i + 1; continue; }
+    if (c == 10) { line = line + 1; i = i + 1; continue; }
+    if (isIdStart(c)) {
+      var s = i; i = i + 1;
+      while (i < n) { var d = ord(src, i); if (isIdStart(d) || isDigit(d)) { i = i + 1; } else { break; } }
+      var w = substr(src, s, i - s);
+      if (has(KEYWORDS, w)) { addTok(5, w, line); } else { addTok(3, w, line); }
+      continue;
+    }
+    if (c == 47) {
+      var c2 = ord(src, i + 1);
+      if (c2 == 47) { while (i < n && ord(src, i) != 10) { i = i + 1; } continue; }
+      if (c2 == 42) {
+        i = i + 2;
+        while (i < n && !(ord(src, i) == 42 && ord(src, i + 1) == 47)) { if (ord(src, i) == 10) { line = line + 1; } i = i + 1; }
+        i = i + 2; continue;
+      }
+    }
+    if (isDigit(c) || (c == 46 && isDigit(ord(src, i + 1)))) {
+      var s2 = i;
+      if (c == 48 && (ord(src, i + 1) == 120 || ord(src, i + 1) == 88)) {
+        i = i + 2; while (i < n && isHex(ord(src, i))) { i = i + 1; }
+      } else {
+        while (i < n && isDigit(ord(src, i))) { i = i + 1; }
+        if (ord(src, i) == 46) { i = i + 1; while (i < n && isDigit(ord(src, i))) { i = i + 1; } }
+        if (ord(src, i) == 101 || ord(src, i) == 69) {
+          var save = i; i = i + 1;
+          if (ord(src, i) == 43 || ord(src, i) == 45) { i = i + 1; }
+          if (isDigit(ord(src, i))) { while (i < n && isDigit(ord(src, i))) { i = i + 1; } } else { i = save; }
+        }
+      }
+      var v = num(substr(src, s2, i - s2));
+      if (v == null) { CURLINE = line; fail("无法识别的数字"); }
+      addTok(1, v, line);
+      continue;
+    }
+    if (c == 34 || c == 39) {
+      var q = c; i = i + 1; var out = ""; var seg = i;
+      while (true) {
+        if (i >= n) { CURLINE = line; fail("字符串没有结束"); }
+        var e = ord(src, i);
+        if (e == q) { break; }
+        if (e == 10) { CURLINE = line; fail("字符串没有结束"); }
+        if (e == 92) {
+          out = out + substr(src, seg, i - seg);
+          var x = ord(src, i + 1);
+          if (x == 110) { out = out + "\n"; i = i + 2; }
+          else if (x == 116) { out = out + "\t"; i = i + 2; }
+          else if (x == 114) { out = out + "\r"; i = i + 2; }
+          else if (x == 117) { out = out + chr(num("0x" + substr(src, i + 2, 4))); i = i + 6; }
+          else { out = out + substr(src, i + 1, 1); i = i + 2; }
+          seg = i;
+        } else { i = i + 1; }
+      }
+      out = out + substr(src, seg, i - seg);
+      i = i + 1;
+      addTok(2, out, line);
+      continue;
+    }
+    // 符号：先试三字符，再两字符，最后单字符
+    var t3 = substr(src, i, 3);
+    if (t3 == "===" || t3 == "!==") { addTok(4, t3, line); i = i + 3; continue; }
+    var t2 = substr(src, i, 2);
+    if (t2 == "==" || t2 == "!=" || t2 == "<=" || t2 == ">=" || t2 == "&&" || t2 == "||" || t2 == "+=" || t2 == "-=" || t2 == "*=" || t2 == "/=" || t2 == "%=" || t2 == "++" || t2 == "--") {
+      addTok(4, t2, line); i = i + 2; continue;
+    }
+    var t1 = substr(src, i, 1);
+    if (indexOf("+-*/%<>=!(){}[],;:.?", t1, 0) >= 0) { addTok(4, t1, line); i = i + 1; continue; }
+    CURLINE = line; fail("无法识别的字符 " + t1);
+  }
+  addTok(0, "", line);
+}
+
+// ---------- 发射 ----------
+function emit(op, a) {
+  if (CURLINE != LASTLINE) { push(LINES, len(CODE)); push(LINES, CURLINE); LASTLINE = CURLINE; }
+  push(CODE, op); push(CODE, a);
+}
+function emitJ(op) { emit(op, 0); return len(CODE) - 1; }
+function patch(at) { CODE[at] = len(CODE); }
+function constIdx(v) {
+  var key = type(v) + ":" + str(v);
+  if (has(CONSTMAP, key)) { return CONSTMAP[key]; }
+  push(CONSTS, v);
+  CONSTMAP[key] = len(CONSTS) - 1;
+  return len(CONSTS) - 1;
+}
+function emitNum(v) {
+  if (v == floor(v) && v > -1000000000 && v < 1000000000) { emit(O_NUM, v); } else { emit(O_CONST, constIdx(v)); }
+}
+function builtinIdx(name) {
+  if (has(BNMAP, name)) { return BNMAP[name]; }
+  push(BN, [name, CURLINE]);
+  BNMAP[name] = len(BN) - 1;
+  return len(BN) - 1;
+}
+
+function isP(s) { return TT[P] == 4 && TV[P] == s; }
+function isK(s) { return TT[P] == 5 && TV[P] == s; }
+function expectP(s) {
+  CURLINE = TL[P];
+  if (!isP(s)) { fail("这里需要 " + s + "，却遇到 " + tokText()); }
+  P = P + 1;
+}
+function tokText() {
+  if (TT[P] == 0) { return "文件结尾"; }
+  return str(TV[P]);
+}
+function expectIdent() {
+  CURLINE = TL[P];
+  if (TT[P] != 3) { fail("这里需要一个名字，却遇到 " + tokText()); }
+  P = P + 1;
+  return TV[P - 1];
+}
+
+function materialize() {
+  if (DK == 1) { emit(O_LOADL, DA); }
+  else if (DK == 2) { emit(O_LOADG, DA); }
+  else if (DK == 3) { emit(O_GETI, 0); }
+  else if (DK == 4) { emit(O_GETF, DA); }
+  DK = 0;
+}
+function emitStore(k, a) {
+  if (k == 1) { emit(O_STOREL, a); }
+  else if (k == 2) { emit(O_STOREG, a); }
+  else if (k == 3) { emit(O_SETI, 0); }
+  else if (k == 4) { emit(O_SETF, a); }
+  else { fail("赋值的左边必须是变量、下标或字段"); }
+}
+function emitLoadForUpdate(k, a) {
+  if (k == 1) { emit(O_LOADL, a); }
+  else if (k == 2) { emit(O_LOADG, a); }
+  else if (k == 3) { emit(O_DUP2, 0); emit(O_GETI, 0); }
+  else if (k == 4) { emit(O_DUP, 0); emit(O_GETF, a); }
+  else { fail("这里需要可以赋值的变量、下标或字段"); }
+}
+
+// ---------- 表达式 ----------
+function parseArgs() {
+  // 已经越过 "("，返回参数个数
+  var n = 0;
+  if (isP(")")) { P = P + 1; return 0; }
+  while (true) {
+    parseAssign(); materialize();
+    n = n + 1;
+    if (isP(",")) { P = P + 1; continue; }
+    expectP(")");
+    break;
+  }
+  return n;
+}
+
+function parsePrimary() {
+  CURLINE = TL[P];
+  var t = TT[P]; var v = TV[P];
+  if (t == 1) { P = P + 1; emitNum(v); DK = 0; return 0; }
+  if (t == 2) { P = P + 1; emit(O_CONST, constIdx(v)); DK = 0; return 0; }
+  if (t == 5) {
+    if (v == "true") { P = P + 1; emit(O_TRUE, 0); DK = 0; return 0; }
+    if (v == "false") { P = P + 1; emit(O_FALSE, 0); DK = 0; return 0; }
+    if (v == "null") { P = P + 1; emit(O_NULL, 0); DK = 0; return 0; }
+    fail("表达式里不能出现 " + v);
+  }
+  if (t == 3) {
+    P = P + 1;
+    var isLocal = INFUNC && has(LOCALS, v);
+    var isGlobal = has(GLOBALS, v);
+    if (isP("(") && !isLocal && !isGlobal) {
+      P = P + 1;
+      if (v == "sys") {
+        var na = parseArgs();
+        if (na < 1) { fail("sys 至少需要系统调用名"); }
+        emit(O_SYS, na); DK = 0; return 0;
+      }
+      if (has(FUNCS, v)) {
+        var fi = FUNCS[v]; var np = FDEFS[fi].p;
+        var n = parseArgs();
+        if (n > np) { fail("函数 " + v + " 只接受 " + np + " 个参数"); }
+        while (n < np) { emit(O_NULL, 0); n = n + 1; }
+        emit(O_CALL, fi); DK = 0; return 0;
+      }
+      var bi = builtinIdx(v);
+      var nb = parseArgs();
+      emit(O_BUILTIN, bi * 256 + nb); DK = 0; return 0;
+    }
+    if (isLocal) { DK = 1; DA = LOCALS[v]; return 0; }
+    if (isGlobal) { DK = 2; DA = GLOBALS[v]; return 0; }
+    if (has(FUNCS, v)) { emit(O_FUNC, FUNCS[v]); DK = 0; return 0; }
+    fail("未定义的变量 " + v);
+  }
+  if (t == 4) {
+    if (v == "(") { P = P + 1; parseAssign(); materialize(); expectP(")"); DK = 0; return 0; }
+    if (v == "[") {
+      P = P + 1; var cnt = 0;
+      while (!isP("]")) {
+        parseAssign(); materialize(); cnt = cnt + 1;
+        if (isP(",")) { P = P + 1; } else if (!isP("]")) { CURLINE = TL[P]; fail("数组里需要 , 或 ]"); }
+      }
+      P = P + 1; emit(O_NEWARR, cnt); DK = 0; return 0;
+    }
+    if (v == "{") {
+      P = P + 1; var mc = 0;
+      while (!isP("}")) {
+        CURLINE = TL[P];
+        if (TT[P] == 3 || TT[P] == 2 || TT[P] == 5) { emit(O_CONST, constIdx(str(TV[P]))); }
+        else if (TT[P] == 1) { emit(O_CONST, constIdx(str(TV[P]))); }
+        else { fail("映射的键必须是名字或字符串"); }
+        P = P + 1;
+        expectP(":");
+        parseAssign(); materialize(); mc = mc + 1;
+        if (isP(",")) { P = P + 1; } else if (!isP("}")) { CURLINE = TL[P]; fail("映射里需要 , 或 }"); }
+      }
+      P = P + 1; emit(O_NEWMAP, mc); DK = 0; return 0;
+    }
+  }
+  fail("这里需要一个表达式，却遇到 " + tokText());
+  return 0;
+}
+
+function parsePostfix() {
+  parsePrimary();
+  while (TT[P] == 4) {
+    var v = TV[P];
+    if (v == "(") {
+      materialize(); P = P + 1;
+      var n = parseArgs();
+      emit(O_CALLV, n); DK = 0;
+    } else if (v == "[") {
+      materialize(); P = P + 1;
+      parseAssign(); materialize();
+      expectP("]");
+      DK = 3; DA = 0;
+    } else if (v == ".") {
+      materialize(); P = P + 1;
+      CURLINE = TL[P];
+      if (TT[P] != 3 && TT[P] != 5) { fail(". 后面需要字段名"); }
+      DA = constIdx(str(TV[P])); P = P + 1;
+      DK = 4;
+    } else if (v == "++" || v == "--") {
+      var k = DK; var a = DA; P = P + 1;
+      emitLoadForUpdate(k, a);
+      emit(O_NUM, 1);
+      if (v == "++") { emit(13, 0); } else { emit(14, 0); }
+      emitStore(k, a); DK = 0;
+    } else { break; }
+  }
+  return 0;
+}
+
+function parseUnary() {
+  CURLINE = TL[P];
+  if (TT[P] == 4) {
+    var v = TV[P];
+    if (v == "!") { P = P + 1; parseUnary(); materialize(); emit(O_NOT, 0); DK = 0; return 0; }
+    if (v == "-") {
+      P = P + 1;
+      if (TT[P] == 1) { emitNum(0 - TV[P]); P = P + 1; DK = 0; return 0; }
+      parseUnary(); materialize(); emit(O_NEG, 0); DK = 0; return 0;
+    }
+    if (v == "+") { P = P + 1; parseUnary(); materialize(); DK = 0; return 0; }
+    if (v == "++" || v == "--") {
+      P = P + 1; parseUnary();
+      var k = DK; var a = DA;
+      emitLoadForUpdate(k, a);
+      emit(O_NUM, 1);
+      if (v == "++") { emit(13, 0); } else { emit(14, 0); }
+      emitStore(k, a); DK = 0; return 0;
+    }
+  }
+  parsePostfix();
+  return 0;
+}
+
+function parseBinary(minPrec) {
+  parseUnary();
+  while (TT[P] == 4 && has(PREC, TV[P])) {
+    var op = TV[P]; var pr = PREC[op];
+    if (pr < minPrec) { break; }
+    materialize();
+    CURLINE = TL[P];
+    P = P + 1;
+    if (op == "&&") {
+      var j1 = emitJ(O_JFK); emit(O_POP, 0);
+      parseBinary(pr + 1); materialize(); patch(j1);
+    } else if (op == "||") {
+      var j2 = emitJ(O_JTK); emit(O_POP, 0);
+      parseBinary(pr + 1); materialize(); patch(j2);
+    } else {
+      parseBinary(pr + 1); materialize();
+      emit(BINOP[op], 0);
+    }
+    DK = 0;
+  }
+  return 0;
+}
+
+function parseTernary() {
+  parseBinary(1);
+  if (isP("?")) {
+    materialize(); P = P + 1;
+    var jf = emitJ(O_JF);
+    parseAssign(); materialize();
+    var je = emitJ(O_JMP);
+    patch(jf);
+    expectP(":");
+    parseAssign(); materialize();
+    patch(je);
+    DK = 0;
+  }
+  return 0;
+}
+
+function parseAssign() {
+  parseTernary();
+  if (TT[P] == 4) {
+    var op = TV[P];
+    if (op == "=") {
+      var k = DK; var a = DA;
+      CURLINE = TL[P];
+      if (k == 0) { fail("赋值的左边必须是变量、下标或字段"); }
+      P = P + 1;
+      parseAssign(); materialize();
+      emitStore(k, a); DK = 0;
+    } else if (has(ASSIGNOP, op)) {
+      var k2 = DK; var a2 = DA;
+      CURLINE = TL[P];
+      P = P + 1;
+      emitLoadForUpdate(k2, a2);
+      parseAssign(); materialize();
+      emit(ASSIGNOP[op], 0);
+      emitStore(k2, a2); DK = 0;
+    }
+  }
+  return 0;
+}
+
+// ---------- 语句 ----------
+function declareVar(name) {
+  if (INFUNC) {
+    if (!has(LOCALS, name)) { LOCALS[name] = NLOCALS; NLOCALS = NLOCALS + 1; }
+    return LOCALS[name];
+  }
+  if (!has(GLOBALS, name)) { push(GNAMES, name); GLOBALS[name] = len(GNAMES) - 1; }
+  return GLOBALS[name];
+}
+
+function parseVarDecl() {
+  // 已越过 var/let/const
+  while (true) {
+    var name = expectIdent();
+    var slot = declareVar(name);
+    if (isP("=")) {
+      P = P + 1;
+      parseAssign(); materialize();
+      if (INFUNC) { emit(O_STOREL, slot); } else { emit(O_STOREG, slot); }
+      emit(O_POP, 0);
+    }
+    if (isP(",")) { P = P + 1; continue; }
+    break;
+  }
+  return 0;
+}
+
+function parseBlock() {
+  expectP("{");
+  while (!isP("}")) {
+    if (TT[P] == 0) { CURLINE = TL[P]; fail("缺少 }"); }
+    parseStatement();
+  }
+  P = P + 1;
+  return 0;
+}
+
+function parseStatement() {
+  CURLINE = TL[P];
+  var t = TT[P]; var v = TV[P];
+  if (t == 4 && v == "{") { parseBlock(); return 0; }
+  if (t == 4 && v == ";") { P = P + 1; return 0; }
+  if (t == 5) {
+    if (v == "var" || v == "let" || v == "const") { P = P + 1; parseVarDecl(); expectP(";"); return 0; }
+    if (v == "if") {
+      P = P + 1; expectP("(");
+      parseAssign(); materialize(); expectP(")");
+      var jf = emitJ(O_JF);
+      parseStatement();
+      if (isK("else")) {
+        P = P + 1;
+        var je = emitJ(O_JMP);
+        patch(jf);
+        parseStatement();
+        patch(je);
+      } else { patch(jf); }
+      return 0;
+    }
+    if (v == "while") {
+      P = P + 1; expectP("(");
+      var top = len(CODE);
+      parseAssign(); materialize(); expectP(")");
+      var jx = emitJ(O_JF);
+      push(BRK, []); push(CNT, []);
+      parseStatement();
+      var cl = pop(CNT); var i = 0;
+      while (i < len(cl)) { CODE[cl[i]] = top; i = i + 1; }
+      emit(O_JMP, top);
+      patch(jx);
+      var bl = pop(BRK); i = 0;
+      while (i < len(bl)) { patch(bl[i]); i = i + 1; }
+      return 0;
+    }
+    if (v == "for") {
+      P = P + 1; expectP("(");
+      if (isP(";")) { P = P + 1; }
+      else if (isK("var") || isK("let") || isK("const")) { P = P + 1; parseVarDecl(); expectP(";"); }
+      else { parseAssign(); materialize(); emit(O_POP, 0); expectP(";"); }
+      var ftop = len(CODE);
+      var fx = -1;
+      if (!isP(";")) { parseAssign(); materialize(); fx = emitJ(O_JF); }
+      expectP(";");
+      // 更新表达式先编译到临时缓冲，循环体之后再接上
+      var saveCode = CODE; var saveLines = LINES; var saveLast = LASTLINE;
+      CODE = []; LINES = []; LASTLINE = -1;
+      var updLine = TL[P];
+      if (!isP(")")) { parseAssign(); materialize(); emit(O_POP, 0); }
+      var upd = CODE;
+      CODE = saveCode; LINES = saveLines; LASTLINE = saveLast;
+      expectP(")");
+      push(BRK, []); push(CNT, []);
+      parseStatement();
+      var cont = len(CODE);
+      var fcl = pop(CNT); var k = 0;
+      while (k < len(fcl)) { CODE[fcl[k]] = cont; k = k + 1; }
+      CURLINE = updLine;
+      k = 0;
+      while (k < len(upd)) {
+        var uop = upd[k]; var ua = upd[k + 1];
+        // 临时缓冲里的跳转目标要平移
+        if (uop >= 26 && uop <= 30) { ua = ua + cont; }
+        emit(uop, ua); k = k + 2;
+      }
+      emit(O_JMP, ftop);
+      if (fx >= 0) { patch(fx); }
+      var fbl = pop(BRK); k = 0;
+      while (k < len(fbl)) { patch(fbl[k]); k = k + 1; }
+      return 0;
+    }
+    if (v == "return") {
+      P = P + 1;
+      if (!INFUNC) { if (!isP(";")) { parseAssign(); materialize(); emit(O_POP, 0); } expectP(";"); emit(O_HALT, 0); return 0; }
+      if (isP(";")) { emit(O_NULL, 0); } else { parseAssign(); materialize(); }
+      expectP(";");
+      emit(O_RET, 0);
+      return 0;
+    }
+    if (v == "break") {
+      P = P + 1; expectP(";");
+      if (len(BRK) == 0) { fail("break 只能出现在循环里"); }
+      push(BRK[len(BRK) - 1], emitJ(O_JMP));
+      return 0;
+    }
+    if (v == "continue") {
+      P = P + 1; expectP(";");
+      if (len(CNT) == 0) { fail("continue 只能出现在循环里"); }
+      push(CNT[len(CNT) - 1], emitJ(O_JMP));
+      return 0;
+    }
+    if (v == "function") { fail("函数只能定义在最外层"); }
+    if (v == "import") { fail("import 只能出现在最外层"); }
+  }
+  parseAssign(); materialize();
+  emit(O_POP, 0);
+  expectP(";");
+  return 0;
+}
+
+function parseFunction() {
+  // 已越过 function
+  var name = expectIdent();
+  var fi = FUNCS[name];
+  var mCode = CODE; var mLines = LINES; var mLast = LASTLINE; var mBrk = BRK; var mCnt = CNT;
+  CODE = []; LINES = []; LASTLINE = -1; BRK = []; CNT = [];
+  LOCALS = {}; NLOCALS = 0; INFUNC = true;
+  expectP("(");
+  while (!isP(")")) {
+    var pn = expectIdent();
+    if (has(LOCALS, pn)) { fail("参数重名 " + pn); }
+    LOCALS[pn] = NLOCALS; NLOCALS = NLOCALS + 1;
+    if (isP(",")) { P = P + 1; }
+  }
+  P = P + 1;
+  NPARAMS = NLOCALS;
+  parseBlock();
+  emit(O_NULL, 0); emit(O_RET, 0);
+  var d = FDEFS[fi];
+  d.l = NLOCALS; d.c = CODE; d.ln = LINES; d.fl = FILE;
+  CODE = mCode; LINES = mLines; LASTLINE = mLast; BRK = mBrk; CNT = mCnt;
+  INFUNC = false; LOCALS = null;
+  return 0;
+}
+
+// 预扫描：登记本文件的函数名（及参数个数）和最外层变量，使它们可以先使用后定义
+function prescan() {
+  var i = 0; var depth = 0;
+  while (TT[i] != 0) {
+    var t = TT[i]; var v = TV[i];
+    if (t == 4) { if (v == "{") { depth = depth + 1; } else if (v == "}") { depth = depth - 1; } }
+    if (t == 5 && v == "function" && depth == 0 && TT[i + 1] == 3) {
+      var name = TV[i + 1];
+      CURLINE = TL[i];
+      if (has(FUNCS, name)) { fail("函数重复定义 " + name); }
+      var np = 0; var j = i + 3;
+      while (TT[j] != 0 && !(TT[j] == 4 && TV[j] == ")")) { if (TT[j] == 3) { np = np + 1; } j = j + 1; }
+      push(FDEFS, { n: name, p: np, l: np, c: [], ln: [], fl: FILE });
+      FUNCS[name] = len(FDEFS) - 1;
+    }
+    if (t == 5 && (v == "var" || v == "let" || v == "const") && depth == 0) {
+      // 最外层声明：逗号分隔的名字（跳过初始化表达式里的内容）
+      var k = i + 1; var pd = 0; var expectName = true;
+      while (TT[k] != 0) {
+        var kt = TT[k]; var kv = TV[k];
+        if (kt == 4 && (kv == "(" || kv == "[" || kv == "{")) { pd = pd + 1; }
+        else if (kt == 4 && (kv == ")" || kv == "]" || kv == "}")) { pd = pd - 1; if (pd < 0) { break; } }
+        else if (kt == 4 && kv == ";" && pd == 0) { break; }
+        else if (kt == 4 && kv == "," && pd == 0) { expectName = true; }
+        else if (kt == 3 && expectName && pd == 0) {
+          if (!has(GLOBALS, kv)) { push(GNAMES, kv); GLOBALS[kv] = len(GNAMES) - 1; }
+          expectName = false;
+        } else { expectName = false; }
+        k = k + 1;
+      }
+    }
+    i = i + 1;
+  }
+  return 0;
+}
+
+function compileUnit(path) {
+  var text = sys("read", path);
+  if (type(text) != "str") { fail("读不到源文件 " + path); }
+  push(DEPS, [path, hash(text)]);
+  var sTT = TT; var sTV = TV; var sTL = TL; var sP = P; var sFILE = FILE;
+  TT = []; TV = []; TL = []; P = 0; FILE = path;
+  lex(text);
+  prescan();
+  while (TT[P] != 0) {
+    CURLINE = TL[P];
+    if (isK("import")) {
+      P = P + 1;
+      if (TT[P] != 2) { fail("import 后面需要文件路径字符串"); }
+      var ip = TV[P]; P = P + 1;
+      expectP(";");
+      if (!has(IMPORTED, ip)) { IMPORTED[ip] = 1; compileUnit(ip); }
+    } else if (isK("function")) {
+      P = P + 1; parseFunction();
+    } else {
+      parseStatement();
+    }
+  }
+  TT = sTT; TV = sTV; TL = sTL; P = sP; FILE = sFILE;
+  return 0;
+}
+
+function compileMain() {
+  var args = sys("args");
+  if (type(args) != "map" || type(args.src) != "str") { FILE = "编译器"; fail("缺少参数 src"); }
+  IMPORTED[args.src] = 1;
+  compileUnit(args.src);
+  emit(O_HALT, 0);
+  push(FDEFS, { n: "<main>", p: 0, l: 0, c: CODE, ln: LINES, fl: args.src });
+  var prog = { nxb: 1, src: args.src, consts: CONSTS, globals: GNAMES, funcs: FDEFS, main: len(FDEFS) - 1, bn: BN };
+  var out = args.out;
+  if (type(out) != "str") { out = args.src + "b"; }
+  var r = sys("write", out, json(prog));
+  if (type(r) == "map") { FILE = out; CURLINE = 0; fail("写入失败：" + str(r.error)); }
+  sys("write", out + ".dep", json(DEPS));
+  sys("print", "已编译 " + args.src + " → " + out + "（" + len(FDEFS) + " 个函数）");
+  sys("exit", 0);
+  return 0;
+}
+
+compileMain();

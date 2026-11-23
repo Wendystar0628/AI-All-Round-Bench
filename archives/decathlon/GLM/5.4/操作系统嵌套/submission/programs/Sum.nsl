@@ -1,0 +1,9 @@
+// 累加计算：把 1..N 相加并打印，可修改 N 与循环次数
+var N = 100
+var total = 0
+var i = 1
+while (i <= N) {
+  total = total + i
+  i = i + 1
+}
+sys.log("累加 1.." + N + " = " + total)

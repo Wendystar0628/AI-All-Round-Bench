@@ -1,0 +1,371 @@
+{
+ "problem": "09",
+ "parts": [
+  {
+   "name": "1",
+   "title": "跨腔三向斜流道歧管",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        150,
+        95
+       ]
+      }
+     ],
+     "depth": 10
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "loops": [
+      {
+       "rect": [
+        6,
+        6,
+        144,
+        89
+       ]
+      }
+     ],
+     "depth": 52
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "path": [
+        [
+         144,
+         40
+        ],
+        [
+         200,
+         40
+        ],
+        [
+         200,
+         100
+        ],
+        [
+         116,
+         100
+        ],
+        [
+         116,
+         62
+        ]
+       ]
+      }
+     ],
+     "depth": [
+      -200,
+      0
+     ]
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      75,
+      6,
+      36
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 24,
+     "through": true
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      62
+     ],
+     "loops": [
+      {
+       "rect": [
+        24,
+        22,
+        60,
+        73
+       ]
+      }
+     ],
+     "depth": 10
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      45,
+      6,
+      44
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 34
+      }
+     ],
+     "depth": -10
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      45,
+      -4,
+      44
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 22,
+     "depth": 50
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      62
+     ],
+     "at": [
+      [
+       42,
+       47
+      ]
+     ],
+     "d": 30,
+     "depth": 12
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      62
+     ],
+     "at": [
+      [
+       42,
+       47
+      ]
+     ],
+     "d": 16,
+     "depth": 40
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      62
+     ],
+     "at": [
+      [
+       104,
+       47
+      ]
+     ],
+     "d": 18,
+     "through": true
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "YZ",
+     "origin": [
+      144,
+      47,
+      30
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 36
+      }
+     ],
+     "depth": 10
+    },
+    {
+     "type": "hole",
+     "plane": "YZ",
+     "origin": [
+      154,
+      47,
+      30
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 28,
+     "depth": 30
+    },
+    {
+     "type": "hole",
+     "plane": {
+      "origin": [
+       116,
+       47,
+       62
+      ],
+      "normal": [
+       0.70711,
+       0,
+       0.70711
+      ],
+      "x_dir": [
+       0.70711,
+       0,
+       -0.70711
+      ]
+     },
+     "origin": [
+      116,
+      47,
+      62
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 18,
+     "depth": 30
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "at": [
+      [
+       8,
+       8
+      ],
+      [
+       142,
+       8
+      ],
+      [
+       8,
+       87
+      ],
+      [
+       142,
+       87
+      ]
+     ],
+     "d": 8,
+     "through": true
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        60,
+        0,
+        90,
+        6
+       ]
+      }
+     ],
+     "depth": 10
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "loops": [
+      {
+       "rect": [
+        24,
+        6,
+        60,
+        30
+       ]
+      }
+     ],
+     "depth": -12
+    },
+    {
+     "type": "chamfer",
+     "distance": 1,
+     "edges": [
+      [
+       30,
+       0,
+       0
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

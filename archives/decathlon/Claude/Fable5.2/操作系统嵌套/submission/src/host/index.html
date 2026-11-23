@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' nos: data: blob:; script-src 'self' nos: 'unsafe-eval'; style-src 'self' nos: 'unsafe-inline'; img-src 'self' nos: data: blob: https: http:; worker-src 'self' nos: blob:">
+<title>Nested OS</title>
+<link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="styles/apps.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="desk">
+    <div id="wall" class="w-dawn" data-testid="os-desktop" data-system-id="outer" aria-label="根系统桌面"></div>
+    <div id="icons"></div>
+    <div id="wins"></div>
+    <div id="taskbar" role="toolbar" aria-label="任务栏">
+      <button id="start-btn" class="tb-btn" data-testid="start-toggle" data-system-id="outer" aria-label="开始" title="开始"></button>
+      <div id="tb-pins" style="display:flex;gap:2px"></div>
+      <div class="tb-sep"></div>
+      <div id="tb-wins"></div>
+      <div id="tray">
+        <button id="sys-new" class="tb-btn" data-testid="system-new" data-system-id="outer" aria-label="新建子系统" title="新建并启动一个直属子系统"></button>
+        <div class="tb-sep"></div>
+        <button id="widgets-btn" class="tb-btn" data-testid="widgets-toggle" data-system-id="outer" aria-label="小组件面板" title="小组件"></button>
+        <button id="notes-btn" class="tb-btn" data-testid="notifications-toggle" data-system-id="outer" aria-label="通知中心" title="通知"></button>
+        <button id="clock" class="tb-btn" data-testid="tray-clock" data-system-id="outer" aria-label="时钟与日历" title="时钟与日历"><b>--:--</b><i>----</i></button>
+      </div>
+    </div>
+    <div id="start-menu" class="flyout" data-testid="start-menu" data-system-id="outer" hidden>
+      <h2 id="start-title">根系统</h2>
+      <div class="sub">outer · 第 1 层 · 系统树的根</div>
+      <input id="start-search" data-testid="start-search" data-system-id="outer" placeholder="查找应用…" aria-label="查找应用" autocomplete="off">
+      <div id="start-list"></div>
+      <div class="start-foot">
+        <button class="btn" id="start-help" data-testid="start-help" data-system-id="outer">操作说明</button>
+        <button class="btn" id="start-sys" data-testid="start-new-system" data-system-id="outer">新建子系统</button>
+      </div>
+    </div>
+    <div id="toasts"></div>
+    <div id="scrim" hidden></div>
+  </div>
+</div>
+<script src="vm.js"></script>
+<script src="rootkernel.js"></script>
+<script src="icons.js"></script>
+<script src="device2d.js"></script>
+<script type="module" src="device3d.js"></script>
+<script src="boot.js"></script>
+<script src="rootwm.js"></script>
+<script src="apps/systems.js"></script>
+<script src="apps/files.js"></script>
+<script src="apps/editor.js"></script>
+<script src="apps/spreadsheet.js"></script>
+<script src="apps/widgets.js"></script>
+<script src="apps/tasks.js"></script>
+<script src="apps/settings.js"></script>
+<script src="apps/browser.js"></script>
+<script src="apps/help.js"></script>
+<script src="bench.js"></script>
+<script src="start.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{"problem":"17","parts":[{"name":"1","title":"五斜座交汇比例阀体(初稿)","features":[
+{"type":"extrude","name":"地脚法兰","plane":"XY","loops":[{"rect":[0,0,300,200]}],"depth":18},
+{"type":"extrude","name":"阀体","plane":"XZ","loops":[{"path":[[18,18],[282,18],[282,104],[245,150],[192,150],[151,124],[94,150],[55,150],[18,104]]}],"depth":[-184,-16]},
+{"type":"extrude","name":"前凸缘Φ90","plane":"XZ","loops":[{"circle":[94,73],"d":90}],"depth":[-16,0]},
+{"type":"hole","name":"前孔(估)","plane":"XZ","origin":[0,0,0],"at":[94,73],"d":40,"depth":40},
+{"type":"hole","name":"地脚孔Φ10/Φ18","plane":"XY","origin":[0,0,18],"at":[[12,12],[288,12],[12,188],[288,188]],"d":10,"through":true,"cbore":{"d":18,"depth":6}}
+]}]}

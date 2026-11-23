@@ -1,0 +1,71 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 56.1,
+      "reason": "官方固定命令编译成功，基线/提交最小用时为 509.5218/112.6213 ms，加速 4.524205 倍，速度分 q=56.074377904。5次计时画面、12个隐藏输入和3个公开边界全部通过，c=h=1；源码规则核对未发现实质性违规，按官方 q×c×h 得分保留一位小数。"
+    }
+  ],
+  "metrics": {
+    "baseline_min_ms": 509.5218,
+    "submission_min_ms": 112.6213,
+    "speedup": 4.524204568762747,
+    "q": 56.074377903718826,
+    "c": 1,
+    "h": 1,
+    "unrounded_score": 56.074377903718826,
+    "timing_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_passed": 3,
+    "performance_exception_pixels": [
+      848,
+      848,
+      848,
+      848,
+      848
+    ],
+    "performance_exception_limit": 3232,
+    "performance_rmse": 3.9906594380182816e-05,
+    "baseline_times_ms": [
+      509.5862,
+      510.6253,
+      512.0437,
+      509.5218,
+      510.1685
+    ],
+    "submission_times_ms": [
+      115.9261,
+      112.6213,
+      113.0745,
+      112.7388,
+      115.1269
+    ],
+    "cpus": "16-27",
+    "priority": "high",
+    "official_results": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GPT\\6.2Sol\\光线追踪渲染加速\\codex\\performance\\work\\official\\results.json"
+  },
+  "notes": "评的是作答结束时工作目录中的内容，已复制到 work\\submission；不看 git 提交。通过指定 process_job.py --cpus 16-27 包装运行一次完整官方 evaluate.py，保留入口 --cpus 16-27；报告 valid=true、formal=true。规则扫描仅命中已 join 的CPU建树线程，未发现作弊。所有评测子进程均正常退出，包装进程也已退出；本次未启动浏览器或网页服务器。"
+}

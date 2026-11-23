@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>果冻冲击与造浪水槽 · 3D 物理模拟实验室</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="gpu-canvas"></canvas>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div>正在初始化 WebGPU 物理引擎与着色器…</div>
+  </div>
+
+  <div id="error-banner">
+    <h2>WebGPU 初始化失败</h2>
+    <div class="err-msg"></div>
+  </div>
+
+  <div class="ui-layer">
+    <!-- Top Studio Header Bar -->
+    <header class="top-bar">
+      <div class="brand-group ui-card">
+        <span class="brand-mark"></span>
+        <span class="brand-title">果冻冲击与造浪水槽</span>
+      </div>
+
+      <div class="scene-tabs ui-card">
+        <button id="btn-scene-1" class="tab-btn active" type="button">场景一：重球冲击果冻</button>
+        <button id="btn-scene-2" class="tab-btn" type="button">场景二：多密度球与造浪水槽</button>
+      </div>
+
+      <div class="demo-bar ui-card">
+        <span class="demo-bar-label">预置演示</span>
+        <button class="demo-btn" data-demo="jelly-center" type="button">正中单击</button>
+        <button class="demo-btn" data-demo="jelly-multi" type="button">连击开裂</button>
+        <button class="demo-btn" data-demo="jelly-offset" type="button">偏心撞击</button>
+        <button class="demo-btn" data-demo="tank-full" type="button">造浪风浪</button>
+      </div>
+
+      <div class="util-group ui-card">
+        <button id="btn-audio" class="pill-btn" type="button">音效：开</button>
+        <button id="btn-toggle-panel" class="pill-btn" type="button">收起面板</button>
+      </div>
+    </header>
+
+    <div id="demo-status-badge">演示中</div>
+
+    <!-- Right Collapsible Parameter Panel -->
+    <aside id="control-drawer" class="control-drawer ui-card">
+      <!-- Scene 1 Controls -->
+      <div id="panel-scene-1">
+        <div class="section-heading">冲击方式</div>
+        <div class="action-grid">
+          <button id="btn-s1-center" class="action-btn primary" type="button">正中冲击</button>
+          <button id="btn-s1-offset" class="action-btn" type="button">偏心冲击</button>
+          <button id="btn-s1-multi" class="action-btn" type="button">连续冲击</button>
+          <button id="btn-s1-all" class="action-btn" type="button">三果冻对比</button>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-heading">软体与重球参数</div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label">果冻软硬</span>
+            <span id="val-stiffness" class="slider-val">1.00×</span>
+          </div>
+          <input id="sl-stiffness" type="range" min="0.25" max="2.50" step="0.05" value="1.00" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label">果冻结实程度</span>
+            <span id="val-toughness" class="slider-val">62%</span>
+          </div>
+          <input id="sl-toughness" type="range" min="0.15" max="1.00" step="0.01" value="0.62" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label">重球质量</span>
+            <span id="val-ball-mass" class="slider-val">2.3 kg</span>
+          </div>
+          <input id="sl-ball-mass" type="range" min="0.6" max="6.0" step="0.1" value="2.3" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label">下落高度</span>
+            <span id="val-drop-height" class="slider-val">2.65 m</span>
+          </div>
+          <input id="sl-drop-height" type="range" min="1.30" max="4.50" step="0.05" value="2.65" />
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-heading">台上果冻配置</div>
+        <div class="legend-list">
+          <div class="legend-item"><span class="color-dot dot-ruby"></span><span>中央 · 红宝石布丁冻（标准韧性）</span></div>
+          <div class="legend-item"><span class="color-dot dot-amber"></span><span>左侧 · 琥珀柑橘软冻（更软易陷）</span></div>
+          <div class="legend-item"><span class="color-dot dot-emerald"></span><span>右侧 · 翡翠青柠弹冻（偏硬高弹）</span></div>
+        </div>
+      </div>
+
+      <!-- Scene 2 Controls -->
+      <div id="panel-scene-2" style="display: none;">
+        <div class="section-heading">水槽与造浪控制</div>
+        <div class="action-grid">
+          <button id="btn-s2-wave-start" class="action-btn" type="button">开始造浪</button>
+          <button id="btn-s2-wave-stop" class="action-btn primary-active" type="button">停止造浪</button>
+          <button id="btn-s2-drop" class="action-btn full-width" type="button">再次释放小球</button>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-heading">造浪装置参数</div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label">造浪幅度</span>
+            <span id="val-wave-amp" class="slider-val">77%</span>
+          </div>
+          <input id="sl-wave-amp" type="range" min="0.06" max="0.44" step="0.01" value="0.34" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label">造浪频率</span>
+            <span id="val-wave-freq" class="slider-val">0.62 Hz</span>
+          </div>
+          <input id="sl-wave-freq" type="range" min="0.35" max="1.35" step="0.01" value="0.62" />
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-heading">各组小球密度（相对水 = 1.00）</div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label"><span class="color-dot dot-coral"></span>低密度组（珊瑚橙）</span>
+            <span id="val-rho-0" class="slider-val">0.35</span>
+          </div>
+          <input id="sl-rho-0" type="range" min="0.20" max="3.20" step="0.05" value="0.35" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label"><span class="color-dot dot-gold"></span>浅浮组（琥珀黄）</span>
+            <span id="val-rho-1" class="slider-val">0.72</span>
+          </div>
+          <input id="sl-rho-1" type="range" min="0.20" max="3.20" step="0.05" value="0.72" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label"><span class="color-dot dot-cobalt"></span>中性浮力组（钴蓝）</span>
+            <span id="val-rho-2" class="slider-val">1.00</span>
+          </div>
+          <input id="sl-rho-2" type="range" min="0.20" max="3.20" step="0.05" value="1.00" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-label"><span class="color-dot dot-slate"></span>高密度组（墨石黑）</span>
+            <span id="val-rho-3" class="slider-val">2.40</span>
+          </div>
+          <input id="sl-rho-3" type="range" min="0.20" max="3.20" step="0.05" value="2.40" />
+        </div>
+      </div>
+    </aside>
+
+    <!-- Bottom Compact Playback Dock -->
+    <div class="bottom-dock ui-card">
+      <button id="btn-pause" class="dock-btn" type="button">暂停</button>
+      <div class="speed-group">
+        <button class="speed-btn" data-speed="0.25" type="button">0.25×</button>
+        <button class="speed-btn" data-speed="0.5" type="button">0.5×</button>
+        <button class="speed-btn active" data-speed="1" type="button">1×</button>
+      </div>
+      <span class="dock-sep"></span>
+      <button id="btn-reset" class="dock-btn" type="button">重置</button>
+      <button id="btn-rerun" class="dock-btn" type="button">重新运行</button>
+    </div>
+
+    <div class="camera-hint">左键拖拽旋转 · 右键平移 · 滚轮缩放 · 空格暂停 · R 重置</div>
+  </div>
+
+  <!-- Classic script loading: 100% file:// compatible in Chrome without any web server -->
+  <script src="js/math.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/gpu-core.js"></script>
+  <script src="js/scene1-mesh.js"></script>
+  <script src="js/scene1-physics.js"></script>
+  <script src="js/scene1-renderer.js"></script>
+  <script src="js/scene2-fluid-wgsl.js"></script>
+  <script src="js/scene2-sim.js"></script>
+  <script src="js/scene2-renderer.js"></script>
+  <script src="js/demos.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

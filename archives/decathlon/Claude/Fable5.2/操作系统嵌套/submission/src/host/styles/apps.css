@@ -1,0 +1,11 @@
+/* 子系统管理 */
+.sm-wrap { flex: 1; overflow: auto; padding: 6px 14px 14px; }
+.sm-wrap h4 { margin: 14px 0 6px; font-size: 12.5px; color: var(--dim); font-weight: 600; }
+.sm-row { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.sm-row.sel { border-color: var(--accent); }
+.sm-id { display: flex; gap: 10px; align-items: center; margin-bottom: 4px; }
+.sm-id b { font-size: 14px; }
+.sm-meta { font-size: 11.5px; margin-bottom: 8px; }
+.sm-err { font: 12px/1.5 var(--mono); color: #f3c6cb; background: #1a1116; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; white-space: pre-wrap; word-break: break-all; }
+.sm-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.sm-btns .btn { height: 25px; font-size: 12px; padding: 0 9px; }

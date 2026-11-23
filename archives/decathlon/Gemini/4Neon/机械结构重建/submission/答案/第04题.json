@@ -1,0 +1,167 @@
+{
+  "problem": "04",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏心双级迷宫泵盖",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "大法兰盘Φ144",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"circle": [0, 0], "d": 144}],
+          "depth": 14
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左上定位耳",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [-60, 34, -44, 46]}],
+          "depth": 14
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左侧矩形定位缺口",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [-74, -8, -64, 8]}],
+          "through": true
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "偏心中阶圆柱Φ90",
+          "plane": "XY",
+          "origin": [12, 0, 14],
+          "loops": [{"circle": [0, 0], "d": 90}],
+          "depth": 22
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "偏心上阶圆柱Φ68",
+          "plane": "XY",
+          "origin": [12, 0, 36],
+          "loops": [{"circle": [0, 0], "d": 68}],
+          "depth": 14
+        },
+        {
+          "type": "hole",
+          "name": "底部Φ74沉台",
+          "plane": "XY",
+          "origin": [12, 0, 0],
+          "at": [0, 0],
+          "d": 74,
+          "depth": 6,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "中心Φ30通孔",
+          "plane": "XY",
+          "origin": [12, 0, 50],
+          "at": [0, 0],
+          "d": 30,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "name": "上部Φ50沉孔腔",
+          "plane": "XY",
+          "origin": [12, 0, 50],
+          "at": [0, 0],
+          "d": 50,
+          "depth": 22
+        },
+        {
+          "type": "revolve",
+          "op": "cut",
+          "name": "内部迷宫环槽Φ58-Φ66",
+          "plane": "XZ",
+          "origin": [12, 0, 0],
+          "axis": "y",
+          "loops": [{"rect": [29, 20, 33, 24]}],
+          "angle": 360
+        },
+        {
+          "type": "hole",
+          "name": "四个Φ9法兰安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "at": [[-42, 42], [-42, -42], [48, 42], [48, -42]],
+          "d": 9,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "name": "左侧Φ12定位孔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "at": [-40, 0],
+          "d": 12,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "name": "左上耳Φ6定位孔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "at": [-54, 40],
+          "d": 6,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "name": "前侧Φ8径向油孔",
+          "plane": "XZ",
+          "origin": [0, -48, 0],
+          "at": [12, 22],
+          "d": 8,
+          "depth": 36
+        },
+        {
+          "type": "hole",
+          "name": "底面Φ8竖向油孔",
+          "plane": "XY",
+          "origin": [0, 0, 6],
+          "at": [12, -25],
+          "d": 8,
+          "depth": 18,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右侧Φ6径向油孔",
+          "plane": "YZ",
+          "origin": [60, 0, 0],
+          "at": [0, 18],
+          "d": 6,
+          "depth": 22
+        },
+        {
+          "type": "hole",
+          "name": "右侧30度Φ6斜孔",
+          "plane": {
+            "origin": [41, 0, 50],
+            "normal": [0.5, 0, 0.8660254],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 6,
+          "depth": 28
+        },
+        {
+          "type": "chamfer",
+          "name": "大法兰下外圆棱C1",
+          "distance": 1,
+          "edges": [[72, 0, 0]]
+        }
+      ]
+    }
+  ]
+}

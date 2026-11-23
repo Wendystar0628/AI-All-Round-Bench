@@ -1,0 +1,114 @@
+// /Apps/player-timeline.nx —— 播放器的“时序”进程：按本系统的虚拟时间推进播放位置，
+// 用消息驱动飞行场景进程和环境特效进程为同一时刻各自准备画面，两者都完成后才让显示设备呈现这一帧。
+// 帧率 30 帧/秒；逐帧一次前进 1/30 秒。
+
+var UIPID = 0; var SCENE = 0; var FX = 0; var H = 0;
+var POS = 0; var DUR = 0; var FPS = 30; var RATE = 1; var LOOP = false;
+var STATE = "stopped";        // stopped | playing | paused | ended
+var LIVE = false; var P0 = 0; var T0 = 0;
+var SEQ = 0; var WAIT = null;  // 正在准备的帧 {seq, stage, pos, at}
+var NEED = false; var LAST = 0; var NEXT = 0; var SHOWN = -1; var LASTSUM = null; var READY = false;
+var SCENE_OFF = false; var FX_OFF = false; var DROPPED = 0;
+
+function report() {
+  sys("send", UIPID, { t: "tl", pos: POS, dur: DUR, state: STATE, rate: RATE, loop: LOOP, shown: SHOWN, live: LIVE, fps: FPS, sceneOff: SCENE_OFF, fxOff: FX_OFF });
+  return 0;
+}
+function request() {
+  // 向两个工作进程要同一时刻的画面；被挂起的进程跳过，它负责的那部分保持原样
+  SEQ = SEQ + 1; NEED = false;
+  SCENE_OFF = sys("pstate", SCENE) == 3; FX_OFF = sys("pstate", FX) == 3;
+  WAIT = { seq: SEQ, stage: "scene", pos: POS, at: sys("time") };
+  if (SCENE_OFF) { toFx(POS); } else { sys("send", SCENE, { t: "frame", seq: SEQ, pos: POS }); }
+  return 0;
+}
+function toFx(shownPos) {
+  WAIT.stage = "fx"; WAIT.shown = shownPos;
+  if (FX_OFF || LASTSUM == null) { finish(); } else { sys("send", FX, { t: "frame", seq: WAIT.seq, pos: shownPos, sum: LASTSUM, h: H }); }
+  return 0;
+}
+function finish() {
+  SHOWN = WAIT.shown; WAIT = null;
+  sys("scene_present", H, SHOWN);
+  report();
+  return 0;
+}
+function advance() {
+  var now = sys("time");
+  if (STATE == "playing") {
+    if (LIVE) { POS = P0 + (now - T0) / 1000; DUR = POS; }
+    else {
+      POS = POS + (now - LAST) / 1000 * RATE;
+      if (POS >= DUR) {
+        if (LOOP && DUR > 0) { POS = POS % DUR; }
+        else { POS = DUR; STATE = "ended"; NEED = true; }   // 非循环播放到结尾：停在末帧
+      }
+    }
+  }
+  LAST = now;
+  return 0;
+}
+function onMsg(m, from) {
+  var t = m.t;
+  if (t == "done") {
+    if (WAIT == null || m.seq != WAIT.seq) { return 0; }
+    if (from == SCENE && WAIT.stage == "scene") { LASTSUM = m.sum; if (LIVE && has(m, "dur")) { DUR = max(DUR, m.pos); } toFx(m.pos); }
+    else if (from == FX && WAIT.stage == "fx") { finish(); }
+    return 0;
+  }
+  advance();
+  if (t == "cfg") { H = m.h; DUR = m.dur; FPS = m.fps; POS = 0; STATE = "stopped"; LIVE = false; RATE = 1; READY = true; NEED = true; WAIT = null; LASTSUM = null; SHOWN = -1; }
+  else if (t == "play") {
+    if (STATE == "ended" || (POS >= DUR && !LIVE)) { POS = 0; }
+    if (LIVE) { P0 = POS; T0 = sys("time"); sys("send", SCENE, { t: "hold", on: false }); }
+    STATE = "playing"; NEED = true;
+  }
+  else if (t == "pause") { if (STATE == "playing") { STATE = "paused"; if (LIVE) { sys("send", SCENE, { t: "hold", on: true }); } } NEED = true; }
+  else if (t == "stop") { if (LIVE) { LIVE = false; sys("send", SCENE, { t: "replay" }); } POS = 0; STATE = "stopped"; NEED = true; }
+  else if (t == "replay") { if (LIVE) { LIVE = false; sys("send", SCENE, { t: "replay" }); } POS = 0; STATE = "playing"; NEED = true; }
+  else if (t == "seek") {
+    if (!LIVE) { POS = m.pos; if (POS < 0) { POS = 0; } if (POS > DUR) { POS = DUR; } if (STATE == "ended" && POS < DUR) { STATE = "paused"; } if (STATE == "stopped" && POS > 0) { STATE = "paused"; } NEED = true; }
+  }
+  else if (t == "step") {
+    // 逐帧：前进一帧的时长并保持暂停
+    if (!LIVE) { if (STATE == "playing") { STATE = "paused"; } POS = (floor(POS * FPS + 0.0001) + 1) / FPS; if (POS > DUR) { POS = DUR; } if (STATE == "stopped" || STATE == "ended") { STATE = "paused"; } NEED = true; }
+  }
+  else if (t == "rate") { if (m.rate > 0) { RATE = m.rate; } }
+  else if (t == "loop") { LOOP = m.on; }
+  else if (t == "live") {
+    // 转入排演：位置从此刻起随系统虚拟时间走，速率固定为 1
+    LIVE = true; P0 = POS; T0 = sys("time"); STATE = "playing"; RATE = 1; LOOP = false; NEED = true;
+  }
+  else if (t == "unlive") { LIVE = false; DUR = m.dur; if (POS > DUR) { POS = DUR; } STATE = "paused"; NEED = true; }
+  else if (t == "dur") { DUR = m.dur; if (POS > DUR) { POS = DUR; } NEED = true; }
+  else if (t == "redraw") { NEED = true; }
+  report();
+  return 0;
+}
+
+var A = sys("args");
+UIPID = A.ui; SCENE = A.scene; FX = A.fx;
+LAST = sys("time"); NEXT = LAST;
+while (true) {
+  var m = null;
+  var now = sys("time");
+  if (STATE == "playing" || NEED || WAIT != null) {
+    var w = NEXT - now; if (w < 1) { w = 1; }
+    if (WAIT != null && w > 12) { w = 12; }
+    m = sys("recv", w);
+  } else { m = sys("recv"); }
+  while (m != null) { onMsg(m.body, m.from); m = sys("poll"); }
+  if (!READY) { continue; }
+  advance();
+  now = sys("time");
+  if (WAIT != null) {
+    // 工作进程在准备途中被挂起：不再等它
+    if (WAIT.stage == "scene" && sys("pstate", SCENE) == 3) { SCENE_OFF = true; toFx(POS); }
+    else if (WAIT.stage == "fx" && sys("pstate", FX) == 3) { FX_OFF = true; finish(); }
+  }
+  if (WAIT == null && (NEED || (STATE == "playing" && now >= NEXT))) {
+    request();
+    NEXT = NEXT + 1000 / FPS;
+    if (NEXT < now) { NEXT = now + 1000 / FPS; }
+  }
+}

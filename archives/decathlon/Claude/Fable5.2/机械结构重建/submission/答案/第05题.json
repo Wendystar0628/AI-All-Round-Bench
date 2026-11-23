@@ -1,0 +1,27 @@
+{
+  "problem": "05",
+  "parts": [
+    {"name": "1", "title": "双层交汇混流阀箱", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [-12, -12, 172, 122]}], "depth": 14},
+      {"type": "extrude", "name": "斜肩箱体", "plane": "XZ", "loops": [{"path": [[0, 14], [160, 14], [160, 48], [116, 92], [0, 92]]}], "depth": [-110, 0]},
+      {"type": "extrude", "name": "左侧垫台", "plane": "YZ", "loops": [{"rect": [28, 26, 82, 74]}], "depth": [-6, 0]},
+      {"type": "extrude", "name": "左凸台Φ34", "plane": "YZ", "loops": [{"circle": [55, 50], "d": 34}], "depth": [-14, -6]},
+      {"type": "extrude", "op": "cut", "name": "左上腔(环形,中间导流隔板)", "plane": "XY", "origin": [0, 0, 38], "loops": [{"rect": [12, 14, 68, 96]}, {"rect": [18, 47, 62, 63]}], "depth": 44},
+      {"type": "extrude", "op": "cut", "name": "右下腔", "plane": "XY", "origin": [0, 0, 14], "loops": [{"rect": [78, 14, 140, 96]}], "depth": 32},
+      {"type": "hole", "name": "左凸台孔Φ20", "plane": "ZY", "origin": [-14, 0, 0], "at": [50, 55], "d": 20, "depth": 26},
+      {"type": "hole", "name": "下层通道Φ14", "plane": "ZY", "origin": [0, 0, 0], "at": [24, 55], "d": 14, "depth": 78},
+      {"type": "hole", "name": "右端孔Φ14沉孔Φ24", "plane": "YZ", "origin": [160, 0, 0], "at": [55, 24], "d": 14, "depth": 20, "cbore": {"d": 24, "depth": 12}},
+      {"type": "hole", "name": "前孔Φ26", "plane": "XZ", "origin": [0, 0, 0], "at": [40, 60], "d": 26, "depth": 14},
+      {"type": "hole", "name": "后壁孔Φ24", "plane": "ZX", "origin": [0, 110, 0], "at": [30, 106], "d": 24, "depth": 14},
+      {"type": "hole", "name": "立孔Φ10", "plane": "XY", "origin": [0, 0, 60], "at": [40, 55], "d": 10, "depth": 32},
+      {"type": "extrude", "op": "cut", "name": "隔墙下孔Φ16", "plane": "YZ", "origin": [68, 0, 0], "loops": [{"circle": [36, 42], "d": 16}], "depth": 10},
+      {"type": "extrude", "op": "cut", "name": "隔墙上孔Φ14", "plane": "YZ", "origin": [68, 0, 0], "loops": [{"circle": [78, 62], "d": 14}], "depth": 48},
+      {"type": "hole", "name": "底板孔4-Φ8", "plane": "XY", "origin": [0, 0, 14], "at": [[-6, -6], [166, -6], [-6, 116], [166, 116]], "d": 8, "through": true},
+      {"type": "hole", "name": "顶面盲孔2-Φ5", "plane": "XY", "origin": [0, 0, 92], "at": [[8, 18], [8, 92]], "d": 5, "depth": 16},
+      {"type": "hole", "name": "斜孔Φ16(斜肩)", "plane": {"origin": [138, 55, 70], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 16, "depth": 62},
+      {"type": "hole", "name": "斜孔Φ8(顶面)", "plane": {"origin": [116, 22, 92], "normal": [0, 0.5, 0.8660254], "x_dir": [1, 0, 0]}, "at": [0, 0], "d": 8, "depth": 38},
+      {"type": "fillet", "radius": 2, "edges": [[-12, -12, 7]], "name": "底板左前外竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[80, -12, 0]], "name": "前下直棱C1"}
+    ]}
+  ]
+}

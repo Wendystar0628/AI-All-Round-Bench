@@ -1,0 +1,8 @@
+// 持续计算：循环中不主动让出执行权，用于检验调度
+var n = 0
+var x = 1
+while (true) {
+  x = x * 1.0000001
+  n = n + 1
+  if (n % 20000 == 0) { sys.publish("busy", n) }
+}

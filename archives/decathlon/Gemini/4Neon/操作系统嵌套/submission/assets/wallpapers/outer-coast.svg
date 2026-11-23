@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="skyC" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="40%" stop-color="#6d28d9"/>
+      <stop offset="72%" stop-color="#db2777"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="seaC" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.5"/>
+      <stop offset="45%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="690" fill="url(#skyC)"/>
+  <circle cx="960" cy="640" r="115" fill="#fef08a" opacity="0.9"/>
+  <rect x="0" y="680" width="1920" height="400" fill="url(#seaC)"/>
+  <path d="M0 680 L0 520 Q180 540 380 650 L540 680 Z" fill="#1e1b3a"/>
+  <path d="M1920 680 L1920 490 Q1680 520 1440 645 L1310 680 Z" fill="#181530"/>
+  <g fill="#fde68a" opacity="0.52">
+    <rect x="860" y="700" width="200" height="6" rx="3"/>
+    <rect x="890" y="726" width="140" height="5" rx="2.5"/>
+    <rect x="840" y="756" width="240" height="5" rx="2.5" opacity="0.6"/>
+    <rect x="905" y="790" width="110" height="4" rx="2" opacity="0.4"/>
+  </g>
+</svg>

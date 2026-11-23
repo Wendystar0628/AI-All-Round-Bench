@@ -1,0 +1,11 @@
+# 行编译器：输入源代码，逐行生成指令
+@main
+i = 0
+@next
+if i >= length(lines) goto done
+line = at(lines,i)
+emit(line)
+i = i + 1
+goto next
+@done
+return compiled()

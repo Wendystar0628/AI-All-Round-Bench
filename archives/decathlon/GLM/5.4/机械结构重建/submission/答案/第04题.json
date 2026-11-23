@@ -1,0 +1,39 @@
+{
+  "problem": "04",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏心双级迷宫泵盖",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0],
+         "loops": [{"circle": [0, 0], "d": 144}], "depth": 14},
+
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [13, 0, 14],
+         "loops": [{"circle": [0, 0], "d": 90}], "depth": 25},
+
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [13, 0, 39],
+         "loops": [{"circle": [0, 0], "d": 58}], "depth": 13},
+
+        {"type": "hole", "plane": "XY", "origin": [13, 0, 52], "at": [[0, 0]], "d": 50, "through": true},
+
+        {"type": "hole", "plane": "XY", "origin": [13, 0, 52], "at": [[0, 0]], "d": 30, "depth": 13},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[42.4, 42.4], [-42.4, 42.4], [-42.4, -42.4], [42.4, -42.4]], "d": 9, "through": true},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[-45, -35]], "d": 12, "through": true},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [[-60, 18]], "d": 6, "through": true},
+
+        {"type": "hole", "plane": "XZ", "origin": [13, -45, 30], "at": [[0, 0]], "d": 8, "depth": 60},
+
+        {"type": "hole", "plane": {"origin": [0, 0, 52], "normal": [0.5, 0, 0.86603], "x_dir": [0.86603, 0, -0.5]},
+         "origin": [0, 0, 52], "at": [[0, 0]], "d": 6, "depth": 28},
+
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 0],
+         "loops": [{"rect": [-80, -12, -60, 12]}], "depth": 14},
+
+        {"type": "chamfer", "distance": 1, "edges": [[72, 0, 0]]}
+      ]
+    }
+  ]
+}

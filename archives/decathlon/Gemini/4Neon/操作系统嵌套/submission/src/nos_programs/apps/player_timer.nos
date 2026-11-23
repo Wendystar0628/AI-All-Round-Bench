@@ -1,0 +1,396 @@
+// /apps/player_timer.nos — 三维场景播放器进程 1：时序控制与交互协调进程
+// 职责：依据所属系统虚拟时间推进播放位置，处理播放/暂停/停止/逐帧/跳转/调速/循环与排演切换，
+// 通过消息驱动 player_scene.nos 与 player_fx.nos 同步更新。
+
+let winId = ARGS.windowId;
+let scenePid = ARGS.scenePid;
+let fxPid = ARGS.fxPid;
+
+let scenePath = "/Demo/helicopter-24.scene";
+if (ARGS.launch != null && ARGS.launch.openPath != null) {
+  scenePath = ARGS.launch.openPath;
+}
+let pathInput = scenePath;
+let controllerPath = "/apps/flight_ctrl.nos";
+let ctrlPid = 0;
+
+let playState = "paused"; // paused | playing | stopped
+let mode = "performance"; // performance | rehearsal | replay
+let position = 0.0;
+let duration = 15.0;
+let fps = 30.0;
+let rate = 1.0;
+let loop = false;
+let timeInput = "0.00";
+let seq = 1;
+
+// 排演输入状态
+let windStrength = 0.0;
+let windAngleDeg = 35;
+let targetHeadingDeg = 0;
+let targetPos = [38, 2.2, -26]; // 默认指向 2 号停机坪
+let landAtTarget = true;
+let faultTrigger = "none"; // none | tail_rotor | engine
+
+// 相机状态（属于应用状态，参与快照保存）
+let camera = {
+  mode: "cinematic", // cinematic | follow | orbit
+  orbitYaw: 0.72,
+  orbitPitch: 0.34,
+  orbitDist: 20.0
+};
+let orbitDrag = null;
+let statusMsg = "就绪 (30 fps)";
+let replaySeq = 1;
+
+let lastVTime = syscall("time");
+let needTick = true;
+
+fn stop_controller() {
+  if (ctrlPid > 0) {
+    syscall("kill", ctrlPid, "退出排演模式");
+    ctrlPid = 0;
+  }
+}
+
+fn start_controller() {
+  stop_controller();
+  let sp = syscall("spawn", controllerPath, { windowId: winId }, {
+    kind: "flight_ctrl",
+    appId: "player",
+    windowId: winId,
+    name: "飞控进程 (" + controllerPath + ")"
+  });
+  if (sp != null && sp.ok) {
+    ctrlPid = sp.pid;
+    statusMsg = "排演中 · 飞控 PID " + str(ctrlPid);
+  } else {
+    statusMsg = "飞控启动失败: " + (sp != null ? str(sp.error) : "");
+  }
+}
+
+fn send_load(path) {
+  stop_controller();
+  scenePath = path;
+  pathInput = path;
+  playState = "paused";
+  position = 0.0;
+  timeInput = "0.00";
+  mode = "performance";
+  faultTrigger = "none";
+  seq += 1;
+  syscall("send", scenePid, { type: "load_scene", path: path, seq: seq });
+  needTick = true;
+}
+
+fn dispatch_tick(stepDt, isStep) {
+  seq += 1;
+  let uiMeta = {
+    scenePath: scenePath,
+    pathInput: pathInput,
+    controllerPath: controllerPath,
+    ctrlPid: ctrlPid,
+    playState: playState,
+    mode: mode,
+    position: position,
+    duration: duration,
+    fps: fps,
+    rate: rate,
+    loop: loop,
+    timeInput: timeInput,
+    windStrength: windStrength,
+    windAngleDeg: windAngleDeg,
+    targetHeadingDeg: targetHeadingDeg,
+    landAtTarget: landAtTarget,
+    faultTrigger: faultTrigger,
+    camera: clone(camera),
+    statusMsg: statusMsg
+  };
+  let msg = {
+    type: "frame_tick",
+    seq: seq,
+    targetTime: position,
+    stepDt: stepDt,
+    isStep: isStep,
+    playState: playState,
+    mode: mode,
+    rate: rate,
+    camera: clone(camera),
+    uiMeta: uiMeta
+  };
+  syscall("send", scenePid, msg);
+  syscall("send", fxPid, msg);
+}
+
+fn handle_ui_event(ev) {
+  if (ev == null) return;
+  let act = ev.action;
+  let pl = ev.payload != null ? ev.payload : {};
+
+  if (act == "edit_path") {
+    pathInput = str(ev.value);
+    needTick = true;
+    return;
+  }
+  if (act == "open_scene") {
+    let p = pl.path != null ? str(pl.path) : trim(pathInput);
+    if (p != "") send_load(p);
+    return;
+  }
+  if (act == "play") {
+    playState = "playing";
+    if (mode != "rehearsal" && position >= duration - 0.001) {
+      position = 0.0;
+    }
+    lastVTime = syscall("time");
+    needTick = true;
+    return;
+  }
+  if (act == "pause") {
+    playState = "paused";
+    needTick = true;
+    return;
+  }
+  if (act == "stop") {
+    stop_controller();
+    playState = "stopped";
+    if (mode == "rehearsal") mode = "performance";
+    position = 0.0;
+    timeInput = "0.00";
+    needTick = true;
+    return;
+  }
+  if (act == "replay") {
+    stop_controller();
+    if (mode == "rehearsal") mode = "performance";
+    position = 0.0;
+    timeInput = "0.00";
+    playState = "playing";
+    lastVTime = syscall("time");
+    needTick = true;
+    return;
+  }
+  if (act == "step_frame") {
+    playState = "paused";
+    let fdt = 1.0 / fps;
+    position += fdt;
+    if (mode != "rehearsal") {
+      if (position > duration) {
+        if (loop) position = position - duration;
+        else position = duration;
+      }
+    } else {
+      if (position > duration) duration = position;
+    }
+    timeInput = str(round(position * 100) / 100);
+    dispatch_tick(fdt, true);
+    needTick = false;
+    return;
+  }
+  if (act == "toggle_loop") {
+    loop = !loop;
+    needTick = true;
+    return;
+  }
+  if (act == "seek") {
+    let t = clamp(num(ev.value), 0.0, max(0.01, duration));
+    position = t;
+    timeInput = str(round(t * 100) / 100);
+    if (mode == "rehearsal") {
+      stop_controller();
+      mode = "replay";
+    }
+    needTick = true;
+    return;
+  }
+  if (act == "time_input") {
+    timeInput = str(ev.value);
+    let t = clamp(num(ev.value), 0.0, max(0.01, duration));
+    position = t;
+    if (mode == "rehearsal") {
+      stop_controller();
+      mode = "replay";
+    }
+    needTick = true;
+    return;
+  }
+  if (act == "set_rate") {
+    rate = clamp(num(ev.value), 0.1, 4.0);
+    needTick = true;
+    return;
+  }
+  if (act == "set_camera") {
+    let cm = str(ev.value);
+    if (cm == "cinematic" || cm == "follow" || cm == "orbit") {
+      camera.mode = cm;
+      needTick = true;
+    }
+    return;
+  }
+  if (act == "rehearsal_start") {
+    // 从当前时刻无缝转入实时闭环飞行排演（画面不跳变！）
+    mode = "rehearsal";
+    playState = "playing";
+    faultTrigger = "none";
+    if (camera.mode == "cinematic") camera.mode = "follow";
+    syscall("send", scenePid, {
+      type: "enter_rehearsal",
+      fromTime: position,
+      windStrength: windStrength,
+      windAngleDeg: windAngleDeg,
+      targetHeadingDeg: targetHeadingDeg,
+      targetPos: targetPos,
+      landAtTarget: landAtTarget
+    });
+    start_controller();
+    lastVTime = syscall("time");
+    needTick = true;
+    return;
+  }
+  if (act == "rehearsal_wind") {
+    windStrength = clamp(num(ev.value), 0.0, 18.0);
+    syscall("send", scenePid, { type: "rehearsal_input", windStrength: windStrength, windAngleDeg: windAngleDeg });
+    needTick = true;
+    return;
+  }
+  if (act == "rehearsal_heading") {
+    targetHeadingDeg = num(ev.value);
+    syscall("send", scenePid, { type: "rehearsal_input", targetHeadingDeg: targetHeadingDeg });
+    needTick = true;
+    return;
+  }
+  if (act == "rehearsal_helipad2") {
+    targetPos = [38, 2.2, -26];
+    landAtTarget = true;
+    syscall("send", scenePid, { type: "rehearsal_input", targetPos: targetPos, landAtTarget: true });
+    statusMsg = "目标已设为 2 号停机坪悬停降落";
+    needTick = true;
+    return;
+  }
+  if (act == "rehearsal_fault") {
+    let ft = ev.value != null ? str(ev.value) : "tail_rotor";
+    faultTrigger = ft;
+    syscall("send", scenePid, { type: "rehearsal_input", triggerFault: ft });
+    statusMsg = ft == "none" ? "故障清除" : ("已触发故障: " + ft);
+    needTick = true;
+    return;
+  }
+  if (act == "rehearsal_controller") {
+    controllerPath = trim(str(ev.value));
+    if (mode == "rehearsal") {
+      start_controller();
+    }
+    needTick = true;
+    return;
+  }
+  if (act == "save_replay") {
+    let rp = "/Documents/rehearsal_" + str(replaySeq) + "_" + str(floor(syscall("time") * 10)) + ".replay";
+    replaySeq += 1;
+    syscall("send", scenePid, { type: "save_replay", path: rp });
+    statusMsg = "正在保存排演记录至 " + rp;
+    needTick = true;
+    return;
+  }
+
+  // 三维视口交互（支持自由环绕镜头拖动、滚轮缩放与 3D 部件/地面点选）
+  if (act == "view3d_pointerdown") {
+    if (camera.mode == "orbit") {
+      orbitDrag = { sx: num(pl.nx), sy: num(pl.ny), yaw: camera.orbitYaw, pitch: camera.orbitPitch };
+    }
+    return;
+  }
+  if (act == "view3d_pointermove" && orbitDrag != null) {
+    let dx = num(pl.nx) - orbitDrag.sx;
+    let dy = num(pl.ny) - orbitDrag.sy;
+    camera.orbitYaw = orbitDrag.yaw - dx * 4.2;
+    camera.orbitPitch = clamp(orbitDrag.pitch + dy * 2.6, 0.08, 1.38);
+    needTick = true;
+    return;
+  }
+  if (act == "view3d_pointerup") {
+    orbitDrag = null;
+    return;
+  }
+  if (act == "view3d_wheel") {
+    if (camera.mode != "orbit") camera.mode = "orbit";
+    let d = num(pl.deltaY) > 0 ? 1.12 : 0.89;
+    camera.orbitDist = clamp(camera.orbitDist * d, 6.0, 95.0);
+    needTick = true;
+    return;
+  }
+  if (act == "view3d_click") {
+    syscall("send", scenePid, {
+      type: "pick_3d",
+      nx: num(pl.nx),
+      ny: num(pl.ny),
+      aspect: num(pl.aspect) > 0 ? num(pl.aspect) : 1.6,
+      camera: clone(camera)
+    });
+    return;
+  }
+}
+
+// 初始加载预置场景
+send_load(scenePath);
+
+while (true) {
+  let waitSec = (playState == "playing") ? 0.028 : 0.12;
+  let msg = syscall("recv", waitSec);
+  while (msg != null) {
+    let d = msg.data;
+    if (d != null) {
+      if (d.type == "ui_event") {
+        handle_ui_event(d.event);
+      } else if (d.type == "scene_loaded") {
+        if (d.ok) {
+          duration = d.duration > 0 ? d.duration : 15.0;
+          fps = d.fps > 0 ? d.fps : 30.0;
+          if (d.isReplay) mode = "replay";
+          else mode = "performance";
+          statusMsg = "已载入 " + str(d.name) + " (" + str(duration) + "s · " + str(fps) + "fps)";
+        } else {
+          statusMsg = "场景载入失败: " + str(d.error);
+        }
+        needTick = true;
+      } else if (d.type == "replay_saved") {
+        if (d.ok) statusMsg = "排演记录已保存: " + str(d.path);
+        else statusMsg = "保存失败: " + str(d.error);
+        needTick = true;
+      } else if (d.type == "heading_picked") {
+        targetHeadingDeg = round(d.headingDeg);
+        targetPos = d.targetPos;
+        statusMsg = "已将地面点击位置设为目标航向 " + str(targetHeadingDeg) + "°";
+        needTick = true;
+      }
+    }
+    msg = syscall("recv", 0);
+  }
+
+  let now = syscall("time");
+  let dt = now - lastVTime;
+  lastVTime = now;
+
+  if (playState == "playing" && dt > 0) {
+    let stepDt = dt * rate;
+    position += stepDt;
+    if (mode != "rehearsal") {
+      if (position >= duration) {
+        if (loop) {
+          position = position - duration;
+          if (position >= duration) position = 0;
+        } else {
+          position = duration;
+          playState = "paused";
+        }
+      }
+    } else {
+      if (position > duration) duration = position;
+    }
+    timeInput = str(round(position * 100) / 100);
+    dispatch_tick(stepDt, false);
+    needTick = false;
+  } else if (needTick) {
+    dispatch_tick(0.0, false);
+    needTick = false;
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "problem": "01",
+  "parts": [
+    {"name": "1", "title": "滑阀驱动底座", "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 80, 104]}], "depth": 10, "name": "底板80x104x10"},
+      {"type": "fillet", "radius": 2, "edges": [[0, 0, 5]], "name": "底板左前外竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[40, 0, 0]], "name": "前下直棱C1"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 8], "loops": [{"rect": [24, 16, 56, 88]}], "depth": 10, "name": "导轨32x72x8"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 10], "at": [[10, 10], [70, 10], [10, 94], [70, 94]], "d": 9, "through": true, "name": "4xΦ9"}
+    ]},
+    {"name": "2", "title": "前轴承架", "placement": {"translate": [24, 16, 10]}, "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 38, 12]}], "depth": 36, "name": "架板38x12x36"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [19, 22], "d": 26, "through": true, "name": "轴承孔Φ26"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [19, 22], "d": 34, "depth": 6, "name": "端面沉台Φ34深6"}
+    ]},
+    {"name": "3", "title": "后轴承架", "placement": {"translate": [24, 92, 10]}, "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 38, 12]}], "depth": 36, "name": "架板38x12x36"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [19, 22], "d": 26, "through": true, "name": "轴承孔Φ26"},
+      {"type": "hole", "plane": "XZ", "origin": [0, 12, 0], "at": [19, 22], "d": 34, "depth": 6, "reverse": true, "name": "端面沉台Φ34深6"}
+    ]},
+    {"name": "4", "title": "前法兰轴套", "placement": {"rotate": [{"axis": "X", "angle": -90}], "translate": [43, 16, 32]}, "features": [
+      {"type": "revolve", "op": "add", "plane": "XZ", "axis": "y", "loops": [{"path": [[0, 0], [17, 0], [17, 6], [13, 6], [13, 19], [0, 19]]}], "name": "法兰Φ34x6+套Φ26x13"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 0], "at": [0, 0], "d": 16, "through": true, "reverse": true, "name": "套孔Φ16"},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 10], "at": [0, 0], "d": 4, "depth": 13, "name": "润滑孔Φ4"}
+    ]},
+    {"name": "5", "title": "后法兰轴套", "placement": {"rotate": [{"axis": "X", "angle": 90}], "translate": [43, 104, 32]}, "features": [
+      {"type": "revolve", "op": "add", "plane": "XZ", "axis": "y", "loops": [{"path": [[0, 0], [17, 0], [17, 6], [13, 6], [13, 19], [0, 19]]}], "name": "法兰Φ34x6+套Φ26x13"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 0], "at": [0, 0], "d": 16, "through": true, "reverse": true, "name": "套孔Φ16"},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 10], "at": [0, 0], "d": 4, "depth": 13, "name": "润滑孔Φ4"}
+    ]},
+    {"name": "6", "title": "偏心轴", "placement": {"translate": [43, 10, 32]}, "features": [
+      {"type": "revolve", "op": "add", "plane": "XZ", "axis": "y", "loops": [{"path": [[0, 0], [8, 0], [8, 10], [12, 10], [12, 16], [0, 16]]}], "name": "前颈Φ16x10+挡肩Φ24x6"},
+      {"type": "extrude", "op": "add", "plane": "XZ", "origin": [6, 16, 0], "loops": [{"circle": [0, 0], "d": 44}], "depth": 36, "name": "偏心轮Φ44厚36 偏+X6"},
+      {"type": "revolve", "op": "add", "plane": "XZ", "axis": "y", "loops": [{"path": [[0, 52], [12, 52], [12, 58], [8, 58], [8, 72], [0, 72]]}], "name": "后挡肩Φ24x6+后颈Φ16x14"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, -30], "loops": [{"rect": [-20, 62, 20, 72]}], "depth": 60, "name": "Y向扁位长10"}
+    ]},
+    {"name": "7", "title": "槽形从动框", "placement": {"translate": [15, 52, 2]}, "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 68, 16]}], "depth": 60, "name": "框外68x16x60"},
+      {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 8], "loops": [{"rect": [12, -1, 56, 17]}], "depth": 44, "name": "窗口44x44"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 16], "loops": [{"rect": [32, 0, 36, 8]}], "depth": 12, "name": "连接耳"},
+      {"type": "hole", "plane": "YZ", "origin": [32, 0, 0], "at": [4, 22], "d": 8, "depth": 4, "name": "耳销孔Φ8"}
+    ]},
+    {"name": "8", "title": "滑阀阀芯", "placement": {"translate": [41, 16, 18]}, "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 16, 32]}], "depth": 16, "name": "阀芯体16x32x16"},
+      {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 32, 0], "loops": [{"rect": [0, 0, 4, 8]}, {"rect": [12, 0, 16, 8]}], "depth": 12, "name": "连接叉"},
+      {"type": "hole", "plane": "YZ", "origin": [0, 0, 0], "at": [36, 6], "d": 8, "depth": 16, "name": "叉销孔Φ8"},
+      {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 8, 0], "loops": [{"rect": [-1, 16, 17, 20]}], "through": true, "name": "阀芯槽"}
+    ]},
+    {"name": "9", "title": "连接销", "placement": {"rotate": [{"axis": "Y", "angle": 90}], "translate": [35, 54, 24]}, "features": [
+      {"type": "revolve", "op": "add", "plane": "XZ", "axis": "y", "loops": [{"path": [[0, 0], [6, 0], [6, 4], [4, 4], [4, 40], [0, 40]]}], "name": "挡头Φ12x4+销Φ8x36"}
+    ]},
+    {"name": "10", "title": "导轨压板", "placement": {"translate": [24, 56, 18]}, "features": [
+      {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 32, 32]}], "depth": 4, "name": "压板32x32x4"},
+      {"type": "hole", "plane": "XY", "origin": [0, 0, 4], "at": [[8, 8], [24, 24]], "d": 5, "through": true, "name": "2xΦ5"}
+    ]}
+  ]
+}

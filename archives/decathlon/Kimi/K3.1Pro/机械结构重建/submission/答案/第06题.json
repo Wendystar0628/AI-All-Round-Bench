@@ -1,0 +1,37 @@
+{
+  "problem": "06",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双斜接口差压控制块",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [-5, -5, 81, 52]}], "depth": 5},
+        {"type": "fillet", "radius": 2, "edges": [[-5, -5, 2.5]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[20, -5, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "loops": [{"path": [[0, 5], [76, 5], [76, 24], [57, 42], [19, 42], [0, 24]]}], "depth": -50},
+        {"type": "extrude", "op": "add", "plane": "YZ", "loops": [{"circle": [25, 18], "d": 40}], "depth": -4},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [76, 0, 0], "loops": [{"circle": [25, 18], "d": 36}], "depth": 4},
+        {"type": "extrude", "op": "add", "plane": "XZ", "loops": [{"circle": [38, 18], "d": 30}], "depth": 4},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 10, 0], "loops": [{"path": [[4, 5], [72, 5], [72, 20], [53, 38], [23, 38], [4, 20]]}], "depth": -30},
+        {"type": "hole", "plane": "YZ", "origin": [-4, 0, 0], "at": [[25, 18]], "d": 28, "through": true, "reverse": true},
+        {"type": "hole", "plane": "XZ", "origin": [0, -4, 0], "at": [[38, 18]], "d": 18, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 42], "at": [[38, 25]], "d": 12, "through": true, "cbore": {"d": 26, "depth": 6}},
+        {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [[16, 10]], "d": 8, "through": true},
+        {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [[60, 10]], "d": 10, "through": true},
+        {
+          "type": "hole",
+          "plane": {"origin": [64.3888888889, 25, 35], "normal": [0.7071067812, 0, 0.7071067812], "x_dir": [0.7071067812, 0, -0.7071067812]},
+          "at": [[0, 0]], "d": 16, "depth": 50
+        },
+        {
+          "type": "hole",
+          "plane": {"origin": [12.6666666667, 25, 30], "normal": [-0.7071067812, 0, 0.7071067812], "x_dir": [-0.7071067812, 0, -0.7071067812]},
+          "at": [[0, 0]], "d": 14, "depth": 48
+        },
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 42], "at": [[16, 15], [60, 40]], "d": 6, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 5], "at": [[-1, -1], [77, -1], [-1, 48], [77, 48]], "d": 7, "through": true},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 5], "loops": [{"rect": [28, -5, 48, 10]}], "depth": -5}
+      ]
+    }
+  ]
+}

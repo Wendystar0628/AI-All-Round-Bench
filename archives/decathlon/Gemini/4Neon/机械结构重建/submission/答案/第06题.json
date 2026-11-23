@@ -1,0 +1,158 @@
+{
+  "problem": "06",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双斜接口差压控制块",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [-10, -10, 110, 70]}],
+          "depth": 7
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "双斜顶阀块主体",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"path": [[0, 7], [100, 7], [100, 34], [74, 60], [22, 60], [0, 38]]}],
+          "depth": [-60, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后侧仪表台Φ26凸台",
+          "plane": "XZ",
+          "origin": [0, 60, 0],
+          "loops": [{"circle": [48, 43], "d": 26}],
+          "depth": [-4, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左右贯穿Φ40圆筒",
+          "plane": "YZ",
+          "origin": [-2, 0, 0],
+          "loops": [{"circle": [30, 22], "d": 40}],
+          "depth": 104
+        },
+        {
+          "type": "hole",
+          "name": "底部Φ36沉台",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "at": [48, 30],
+          "d": 36,
+          "depth": 5,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "下部Φ28横向通孔",
+          "plane": "YZ",
+          "origin": [-4, 0, 0],
+          "at": [30, 22],
+          "d": 28,
+          "depth": 108,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "上部Φ18纵向通孔与Φ30前沉孔",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "at": [48, 43],
+          "d": 18,
+          "depth": 66,
+          "cbore": {"d": 30, "depth": 8}
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ12中心竖孔",
+          "plane": "XY",
+          "origin": [0, 0, 60],
+          "at": [48, 30],
+          "d": 12,
+          "depth": 36
+        },
+        {
+          "type": "hole",
+          "name": "左斜面45度Φ14斜孔",
+          "plane": {
+            "origin": [11, 30, 49],
+            "normal": [-0.7071068, 0, 0.7071068],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 14,
+          "depth": 48
+        },
+        {
+          "type": "hole",
+          "name": "右斜面45度Φ16斜孔",
+          "plane": {
+            "origin": [87, 30, 47],
+            "normal": [0.7071068, 0, 0.7071068],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 16,
+          "depth": 50
+        },
+        {
+          "type": "hole",
+          "name": "前左Φ8横孔",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "at": [24, 18],
+          "d": 8,
+          "depth": 32
+        },
+        {
+          "type": "hole",
+          "name": "前右Φ10横孔",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "at": [78, 18],
+          "d": 10,
+          "depth": 32
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ6安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 60],
+          "at": [[28, 12], [68, 48]],
+          "d": 6,
+          "depth": 18
+        },
+        {
+          "type": "hole",
+          "name": "底板四角Φ7安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 7],
+          "at": [[-5, -5], [-5, 65], [105, -5], [105, 65]],
+          "d": 7,
+          "through": true
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[48, -10, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[-10, -10, 3.5]]
+        }
+      ]
+    }
+  ]
+}

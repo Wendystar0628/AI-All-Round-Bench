@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b132b"/>
+      <stop offset="28%" stop-color="#1c2541"/>
+      <stop offset="52%" stop-color="#3a506b"/>
+      <stop offset="72%" stop-color="#c97b63"/>
+      <stop offset="86%" stop-color="#f2b880"/>
+      <stop offset="100%" stop-color="#fde4b2"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="64%" cy="62%" r="36%">
+      <stop offset="0%" stop-color="#fff3c4" stop-opacity="0.95"/>
+      <stop offset="25%" stop-color="#f7b267" stop-opacity="0.58"/>
+      <stop offset="65%" stop-color="#c96f7b" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#1c2541" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d89b7a"/>
+      <stop offset="25%" stop-color="#625d7d"/>
+      <stop offset="65%" stop-color="#1d2d4a"/>
+      <stop offset="100%" stop-color="#0c1528"/>
+    </linearGradient>
+    <linearGradient id="mtnFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5d5c82"/>
+      <stop offset="100%" stop-color="#2c3554"/>
+    </linearGradient>
+    <linearGradient id="mtnMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#353f61"/>
+      <stop offset="100%" stop-color="#1a243d"/>
+    </linearGradient>
+    <linearGradient id="mtnNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b263b"/>
+      <stop offset="100%" stop-color="#0b1324"/>
+    </linearGradient>
+    <linearGradient id="snowSun" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe7c2" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#b9a8cc" stop-opacity="0.25"/>
+    </linearGradient>
+    <filter id="softBlur"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+
+  <!-- Sky & Twilight Glow -->
+  <rect width="1920" height="740" fill="url(#sky)"/>
+  <rect width="1920" height="760" fill="url(#sunGlow)"/>
+
+  <!-- Subtle high stars -->
+  <g fill="#e2eeff" opacity="0.72">
+    <circle cx="210" cy="112" r="1.5"/><circle cx="380" cy="84" r="1.2"/><circle cx="520" cy="152" r="1.8"/>
+    <circle cx="760" cy="70" r="1.3"/><circle cx="940" cy="135" r="1.1"/><circle cx="1180" cy="90" r="1.7"/>
+    <circle cx="1410" cy="128" r="1.3"/><circle cx="1640" cy="82" r="1.6"/><circle cx="1790" cy="150" r="1.2"/>
+    <circle cx="290" cy="210" r="1.0"/><circle cx="845" cy="195" r="1.2"/><circle cx="1525" cy="204" r="1.1"/>
+  </g>
+
+  <!-- Glowing twilight sun disk -->
+  <circle cx="1228" cy="618" r="54" fill="#fff5d4" opacity="0.92"/>
+  <circle cx="1228" cy="618" r="96" fill="#ffd28a" opacity="0.28" filter="url(#softBlur)"/>
+
+  <!-- Layered warm clouds -->
+  <g opacity="0.42" filter="url(#softBlur)">
+    <ellipse cx="420" cy="340" rx="260" ry="26" fill="#f4a27e"/>
+    <ellipse cx="960" cy="295" rx="340" ry="24" fill="#e99a84"/>
+    <ellipse cx="1490" cy="375" rx="280" ry="28" fill="#ffd49c"/>
+    <ellipse cx="690" cy="445" rx="220" ry="18" fill="#f7c08e"/>
+  </g>
+
+  <!-- Far snow-capped mountain range -->
+  <path d="M0 680 L170 500 L330 570 L535 425 L710 535 L895 450 L1085 575 L1270 495 L1460 398 L1665 535 L1825 462 L1920 515 L1920 710 L0 710 Z" fill="url(#mtnFar)"/>
+  <!-- Sunlit snow facets -->
+  <path d="M535 425 L605 495 L555 512 L515 478 Z" fill="url(#snowSun)"/>
+  <path d="M895 450 L960 515 L912 522 L878 492 Z" fill="url(#snowSun)"/>
+  <path d="M1460 398 L1555 496 L1488 518 L1432 458 Z" fill="url(#snowSun)"/>
+
+  <!-- Atmospheric valley mist -->
+  <rect x="0" y="595" width="1920" height="125" fill="#f4b88d" opacity="0.18" filter="url(#softBlur)"/>
+
+  <!-- Mid mountain ridges -->
+  <path d="M0 700 L140 575 L345 635 L580 540 L820 658 L1040 592 L1290 668 L1540 548 L1765 628 L1920 562 L1920 725 L0 725 Z" fill="url(#mtnMid)"/>
+
+  <!-- Alpine Lake surface -->
+  <rect x="0" y="705" width="1920" height="375" fill="url(#lake)"/>
+
+  <!-- Reflected mountains in lake -->
+  <g opacity="0.34">
+    <path d="M0 705 L140 820 L345 775 L580 865 L820 760 L1040 825 L1290 750 L1540 860 L1765 785 L1920 845 L1920 705 Z" fill="#182238"/>
+  </g>
+
+  <!-- Golden sun reflection ripples across lake -->
+  <g fill="#ffe0a3" opacity="0.58">
+    <rect x="1150" y="718" width="160" height="4" rx="2"/>
+    <rect x="1128" y="734" width="204" height="5" rx="2.5" opacity="0.8"/>
+    <rect x="1165" y="754" width="132" height="4" rx="2" opacity="0.65"/>
+    <rect x="1110" y="778" width="236" height="5" rx="2.5" opacity="0.52"/>
+    <rect x="1175" y="806" width="110" height="4" rx="2" opacity="0.45"/>
+    <rect x="1136" y="838" width="184" height="4" rx="2" opacity="0.35"/>
+    <rect x="1180" y="878" width="96" height="3.5" rx="2" opacity="0.26"/>
+    <rect x="1155" y="925" width="142" height="3" rx="1.5" opacity="0.18"/>
+  </g>
+
+  <!-- Foreground dark peninsulas & pine forest silhouettes -->
+  <path d="M0 735 Q240 722 465 775 Q300 845 0 890 Z" fill="url(#mtnNear)"/>
+  <path d="M1920 742 Q1650 730 1445 790 Q1620 855 1920 915 Z" fill="url(#mtnNear)"/>
+  <!-- Left & right pine tree silhouettes -->
+  <g fill="#0a1120">
+    <polygon points="75,745 55,815 95,815"/><polygon points="75,720 58,775 92,775"/>
+    <polygon points="135,738 112,818 158,818"/><polygon points="135,708 116,770 154,770"/>
+    <polygon points="205,748 184,812 226,812"/><polygon points="205,724 188,774 222,774"/>
+    <polygon points="268,756 250,806 286,806"/>
+    <polygon points="1690,762 1670,818 1710,818"/>
+    <polygon points="1755,744 1732,824 1778,824"/><polygon points="1755,716 1736,778 1774,778"/>
+    <polygon points="1835,730 1810,828 1860,828"/><polygon points="1835,698 1814,768 1856,768"/>
+  </g>
+</svg>

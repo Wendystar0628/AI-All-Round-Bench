@@ -1,0 +1,352 @@
+{
+ "problem": "03",
+ "parts": [
+  {
+   "name": "1",
+   "title": "双腔斜顶分流阀壳",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        120,
+        84
+       ]
+      }
+     ],
+     "depth": 12
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      12
+     ],
+     "loops": [
+      {
+       "path": [
+        [
+         10,
+         8
+        ],
+        [
+         110,
+         8
+        ],
+        [
+         110,
+         76
+        ],
+        [
+         10,
+         76
+        ]
+       ]
+      }
+     ],
+     "depth": 38
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "path": [
+        [
+         110,
+         30
+        ],
+        [
+         140,
+         30
+        ],
+        [
+         140,
+         60
+        ],
+        [
+         90,
+         60
+        ],
+        [
+         90,
+         50
+        ]
+       ]
+      }
+     ],
+     "depth": [
+      -100,
+      0
+     ]
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      50
+     ],
+     "loops": [
+      {
+       "rect": [
+        22,
+        20,
+        88,
+        64
+       ]
+      }
+     ],
+     "depth": -38
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      30
+     ],
+     "loops": [
+      {
+       "rect": [
+        88,
+        20,
+        100,
+        64
+       ]
+      }
+     ],
+     "depth": -18
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      94,
+      42,
+      12
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 22,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      94,
+      76,
+      21
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 18,
+     "depth": 10,
+     "reverse": true
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      35,
+      8,
+      30
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 34
+      }
+     ],
+     "depth": -10
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      35,
+      -2,
+      30
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 22,
+     "depth": 30
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      12
+     ],
+     "at": [
+      [
+       25,
+       25
+      ],
+      [
+       25,
+       59
+      ]
+     ],
+     "d": 5,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      12
+     ],
+     "at": [
+      [
+       6,
+       6
+      ],
+      [
+       114,
+       6
+      ],
+      [
+       6,
+       78
+      ],
+      [
+       114,
+       78
+      ]
+     ],
+     "d": 7,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": {
+      "origin": [
+       100,
+       42,
+       40
+      ],
+      "normal": [
+       0.70711,
+       0,
+       0.70711
+      ],
+      "x_dir": [
+       0.70711,
+       0,
+       -0.70711
+      ]
+     },
+     "origin": [
+      100,
+      42,
+      40
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 12,
+     "depth": 42
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        25,
+        0,
+        59,
+        8
+       ]
+      }
+     ],
+     "depth": [
+      -6,
+      0
+     ]
+    },
+    {
+     "type": "fillet",
+     "radius": 2,
+     "edges": [
+      [
+       0,
+       0,
+       6
+      ]
+     ],
+     "depth": [
+      0,
+      6
+     ]
+    },
+    {
+     "type": "chamfer",
+     "distance": 1,
+     "edges": [
+      [
+       60,
+       0,
+       0
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

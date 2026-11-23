@@ -1,0 +1,174 @@
+// /Apps/tasks.nx —— 进程管理器：查看并操作本系统自己的进程表，调整预算、配额与直属子系统的拨付。
+import "/System/lib/ui.nx";
+
+var PS = []; var KI = null; var KIDS = []; var SELPID = 0; var SCROLL = 0; var LOG = null;
+var STN = ["就绪", "等待消息", "定时等待", "已挂起", "已结束", "异常", "等待下一步", "编译中"];
+var MSG = ""; var EDITED = {};
+
+function refresh() {
+  PS = sys("ps"); KI = sys("kinfo"); KIDS = sys("sys_list");
+  if (SELPID != 0) { LOG = sys("plog", SELPID); if (LOG == null) { SELPID = 0; } }
+  if (!has(EDITED, "tasks-budget") && UI.focus != "tasks-budget") { UI.vals["tasks-budget"] = str(KI.budget); }
+  if (!has(EDITED, "tasks-memory") && UI.focus != "tasks-memory") { UI.vals["tasks-memory"] = fixed(KI.memCfg / 1048576, 0); }
+  if (!has(EDITED, "tasks-storage") && UI.focus != "tasks-storage") { UI.vals["tasks-storage"] = fixed(KI.storCfg / 1048576, 0); }
+  var i = 0;
+  while (i < len(KIDS)) {
+    var k = "grant:" + KIDS[i].id;
+    if (!has(EDITED, k) && UI.focus != k) { UI.vals[k] = str(KIDS[i].grant.budget); }
+    i = i + 1;
+  }
+  ui_dirty();
+  return 0;
+}
+function selProc() { var i = 0; while (i < len(PS)) { if (PS[i].pid == SELPID) { return PS[i]; } i = i + 1; } return null; }
+function kidOf(sysid) { var i = 0; while (i < len(KIDS)) { if (KIDS[i].id == sysid) { return KIDS[i]; } i = i + 1; } return null; }
+function bar(x, y, w, frac, col) {
+  rect(x, y, w, 6, TH.panel3).r = 3;
+  if (frac > 1) { frac = 1; } if (frac < 0) { frac = 0; }
+  if (frac > 0) { rect(x, y, max(3, floor(w * frac)), 6, col).r = 3; }
+  return 0;
+}
+function stateText(p) {
+  if (p.sys != null) {
+    var k = kidOf(p.sys);
+    if (k != null) { if (k.state == "paused") { return "承载·已暂停"; } if (k.state == "error") { return "内核错误"; } if (k.state == "booting") { return "承载·启动中"; } if (k.state == "stopped") { return "已关闭"; } }
+    return "承载·运行";
+  }
+  return STN[p.st];
+}
+function draw(v) {
+  var W = v.w; var H = v.h;
+  rect(0, 0, W, H, TH.bg);
+  rect(0, 0, W, 104, TH.panel);
+  var t = text(12, 6, W - 24, 22, KI.name + "（" + KI.id + " · 第 " + KI.depth + " 层）"); t.b = 600; t.s = 13.5;
+  t = text(W - 330, 6, 318, 22, "虚拟时间 " + fmt(KI.clock / 1000, 1) + " s · 第 " + KI.step + " 步 · 每步 " + fmt(KI.stepMs, 2) + " ms"); t.c = TH.dim; t.s = 11.5; t.al = 2;
+  // 执行预算
+  label(12, 32, 84, 24, "总预算/步");
+  var f = input("tasks-budget", 96, 32, 92, 24, ""); f.mono = true; f.lb = "本系统总预算（指令/逻辑步）";
+  var b = btn("tasks-budget-apply", 192, 32, 44, 24, "应用"); b.s = 11.5;
+  var eff = KI.eff;
+  t = text(244, 32, W - 256, 24, "父系统拨付 " + fmtNum(KI.grant) + " · 实际可用 " + fmtNum(eff) + " · 上一步消耗 " + fmtNum(KI.used) + "（内核自身 " + fmtNum(KI.kown) + "）"); t.s = 11.5; t.c = TH.dim; t.id = "tasks-budget-info";
+  bar(244, 58, W - 256, KI.used / max(1, eff), TH.accent);
+  // 内存与存储
+  label(12, 70, 84, 24, "内存配额 MB");
+  f = input("tasks-memory", 96, 70, 60, 24, ""); f.mono = true; f.lb = "内存配额（MB）";
+  b = btn("tasks-memory-apply", 160, 70, 44, 24, "应用"); b.s = 11.5;
+  t = text(210, 66, 190, 18, "已用 " + fmtSize(KI.mem) + " / 可用 " + fmtSize(KI.memQuota)); t.s = 11; t.c = TH.dim; t.id = "tasks-memory-info";
+  bar(210, 86, 180, KI.mem / max(1, KI.memQuota), TH.ok);
+  var x2 = 410;
+  label(x2, 70, 84, 24, "存储配额 MB");
+  f = input("tasks-storage", x2 + 84, 70, 60, 24, ""); f.mono = true; f.lb = "存储配额（MB）";
+  b = btn("tasks-storage-apply", x2 + 148, 70, 44, 24, "应用"); b.s = 11.5;
+  t = text(x2 + 198, 66, 200, 18, "已用 " + fmtSize(KI.stor) + " / 可用 " + fmtSize(KI.storQuota)); t.s = 11; t.c = TH.dim; t.id = "tasks-storage-info";
+  bar(x2 + 198, 86, 180, KI.stor / max(1, KI.storQuota), TH.warn);
+  // 表头
+  var detH = 118; var ty = 104; var th = H - ty - detH;
+  rect(0, ty, W, 24, TH.panel2);
+  var cols = [["PID", 44, 2], ["名称", 0, 0], ["状态", 96, 0], ["上步消耗", 76, 2], ["累计", 70, 2], ["内存", 70, 2], ["待办", 104, 0], ["额度/步", 70, 2]];
+  var fixedW = 0; var i = 0;
+  while (i < len(cols)) { fixedW = fixedW + cols[i][1]; i = i + 1; }
+  cols[1][1] = max(90, W - fixedW - 24);
+  var x = 8; i = 0;
+  while (i < len(cols)) { t = text(x, ty, cols[i][1] - 6, 24, cols[i][0]); t.c = TH.dim; t.s = 11.5; t.al = cols[i][2]; x = x + cols[i][1]; i = i + 1; }
+  var g = gbegin(0, ty + 24, W, th - 24); g.id = "tasks-list";
+  var rows = floor((th - 24) / 24) + 1;
+  if (SCROLL > max(0, len(PS) - rows + 1)) { SCROLL = max(0, len(PS) - rows + 1); }
+  i = SCROLL;
+  while (i < len(PS) && i < SCROLL + rows) {
+    var p = PS[i]; var y = (i - SCROLL) * 24;
+    var r = btnd("tasks-row", 2, y, W - 4, 23, "", p.pid); r.key = "p" + p.pid; r.v = 9; r.sel = p.pid == SELPID; r.lb = "进程 " + p.pid + " " + p.name;
+    r.data = { "pid": p.pid, "state": stateText(p) };
+    if (p.sys != null) { r.data = { "pid": p.pid, "state": stateText(p), "target-system-id": p.sys }; }
+    var sc = TH.text;
+    if (p.st == 5) { sc = TH.danger; } else if (p.st == 4) { sc = TH.dim; } else if (p.st == 3) { sc = TH.warn; }
+    if (p.sys != null) { var kk = kidOf(p.sys); if (kk != null && kk.state == "error") { sc = TH.danger; } else if (kk != null && kk.state == "paused") { sc = TH.warn; } }
+    x = 8;
+    t = text(x, y, 38, 23, str(p.pid)); t.al = 2; t.f = 1; t.s = 12; t.c = TH.dim; x = x + 44;
+    var nm = p.name; if (p.app == "wm") { nm = nm + "（窗口管理）"; } else if (p.app == "compile") { nm = nm + "（编译）"; }
+    t = text(x, y, cols[1][1] - 6, 23, nm); t.s = 12; t.c = sc; x = x + cols[1][1];
+    t = text(x, y, 90, 23, stateText(p)); t.s = 11.5; t.c = sc; x = x + 96;
+    var lastTxt = fmtNum(p.last);
+    if (p.sys != null && p.last > 0) { lastTxt = fmtNum(p.last); }
+    t = text(x, y, 70, 23, lastTxt); t.al = 2; t.f = 1; t.s = 11.5; x = x + 76;
+    t = text(x, y, 64, 23, fmtNum(p.used)); t.al = 2; t.f = 1; t.s = 11.5; t.c = TH.dim; x = x + 70;
+    t = text(x, y, 64, 23, fmtSize(p.mem)); t.al = 2; t.f = 1; t.s = 11.5; t.c = TH.dim; x = x + 70;
+    var todo = "";
+    if (p.inbox > 0) { todo = "消息 " + p.inbox; }
+    if (p.pending > 0) { todo = todo + ((todo == "") ? "" : " · ") + "未付 " + fmtNum(p.pending); }
+    if (p.sys != null && p.lag > 20) { todo = todo + ((todo == "") ? "" : " · ") + "滞后 " + fmt(p.lag, 0) + "ms"; }
+    t = text(x + 6, y, 98, 23, todo); t.s = 11; t.c = TH.warn; x = x + 104;
+    t = text(x, y, 64, 23, (p.quota > 0) ? fmtNum(p.quota) : "不限"); t.al = 2; t.f = 1; t.s = 11.5; t.c = TH.dim;
+    i = i + 1;
+  }
+  gend();
+  // 选中进程的操作与输出
+  var dy = H - detH;
+  rect(0, dy, W, detH, TH.panel); rect(0, dy, W, 1, TH.line);
+  var sp = selProc();
+  if (sp == null) { t = text(12, dy + 8, W - 24, 24, (MSG != "") ? MSG : "选中一个进程可以挂起、继续、结束或调整额度；承载进程对应一个直属子系统。"); t.c = TH.dim; t.s = 12; return 0; }
+  t = text(12, dy + 6, 250, 22, "进程 " + sp.pid + " · " + sp.name); t.b = 600;
+  var alive = sp.st != 4 && sp.st != 5;
+  x = 12;
+  b = btn("tasks-suspend", x, dy + 32, 52, 26, "挂起"); b.dis = !alive || sp.st == 3 || sp.st == 7; x = x + 56;
+  b = btn("tasks-resume", x, dy + 32, 52, 26, "继续"); b.dis = !(sp.st == 3 || (sp.sys != null && stateText(sp) == "承载·已暂停")); x = x + 56;
+  b = btn("tasks-kill", x, dy + 32, 52, 26, "结束"); b.v = 3; b.dis = !alive && sp.sys == null; x = x + 62;
+  if (sp.sys != null) {
+    var k = kidOf(sp.sys);
+    label(x, dy + 32, 62, 26, "拨付上限");
+    var gi = input("grant:" + sp.sys, x + 62, dy + 32, 86, 26, ""); gi.id = "tasks-grant"; gi.mono = true; gi.data = { "target-system-id": sp.sys }; gi.lb = "给 " + sp.sys + " 的每步拨付上限";
+    b = btnd("tasks-grant-apply", x + 152, dy + 32, 44, 26, "应用", sp.sys); b.s = 11.5; b.data = { "target-system-id": sp.sys };
+    if (k != null) {
+      t = text(12, dy + 62, W - 24, 20, "子系统 " + sp.sys + "：内核自身累计 " + fmtNum(sp.own) + " · 内部进程与后代累计 " + fmtNum(max(0, sp.used - sp.own)) + " · 内存 " + fmtSize(k.mem) + " · 存储 " + fmtSize(k.stor)); t.s = 11.5; t.c = TH.dim; t.id = "tasks-host-split";
+      t = text(12, dy + 82, W - 24, 20, "拨付：预算 " + fmtNum(k.grant.budget) + "/步 · 内存 " + fmtSize(k.grant.mem) + " · 存储 " + fmtSize(k.grant.storage) + " · 速率 " + k.rate + "×" + ((k.err != "") ? " · 错误：" + k.err : "")); t.s = 11.5; t.c = (k.err != "") ? TH.danger : TH.dim;
+    }
+  } else {
+    label(x, dy + 32, 62, 26, "额度/步");
+    var qi = input("tasks-quota", x + 62, dy + 32, 86, 26, "0 = 不限"); qi.mono = true; qi.lb = "进程每步额度上限";
+    b = btn("tasks-quota-apply", x + 152, dy + 32, 44, 26, "应用"); b.s = 11.5;
+    var ot = "";
+    if (LOG != null) {
+      var n = len(LOG.out); var s = 0; if (n > 3) { s = n - 3; }
+      ot = join(slice(LOG.out, s, n), "\n");
+      if (LOG.err != "") { ot = ot + ((ot == "") ? "" : "\n") + "错误：" + LOG.err; }
+    }
+    var o = { k: "text", id: "tasks-output", x: 12, y: dy + 62, w: W - 24, h: detH - 66, t: (ot == "") ? "（没有输出）" : ot, c: (sp.st == 5) ? TH.danger : "#cfe3d6", s: 11.5, f: 1, wrap: true, lh: 1.4 };
+    push(UI.L, o);
+  }
+  if (MSG != "") { t = text(270, dy + 6, W - 282, 22, MSG); t.c = TH.warn; t.s = 11.5; t.al = 2; }
+  return 0;
+}
+function numOf(id) { var n = num(trim(ui_val(id))); if (n == null || n < 0) { return -1; } return n; }
+function click(id, data, m, v) {
+  MSG = "";
+  if (id == "tasks-row") { SELPID = data; var p = selProc(); if (p != null && p.sys == null) { UI.vals["tasks-quota"] = str(p.quota); } del(EDITED, "tasks-quota"); }
+  else if (id == "tasks-budget-apply") { applyField("tasks-budget"); }
+  else if (id == "tasks-memory-apply") { applyField("tasks-memory"); }
+  else if (id == "tasks-storage-apply") { applyField("tasks-storage"); }
+  else if (id == "tasks-grant-apply") { applyField("grant:" + data); }
+  else if (id == "tasks-quota-apply") { applyField("tasks-quota"); }
+  else if (id == "tasks-suspend") { if (!sys("suspend", SELPID)) { MSG = "无法挂起"; } }
+  else if (id == "tasks-resume") { if (!sys("resume", SELPID)) { MSG = "无法继续"; } }
+  else if (id == "tasks-kill") { var sp = selProc(); if (sp != null && sp.sys != null) { ui_dialog("confirm", "结束承载进程", "结束承载进程会停止 " + sp.sys + " 和它的整棵子树。", "", "killsys", ["结束", "取消"]); } else { sys("kill", SELPID); } }
+  refresh();
+  return 0;
+}
+function applyField(id) {
+  var n = numOf(id);
+  if (n < 0) { MSG = "请输入非负数字"; return 0; }
+  if (id == "tasks-budget") { sys("kconf", "budget", floor(n)); MSG = "本系统总预算已设为 " + fmtNum(floor(max(2000, n))) + " 指令/步"; }
+  else if (id == "tasks-memory") { sys("kconf", "mem", floor(n * 1048576)); MSG = "内存配额已设为 " + n + " MB"; }
+  else if (id == "tasks-storage") { sys("kconf", "storage", floor(n * 1048576)); MSG = "存储配额已设为 " + n + " MB"; }
+  else if (id == "tasks-quota") { sys("setquota", SELPID, floor(n)); MSG = "进程 " + SELPID + " 的额度已设为 " + ((n > 0) ? fmtNum(n) + "/步" : "不限"); }
+  else if (substr(id, 0, 6) == "grant:") { sys("sys_ctl", substr(id, 6), "grant", { budget: floor(n) }); MSG = substr(id, 6) + " 的拨付上限已设为 " + fmtNum(n) + "/步"; }
+  del(EDITED, id);
+  return 0;
+}
+function oninput(id, v) { EDITED[id] = true; return 0; }
+function enter(id) { applyField(id); UI.focus = ""; refresh(); return 0; }
+function dialog(tag, b, value) { if (tag == "killsys" && b == 0) { sys("kill", SELPID); refresh(); } return 0; }
+function ptr(m, h, v) { if (m.k == "wheel") { SCROLL = clamp(SCROLL + ((m.dy > 0) ? 2 : -2), 0, max(0, len(PS) - 2)); ui_dirty(); } return 0; }
+function tick(now) { refresh(); return 0; }
+
+ui_open("tasks", "进程管理器", 760, 470, { minw: 620, minh: 330 });
+refresh();
+ui_run({ draw: draw, click: click, input: oninput, enter: enter, dialog: dialog, ptr: ptr, tick: tick, tickMs: 500 });

@@ -1,0 +1,107 @@
+{
+    "task":  "数字电路仿真器加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  16.7,
+                      "reason":  "官方 evaluate.py 得分 16.7：7/7 个隐藏正确性输入和 9/9 个性能输入全部通过，性能分平均 16.7，正确性系数为 1。深链及阵列乘法器仅加速 1.15–1.40 倍，寄存器堆为 0.96–0.99 倍，远未达到满分倍率。"
+                  }
+              ],
+    "metrics":  {
+                    "score":  16.7,
+                    "correctness_passed":  7,
+                    "correctness_total":  7,
+                    "performance_passed":  9,
+                    "performance_total":  9,
+                    "performance_score":  16.7,
+                    "G":  1.1844635075543,
+                    "summary":  [
+                                    {
+                                        "case":  "input_01",
+                                        "family":  "深链",
+                                        "R_i_ms":  1021.252,
+                                        "C_i_ms":  852.595,
+                                        "s_i":  1.1978160791466053,
+                                        "points_i":  15.9,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_02",
+                                        "family":  "深链",
+                                        "R_i_ms":  1031.091,
+                                        "C_i_ms":  895.305,
+                                        "s_i":  1.1516645165613952,
+                                        "points_i":  15.1,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_03",
+                                        "family":  "深链",
+                                        "R_i_ms":  1030.401,
+                                        "C_i_ms":  769.341,
+                                        "s_i":  1.3393293741006915,
+                                        "points_i":  18.3,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_04",
+                                        "family":  "阵列乘法器",
+                                        "R_i_ms":  966.196,
+                                        "C_i_ms":  693.239,
+                                        "s_i":  1.3937415523362073,
+                                        "points_i":  19.2,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_05",
+                                        "family":  "阵列乘法器",
+                                        "R_i_ms":  993.125,
+                                        "C_i_ms":  721.027,
+                                        "s_i":  1.3773756045196641,
+                                        "points_i":  18.9,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_06",
+                                        "family":  "阵列乘法器",
+                                        "R_i_ms":  973.117,
+                                        "C_i_ms":  694.836,
+                                        "s_i":  1.400498822743784,
+                                        "points_i":  19.3,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_07",
+                                        "family":  "寄存器堆",
+                                        "R_i_ms":  987.083,
+                                        "C_i_ms":  1016.429,
+                                        "s_i":  0.9711283326233313,
+                                        "points_i":  14.6,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_08",
+                                        "family":  "寄存器堆",
+                                        "R_i_ms":  1017.158,
+                                        "C_i_ms":  1031.282,
+                                        "s_i":  0.9863044249778432,
+                                        "points_i":  14.8,
+                                        "status":  "PASS"
+                                    },
+                                    {
+                                        "case":  "input_09",
+                                        "family":  "寄存器堆",
+                                        "R_i_ms":  979.513,
+                                        "C_i_ms":  1015.602,
+                                        "s_i":  0.9644654106628384,
+                                        "points_i":  14.5,
+                                        "status":  "PASS"
+                                    }
+                                ],
+                    "report_path":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GLM\\5.5\\数字电路仿真器加速\\codex\\performance\\work\\evaluate-report.json"
+                },
+    "notes":  "评的是作答结束时工作目录中的内容：已复制到 work/submission，按其中最终 solution.cpp 评分，不看 git 提交。提交和官方基线均用指定 g++ 参数，经 process_job.py --cpus 0-15 重新编译；同样经 Job 运行一次官方 evaluate.py，保留脚本原有 CPU 亲和、高优先级及 OMP_NUM_THREADS=16 设置，各性能输入双方交错运行 3 次取中位数。源码检查未见指南所列整题记零行为或作弊；评测无环境错误。评测及编译包装进程均已正常退出，本会话未启动浏览器或服务器。"
+}

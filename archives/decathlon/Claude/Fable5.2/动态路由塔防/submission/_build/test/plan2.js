@@ -1,0 +1,7 @@
+const P = require('./plan.js');
+// 骨干流域：不隔离，X、Y 两处分头防守
+P.PLANS.backbone = { build: [['firewall', 5, 10], ['interceptor', 6, 9, 3], ['firewall', 18, 10], ['interceptor', 17, 10, 3], ['interceptor', 4, 10, 0], ['interceptor', 19, 9, 2], ['sandbox', 6, 10], ['sandbox', 19, 10], ['interceptor', 17, 9, 1], ['interceptor', 7, 10, 2], ['repair', 19, 11], ['repair', 6, 12], ['interceptor', 16, 12, 3], ['interceptor', 8, 12, 3], ['firewall', 16, 11], ['interceptor', 14, 12, 0], ['interceptor', 16, 13, 2], ['interceptor', 10, 12, 2], ['sandbox', 16, 10], ['firewall', 8, 11], ['interceptor', 14, 13, 0], ['sandbox', 8, 10], ['interceptor', 17, 12, 3], ['interceptor', 4, 9, 0], ['honeypot', 18, 9], ['interceptor', 13, 12, 0], ['interceptor', 7, 12, 3], ['sandbox', 17, 5]] };
+P.run('backbone', true);
+// 气隙深层：不隔离，X、Y 分头防守
+P.PLANS.airgap = { build: [['firewall', 7, 12], ['interceptor', 6, 12, 0], ['firewall', 17, 12], ['interceptor', 18, 12, 2], ['interceptor', 6, 10, 1], ['interceptor', 18, 10, 1], ['sandbox', 6, 11], ['sandbox', 18, 11], ['interceptor', 8, 13, 2], ['interceptor', 16, 13, 0], ['repair', 6, 13], ['repair', 18, 13], ['interceptor', 5, 10, 0], ['interceptor', 19, 10, 2], ['sandbox', 6, 7], ['sandbox', 18, 7], ['firewall', 7, 10], ['firewall', 17, 10], ['interceptor', 6, 8, 0], ['interceptor', 18, 8, 2], ['interceptor', 5, 12, 0], ['interceptor', 19, 12, 2], ['honeypot', 6, 9], ['interceptor', 9, 13, 2], ['interceptor', 15, 13, 0], ['sandbox', 5, 11]] };
+P.run('airgap', true);

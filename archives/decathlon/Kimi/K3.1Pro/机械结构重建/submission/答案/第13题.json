@@ -1,0 +1,38 @@
+{
+  "problem": "13",
+  "parts": [
+    {
+      "name": "1", "title": "斜耳叉架减速箱体",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 92, 58], "r": 6}], "depth": 6},
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 6], "loops": [{"rect": [24, 6, 66, 52]}], "depth": 52},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 6, 0], "loops": [{"path": [[10, 6], [24, 6], [24, 58]]}], "depth": -6},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 46, 0], "loops": [{"path": [[10, 6], [24, 6], [24, 58]]}], "depth": -6},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 6, 0], "loops": [{"path": [[66, 6], [82, 6], [66, 58]]}], "depth": -6},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 46, 0], "loops": [{"path": [[66, 6], [82, 6], [66, 58]]}], "depth": -6},
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 6], "loops": [{"rect": [66, 12, 82, 46]}], "depth": 40},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 6, 0], "loops": [{"circle": [40, 40], "d": 66}], "depth": 2},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [82, 0, 0], "loops": [{"circle": [29, 40], "d": 54}], "depth": 6},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 4, 0], "loops": [{"path": [[24, 58], [30, 76], [38, 72], [32, 58]]}], "depth": -8},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 52], "loops": [{"rect": [30, 12, 60, 46]}], "depth": -46},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [[40, 40]], "d": 30, "through": true, "cbore": {"d": 44, "depth": 6}},
+        {"type": "hole", "plane": "YZ", "origin": [88, 0, 0], "at": [[29, 40]], "d": 24, "through": true, "cbore": {"d": 36, "depth": 6}},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [[31, 68]], "d": 16, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 58], "at": [[48, 29]], "d": 10, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 58], "at": [[74, 12], [74, 46]], "d": 10, "through": true},
+        {
+          "type": "hole",
+          "plane": {"origin": [74, 46, 58], "normal": [-0.405576777, -0.405576777, 0.8191520443], "x_dir": [0.7071067812, -0.7071067812, 0]},
+          "at": [[0, 0]], "d": 12, "depth": 76
+        },
+        {
+          "type": "hole",
+          "plane": {"origin": [82, 29, 36], "normal": [-0.9659258263, 0, 0.2588190451], "x_dir": [0, 1, 0]},
+          "at": [[0, 0]], "d": 10, "depth": 50
+        },
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[6, 6], [86, 6], [6, 52], [86, 52]], "d": 9, "through": true, "cbore": {"d": 16, "depth": 2}},
+        {"type": "chamfer", "distance": 1.5, "edges": [[55.5563491861, 4, 55.5563491861]], "name": "低速前沉孔口整圈C1.5"}
+      ]
+    }
+  ]
+}

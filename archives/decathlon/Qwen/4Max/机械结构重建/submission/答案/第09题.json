@@ -1,0 +1,28 @@
+{
+  "problem": "09",
+  "parts": [
+    {
+      "name": "1",
+      "title": "跨腔三向斜流道歧管",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 44, 32]}], "depth": 6, "name": "底板44x32x6"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 3]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[22, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 6], "loops": [{"rect": [4, 4, 40, 28]}], "depth": 36, "name": "主体Z6-42"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 6, 0], "loops": [{"circle": [20, 24], "d": 40}], "depth": 6, "name": "前接口凸台Φ40"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [20, 24], "d": 34, "depth": 20, "name": "主腔Φ34深20"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [30, 16], "d": 26, "depth": 12, "name": "次腔Φ26深12"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [12, 12], "d": 12, "depth": 10, "name": "前孔Φ12深10"},
+        {"type": "hole", "plane": "YZ", "origin": [40, 0, 0], "at": [16, 24], "d": 22, "depth": 20, "name": "侧孔Φ22深20"},
+        {"type": "hole", "plane": "YZ", "origin": [40, 0, 0], "at": [10, 12], "d": 18, "depth": 16, "name": "侧孔Φ18深16"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 42], "at": [20, 16], "d": 30, "depth": 12, "name": "顶孔Φ30深12"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 42], "at": [30, 16], "d": 16, "depth": 20, "name": "顶孔Φ16深20"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 42], "at": [10, 24], "d": 10, "depth": 10, "name": "顶孔Φ10深10"},
+        {"type": "hole", "plane": {"origin": [32, 16, 42], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 14, "depth": 64, "name": "斜孔1Φ14深64 倾45方位0"},
+        {"type": "hole", "plane": {"origin": [20, 24, 42], "normal": [0, 0.5, 0.8660254], "x_dir": [1, 0, 0]}, "at": [0, 0], "d": 10, "depth": 40, "name": "斜孔2Φ10深40 倾30方位90"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[4, 4], [40, 4], [4, 28], [40, 28]], "d": 8, "through": true, "name": "4xΦ8安装孔"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [[10, 34], [34, 34]], "d": 8, "depth": 8, "name": "2xΦ8前上孔"}
+      ]
+    }
+  ]
+}

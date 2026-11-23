@@ -1,0 +1,38 @@
+{
+  "problem": "14",
+  "parts": [
+    {
+      "name": "1", "title": "偏置双出口泵体铸件",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 96, 58], "r": 5}], "depth": 5},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 4, 0], "loops": [{"path": [[10, 5], [76, 5], [76, 38], [62, 70], [24, 70], [10, 38]]}], "depth": -50},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 4, 0], "loops": [{"circle": [42, 50], "d": 82}], "depth": 8},
+        {"type": "fillet", "radius": 3, "edges": [[70.9913752848, 4, 78.9913752848]], "name": "前凸缘根部过渡R3"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, -2, 0], "loops": [{"circle": [42, 50], "d": 76}], "depth": 2},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [76, 0, 0], "loops": [{"circle": [29, 50], "d": 46}], "depth": 24},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [100, 0, 0], "loops": [{"circle": [29, 50], "d": 68}], "depth": 6},
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 70], "loops": [{"circle": [42, 29], "d": 38}], "depth": 14},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 52], "loops": [{"rect": [24, 12, 62, 46]}], "depth": -47},
+        {"type": "hole", "plane": "XZ", "origin": [0, -4, 0], "at": [[42, 50]], "d": 32, "through": true},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, -4, 0], "loops": [{"circle": [42, 50], "d": 46}], "depth": -8},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, -4, 0], "loops": [{"circle": [42, 50], "d": 54}], "depth": -4},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, -4, 0], "loops": [{"circle": [42, 50], "d": 66}], "depth": -2},
+        {"type": "hole", "plane": "YZ", "origin": [106, 0, 0], "at": [[29, 50]], "d": 28, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 84], "at": [[42, 29]], "d": 18, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 70], "at": [[58, 29]], "d": 10, "through": true},
+        {
+          "type": "hole",
+          "plane": {"origin": [24, 12, 70], "normal": [0, 0.8660254038, 0.5], "x_dir": [1, 0, 0]},
+          "at": [[0, 0]], "d": 8, "depth": 52
+        },
+        {
+          "type": "hole",
+          "plane": {"origin": [66, 46, 70], "normal": [0, -0.8191520443, 0.5735764364], "x_dir": [1, 0, 0]},
+          "at": [[0, 0]], "d": 10, "depth": 50
+        },
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 5], "at": [[6, 6], [90, 6], [6, 52], [90, 52]], "d": 9, "through": true, "cbore": {"d": 16, "depth": 2}},
+        {"type": "chamfer", "distance": 1.5, "edges": [[65.3345262095, -4, 73.3345262095]], "name": "前轴承沉孔口整圈C1.5"}
+      ]
+    }
+  ]
+}

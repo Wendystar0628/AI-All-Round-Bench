@@ -1,0 +1,191 @@
+{
+  "problem": "10",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双斜座多腔阀体铸件",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底座",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 160, 104], "r": 6}],
+          "depth": 16
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "双斜顶阀体主体",
+          "plane": "XZ",
+          "origin": [0, 12, 0],
+          "loops": [{"path": [[12, 16], [148, 16], [148, 72], [108, 106], [48, 106], [12, 74]]}],
+          "depth": [-80, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左横向Φ64凸缘",
+          "plane": "YZ",
+          "origin": [-10, 0, 0],
+          "loops": [{"circle": [52, 54], "d": 64}],
+          "depth": 26
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右横向Φ72凸缘",
+          "plane": "YZ",
+          "origin": [144, 0, 0],
+          "loops": [{"circle": [52, 54], "d": 72}],
+          "depth": 28
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前侧Φ30凸台",
+          "plane": "XZ",
+          "origin": [0, 6, 0],
+          "loops": [{"circle": [62, 62], "d": 30}],
+          "depth": [-10, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前斜肋",
+          "plane": "XZ",
+          "origin": [0, 6, 0],
+          "loops": [{"path": [[28, 16], [62, 16], [62, 54]]}],
+          "depth": [-6, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后侧Φ32凸台",
+          "plane": "XZ",
+          "origin": [0, 92, 0],
+          "loops": [{"circle": [104, 44], "d": 32}],
+          "depth": [-8, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左前工作腔",
+          "plane": "XY",
+          "origin": [0, 0, 24],
+          "loops": [{"rect": [22, 24, 72, 80]}],
+          "depth": 56
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "右后工作腔",
+          "plane": "XY",
+          "origin": [0, 0, 24],
+          "loops": [{"rect": [84, 24, 136, 80]}],
+          "depth": 40
+        },
+        {
+          "type": "hole",
+          "name": "左进水Φ30孔",
+          "plane": "YZ",
+          "origin": [-12, 0, 0],
+          "at": [52, 54],
+          "d": 30,
+          "depth": 38,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右出水Φ34孔",
+          "plane": "YZ",
+          "origin": [174, 0, 0],
+          "at": [52, 54],
+          "d": 34,
+          "depth": 42
+        },
+        {
+          "type": "hole",
+          "name": "隔墙Φ20节流孔",
+          "plane": "YZ",
+          "origin": [70, 0, 0],
+          "at": [52, 44],
+          "d": 20,
+          "depth": 18,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "前凸台Φ10孔",
+          "plane": "XZ",
+          "origin": [0, 4, 0],
+          "at": [62, 62],
+          "d": 10,
+          "depth": 24
+        },
+        {
+          "type": "hole",
+          "name": "后凸台Φ12孔",
+          "plane": "XZ",
+          "origin": [0, 102, 0],
+          "at": [104, 44],
+          "d": 12,
+          "depth": 26,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ8中心孔",
+          "plane": "XY",
+          "origin": [0, 0, 106],
+          "at": [78, 52],
+          "d": 8,
+          "depth": 24
+        },
+        {
+          "type": "hole",
+          "name": "左斜阀座Φ24孔",
+          "plane": {
+            "origin": [26, 52, 92],
+            "normal": [-0.64278761, 0, 0.766044443],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 24,
+          "depth": 50
+        },
+        {
+          "type": "hole",
+          "name": "右斜阀座Φ22孔",
+          "plane": {
+            "origin": [132, 52, 90],
+            "normal": [0.766044443, 0, 0.64278761],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 22,
+          "depth": 50
+        },
+        {
+          "type": "hole",
+          "name": "底座四个Φ8安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 16],
+          "at": [[10, 10], [150, 10], [10, 94], [150, 94]],
+          "d": 8,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "name": "底部两个Φ8竖向回流孔",
+          "plane": "XY",
+          "origin": [0, 0, 26],
+          "at": [[44, 40], [110, 64]],
+          "d": 8,
+          "depth": 28
+        }
+      ]
+    }
+  ]
+}

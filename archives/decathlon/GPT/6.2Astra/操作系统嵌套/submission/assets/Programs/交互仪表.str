@@ -1,0 +1,10 @@
+# 便携绘图程序 · 单击移动标记
+x = 320
+y = 180
+@draw
+display([{type:"rect",x:0,y:0,width:640,height:360,fill:"#273f37"},{type:"circle",cx:x,cy:y,r:28,fill:"#e5ef9c"},{type:"text",x:25,y:42,text:"FIELD SIGNAL  /  单击标记位置",fill:"#e3e8d2"}])
+receive event
+if event.action != "click" goto draw
+x = event.x
+y = event.y
+goto draw

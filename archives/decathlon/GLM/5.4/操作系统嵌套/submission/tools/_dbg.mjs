@@ -1,0 +1,18 @@
+import fs from 'fs';
+import { createRequire } from 'module';
+import path from 'path';
+global.window = { require: createRequire(import.meta.url) };
+for (const f of ['vm.js', 'nsl.js', 'util.js', 'nslruntime.js']) (0, eval)(fs.readFileSync('renderer/js/' + f, 'utf8'));
+const NSL = window.NSL, NSLC = window.NSLC, RT = window.NSLRuntime;
+const rt = new RT.Runtime();
+const rootInst = rt.createRoot({});
+const child = rt.createInstance(rootInst, 'inner-1');
+child.screen = { w: 960, h: 620 };
+const ks = rt.fixtureSource('Kernel.nsl');
+console.log('fixture len', ks.length, JSON.stringify(ks.slice(0,60)));
+const kc = NSLC.compile(ks, 'kernel');
+console.log('code0', JSON.stringify(kc.prog.code.slice(0, 8)), 'len', kc.prog.code.length);
+const p = NSL.createProcess(kc.prog, { id: 0, tag: 'kernel' });
+console.log('frames0', p.frames.length, 'pc', p.frames[0].pc, 'prog', p.prog === kc.prog);
+let r = NSL.step(p, 50000);
+console.log('step1', JSON.stringify(r), 'err', p.error, 'frames', p.frames.length, 'pcs', p.frames.map((f) => f.pc));

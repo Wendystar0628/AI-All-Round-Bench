@@ -1,0 +1,381 @@
+// /System/lib/flight.nx —— 通用旋翼机飞行模型（由场景进程使用）。
+// 机体是不稳定的被控对象：状态按固定步长（1/240 秒）随时间演化，不等待飞控；控制量保持到下一次写入。
+// 地形、障碍与机体参数全部来自场景资源，改动资源里的地形或障碍，接触结果相应变化。
+
+var FDT = 0.004166666666666667;       // 物理步长（秒）
+var G = 9.81;
+var SERVO_TAU = 0.03;
+var TERR = null; var TN = 0; var TSIZE = 1; var THALF = 0; var TROW = 0;
+var SOLIDS = [];                      // [kind(0 盒 1 柱), x, z, 半宽x/半径, 半宽z, 底, 顶, cos, sin, 名称]
+var VEH = null; var CONTACTS = []; var MASS = 2200; var IXX = 2400; var IYY = 7600; var IZZ = 6800;
+var ROTOR_R = 5.7; var PARTDEF = {}; var BLADES = []; var CGH = 1.56;
+var R00 = 1; var R01 = 0; var R02 = 0; var R10 = 0; var R11 = 1; var R12 = 0; var R20 = 0; var R21 = 0; var R22 = 1;
+var EVENTS = [];                      // 本次推进中发生的事件（撞击、起火、故障阶段）
+var NEAR = []; var NEARX = 1000000; var NEARZ = 1000000;   // 机体附近的障碍物（只是加速用的缓存，不影响结果）
+
+function fl_near(x, z) {
+  var dx = x - NEARX; var dz = z - NEARZ;
+  if (dx * dx + dz * dz < 9) { return 0; }
+  NEAR = []; NEARX = x; NEARZ = z;
+  var i = 0;
+  while (i < len(SOLIDS)) {
+    var s = SOLIDS[i]; i = i + 1;
+    var ex = s[1] - x; var ez = s[2] - z; var rr = 13 + s[10];
+    if (ex * ex + ez * ez < rr * rr) { push(NEAR, s); }
+  }
+  return 0;
+}
+
+function fl_setup(res) {
+  var T = res.terrain;
+  if (T != null) { TERR = T.heights; TN = T.n; TSIZE = T.size; THALF = T.size / 2; TROW = T.n + 1; } else { TERR = null; }
+  SOLIDS = [];
+  var objs = res.objects; var i = 0;
+  if (objs == null) { objs = []; }
+  while (i < len(objs)) {
+    var o = objs[i]; i = i + 1;
+    if (!has(o, "solid")) { continue; }
+    var s = o.solid;
+    if (has(o, "instances")) {
+      var j = 0;
+      while (j < len(o.instances)) {
+        var it = o.instances[j]; j = j + 1;
+        var sc = it[2]; var gy = fl_terrain(it[0], it[1]);
+        push(SOLIDS, [1, it[0], it[1], s.r * sc, 0, gy, gy + s.h * sc, 1, 0, o.name, s.r * sc]);
+      }
+      continue;
+    }
+    var px = o.pos[0]; var pz = o.pos[2];
+    if (s.type == "cyl") { push(SOLIDS, [1, px, pz, s.r, 0, -1000, s.top, 1, 0, o.name, s.r]); }
+    else {
+      var ry = 0; if (has(o, "rot")) { ry = o.rot[1] * 0.017453292519943295; }
+      var base = o.pos[1];
+      push(SOLIDS, [0, px, pz, s.size[0] / 2, s.size[2] / 2, base - 2, base + s.size[1], cos(ry), sin(ry), o.name, sqrt(s.size[0] * s.size[0] + s.size[2] * s.size[2]) / 2]);
+    }
+  }
+  VEH = res.vehicle; CONTACTS = []; PARTDEF = {}; BLADES = [];
+  if (VEH != null) {
+    var k = 0;
+    while (k < len(VEH.parts)) { PARTDEF[VEH.parts[k].name] = VEH.parts[k]; k = k + 1; }
+    if (has(VEH, "phys")) { MASS = VEH.phys.mass; IXX = VEH.phys.inertia[0]; IYY = VEH.phys.inertia[1]; IZZ = VEH.phys.inertia[2]; CONTACTS = VEH.phys.contacts; CGH = VEH.phys.cgToSkid; }
+    if (has(VEH, "rotor")) { ROTOR_R = VEH.rotor.radius; BLADES = VEH.rotor.blades; }
+  }
+  return 0;
+}
+function fl_terrain(x, z) {
+  if (TERR == null) { return 0; }
+  var fx = (x + THALF) / TSIZE * TN; var fz = (z + THALF) / TSIZE * TN;
+  if (fx < 0) { fx = 0; } if (fx > TN - 0.0001) { fx = TN - 0.0001; }
+  if (fz < 0) { fz = 0; } if (fz > TN - 0.0001) { fz = TN - 0.0001; }
+  var ix = floor(fx); var iz = floor(fz); var tx = fx - ix; var tz = fz - iz;
+  var a = TERR[iz * TROW + ix]; var b = TERR[iz * TROW + ix + 1]; var c = TERR[(iz + 1) * TROW + ix]; var d = TERR[(iz + 1) * TROW + ix + 1];
+  return (a * (1 - tx) + b * tx) * (1 - tz) + (c * (1 - tx) + d * tx) * tz;
+}
+// 某点下方的支撑面高度（地形或障碍物顶面）；y 用来判断是否从上方落到障碍物顶面
+function fl_surface(x, y, z) {
+  var h = fl_terrain(x, z); var i = 0;
+  var ddx = x - NEARX; var ddz = z - NEARZ;
+  if (ddx * ddx + ddz * ddz > 100) { fl_near(x, z); }
+  var n = len(NEAR);
+  while (i < n) {
+    var s = NEAR[i]; i = i + 1;
+    var dx = x - s[1]; var dz = z - s[2];
+    if (dx * dx + dz * dz > s[10] * s[10]) { continue; }
+    if (s[0] == 1) { if (dx * dx + dz * dz < s[3] * s[3] && s[6] > h && y > s[6] - 1.2) { h = s[6]; } }
+    else {
+      var lx = dx * s[7] - dz * s[8]; var lz = dx * s[8] + dz * s[7];
+      if (lx > -s[3] && lx < s[3] && lz > -s[4] && lz < s[4] && s[6] > h && y > s[6] - 1.2) { h = s[6]; }
+    }
+  }
+  return h;
+}
+// 点是否陷入某个障碍物侧面；返回 [推出x, 推出z, 名称] 或 null
+function fl_inside(x, y, z) {
+  var i = 0; var n = len(NEAR);
+  while (i < n) {
+    var s = NEAR[i]; i = i + 1;
+    if (y < s[5] || y > s[6] - 1.2) { continue; }
+    var dx = x - s[1]; var dz = z - s[2];
+    if (dx * dx + dz * dz > s[10] * s[10]) { continue; }
+    if (s[0] == 1) {
+      var d2 = dx * dx + dz * dz;
+      if (d2 < s[3] * s[3]) { var d = sqrt(d2) + 0.0001; var pen = s[3] - d; return [dx / d * pen, dz / d * pen, s[9]]; }
+    } else {
+      var lx = dx * s[7] - dz * s[8]; var lz = dx * s[8] + dz * s[7];
+      if (lx > -s[3] && lx < s[3] && lz > -s[4] && lz < s[4]) {
+        var px = s[3] - abs(lx); var pz = s[4] - abs(lz);
+        var ox = 0; var oz = 0;
+        if (px < pz) { ox = (lx > 0) ? px : -px; } else { oz = (lz > 0) ? pz : -pz; }
+        return [ox * s[7] + oz * s[8], -ox * s[8] + oz * s[7], s[9]];
+      }
+    }
+  }
+  return null;
+}
+function fl_setR(q) {
+  var x = q[0]; var y = q[1]; var z = q[2]; var w = q[3];
+  R00 = 1 - 2 * (y * y + z * z); R01 = 2 * (x * y - z * w); R02 = 2 * (x * z + y * w);
+  R10 = 2 * (x * y + z * w); R11 = 1 - 2 * (x * x + z * z); R12 = 2 * (y * z - x * w);
+  R20 = 2 * (x * z - y * w); R21 = 2 * (y * z + x * w); R22 = 1 - 2 * (x * x + y * y);
+  return 0;
+}
+function qmul(a, b) {
+  return [a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1], a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
+          a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3], a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]];
+}
+function qaxis(ax, ay, az, ang) { var s = sin(ang / 2); return [ax * s, ay * s, az * s, cos(ang / 2)]; }
+function qeuler(rx, ry, rz) {   // 与显示设备相同的 YXZ 次序（角度制）
+  var d = 0.017453292519943295;
+  return qmul(qmul(qaxis(0, 1, 0, ry * d), qaxis(1, 0, 0, rx * d)), qaxis(0, 0, 1, rz * d));
+}
+function qintegrate(q, wx, wy, wz, dt) {   // 机体系角速度
+  var x = q[0]; var y = q[1]; var z = q[2]; var w = q[3]; var h = dt * 0.5;
+  var nx = x + h * (w * wx + y * wz - z * wy); var ny = y + h * (w * wy - x * wz + z * wx);
+  var nz = z + h * (w * wz + x * wy - y * wx); var nw = w - h * (x * wx + y * wy + z * wz);
+  var n = sqrt(nx * nx + ny * ny + nz * nz + nw * nw);
+  q[0] = nx / n; q[1] = ny / n; q[2] = nz / n; q[3] = nw / n;
+  return 0;
+}
+function fl_rand(S) { S.rng = (S.rng * 1103515245 + 12345) % 2147483648; return S.rng / 2147483648; }
+
+// 初始状态：停在坐标 (x, z) 的支撑面上，机头朝 yawDeg
+function fl_init(x, z, yawDeg, seed) {
+  var cg = 1.56; if (VEH != null && has(VEH, "phys")) { cg = VEH.phys.cgToSkid; }
+  var y = fl_surface(x, 1000, z) + cg;
+  return { t: 0, n: 0, p: [x, y, z], v: [0, 0, 0], q: qaxis(0, 1, 0, yawDeg * 0.017453292519943295), w: [0, 0, 0],
+           rpm: 0.24, az: 0, taz: 0, col: 0, cp: 0, cr: 0, cy: 0, tail: 1, power: 1, fault: null, faultT: -1,
+           crashed: false, crashT: -1, ground: true, agl: 0, wind: [0, 0], gust: [0, 0, 0], sr: 0, sp: 0,
+           target: { x: x, z: z, alt: 0, hdg: yawDeg, mode: "idle" }, allRest: false, rng: 1000 + seed, dmg: {}, debris: [], squash: 0, fire: 0, thrust: 0, rest: false,
+           maxTilt: 0, impact: 0 };
+}
+function fl_event(S, kind, x, y, z, power, part) { push(EVENTS, { t: S.t, kind: kind, p: [x, y, z], power: power, part: part }); return 0; }
+function fl_damage(S, part, amount) {
+  var d = 0; if (has(S.dmg, part)) { d = S.dmg[part]; }
+  d = d + amount; if (d > 1) { d = 1; }
+  S.dmg[part] = d;
+  return d;
+}
+function fl_detach(S, part, vx, vy, vz, spin) {
+  // 部件脱落成为独立的碎片，带着当时的位置与速度
+  var i = 0;
+  while (i < len(S.debris)) { if (S.debris[i].name == part) { return 0; } i = i + 1; }
+  if (!has(PARTDEF, part)) { return 0; }
+  var d = PARTDEF[part]; var wp = fl_partWorld(S, part);
+  var c = [0, 0, 0]; var hs = 0.4;
+  if (has(d, "col")) { c = d.col.c; hs = min(d.col.h[1], d.col.h[2]); if (hs < 0.04) { hs = 0.04; } }
+  push(S.debris, { name: part, p: wp[0], q: wp[1], v: [vx, vy, vz], w: [spin * (fl_rand(S) - 0.5), spin * (fl_rand(S) - 0.5), spin * (fl_rand(S) - 0.5)], r: hs + 0.03, rest: false, c: c });
+  fl_damage(S, part, 0.5);
+  fl_setR(S.q);
+  return 0;
+}
+// 部件当前的世界位姿（沿部件层级累乘）；返回 [位置, 四元数]
+function fl_partWorld(S, part) {
+  var chain = []; var n = part;
+  while (n != null && has(PARTDEF, n)) { push(chain, PARTDEF[n]); if (has(PARTDEF[n], "parent")) { n = PARTDEF[n].parent; } else { n = null; } }
+  var p = [S.p[0], S.p[1], S.p[2]]; var q = [S.q[0], S.q[1], S.q[2], S.q[3]];
+  var i = len(chain) - 1;
+  while (i >= 0) {
+    var d = chain[i]; i = i - 1;
+    var lp = [0, 0, 0]; if (has(d, "pos")) { lp = d.pos; }
+    var lq = [0, 0, 0, 1]; if (has(d, "rot")) { lq = qeuler(d.rot[0], d.rot[1], d.rot[2]); }
+    if (has(d, "rotor") && d.name == VEH.rotor.part) { lq = qmul(lq, qaxis(0, 1, 0, S.az)); }
+    fl_setR(q);
+    p = [p[0] + R00 * lp[0] + R01 * lp[1] + R02 * lp[2], p[1] + R10 * lp[0] + R11 * lp[1] + R12 * lp[2], p[2] + R20 * lp[0] + R21 * lp[1] + R22 * lp[2]];
+    q = qmul(q, lq);
+  }
+  return [p, q];
+}
+function fl_crash(S, speed, x, y, z, part) {
+  if (!S.crashed) {
+    S.crashed = true; S.crashT = S.t; S.impact = speed;
+    S.squash = min(1, speed / 16);
+    fl_event(S, "crash", x, y, z, speed, part);
+    if (speed > 5 || S.rpm > 0.5) { S.fire = min(1, 0.45 + speed / 22); fl_event(S, "fire", x, y + 0.6, z, S.fire, part); }
+    // 旋翼仍在转：桨叶甩出
+    var i = 0;
+    while (i < len(BLADES)) {
+      if (S.rpm > 0.35 && (speed > 6 || fl_rand(S) < 0.75)) {
+        var a = S.az + i * 1.5707963; var tip = 22 * S.rpm;
+        var bx = -sin(a) * tip; var bz = -cos(a) * tip;
+        fl_detach(S, BLADES[i], S.v[0] * 0.5 + R00 * bx + R02 * bz, 3 + fl_rand(S) * 7, S.v[2] * 0.5 + R20 * bx + R22 * bz, 16);
+      }
+      i = i + 1;
+    }
+    if (speed > 7) { fl_detach(S, VEH.tailRotor.part, S.v[0] * 0.6 + (fl_rand(S) - 0.5) * 6, 4 + fl_rand(S) * 4, S.v[2] * 0.6 + (fl_rand(S) - 0.5) * 6, 12); }
+    if (speed > 10) { fl_detach(S, "平尾", S.v[0] * 0.5 + (fl_rand(S) - 0.5) * 5, 3 + fl_rand(S) * 3, S.v[2] * 0.5 + (fl_rand(S) - 0.5) * 5, 8); }
+  }
+  return 0;
+}
+function fl_fault(S, kind) {
+  if (S.fault != null || S.crashed) { return false; }
+  S.fault = kind; S.faultT = S.t;
+  fl_event(S, "fault", S.p[0], S.p[1], S.p[2], 1, kind);
+  return true;
+}
+
+// 推进一个物理步
+function fl_step(S) {
+  var dt = FDT; var p = S.p; var v = S.v; var q = S.q; var w = S.w;
+  if (S.rest && S.allRest) { S.n = S.n + 1; S.t = S.n * FDT; return 0; }   // 残骸与碎片都已停稳：状态不再变化
+  fl_setR(q);
+  var t = S.t;
+  // 故障：先有征兆（尾桨效率抖动、功率波动），随后失效
+  if (S.fault != null) {
+    var ft = t - S.faultT;
+    if (ft < 1.5) { S.tail = 1 - 0.38 * (ft / 1.5) + 0.3 * sin(ft * 31) * (ft / 1.5); S.power = 1 - 0.06 * (ft / 1.5) + 0.04 * sin(ft * 17); }
+    else { S.tail = max(0, 0.55 - (ft - 1.5) * 1.6); S.power = max(0.6, 0.94 - (ft - 1.5) * 0.21); }
+  }
+  // 旋翼转速：发动机把它拉向功率给定值；坠毁后停车
+  var rpmT = S.power; if (S.crashed) { rpmT = 0; }
+  var k = 0.42; if (S.crashed) { k = 1.6; }
+  if (S.rpm < rpmT) { S.rpm = min(rpmT, S.rpm + k * dt); } else { S.rpm = max(rpmT, S.rpm - k * dt * 0.8); }
+  S.az = (S.az + S.rpm * 40 * dt) % 6.283185307179586;
+  S.taz = (S.taz + S.rpm * S.tail * 150 * dt) % 6.283185307179586;
+  // 机体轴在世界系中的方向
+  var fx = R00; var fy = R10; var fz = R20; var ux = R01; var uy = R11; var uz = R21; var rx = R02; var ry = R12; var rz = R22;
+  fl_near(p[0], p[1] * 0 + p[2]);
+  var gh = fl_surface(p[0], p[1], p[2]);
+  S.agl = p[1] - gh - CGH;          // 滑橇离支撑面的高度
+  // 阵风（确定性的伪随机，随状态保存）
+  if (S.n % 24 == 0) { S.gust[0] = (fl_rand(S) - 0.5) * 2; S.gust[1] = (fl_rand(S) - 0.5) * 2; S.gust[2] = (fl_rand(S) - 0.5) * 2; }
+  var wsp = sqrt(S.wind[0] * S.wind[0] + S.wind[1] * S.wind[1]);
+  var turb = 0.25 + wsp * 0.09;
+  var Fx = 0; var Fy = -MASS * G; var Fz = 0; var Mx = 0; var My = 0; var Mz = 0;
+  var T = 0;
+  if (!S.crashed) {
+    var ge = 1 + 0.14 * exp(-max(0, S.agl - 1.5) / 3.2);
+    T = MASS * G * (0.22 + 1.62 * S.col) * S.rpm * S.rpm * ge;
+    Fx = Fx + ux * T; Fy = Fy + uy * T; Fz = Fz + uz * T;
+    var auth = S.rpm * S.rpm;
+    // 周期变距力矩、不稳定力矩（倾斜越大越想继续倒）、速度引起的挥舞力矩、阵风
+    var roll = atan2(-ry, uy); var pitch = asin(clamp1(fy));
+    var ub = v[0] * fx + v[1] * fy + v[2] * fz; var sb = v[0] * rx + v[1] * ry + v[2] * rz;
+    var airborne = S.agl > 0.12;
+    if (airborne) {
+      // 倾斜越大，不稳定力矩增长越快：超过约 40 度后舵面已经拉不回来
+      Mx = Mx + IXX * (16 * sin(roll) * (1 + 8 * roll * roll) - 0.08 * sb + turb * 1.3 * S.gust[0]);
+      Mz = Mz + IZZ * (16 * sin(pitch) * (1 + 8 * pitch * pitch) + 0.05 * ub + turb * 1.0 * S.gust[1]);
+      My = My + IYY * (turb * 0.5 * S.gust[2]);
+    }
+    // 舵机有惯性：实际的周期变距以约 30 毫秒的时间常数跟随指令
+    S.sr = S.sr + (S.cr - S.sr) * (dt / SERVO_TAU); S.sp = S.sp + (S.cp - S.sp) * (dt / SERVO_TAU);
+    Mx = Mx + IXX * 40 * S.sr * auth;
+    Mz = Mz - IZZ * 40 * S.sp * auth;
+    // 主旋翼反扭矩与尾桨
+    var q0 = 2.4 * (0.22 + 1.62 * S.col) * S.rpm * S.rpm;
+    My = My - IYY * q0 + IYY * (2.4 + 3.6 * S.cy) * S.tail * S.rpm * S.rpm * ((airborne) ? 1 : 0.2);
+    if (!airborne) { My = My + IYY * q0 * 0.8; }
+    // 垂尾的风标稳定
+    My = My + IYY * 0.045 * sb * min(1, abs(ub) / 6);
+    S.thrust = T / (MASS * G);
+  } else { S.thrust = 0; }
+  // 气动阻力（相对风）
+  var ax = v[0] - S.wind[0]; var ay = v[1]; var az = v[2] - S.wind[1];
+  var sp = sqrt(ax * ax + ay * ay + az * az);
+  var cd = 12 + ((S.crashed) ? 30 : 0);
+  Fx = Fx - cd * sp * ax; Fy = Fy - cd * 1.6 * sp * ay; Fz = Fz - cd * sp * az;
+  // 角速度阻尼
+  var dmp = 1.2; if (S.crashed) { dmp = 2.2; }
+  Mx = Mx - IXX * dmp * w[0]; My = My - IYY * (dmp * 0.9) * w[1]; Mz = Mz - IZZ * dmp * w[2];
+  // 接触：只在离地较近时逐点检查
+  var touching = 0;
+  if (S.agl < 10.5 || S.crashed) {
+    var i = 0; var nc = len(CONTACTS);
+    while (i < nc) {
+      var c = CONTACTS[i]; i = i + 1;
+      var cp = c.p;
+      var lx = cp[0]; var ly = cp[1]; var lz = cp[2];
+      if (c.kind == "rotor") { if (S.crashed || S.agl > 9) { continue; } var ca = cos(S.az); var sa = sin(S.az); var tx0 = lx * ca + lz * sa; lz = -lx * sa + lz * ca; lx = tx0; }
+      var ox = R00 * lx + R01 * ly + R02 * lz; var oy = R10 * lx + R11 * ly + R12 * lz; var oz = R20 * lx + R21 * ly + R22 * lz;
+      var wxp = p[0] + ox; var wyp = p[1] + oy; var wzp = p[2] + oz;
+      // 点速度 = v + R(ω × r)
+      var cxb = w[1] * lz - w[2] * ly; var cyb = w[2] * lx - w[0] * lz; var czb = w[0] * ly - w[1] * lx;
+      var pvx = v[0] + R00 * cxb + R01 * cyb + R02 * czb; var pvy = v[1] + R10 * cxb + R11 * cyb + R12 * czb; var pvz = v[2] + R20 * cxb + R21 * cyb + R22 * czb;
+      var nx = 0; var ny = 0; var nz = 0; var pen = 0; var hitName = "";
+      var sh = fl_surface(wxp, wyp, wzp);
+      if (wyp < sh) { pen = sh - wyp; ny = 1; hitName = "地面"; }
+      else if (len(NEAR) > 0) {
+        var ins = fl_inside(wxp, wyp, wzp);
+        if (ins != null) { pen = sqrt(ins[0] * ins[0] + ins[1] * ins[1]) + 0.0001; nx = ins[0] / pen; nz = ins[1] / pen; hitName = ins[2]; }
+      }
+      if (pen <= 0) { continue; }
+      touching = touching + 1;
+      var vn = pvx * nx + pvy * ny + pvz * nz;
+      var isSkid = c.kind == "skid";
+      if (!S.crashed) {
+        if (c.kind == "rotor" && S.rpm > 0.3) {
+          // 桨叶打到地面或障碍：桨叶脱落，机体被反作用力带偏
+          fl_event(S, "strike", wxp, wyp, wzp, S.rpm * 20, c.part);
+          fl_detach(S, c.part, v[0] + nx * 6 + (fl_rand(S) - 0.5) * 12, 5 + fl_rand(S) * 6, v[2] + nz * 6 + (fl_rand(S) - 0.5) * 12, 18);
+          w[1] = w[1] - 2.4 * S.rpm; w[0] = w[0] + (fl_rand(S) - 0.5) * 2; w[2] = w[2] + (fl_rand(S) - 0.5) * 2;
+          fl_crash(S, max(6, sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])), wxp, wyp, wzp, c.part);
+        } else if (!isSkid && vn < -1.2) { fl_damage(S, c.part, min(1, -vn / 9)); fl_crash(S, sqrt(pvx * pvx + pvy * pvy + pvz * pvz), wxp, wyp, wzp, c.part); }
+        else if (isSkid && (vn < -4.2 || ny == 0)) { fl_damage(S, c.part, min(1, -vn / 9)); fl_crash(S, sqrt(pvx * pvx + pvy * pvy + pvz * pvz), wxp, wyp, wzp, c.part); }
+        else if (!isSkid && c.kind != "rotor") { fl_damage(S, c.part, 0.05); }
+      } else if (vn < -2.5 && !isSkid) { fl_damage(S, c.part, min(0.5, -vn / 14)); }
+      // 法向弹簧阻尼 + 摩擦
+      var kN = 70000; var cN = 9500; if (S.crashed) { kN = 52000; cN = 13000; }
+      var fn = kN * pen - cN * vn; if (fn < 0) { fn = 0; } if (fn > MASS * 60) { fn = MASS * 60; }
+      var tvx = pvx - vn * nx; var tvy = pvy - vn * ny; var tvz = pvz - vn * nz;
+      var ts = sqrt(tvx * tvx + tvy * tvy + tvz * tvz);
+      var mu = 0.75; if (S.crashed) { mu = 0.62; }
+      var ff = mu * fn; var lim = ts * 5200; if (ff > lim) { ff = lim; }
+      var cfx = fn * nx; var cfy = fn * ny; var cfz = fn * nz;
+      if (ts > 0.0001) { cfx = cfx - ff * tvx / ts; cfy = cfy - ff * tvy / ts; cfz = cfz - ff * tvz / ts; }
+      Fx = Fx + cfx; Fy = Fy + cfy; Fz = Fz + cfz;
+      // 力矩（换回机体系）：r × F
+      var mwx = oy * cfz - oz * cfy; var mwy = oz * cfx - ox * cfz; var mwz = ox * cfy - oy * cfx;
+      Mx = Mx + R00 * mwx + R10 * mwy + R20 * mwz; My = My + R01 * mwx + R11 * mwy + R21 * mwz; Mz = Mz + R02 * mwx + R12 * mwy + R22 * mwz;
+    }
+  }
+  S.ground = touching > 0;
+  // 积分
+  v[0] = v[0] + Fx / MASS * dt; v[1] = v[1] + Fy / MASS * dt; v[2] = v[2] + Fz / MASS * dt;
+  w[0] = w[0] + Mx / IXX * dt; w[1] = w[1] + My / IYY * dt; w[2] = w[2] + Mz / IZZ * dt;
+  var wl = 9; if (w[0] > wl) { w[0] = wl; } if (w[0] < -wl) { w[0] = -wl; } if (w[1] > wl) { w[1] = wl; } if (w[1] < -wl) { w[1] = -wl; } if (w[2] > wl) { w[2] = wl; } if (w[2] < -wl) { w[2] = -wl; }
+  if (S.crashed && touching > 0) {
+    // 残骸落定：接地后速度很小时停稳
+    var e = v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + w[0] * w[0] + w[1] * w[1] + w[2] * w[2];
+    if (t - S.crashT > 0.6 && e < 0.5) { v[0] = v[0] * 0.9; v[2] = v[2] * 0.9; w[0] = w[0] * 0.85; w[1] = w[1] * 0.85; w[2] = w[2] * 0.85; }
+    if (t - S.crashT > 1.0 && e < 0.02) { S.rest = true; }
+  }
+  if (S.rest) { v[0] = 0; v[1] = 0; v[2] = 0; w[0] = 0; w[1] = 0; w[2] = 0; }
+  else {
+    p[0] = p[0] + v[0] * dt; p[1] = p[1] + v[1] * dt; p[2] = p[2] + v[2] * dt;
+    qintegrate(q, w[0], w[1], w[2], dt);
+  }
+  // 碎片：各自的刚体，翻滚落地后停稳
+  var di = 0; var moving = 0;
+  while (di < len(S.debris)) {
+    var d = S.debris[di]; di = di + 1;
+    if (d.rest) { continue; }
+    moving = moving + 1;
+    var dp = d.p; var dv = d.v;
+    dv[1] = dv[1] - G * dt;
+    var ds = sqrt(dv[0] * dv[0] + dv[1] * dv[1] + dv[2] * dv[2]);
+    dv[0] = dv[0] - 0.02 * ds * dv[0] * dt * 10; dv[2] = dv[2] - 0.02 * ds * dv[2] * dt * 10;
+    dp[0] = dp[0] + dv[0] * dt; dp[1] = dp[1] + dv[1] * dt; dp[2] = dp[2] + dv[2] * dt;
+    qintegrate(d.q, d.w[0], d.w[1], d.w[2], dt);
+    var dg = fl_surface(dp[0], dp[1], dp[2]) + d.r;
+    if (dp[1] < dg) {
+      dp[1] = dg;
+      if (dv[1] < -1.2) { fl_event(S, "thud", dp[0], dp[1], dp[2], -dv[1], d.name); }
+      if (dv[1] < 0) { dv[1] = -dv[1] * 0.28; }
+      dv[0] = dv[0] * 0.72; dv[2] = dv[2] * 0.72;
+      d.w[0] = d.w[0] * 0.6; d.w[1] = d.w[1] * 0.6; d.w[2] = d.w[2] * 0.6;
+      if (dv[0] * dv[0] + dv[1] * dv[1] + dv[2] * dv[2] < 0.5) { d.rest = true; dv[0] = 0; dv[1] = 0; dv[2] = 0; d.w = [0, 0, 0]; }
+    }
+  }
+  S.allRest = moving == 0 && S.rpm <= 0.001;
+  S.n = S.n + 1; S.t = S.n * FDT;
+  var tilt = acos(clamp1(uy)); if (tilt > S.maxTilt) { S.maxTilt = tilt; }
+  return 0;
+}
+function clamp1(x) { if (x > 1) { return 1; } if (x < -1) { return -1; } return x; }
+// 传感器读数（带时间戳，由场景进程写入设备寄存器）
+function fl_sensors(S) {
+  fl_setR(S.q);
+  var roll = atan2(-R12, R11); var pitch = asin(clamp1(R10)); var yaw = atan2(-R20, R00);
+  return { t: S.t, pos: [S.p[0], S.p[1], S.p[2]], vel: [S.v[0], S.v[1], S.v[2]], att: [roll, pitch, yaw], rate: [S.w[0], S.w[1], S.w[2]],
+           agl: S.agl, rpm: S.rpm, ground: S.ground, crashed: S.crashed, target: S.target };
+}

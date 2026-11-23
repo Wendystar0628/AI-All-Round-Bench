@@ -1,0 +1,165 @@
+{
+  "problem": "07",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层回油支承座",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "地脚底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 134, 92]}],
+          "depth": 14
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左支承座立柱",
+          "plane": "YZ",
+          "origin": [12, 0, 0],
+          "loops": [{"rect": [22, 14, 70, 54]}],
+          "depth": 28
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左支承座Φ62圆筒",
+          "plane": "YZ",
+          "origin": [12, 0, 0],
+          "loops": [{"circle": [46, 54], "d": 62}],
+          "depth": 28
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右支承座立柱",
+          "plane": "YZ",
+          "origin": [88, 0, 0],
+          "loops": [{"rect": [19, 14, 73, 64]}],
+          "depth": 34
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右支承座Φ70圆筒",
+          "plane": "YZ",
+          "origin": [88, 0, 0],
+          "loops": [{"circle": [46, 64], "d": 70}],
+          "depth": 34
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "中间加强桥",
+          "plane": "XZ",
+          "origin": [0, 66, 0],
+          "loops": [{"path": [[22, 14], [112, 14], [100, 30], [34, 30]]}],
+          "depth": 40
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后侧三角肋",
+          "plane": "XZ",
+          "origin": [0, 74, 0],
+          "loops": [{"path": [[64, 30], [88, 30], [88, 48]]}],
+          "depth": 8
+        },
+        {
+          "type": "hole",
+          "name": "左支承Φ32主孔",
+          "plane": "YZ",
+          "origin": [10, 0, 0],
+          "at": [46, 54],
+          "d": 32,
+          "depth": 34,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "左端Φ38沉台",
+          "plane": "YZ",
+          "origin": [10, 0, 0],
+          "at": [46, 54],
+          "d": 38,
+          "depth": 6,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右支承Φ42主孔",
+          "plane": "YZ",
+          "origin": [86, 0, 0],
+          "at": [46, 64],
+          "d": 42,
+          "depth": 40,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右端Φ50沉台",
+          "plane": "YZ",
+          "origin": [124, 0, 0],
+          "at": [46, 64],
+          "d": 50,
+          "depth": 8
+        },
+        {
+          "type": "hole",
+          "name": "左支承Φ8竖向回油孔",
+          "plane": "XY",
+          "origin": [0, 0, 44],
+          "at": [26, 46],
+          "d": 8,
+          "depth": 26
+        },
+        {
+          "type": "hole",
+          "name": "右支承Φ8竖向回油孔",
+          "plane": "XY",
+          "origin": [0, 0, 48],
+          "at": [104, 46],
+          "d": 8,
+          "depth": 30
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "内部水平回油槽",
+          "plane": "YZ",
+          "origin": [26, 0, 0],
+          "loops": [{"rect": [42, 18, 50, 24]}],
+          "depth": 78
+        },
+        {
+          "type": "hole",
+          "name": "加强桥前侧Φ10横孔",
+          "plane": "XZ",
+          "origin": [0, 24, 0],
+          "at": [64, 21],
+          "d": 10,
+          "depth": 24
+        },
+        {
+          "type": "hole",
+          "name": "地脚四个Φ8/Φ13沉头安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "at": [[7, 9], [127, 9], [7, 83], [127, 83]],
+          "d": 8,
+          "through": true,
+          "cbore": {"d": 13, "depth": 5}
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[0, 0, 7]]
+        }
+      ]
+    }
+  ]
+}

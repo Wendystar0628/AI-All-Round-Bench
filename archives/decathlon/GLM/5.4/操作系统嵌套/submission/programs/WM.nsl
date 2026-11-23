@@ -1,0 +1,523 @@
+// ===========================================================================
+//  WM.nsl —— 子系统窗口管理器（内核启动的程序）
+//  负责：桌面绘制、窗口层叠与焦点、命中判断、输入分发、任务栏、开始菜单、通知
+//  修改本文件的层叠/焦点/命中规则并重启子系统，桌面按新规则工作。
+// ===========================================================================
+var wins = []
+var z = []
+var nextWid = 1
+var focusWid = 0
+var W = 900
+var H = 600
+var startOpen = false
+var startQuery = ""
+var notifs = []
+var dragWid = 0
+var dragMode = ""
+var dragOX = 0
+var dragOY = 0
+var dragW = 0
+var dragH = 0
+var dragMX = 0
+var dragMY = 0
+var dragX0 = 0
+var dragY0 = 0
+var ctxOpen = false
+var ctxX = 0
+var ctxY = 0
+var selIcon = -1
+var hoverWid = 0
+var lastClock = -1
+var timeStr = "00:00"
+var dirty = true
+var tick = 0
+var clock = 0
+var bootMsgs = 0
+
+var icons = [
+  { app: "files", title: "文件管理器", path: "/System/Files.nsl" },
+  { app: "player", title: "场景播放器", path: "/System/Player.nsl" },
+  { app: "charts", title: "图表工作台", path: "/System/Charts.nsl" },
+  { app: "editor", title: "编辑器", path: "/System/Editor.nsl" },
+  { app: "tasks", title: "进程管理器", path: "/System/Tasks.nsl" },
+  { app: "systems", title: "系统", path: "/System/Systems.nsl" }
+]
+var launchers = [
+  { app: "files", title: "文件管理器", path: "/System/Files.nsl" },
+  { app: "player", title: "场景播放器", path: "/System/Player.nsl" },
+  { app: "charts", title: "图表工作台", path: "/System/Charts.nsl" },
+  { app: "editor", title: "编辑器", path: "/System/Editor.nsl" },
+  { app: "tasks", title: "进程管理器", path: "/System/Tasks.nsl" },
+  { app: "systems", title: "系统", path: "/System/Systems.nsl" },
+  { app: "sum", title: "累加计算", path: "/Programs/Sum.nsl" },
+  { app: "send", title: "消息发送", path: "/Programs/Send.nsl" },
+  { app: "recv", title: "消息接收", path: "/Programs/Recv.nsl" },
+  { app: "busy", title: "持续计算", path: "/Programs/Busy.nsl" }
+]
+
+// ------------------------------- 绘制原语 ---------------------------------
+func R(L, x, y, w, h, c, r) { L.push({ op: "rect", x: x, y: y, w: w, h: h, color: c, r: r }) }
+func T(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c }) }
+func T2(L, x, y, s, size, c, align) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c, align: align }) }
+func LN(L, x1, y1, x2, y2, c, w) { L.push({ op: "line", x1: x1, y1: y1, x2: x2, y2: y2, color: c, w: w }) }
+func C(L, x, y, r, c) { L.push({ op: "circle", x: x, y: y, r: r, color: c }) }
+func IC(L, name, x, y, s, c) { L.push({ op: "icon", name: name, x: x, y: y, size: s, color: c }) }
+func BL(L, buf, x, y, w, h) { L.push({ op: "blit", buf: buf, x: x, y: y, w: w, h: h }) }
+func DESK(L, id, x, y, w, h) { L.push({ op: "desktop", id: id, x: x, y: y, w: w, h: h }) }
+
+func tw(s, size) {
+  var n = 0
+  for (var i = 0; i < s.length; i++) {
+    var c = s.charCodeAt(i)
+    if (c > 255) { n = n + size } else { n = n + size * 0.56 }
+  }
+  return n
+}
+func fmt2(n) {
+  if (n < 10) { return "0" + n }
+  return "" + n
+}
+
+// ------------------------------- 窗口管理 ---------------------------------
+func findWin(id) {
+  for (var i = 0; i < wins.length; i++) { if (wins[i].id == id) { return wins[i] } }
+  return null
+}
+func winByPid(pid) {
+  for (var i = 0; i < wins.length; i++) { if (wins[i].pid == pid) { return wins[i] } }
+  return null
+}
+func addWin(pid, title, appId) {
+  var w = { id: nextWid, pid: pid, appId: appId, title: title, x: 0, y: 0, w: 640, h: 420, min: false, max: false, closing: false, lastX: 0, lastY: 0, lastW: 0, lastH: 0 }
+  nextWid = nextWid + 1
+  if (appId == "player") { w.w = 760; w.h = 520 }
+  if (appId == "files") { w.w = 660; w.h = 430 }
+  if (appId == "editor") { w.w = 680; w.h = 460 }
+  if (appId == "charts") { w.w = 660; w.h = 450 }
+  if (appId == "tasks") { w.w = 600; w.h = 420 }
+  if (appId == "systems") { w.w = 620; w.h = 440 }
+  var n = wins.length
+  w.x = 70 + (n % 5) * 34
+  w.y = 46 + (n % 5) * 30
+  if (w.x + w.w > W - 20) { w.x = 20 }
+  if (w.y + w.h > H - 76) { w.y = 24 }
+  wins.push(w)
+  z.push(w.id)
+  focusWin(w.id)
+  dirty = true
+  return w
+}
+func removeWin(id) {
+  var nw = []
+  for (var i = 0; i < wins.length; i++) { if (wins[i].id != id) { nw.push(wins[i]) } }
+  wins = nw
+  var nz = []
+  for (var i = 0; i < z.length; i++) { if (z[i] != id) { nz.push(z[i]) } }
+  z = nz
+  if (focusWid == id) { focusWid = z.length > 0 ? z[z.length - 1] : 0 }
+  dirty = true
+}
+func focusWin(id) {
+  if (focusWid == id) {
+    var w = findWin(id)
+    if (w != null && w.min) { w.min = false; dirty = true }
+    return
+  }
+  focusWid = id
+  var nz = []
+  for (var i = 0; i < z.length; i++) { if (z[i] != id) { nz.push(z[i]) } }
+  nz.push(id)
+  z = nz
+  var w2 = findWin(id)
+  if (w2 != null && w2.min) { w2.min = false }
+  dirty = true
+}
+func topWin() {
+  for (var i = z.length - 1; i >= 0; i--) {
+    var w = findWin(z[i])
+    if (w != null && !w.min) { return w }
+  }
+  return null
+}
+func hitWin(x, y) {
+  for (var i = z.length - 1; i >= 0; i--) {
+    var w = findWin(z[i])
+    if (w == null || w.min) { continue }
+    if (x >= w.x && x < w.x + w.w && y >= w.y && y < w.y + w.h) { return w }
+  }
+  return null
+}
+
+// ------------------------------- 通知 -------------------------------------
+func notify(title, body) {
+  notifs.push({ title: title, body: body, t: clock })
+  if (notifs.length > 8) { notifs.shift() }
+  dirty = true
+}
+
+// ------------------------------- 桌面绘制 ---------------------------------
+func drawDesktop(L) {
+  L.push({ op: "wallpaper" })
+  // 桌面图标
+  for (var i = 0; i < icons.length; i++) {
+    var ix = 18 + (i % 4) * 96
+    var iy = 18 + ((i / 4).floor()) * 96
+    if (i == selIcon) { R(L, ix, iy, 88, 88, "rgba(245,185,66,0.16)", 10) }
+    IC(L, icons[i].app, ix + 22, iy + 10, 44, "#e9edf6")
+    T2(L, ix + 44, iy + 66, icons[i].title, 11, "#f2f5fb", "center")
+  }
+  // 窗口
+  for (var i = 0; i < z.length; i++) {
+    var w = findWin(z[i])
+    if (w == null || w.min) { continue }
+    drawWindow(L, w)
+  }
+  // 任务栏
+  drawTaskbar(L)
+  if (startOpen) { drawStart(L) }
+  if (ctxOpen) { drawCtx(L) }
+  drawNotifs(L)
+  drawFocusRing(L)
+}
+
+func drawWindow(L, w) {
+  var focused = w.id == focusWid
+  // 阴影
+  R(L, w.x - 10, w.y - 8, w.w + 20, w.h + 16, "rgba(0,0,0,0.28)", 16)
+  R(L, w.x, w.y, w.w, w.h, focused ? "#1b2030" : "#171b27", 12)
+  R(L, w.x, w.y, w.w, 38, "rgba(255,255,255,0.045)", 12)
+  R(L, w.x, w.y + 28, w.w, 10, "rgba(255,255,255,0.045)", 0)
+  // 标题栏图标与标题
+  IC(L, w.appId, w.x + 12, w.y + 10, 18, "#9aa4ba")
+  T(L, w.x + 36, w.y + 21, w.title, 12.5, focused ? "#e3e9f5" : "#8f99ad")
+  // 窗口按钮
+  var bx = w.x + w.w - 3 * 40
+  R(L, bx, w.y + 4, 40, 30, "rgba(255,255,255,0)", 7)
+  IC(L, "minimize", bx + 13, w.y + 13, 14, "#9aa4ba")
+  bx = bx + 40
+  IC(L, w.max ? "restore" : "maximize", bx + 13, w.y + 13, 13, "#9aa4ba")
+  bx = bx + 40
+  IC(L, "close", bx + 13, w.y + 13, 13, "#c9d2e3")
+  // 内容
+  var cy = w.y + 38
+  var ch = w.h - 38
+  if (ch > 0) {
+    L.push({ op: "clip", x: w.x, y: cy, w: w.w, h: ch })
+    L.push({ op: "blit", buf: w.pid + ":main", x: w.x, y: cy, w: w.w, h: ch, wid: w.id, appId: w.appId, title: w.title })
+    L.push({ op: "unclip" })
+  }
+  if (focused) { R(L, w.x, w.y, w.w, w.h, "rgba(245,185,66,0)", 12) }
+}
+
+func drawTaskbar(L) {
+  var th = 52
+  var ty = H - th - 10
+  R(L, 10, ty, W - 20, th, "rgba(22,26,38,0.86)", 14)
+  // 开始按钮
+  R(L, 16, ty + 6, 40, 40, "rgba(255,255,255,0.06)", 9)
+  IC(L, "systems", 26, ty + 15, 22, "#e9edf6")
+  // 固定应用
+  var px = 64
+  for (var i = 0; i < icons.length && i < 4; i++) {
+    IC(L, icons[i].app, px, ty + 15, 20, "#9aa4ba")
+    px = px + 38
+  }
+  // 运行中的窗口
+  var cx = W / 2 - (wins.length * 52) / 2
+  for (var i = 0; i < z.length; i++) {
+    var w = findWin(z[i])
+    if (w == null) { continue }
+    var active = w.id == focusWid
+    R(L, cx, ty + 7, 46, 38, active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.03)", 9)
+    IC(L, w.appId, cx + 13, ty + 14, 18, active ? "#e9edf6" : "#8f99ad")
+    if (w.min) { R(L, cx + 12, ty + 40, 22, 2, "#8f99ad", 1) }
+    else if (active) { R(L, cx + 15, ty + 40, 16, 2.5, "#f5b942", 2) }
+    cx = cx + 50
+  }
+  // 托盘
+  var rx = W - 150
+  IC(L, "wifi", rx, ty + 16, 17, "#9aa4ba")
+  rx = rx + 30
+  IC(L, "volume", rx, ty + 16, 17, "#9aa4ba")
+  rx = rx + 30
+  T2(L, rx + 4, ty + 22, timeStr, 12, "#c8d2e3", "right")
+  T2(L, rx + 4, ty + 36, "虚拟时间", 9, "#6b7488", "right")
+  // 通知入口
+  var bx = W - 52
+  R(L, bx, ty + 8, 36, 36, "rgba(255,255,255,0.05)", 9)
+  IC(L, "bell", bx + 9, ty + 17, 18, "#c8d2e3")
+  if (notifs.length > 0) { C(L, bx + 30, ty + 12, 3.5, "#f5b942") }
+}
+
+func drawStart(L) {
+  var sw = 470
+  var sh = 420
+  var sx = 12
+  var sy = H - 62 - sh
+  R(L, sx, sy, sw, sh, "rgba(24,28,40,0.97)", 14)
+  R(L, sx + 14, sy + 14, sw - 28, 34, "rgba(0,0,0,0.3)", 9)
+  IC(L, "search", sx + 24, sy + 22, 17, "#6b7488")
+  T(L, sx + 48, sy + 35, startQuery == "" ? "搜索应用" : startQuery, 12, startQuery == "" ? "#6b7488" : "#e9edf6")
+  T(L, sx + 16, sy + 72, "所有应用", 10.5, "#6b7488")
+  var y = sy + 82
+  for (var i = 0; i < launchers.length; i++) {
+    if (startQuery != "" && launchers[i].title.indexOf(startQuery) < 0) { continue }
+    R(L, sx + 10, y, sw - 20, 34, "rgba(255,255,255,0.04)", 8)
+    IC(L, launchers[i].app, sx + 18, y + 8, 18, "#c8d2e3")
+    T(L, sx + 44, y + 21, launchers[i].title, 12, "#e3e9f5")
+    T2(L, sx + sw - 18, y + 21, launchers[i].app, 9.5, "#6b7488", "right")
+    y = y + 38
+  }
+  T(L, sx + 16, sy + sh - 18, "单击启动 · Esc 关闭", 10, "#6b7488")
+}
+
+func drawCtx(L) { }
+func drawNotifs(L) {
+  var y = 14
+  for (var i = notifs.length - 1; i >= 0; i--) {
+    var n = notifs[i]
+    R(L, W - 300, y, 286, 56, "rgba(28,32,45,0.96)", 12)
+    IC(L, "bell", W - 288, y + 12, 18, "#f5b942")
+    T(L, W - 262, y + 22, n.title, 11.5, "#e9edf6")
+    T(L, W - 262, y + 38, n.body, 10.5, "#9aa4ba")
+    y = y + 64
+  }
+}
+func drawFocusRing(L) { }
+
+// ------------------------------- 输入 -------------------------------------
+func sendTo(w, msg) {
+  if (w == null) { return }
+  sys.send(w.pid, msg)
+}
+func contentCoords(w, x, y) {
+  return { x: x - w.x, y: y - w.y - 38 }
+}
+func launch(path, title, app) {
+  sys.request({ op: "launch", path: path, name: app, title: title })
+}
+func closeWin(w) {
+  if (w == null) { return }
+  w.closing = true
+  sendTo(w, { type: "close" })
+  dirty = true
+}
+
+func onMouseDown(x, y, button) {
+  ctxOpen = false
+  // 任务栏
+  var ty = H - 62
+  if (y >= ty) {
+    if (x >= 16 && x < 56) { startOpen = !startOpen; dirty = true; return }
+    var cx = W / 2 - (wins.length * 52) / 2
+    for (var i = 0; i < z.length; i++) {
+      var w = findWin(z[i])
+      if (w == null) { continue }
+      if (x >= cx && x < cx + 46) {
+        if (w.id == focusWid && !w.min) { w.min = true; focusWid = 0 } else { focusWin(w.id) }
+        dirty = true
+        return
+      }
+      cx = cx + 50
+    }
+    if (x >= W - 52 && x < W - 16) { notifs = []; dirty = true; return }
+    return
+  }
+  if (startOpen) {
+    var sw = 470
+    var sh = 420
+    var sx = 12
+    var sy = H - 62 - sh
+    if (x >= sx && x < sx + sw && y >= sy && y < sy + sh) {
+      var ry = sy + 82
+      for (var i = 0; i < launchers.length; i++) {
+        if (startQuery != "" && launchers[i].title.indexOf(startQuery) < 0) { continue }
+        if (y >= ry && y < ry + 34) {
+          startOpen = false
+          launch(launchers[i].path, launchers[i].title, launchers[i].app)
+          dirty = true
+          return
+        }
+        ry = ry + 38
+      }
+      return
+    }
+    startOpen = false
+    dirty = true
+  }
+  // 桌面图标
+  for (var i = 0; i < icons.length; i++) {
+    var ix = 18 + (i % 4) * 96
+    var iy = 18 + ((i / 4).floor()) * 96
+    if (x >= ix && x < ix + 88 && y >= iy && y < iy + 88) {
+      selIcon = i
+      dirty = true
+      return
+    }
+  }
+  selIcon = -1
+  // 窗口
+  var w = hitWin(x, y)
+  if (w == null) { dirty = true; return }
+  focusWin(w.id)
+  var ly = y - w.y
+  var lx = x - w.x
+  // 标题栏按钮
+  if (ly < 38) {
+    var bx = w.x + w.w - 120
+    if (x >= bx && x < bx + 40) { w.min = true; focusWid = 0; dirty = true; return }
+    if (x >= bx + 40 && x < bx + 80) {
+      if (w.max) { w.x = w.lastX; w.y = w.lastY; w.w = w.lastW; w.h = w.lastH; w.max = false }
+      else { w.lastX = w.x; w.lastY = w.y; w.lastW = w.w; w.lastH = w.h; w.max = true; w.x = 0; w.y = 0; w.w = W; w.h = H - 62 }
+      dirty = true; return
+    }
+    if (x >= bx + 80 && x < bx + 120) { closeWin(w); return }
+    dragWid = w.id; dragMode = "move"; dragOX = lx; dragOY = ly
+    return
+  }
+  // 边缘缩放
+  var m = 7
+  if (lx < m || lx > w.w - m || ly < 38 + m || ly > w.h - m) {
+    var hor = ""
+    if (lx < m) { hor = "w" }
+    if (lx > w.w - m) { hor = "e" }
+    var ver = ""
+    if (ly < 38 + m) { ver = "n" }
+    if (ly > w.h - m) { ver = "s" }
+    dragWid = w.id; dragMode = "resize" + hor + ver
+    dragOX = lx; dragOY = ly; dragW = w.w; dragH = w.h
+    dragMX = x; dragMY = y; dragX0 = w.x; dragY0 = w.y
+    return
+  }
+  var c = contentCoords(w, x, y)
+  sendTo(w, { type: "mouse", kind: "down", x: c.x, y: c.y, button: button })
+}
+func onMouseMove(x, y) {
+  if (dragWid != 0) {
+    var w = findWin(dragWid)
+    if (w == null) { dragWid = 0; return }
+    if (dragMode == "move") {
+      w.x = x - dragOX
+      w.y = y - dragOY
+      if (w.x < -w.w + 90) { w.x = -w.w + 90 }
+      if (w.x > W - 90) { w.x = W - 90 }
+      if (w.y < 0) { w.y = 0 }
+      if (w.y > H - 100) { w.y = H - 100 }
+    } else {
+      var dx = x - dragMX
+      var dy = y - dragMY
+      if (dragMode.indexOf("e") >= 0) { w.w = Math.max(320, dragW + dx) }
+      if (dragMode.indexOf("s") >= 0) { w.h = Math.max(220, dragH + dy) }
+      if (dragMode.indexOf("w") >= 0) { var nw = Math.max(320, dragW - dx); w.x = dragX0 + (dragW - nw); w.w = nw }
+      if (dragMode.indexOf("n") >= 0) { var nh = Math.max(220, dragH - dy); w.y = dragY0 + (dragH - nh); w.h = nh }
+    }
+    dirty = true
+    return
+  }
+  var w = hitWin(x, y)
+  if (w != null) { var c = contentCoords(w, x, y); sendTo(w, { type: "mouse", kind: "move", x: c.x, y: c.y }) }
+  if (w != null && w.id != hoverWid) { hoverWid = w.id; dirty = true }
+}
+func onMouseUp(x, y) {
+  if (dragWid != 0) {
+    var w = findWin(dragWid)
+    dragWid = 0; dragMode = ""
+    if (w != null && w.y < 0) { w.y = 0 }
+    if (w != null && w.x + w.w > W) { w.x = W - w.w }
+    if (w != null) { sendTo(w, { type: "resize", w: w.w, h: w.h - 38 }) }
+    dirty = true
+    return
+  }
+  var w = hitWin(x, y)
+  if (w != null) {
+    var c = contentCoords(w, x, y)
+    sendTo(w, { type: "mouse", kind: "up", x: c.x, y: c.y })
+  }
+}
+func onWheel(x, y, dy) {
+  var w = hitWin(x, y)
+  if (w != null) {
+    var c = contentCoords(w, x, y)
+    sendTo(w, { type: "mouse", kind: "wheel", x: c.x, y: c.y, dy: dy })
+  }
+}
+func onDblClick(x, y) {
+  for (var i = 0; i < icons.length; i++) {
+    var ix = 18 + (i % 4) * 96
+    var iy = 18 + ((i / 4).floor()) * 96
+    if (x >= ix && x < ix + 88 && y >= iy && y < iy + 88) {
+      launch(icons[i].path, icons[i].title, icons[i].app)
+      return
+    }
+  }
+  var w = hitWin(x, y)
+  if (w != null) { var c = contentCoords(w, x, y); sendTo(w, { type: "mouse", kind: "dblclick", x: c.x, y: c.y }) }
+}
+func onKey(key, shift, ctrl) {
+  if (key == "Escape") { startOpen = false; ctxOpen = false; selIcon = -1; dirty = true; return }
+  if (startOpen) {
+    if (key == "Backspace") { if (startQuery.length > 0) { startQuery = startQuery.substr(0, startQuery.length - 1) }; dirty = true; return }
+    if (key.length == 1 && !ctrl) { startQuery = startQuery + key; dirty = true; return }
+  }
+  if (focusWid == 0) { return }
+  var w = findWin(focusWid)
+  if (w == null) { return }
+  sendTo(w, { type: "key", key: key, shift: shift, ctrl: ctrl })
+}
+
+// ------------------------------- 消息 -------------------------------------
+func onMsg(m) {
+  if (m.type == "launched") {
+    if (winByPid(m.pid) == null) { var w = addWin(m.pid, m.title, m.appId); sendTo(w, { type: "resize", w: w.w, h: w.h - 38 }) }
+    return
+  }
+  if (m.type == "exit") {
+    var w = winByPid(m.pid)
+    if (w != null) { removeWin(w.id) }
+    return
+  }
+  if (m.type == "proc_error") {
+    notify("程序异常", m.name + ": " + m.error)
+    return
+  }
+  if (m.type == "input") {
+    var e = m.ev
+    if (e.kind == "move") { onMouseMove(e.x, e.y); return }
+    if (e.kind == "down") { onMouseDown(e.x, e.y, e.button); return }
+    if (e.kind == "dblclick") { onDblClick(e.x, e.y); return }
+    if (e.kind == "up") { onMouseUp(e.x, e.y); return }
+    if (e.kind == "wheel") { onWheel(e.x, e.y, e.dy); return }
+    if (e.kind == "key") { onKey(e.key, e.shift, e.ctrl); return }
+    if (e.kind == "resize") { W = e.w; H = e.h; dirty = true; return }
+    return
+  }
+  if (m.type == "notify") { notify(m.title, m.body); return }
+  if (m.type == "tick") {
+    var tt = sys.time()
+    var mm = (tt / 60).floor()
+    var ss = (tt - mm * 60).floor()
+    timeStr = fmt2(mm) + ":" + fmt2(ss)
+    dirty = true
+    return
+  }
+}
+
+// ------------------------------- 主循环 -----------------------------------
+func main() {
+  var sc = sys.screen()
+  W = sc.w
+  H = sc.h
+  sys.draw("desktop", [], W, H)
+  while (true) {
+    var m = sys.recv()
+    clock = sys.time()
+    onMsg(m)
+    if (dirty) { redraw() }
+  }
+}
+func redraw() {
+  var L = []
+  drawDesktop(L)
+  sys.draw("desktop", L, W, H)
+  dirty = false
+}

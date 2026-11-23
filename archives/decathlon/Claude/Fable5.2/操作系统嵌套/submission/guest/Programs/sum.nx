@@ -1,0 +1,10 @@
+// 累加计算：把 1..N 加起来并报告结果。可以改 N 再运行。
+var N = 100000;
+var total = 0;
+var i = 1;
+while (i <= N) {
+  total = total + i;
+  i = i + 1;
+}
+sys("print", "1 到 " + N + " 的和 = " + total);
+sys("exit", 0);

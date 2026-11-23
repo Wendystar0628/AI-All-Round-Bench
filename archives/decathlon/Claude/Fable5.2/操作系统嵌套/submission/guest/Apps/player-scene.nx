@@ -1,0 +1,401 @@
+// /Apps/player-scene.nx —— 播放器的“飞行场景”进程：按时序进程给出的播放位置推进场景状态，
+// 把部件位姿与相机提交给显示设备。默认演出与记录回放按记录里的控制时序重算；排演时机体随系统虚拟时间演化，
+// 控制量来自飞控进程写入的设备寄存器。
+import "/System/lib/flight.nx";
+
+var UIPID = 0; var TLPID = 0; var H = 0; var RES = null; var FILE = "";
+var MODE = "none";            // none | keys（关键帧场景） | replay | live
+var S = null; var REC = null; var CK = []; var HIST = []; var EVLOG = [];
+var PEND = null;              // 等待完成的帧请求 {seq, pos}
+var P0 = 0; var T0 = 0; var HOLD = true;
+var CAM = { mode: "show", yaw: 38, pitch: 12, dist: 24 };
+var LASTCAM = null; var BUS = ""; var CTLPID = 0; var CTLPATH = "/Programs/flightctl.nx";
+var CTLT = []; var FRAMES = 0; var CTLN = 0;
+var D2R = 0.017453292519943295;
+
+function iserr(v) { return type(v) == "map" && has(v, "error"); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function initState() {
+  var f = REC.init;
+  var s = fl_init(f.x, f.z, f.yaw, f.seed);
+  s.ci = 0; s.ii = 0; s.camYaw = f.yaw;
+  if (has(f, "wind")) { s.wind = [f.wind[0], f.wind[1]]; }
+  return s;
+}
+function resetSim() {
+  S = initState(); CK = [{ n: 0, s: copy(S) }]; HIST = []; EVLOG = []; EVENTS = [];
+  sample();
+  return 0;
+}
+function sample() {
+  // 每 0.1 秒记一条轨迹样本，环境特效进程据此生成尘土与烟（因此画面只取决于记录与位置）
+  var gy = fl_surface(S.p[0], S.p[1], S.p[2]);
+  var tw = fl_partWorld(S, VEH.tailRotor.part);
+  push(HIST, [S.t, S.p[0], gy, S.p[2], S.agl, S.thrust * S.rpm, tw[0][0], tw[0][1], tw[0][2], S.p[1], S.fire, (S.crashed) ? 1 : 0, S.tail]);
+  return 0;
+}
+function applyInput(e) {
+  var k = e[1]; var v = e[2];
+  if (k == "wind") { S.wind = [v[0], v[1]]; }
+  else if (k == "target") { var ks = keys(v); var i = 0; while (i < len(ks)) { S.target[ks[i]] = v[ks[i]]; i = i + 1; } }
+  else if (k == "fault") { fl_fault(S, v); }
+  return 0;
+}
+function stepOnce() {
+  var t = S.t;
+  var cs = REC.controls; var ci = S.ci;
+  while (ci < len(cs) && cs[ci][0] <= t) { var c = cs[ci]; S.col = c[1]; S.cp = c[2]; S.cr = c[3]; S.cy = c[4]; ci = ci + 1; }
+  S.ci = ci;
+  var ins = REC.inputs; var ii = S.ii;
+  while (ii < len(ins) && ins[ii][0] <= t) { applyInput(ins[ii]); ii = ii + 1; }
+  S.ii = ii;
+  fl_step(S);
+  // 跟随镜头的方位缓慢转向机头方向（属于场景状态，随记录重算）
+  var yaw = atan2(-R20, R00) / D2R; var d = yaw - S.camYaw;
+  while (d > 180) { d = d - 360; } while (d < -180) { d = d + 360; }
+  S.camYaw = S.camYaw + d * 0.006;
+  if (len(EVENTS) > 0) { var i = 0; while (i < len(EVENTS)) { push(EVLOG, EVENTS[i]); i = i + 1; } EVENTS = []; }
+  if (S.n % 24 == 0) { sample(); }
+  if (S.n % 120 == 0) { push(CK, { n: S.n, s: copy(S) }); }
+  return 0;
+}
+function rewindTo(n) {
+  // 回到不晚于 n 的检查点；其后的轨迹样本与事件作废，由重算得到
+  var i = len(CK) - 1;
+  while (i > 0 && CK[i].n > n) { pop(CK); i = i - 1; }
+  S = copy(CK[i].s);
+  var t = S.t;
+  while (len(HIST) > 0 && HIST[len(HIST) - 1][0] > t) { pop(HIST); }
+  while (len(EVLOG) > 0 && EVLOG[len(EVLOG) - 1].t > t) { pop(EVLOG); }
+  EVENTS = [];
+  return 0;
+}
+// 推进到步号 n；每次最多算 budgetSteps 步，返回是否已到达
+function simTo(n, budgetSteps) {
+  if (n < S.n) { rewindTo(n); }
+  var k = 0;
+  while (S.n < n && k < budgetSteps) { stepOnce(); k = k + 1; }
+  return S.n >= n;
+}
+
+// ---------- 提交显示状态 ----------
+function partsLayer() {
+  var list = []; var ks = keys(S.dmg); var i = 0; var seen = {};
+  var rp = PARTDEF[VEH.rotor.part];
+  var blurMain = S.rpm * 40;
+  push(list, [VEH.rotor.part, rp.pos[0], rp.pos[1], rp.pos[2], 0, sin(S.az / 2), 0, cos(S.az / 2), 0, dmgOf(VEH.rotor.part), blurMain, 0, 0]); seen[VEH.rotor.part] = true;
+  var tp = PARTDEF[VEH.tailRotor.part];
+  var detTail = false;
+  i = 0;
+  while (i < len(S.debris)) {
+    var d = S.debris[i]; i = i + 1;
+    push(list, [d.name, d.p[0], d.p[1], d.p[2], d.q[0], d.q[1], d.q[2], d.q[3], 1, dmgOf(d.name), 0, 0, 0]); seen[d.name] = true;
+    if (d.name == VEH.tailRotor.part) { detTail = true; }
+  }
+  if (!detTail) { push(list, [VEH.tailRotor.part, tp.pos[0], tp.pos[1], tp.pos[2], 0, 0, sin(S.taz / 2), cos(S.taz / 2), 0, dmgOf(VEH.tailRotor.part), S.rpm * S.tail * 150, 0, 0]); seen[VEH.tailRotor.part] = true; }
+  i = 0;
+  while (i < len(ks)) {
+    var name = ks[i]; i = i + 1;
+    if (has(seen, name) || !has(PARTDEF, name)) { continue; }
+    var pd = PARTDEF[name]; var lp = [0, 0, 0]; if (has(pd, "pos")) { lp = pd.pos; }
+    var lq = [0, 0, 0, 1]; if (has(pd, "rot")) { lq = qeuler(pd.rot[0], pd.rot[1], pd.rot[2]); }
+    var sq = 0; if (name == VEH.parts[0].name) { sq = S.squash; }
+    push(list, [name, lp[0], lp[1], lp[2], lq[0], lq[1], lq[2], lq[3], 0, S.dmg[name], 0, sq, 0]);
+  }
+  if (S.crashed && !has(seen, VEH.parts[0].name) && !has(S.dmg, VEH.parts[0].name)) { push(list, [VEH.parts[0].name, 0, 0, 0, 0, 0, 0, 1, 0, 0.25, 0, S.squash, 0]); }
+  return { root: [S.p[0], S.p[1], S.p[2], S.q[0], S.q[1], S.q[2], S.q[3]], list: list };
+}
+function dmgOf(name) { if (has(S.dmg, name)) { return S.dmg[name]; } return 0; }
+function showCam(t) {
+  // 演出镜头：资源里的镜头关键帧（围绕主体的方位、俯仰、距离、视角），在关键帧之间插值
+  var ks = null;
+  if (has(RES, "show") && has(RES.show, "camera")) { ks = RES.show.camera; }
+  if (ks == null || len(ks) == 0) { return { yaw: S.camYaw + 150, pitch: 10, dist: 22, fov: 40, up: 0.6 }; }
+  var i = 0;
+  while (i < len(ks) - 1 && ks[i + 1].t <= t) { i = i + 1; }
+  var a = ks[i];
+  if (i >= len(ks) - 1 || t <= a.t) { return a; }
+  var b = ks[i + 1];
+  if (has(b, "cut") && b.cut) { return a; }
+  var u = (t - a.t) / (b.t - a.t); u = u * u * (3 - 2 * u);
+  var dy = b.yaw - a.yaw;
+  return { yaw: a.yaw + dy * u, pitch: lerp(a.pitch, b.pitch, u), dist: lerp(a.dist, b.dist, u), fov: lerp(a.fov, b.fov, u), up: lerp(a.up, b.up, u) };
+}
+function cameraLayer() {
+  var c = null; var m = CAM.mode;
+  if (m == "show") { c = showCam(S.t); }
+  else if (m == "follow") { var f = RES.cameras.follow; c = { yaw: S.camYaw + 180, pitch: atan2(f.height, f.dist) / D2R, dist: sqrt(f.dist * f.dist + f.height * f.height), fov: f.fov, up: 0.8 }; }
+  else { c = { yaw: CAM.yaw, pitch: CAM.pitch, dist: CAM.dist, fov: 42, up: 0.5 }; }
+  var cy = cos(c.pitch * D2R); var lx = S.p[0]; var ly = S.p[1] + c.up; var lz = S.p[2];
+  var px = lx + cos(c.yaw * D2R) * cy * c.dist; var pz = lz - sin(c.yaw * D2R) * cy * c.dist; var py = ly + sin(c.pitch * D2R) * c.dist;
+  var g = fl_terrain(px, pz) + 1.2;
+  if (py < g) { py = g; }
+  LASTCAM = { p: [px, py, pz], look: [lx, ly, lz], fov: c.fov };
+  return LASTCAM;
+}
+function summary() {
+  var n = len(HIST); var s = 0; if (n > 36) { s = n - 36; }
+  var tw = fl_partWorld(S, VEH.tailRotor.part);
+  var ev = []; var i = 0;
+  while (i < len(EVLOG)) { if (S.t - EVLOG[i].t < 9) { push(ev, EVLOG[i]); } i = i + 1; }
+  var tg = null;
+  if (MODE == "live") { tg = [S.target.x, S.target.z]; }
+  return { t: S.t, p: [S.p[0], S.p[1], S.p[2]], gy: fl_surface(S.p[0], S.p[1], S.p[2]), agl: S.agl, thrust: S.thrust * S.rpm, wind: S.wind, crashed: S.crashed, crashT: S.crashT,
+           fire: S.fire, rest: S.rest, faultT: S.faultT, tail: [tw[0][0], tw[0][1], tw[0][2]], tailH: S.tail, hist: slice(HIST, s, n), ev: ev, target: tg };
+}
+function present(seq) {
+  sys("scene_layer", H, "parts", S.t, partsLayer());
+  sys("scene_layer", H, "camera", S.t, cameraLayer());
+  sys("send", TLPID, { t: "done", seq: seq, pos: S.t, sum: summary(), dur: REC.duration });
+  FRAMES = FRAMES + 1;
+  if (FRAMES % 6 == 0) { sendInfo(); }
+  return 0;
+}
+function sendInfo() {
+  var per = 0;
+  if (len(CTLT) > 2) { per = (CTLT[len(CTLT) - 1] - CTLT[0]) / (len(CTLT) - 1) * 1000; }
+  var lag = 0;
+  if (MODE == "live" && !HOLD) { lag = P0 + (sys("time") - T0) / 1000 - S.t; }
+  fl_setR(S.q);
+  var cst = -1; if (CTLPID > 0) { cst = sys("pstate", CTLPID); }
+  var cerr = "";
+  if (cst == 5) { var lg = sys("plog", CTLPID); if (lg != null) { cerr = lg.err; } }
+  sys("send", UIPID, { t: "info", mode: MODE, simT: S.t, lag: lag, period: per, ctlN: CTLN, crashed: S.crashed, rest: S.rest, agl: S.agl,
+                       speed: sqrt(S.v[0] * S.v[0] + S.v[2] * S.v[2]), hdg: atan2(-R20, R00) / D2R, tilt: acos(clamp1(R11)) / D2R, wind: S.wind, target: S.target,
+                       fault: S.fault, maxTilt: S.maxTilt / D2R, ctl: CTLPID, ctlState: cst, ctlErr: cerr, ctlPath: CTLPATH, impact: S.impact, dur: REC.duration, ground: S.ground, rpm: S.rpm });
+  return 0;
+}
+
+// ---------- 关键帧场景（没有飞行记录的普通场景） ----------
+function keyVal(keys2, t) {
+  var i = 0;
+  while (i < len(keys2) - 1 && keys2[i + 1][0] <= t) { i = i + 1; }
+  var a = keys2[i];
+  if (i >= len(keys2) - 1 || t <= a[0]) { return [a[1], a[2], a[3]]; }
+  var b = keys2[i + 1]; var u = (t - a[0]) / (b[0] - a[0]);
+  return [lerp(a[1], b[1], u), lerp(a[2], b[2], u), lerp(a[3], b[3], u)];
+}
+function presentKeys(seq, pos) {
+  var list = []; var st = {}; var tr = [];
+  if (has(RES, "timeline") && has(RES.timeline, "tracks")) { tr = RES.timeline.tracks; }
+  var i = 0;
+  while (i < len(tr)) {
+    var k = tr[i]; i = i + 1;
+    if (!has(PARTDEF, k.part)) { continue; }
+    if (!has(st, k.part)) { var pd = PARTDEF[k.part]; st[k.part] = { p: has(pd, "pos") ? pd.pos : [0, 0, 0], r: has(pd, "rot") ? pd.rot : [0, 0, 0] }; }
+    if (k.prop == "pos") { st[k.part].p = keyVal(k.keys, pos); } else if (k.prop == "rot") { st[k.part].r = keyVal(k.keys, pos); }
+  }
+  var ks = keys(st); i = 0;
+  while (i < len(ks)) { var e = st[ks[i]]; var q = qeuler(e.r[0], e.r[1], e.r[2]); push(list, [ks[i], e.p[0], e.p[1], e.p[2], q[0], q[1], q[2], q[3], 0, 0, 0, 0, 0]); i = i + 1; }
+  sys("scene_layer", H, "parts", pos, { root: [0, 0, 0, 0, 0, 0, 1], list: list });
+  var c = RES.cameras.default;
+  if (CAM.mode == "orbit") {
+    var cy = cos(CAM.pitch * D2R);
+    c = { p: [c.look[0] + cos(CAM.yaw * D2R) * cy * CAM.dist, c.look[1] + sin(CAM.pitch * D2R) * CAM.dist, c.look[2] - sin(CAM.yaw * D2R) * cy * CAM.dist], look: c.look, fov: c.fov };
+  }
+  LASTCAM = c;
+  sys("scene_layer", H, "camera", pos, c);
+  sys("send", TLPID, { t: "done", seq: seq, pos: pos, sum: null, dur: RES.timeline.duration });
+  return 0;
+}
+
+// ---------- 点选：由相机位置与视角求出指针射线，与各部件的包围盒求交 ----------
+function qconjRot(q, vx, vy, vz) {
+  // 用四元数的逆旋转向量
+  var x = -q[0]; var y = -q[1]; var z = -q[2]; var w = q[3];
+  var tx = 2 * (y * vz - z * vy); var ty = 2 * (z * vx - x * vz); var tz = 2 * (x * vy - y * vx);
+  return [vx + w * tx + (y * tz - z * ty), vy + w * ty + (z * tx - x * tz), vz + w * tz + (x * ty - y * tx)];
+}
+function rayBox(ro, rd, c, h) {
+  var tmin = -1000000; var tmax = 1000000; var i = 0;
+  while (i < 3) {
+    var o = ro[i] - c[i];
+    if (abs(rd[i]) < 0.000001) { if (o < -h[i] || o > h[i]) { return -1; } }
+    else {
+      var t1 = (-h[i] - o) / rd[i]; var t2 = (h[i] - o) / rd[i];
+      if (t1 > t2) { var tt = t1; t1 = t2; t2 = tt; }
+      if (t1 > tmin) { tmin = t1; } if (t2 < tmax) { tmax = t2; }
+      if (tmin > tmax) { return -1; }
+    }
+    i = i + 1;
+  }
+  if (tmax < 0) { return -1; }
+  return (tmin > 0) ? tmin : tmax;
+}
+function pick(m) {
+  if (LASTCAM == null) { return 0; }
+  var c = LASTCAM;
+  var fx = c.look[0] - c.p[0]; var fy = c.look[1] - c.p[1]; var fz = c.look[2] - c.p[2];
+  var fl = sqrt(fx * fx + fy * fy + fz * fz); fx = fx / fl; fy = fy / fl; fz = fz / fl;
+  var rx = -fz; var rz = fx; var rl = sqrt(rx * rx + rz * rz); rx = rx / rl; rz = rz / rl;      // 右 = 前 × 上(0,1,0)
+  var ux = -(fy * rz); var uy = fz * rx - fx * rz; var uz = fy * rx; ux = 0 - (rz * fy); uy = rz * fx - rx * fz; uz = rx * fy;
+  var th = tan(c.fov * D2R / 2); var asp = m.w / m.h;
+  var sx = (2 * m.x / m.w - 1) * th * asp; var sy = (1 - 2 * m.y / m.h) * th;
+  var dx = fx + rx * sx + ux * sy; var dy = fy + uy * sy; var dz = fz + rz * sx + uz * sy;
+  var dl = sqrt(dx * dx + dy * dy + dz * dz); dx = dx / dl; dy = dy / dl; dz = dz / dl;
+  var best = -1; var bestName = "";
+  var ps = VEH.parts; var i = 0;
+  while (i < len(ps)) {
+    var pd = ps[i]; i = i + 1;
+    if (!has(pd, "col")) { continue; }
+    var wp = null; var j = 0;
+    while (j < len(S.debris)) { if (S.debris[j].name == pd.name) { wp = [S.debris[j].p, S.debris[j].q]; } j = j + 1; }
+    if (wp == null) { wp = fl_partWorld(S, pd.name); }
+    var lo = qconjRot(wp[1], c.p[0] - wp[0][0], c.p[1] - wp[0][1], c.p[2] - wp[0][2]);
+    var ld = qconjRot(wp[1], dx, dy, dz);
+    var t = rayBox(lo, ld, pd.col.c, pd.col.h);
+    if (t > 0 && (best < 0 || t < best)) { best = t; bestName = pd.name; }
+  }
+  // 地面：沿射线步进找到与地形的交点
+  var gt = -1; var t2 = 2; var prev = 0;
+  while (t2 < 900) {
+    var y = c.p[1] + dy * t2;
+    var g = fl_surface(c.p[0] + dx * t2, y + 2, c.p[2] + dz * t2);
+    if (y < g) {
+      var lo2 = prev; var hi = t2; var k = 0;
+      while (k < 12) { var mid = (lo2 + hi) / 2; if (c.p[1] + dy * mid < fl_surface(c.p[0] + dx * mid, c.p[1] + dy * mid + 2, c.p[2] + dz * mid)) { hi = mid; } else { lo2 = mid; } k = k + 1; }
+      gt = hi; break;
+    }
+    prev = t2; t2 = t2 + max(1.5, t2 * 0.05);
+  }
+  fl_setR(S.q);
+  if (best > 0 && (gt < 0 || best < gt)) {
+    var dm = dmgOf(bestName); var det = false; var j2 = 0;
+    while (j2 < len(S.debris)) { if (S.debris[j2].name == bestName) { det = true; } j2 = j2 + 1; }
+    sys("send", UIPID, { t: "picked", name: bestName, dmg: dm, det: det, ground: null });
+  } else if (gt > 0) { sys("send", UIPID, { t: "picked", name: "", dmg: 0, det: false, ground: [c.p[0] + dx * gt, c.p[1] + dy * gt, c.p[2] + dz * gt] }); }
+  else { sys("send", UIPID, { t: "picked", name: "", dmg: 0, det: false, ground: null }); }
+  return 0;
+}
+function tan(x) { return sin(x) / cos(x); }
+
+// ---------- 载入、排演与记录 ----------
+function load(file, h) {
+  var text = sys("read", file);
+  if (iserr(text)) { sys("send", UIPID, { t: "loaded", ok: false, error: text.error }); return 0; }
+  var r = parse(text);
+  if (type(r) != "map" || r.format != "nos-scene") { sys("send", UIPID, { t: "loaded", ok: false, error: "不是有效的场景文件" }); return 0; }
+  RES = r; FILE = file; H = h; PEND = null; HOLD = true;
+  stopCtl();
+  fl_setup(RES);
+  CAM.mode = "show";
+  if (has(RES.cameras, "orbit")) { CAM.yaw = RES.cameras.orbit.yaw; CAM.pitch = RES.cameras.orbit.pitch; CAM.dist = RES.cameras.orbit.dist; }
+  var dur = 10; var fps = 30;
+  if (has(RES, "timeline")) { dur = RES.timeline.duration; if (has(RES.timeline, "fps")) { fps = RES.timeline.fps; } }
+  if (has(RES, "flight") && VEH != null && has(VEH, "phys")) {
+    REC = RES.flight; MODE = "replay"; dur = REC.duration;
+    resetSim();
+  } else if (VEH != null && has(VEH, "phys")) {
+    var pa = [0, 0]; if (has(RES, "pads") && len(RES.pads) > 0) { pa = [RES.pads[0].pos[0], RES.pads[0].pos[2]]; }
+    REC = { duration: 0, init: { x: pa[0], z: pa[1], yaw: 0, seed: 1 }, inputs: [], controls: [] }; MODE = "replay";
+    resetSim();
+  } else { MODE = "keys"; REC = { duration: dur }; CAM.mode = "show"; }
+  var pads = []; if (has(RES, "pads")) { pads = RES.pads; }
+  sys("send", UIPID, { t: "loaded", ok: true, name: RES.name, dur: dur, fps: fps, mode: MODE, pads: pads, canFly: MODE != "keys", env: has(RES, "env") ? RES.env : null });
+  return 0;
+}
+function stopCtl() { if (CTLPID > 0) { sys("kill", CTLPID); CTLPID = 0; } return 0; }
+function startCtl() {
+  stopCtl(); CTLT = [];
+  var r = sys("spawn", CTLPATH, { bus: BUS }, true);
+  if (iserr(r)) { sys("send", UIPID, { t: "note", text: "飞控程序无法启动：" + r.error }); return 0; }
+  CTLPID = r;
+  return 0;
+}
+function rehearse(pos) {
+  // 从记录的当前位置转入排演：之后的控制与输入改由现在的飞控与操作产生
+  if (MODE == "keys" || MODE == "none") { return 0; }
+  var n = floor(pos * 240 + 0.0001);
+  while (!simTo(n, 2000)) { }
+  var t = S.t;
+  var cs = []; var i = 0;
+  while (i < len(REC.controls) && REC.controls[i][0] <= t) { push(cs, REC.controls[i]); i = i + 1; }
+  var ins = []; i = 0;
+  while (i < len(REC.inputs) && REC.inputs[i][0] <= t) { push(ins, REC.inputs[i]); i = i + 1; }
+  REC = { duration: t, init: REC.init, inputs: ins, controls: cs };
+  S.ci = len(cs); S.ii = len(ins);
+  while (len(CK) > 1 && CK[len(CK) - 1].n > S.n) { pop(CK); }
+  MODE = "live"; P0 = t; T0 = sys("time"); HOLD = false;
+  if (S.target.mode == "idle" || true) { }
+  sys("dev_take", BUS + ".controls");
+  sys("dev_write", BUS + ".sensors", fl_sensors(S));
+  if (CTLPID == 0 || sys("pstate", CTLPID) == 4 || sys("pstate", CTLPID) == 5 || sys("pstate", CTLPID) < 0) { startCtl(); }
+  sendInfo();
+  return 0;
+}
+function liveInput(kind, value) {
+  if (MODE != "live") { return 0; }
+  push(REC.inputs, [S.t, kind, value]);
+  return 0;
+}
+function saveRecord(path) {
+  if (REC == null || MODE == "keys") { sys("send", UIPID, { t: "saved", ok: false, error: "这个场景没有飞行记录" }); return 0; }
+  // 记录保留场景资源、初态、实际输入和实际发生的控制时序
+  var out = {}; var ks = keys(RES); var i = 0;
+  while (i < len(ks)) { out[ks[i]] = RES[ks[i]]; i = i + 1; }
+  out.flight = { duration: S.t, init: REC.init, inputs: REC.inputs, controls: REC.controls, savedAt: sys("time"), from: FILE };
+  if (MODE != "live") { out.flight.duration = REC.duration; }
+  out.timeline = { duration: out.flight.duration, fps: 30 };
+  if (has(out, "show")) { del(out, "show"); }
+  out.name = RES.name + "（排演记录）";
+  var r = sys("write", path, json(out));
+  if (iserr(r)) { sys("send", UIPID, { t: "saved", ok: false, error: r.error }); } else { sys("send", UIPID, { t: "saved", ok: true, path: path, dur: out.flight.duration, n: len(REC.controls) }); }
+  return 0;
+}
+function takeControls() {
+  // 飞控写入的控制量带时间戳；换算到记录时间后并入控制时序（错过的周期不补发）
+  var q = sys("dev_take", BUS + ".controls"); var i = 0;
+  while (i < len(q)) {
+    var e = q[i]; i = i + 1;
+    var tc = P0 + (e.t - T0) / 1000; if (tc < S.t) { tc = S.t; }
+    var v = e.v;
+    if (type(v) != "map") { continue; }
+    var c = [tc, lim(v.col, 0, 1), lim(v.pitch, -1, 1), lim(v.roll, -1, 1), lim(v.yaw, -1, 1)];
+    push(REC.controls, c); CTLN = CTLN + 1;
+    push(CTLT, tc); if (len(CTLT) > 12) { remove(CTLT, 0); }
+  }
+  return 0;
+}
+function lim(x, a, b) { if (type(x) != "num" || x != x) { return 0; } if (x < a) { return a; } if (x > b) { return b; } return x; }
+function onMsg(m) {
+  var t = m.t;
+  if (t == "frame") { PEND = { seq: m.seq, pos: m.pos }; }
+  else if (t == "load") { load(m.file, m.h); }
+  else if (t == "camera") { CAM.mode = m.mode; if (has(m, "yaw")) { CAM.yaw = m.yaw; CAM.pitch = m.pitch; CAM.dist = m.dist; } }
+  else if (t == "pick") { if (MODE != "keys" && MODE != "none") { pick(m); } }
+  else if (t == "rehearse") { rehearse(m.pos); }
+  else if (t == "input") { liveInput(m.kind, m.value); }
+  else if (t == "hold") {
+    if (MODE == "live") { if (m.on && !HOLD) { HOLD = true; P0 = S.t; } else if (!m.on && HOLD) { HOLD = false; P0 = S.t; T0 = sys("time"); sys("dev_take", BUS + ".controls"); } }
+  }
+  else if (t == "replay") { if (MODE == "live") { MODE = "replay"; HOLD = true; REC.duration = S.t; stopCtl(); sendInfo(); } }
+  else if (t == "save") { saveRecord(m.path); }
+  else if (t == "ctl") { CTLPATH = m.path; if (MODE == "live") { startCtl(); } sendInfo(); }
+  else if (t == "tl") { TLPID = m.pid; }
+  return 0;
+}
+
+var A = sys("args");
+UIPID = A.ui; BUS = "fl." + sys("pid");
+while (true) {
+  var m = null;
+  var busy = (MODE == "live" && !HOLD) || PEND != null;
+  if (busy) { m = sys("recv", 8); } else { m = sys("recv"); }
+  while (m != null) { onMsg(m.body); m = sys("poll"); }
+  if (MODE == "live" && !HOLD) {
+    takeControls();
+    var target = floor((P0 + (sys("time") - T0) / 1000) * 240);
+    simTo(target, 40);
+    REC.duration = S.t;
+    sys("dev_write", BUS + ".sensors", fl_sensors(S));
+    if (PEND != null) { var s1 = PEND.seq; PEND = null; present(s1); }
+  } else if (PEND != null) {
+    if (MODE == "keys") { var s2 = PEND; PEND = null; presentKeys(s2.seq, s2.pos); }
+    else if (MODE == "none") { PEND = null; }
+    else {
+      var n = floor(PEND.pos * 240 + 0.0001);
+      if (MODE == "replay" && n > floor(REC.duration * 240 + 0.0001)) { n = floor(REC.duration * 240 + 0.0001); }
+      if (simTo(n, 120)) { var s3 = PEND.seq; PEND = null; present(s3); }
+    }
+  }
+}

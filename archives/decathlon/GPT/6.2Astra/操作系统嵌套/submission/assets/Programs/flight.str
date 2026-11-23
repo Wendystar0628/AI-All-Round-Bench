@@ -1,0 +1,8 @@
+# 高度与姿态反馈；总距、横滚和转向
+@main
+s = sensors()
+collective = 9.81 + (s.target - s.y) * 2.0 - s.vy * 1.8
+rudder = -s.roll * 4.8 - s.spin * 2.5
+actuate(collective,rudder,s.heading)
+wait 0.06
+goto main

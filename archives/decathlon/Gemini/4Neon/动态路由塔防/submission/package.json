@@ -1,0 +1,14 @@
+{
+  "name": "xiyu-cyber-defense",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --format=iife --target=chrome110 --outfile=dist/game.js",
+    "build:min": "esbuild src/main.js --bundle --format=iife --target=chrome110 --minify --outfile=dist/game.js"
+  },
+  "dependencies": {
+    "esbuild": "^0.28.2",
+    "three": "^0.187.0"
+  }
+}

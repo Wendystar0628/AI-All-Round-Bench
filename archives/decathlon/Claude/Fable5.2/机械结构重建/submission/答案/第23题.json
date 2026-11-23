@@ -1,0 +1,6 @@
+{"problem":"23","parts":[{"name":"1","title":"四向斜置夹紧阀组壳体(初稿)","features":[
+{"type":"extrude","name":"底板","plane":"XY","loops":[{"rect":[0,0,300,190]}],"depth":18},
+{"type":"extrude","name":"壳体","plane":"XZ","loops":[{"path":[[18,18],[282,18],[282,108],[250,150],[190,150],[158,133],[126,150],[56,150],[18,108]]}],"depth":[-172,-18]},
+{"type":"extrude","name":"前凸缘Φ90","plane":"XZ","loops":[{"circle":[92,76],"d":90}],"depth":[-18,0]},
+{"type":"hole","name":"前孔(估)","plane":"XZ","origin":[0,0,0],"at":[92,76],"d":40,"depth":40}
+]}]}

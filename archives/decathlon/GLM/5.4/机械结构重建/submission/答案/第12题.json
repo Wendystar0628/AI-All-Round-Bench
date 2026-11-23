@@ -1,0 +1,239 @@
+{
+ "problem": "12",
+ "parts": [
+  {
+   "name": "1",
+   "title": "偏轴阶梯双腔泵座",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        160,
+        110
+       ]
+      }
+     ],
+     "depth": 10
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      0,
+      10,
+      0
+     ],
+     "loops": [
+      {
+       "path": [
+        [
+         10,
+         10
+        ],
+        [
+         150,
+         10
+        ],
+        [
+         150,
+         55
+        ],
+        [
+         120,
+         75
+        ],
+        [
+         40,
+         75
+        ],
+        [
+         10,
+         55
+        ]
+       ]
+      }
+     ],
+     "depth": -90
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      80,
+      10,
+      42
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 76
+      }
+     ],
+     "depth": 12
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      80,
+      0,
+      42
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 54,
+     "depth": 12
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      80,
+      0,
+      42
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 42,
+     "depth": 50
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      25,
+      10,
+      20
+     ],
+     "loops": [
+      {
+       "rect": [
+        -12,
+        -8,
+        12,
+        8
+       ]
+      }
+     ],
+     "depth": -8
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "at": [
+      [
+       8,
+       8
+      ],
+      [
+       152,
+       8
+      ],
+      [
+       8,
+       102
+      ],
+      [
+       152,
+       102
+      ]
+     ],
+     "d": 9,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      25,
+      2,
+      20
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 15,
+     "depth": 30
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "YZ",
+     "origin": [
+      10,
+      55,
+      40
+     ],
+     "loops": [
+      {
+       "rect": [
+        -12,
+        -20,
+        12,
+        20
+       ]
+      }
+     ],
+     "depth": [
+      0,
+      8
+     ]
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        60,
+        0,
+        120,
+        6
+       ]
+      }
+     ],
+     "depth": 10
+    }
+   ]
+  }
+ ]
+}

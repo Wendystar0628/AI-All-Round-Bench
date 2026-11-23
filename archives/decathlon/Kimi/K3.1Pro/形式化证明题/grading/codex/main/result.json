@@ -1,0 +1,57 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "选定提交中未提交该题文件，缺少主定理 problem1。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "选定提交中未提交该题文件，缺少主定理 problem2。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem3.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms problem3 和 #check @problem3 后再次通过。主定理名称及命题与题面一致，仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "选定提交中未提交该题文件，缺少主定理 problem4。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "选定提交中未提交该题文件，缺少主定理 problem5。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "选定提交中未提交该题文件，缺少主定理 problem6。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "选定提交中未提交该题文件，缺少主定理 problem7。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "选定提交中未提交该题文件，缺少主定理 problem8。"
+    }
+  ],
+  "metrics": {},
+  "notes": "评分版本：最近一次提交 d06fa21ecb86263fc4fee0a08a70b30476bdd5b9（Prove Problem 3: Cohn irreducibility criterion）。原工作目录的 Problem8.lean 含未完成的 sorry，按规则评该提交；提交中仅有 Problem3.lean。该仓库题面与当前题号一致。"
+}

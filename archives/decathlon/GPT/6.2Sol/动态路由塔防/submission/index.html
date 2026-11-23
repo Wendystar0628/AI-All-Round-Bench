@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>网络安全攻防战 · 汐域防御控制台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark" data-icon="brand"></div><div><strong>网络安全攻防战</strong><small>汐域自治域 / 防御控制台</small></div></div>
+  <nav><button class="nav active" id="navBattle">战术视图</button><button class="nav" id="navMissions">关卡选择</button><button class="nav" id="navDemos">实战演示</button><button class="nav" id="navManual">作战手册</button></nav>
+  <div class="top-tools"><span class="ready"><i></i>系统在线</span><button class="icon-button" id="mute" title="静音" aria-label="静音" data-icon="volume"></button><button class="icon-button" id="menu" title="对局菜单" aria-label="对局菜单" data-icon="settings"></button></div>
+</header>
+<main>
+  <section class="command">
+    <div class="mission"><span class="mission-id" id="missionId"></span><div><div class="eyebrow" id="missionType"></div><h1 id="missionName"></h1></div></div>
+    <div class="resources">
+      <div class="stat"><div class="stat-icon mint" data-icon="cpu"></div><div><span>算力</span><b id="cpu"></b></div></div>
+      <div class="stat"><div class="stat-icon violet" data-icon="intel"></div><div><span>情报</span><b id="intel"></b></div></div>
+      <div class="stat integrity"><div class="stat-icon amber" data-icon="heart"></div><div><span>中枢完整度</span><b id="core"></b><div class="integrity-meter" id="coreMeter"></div></div></div>
+    </div>
+    <div class="transport"><button class="icon-button" id="pause" title="暂停 / 继续 (空格)" aria-label="暂停 / 继续" data-icon="pause"></button><button class="speed" id="speed" title="调速">1×</button><button class="primary" id="waveStart"></button></div>
+  </section>
+  <section class="operations">
+    <aside class="left-rail">
+      <section class="panel forecast"><div class="panel-head"><span data-icon="radar"></span><h2>流量预报</h2><button id="lookahead" class="forecast-switch" type="button" hidden aria-pressed="false" title="切换至下一波预报">看下波</button></div><div class="wave-display"><span>入侵波次</span><div><b id="waveNo"></b><small id="waveTotal"></small></div><div class="wave-meter" id="waveMeter"></div><span id="waveBrief"></span></div><div id="forecasts"></div></section>
+      <section class="panel logs"><div class="panel-head"><span data-icon="activity"></span><h2>事件日志</h2><i class="alive"></i></div><div id="logs"></div></section>
+    </aside>
+    <section id="viewport" aria-label="三维战术地图">
+      <div id="world"></div><div id="labels"></div><div class="vie"></div>
+      <div class="view-head"><div class="view-title"><span class="crosshair" data-icon="cross"></span><div><strong>网络拓扑</strong><small id="viewSector"></small></div></div><button class="icon-button" id="resetCamera" title="复位视角" aria-label="复位视角" data-icon="focus"></button></div>
+      <div id="phase"><i></i><span></span></div><div id="toast" role="status"></div><div id="subtitle"></div><div id="virtualPointer"></div>
+      <div class="view-foot"><div class="legend"><span><i class="line"></i>入口路由</span><span><i class="node"></i>交换节点</span><span><i class="platform"></i>设备平台</span><span><i class="legacy"></i>旧链路</span><span id="wirelessLegend" hidden><i class="wireless"></i>无线航线</span><span id="enemyTrailLegend" hidden><i class="hostile-trail"></i>选中威胁</span><span id="skillLegend" hidden><i class="skill-mark"></i>技能目标</span><span id="laneCoveredLegend" hidden><i class="lane-covered"></i>火力覆盖</span><span id="laneGapLegend" hidden><i class="lane-gap"></i>火力盲区</span></div><span class="geometry" id="geometry"></span></div>
+    </section>
+    <aside class="right-rail">
+      <section class="panel inspect"><div class="panel-head"><span data-icon="select"></span><h2>战术检查器</h2></div><div id="inspector"></div></section>
+      <section class="panel utilities"><div class="panel-head"><span data-icon="kit"></span><h2>应急道具</h2></div><div id="items"></div></section>
+    </aside>
+  </section>
+  <section class="panel deck"><div class="deck-head"><div><span data-icon="layers"></span><h2>设备部署</h2></div><span>拖放设备至战术地图 <kbd>1</kbd>–<kbd>6</kbd> 快捷选取</span></div><div id="towerCards"></div></section>
+  <footer><span><i></i> 汐域防御网络 <em>·</em> 守护进程已接入</span><span><kbd>中键</kbd> 环绕 <kbd>Shift + 中键</kbd> 平移 <kbd>滚轮</kbd> 缩放 <kbd>Esc</kbd> 取消</span><span><i class="rx"></i> <b id="footerRoute">路由已收敛</b></span></footer>
+</main>
+<div id="overlay" hidden><div id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"></div></div>
+<script src="vendor/three.min.js"></script><script src="data.js"></script><script src="sim.js"></script><script src="world.js"></script><script src="app.js"></script>
+</body>
+</html>
+

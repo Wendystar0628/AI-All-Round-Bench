@@ -1,0 +1,146 @@
+// ===========================================================================
+//  Tasks.nsl —— 子系统进程管理器
+//  显示本系统进程表、预算读数、直属子系统；挂起/继续/结束/调整额度
+// ===========================================================================
+var W = 600
+var H = 400
+var dirty = true
+var procs = []
+var subs = []
+var budget = { limit: 0, left: 0 }
+var sel = 0
+var subSel = -1
+var msg = ""
+var tick = 0
+
+func R(L, x, y, w, h, c, r) { L.push({ op: "rect", x: x, y: y, w: w, h: h, color: c, r: r }) }
+func T(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c }) }
+func TC(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c, align: "center" }) }
+func IC(L, name, x, y, s, c) { L.push({ op: "icon", name: name, x: x, y: y, size: s, color: c }) }
+func btn(L, x, y, w, h, label, hot, primary) {
+  var c = primary ? "#f5b942" : (hot ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)")
+  R(L, x, y, w, h, c, 7)
+  TC(L, x + w / 2, y + h / 2 + 4, label, 11, primary ? "#211803" : "#dfe5f1")
+}
+func refresh() {
+  procs = sys.request({ op: "proc_list" })
+  subs = sys.request({ op: "list_subsystems" })
+  budget = sys.request({ op: "budget" })
+  dirty = true
+}
+func fmt(n) {
+  if (n >= 1000000) { return (n / 1000000).toFixed(2) + "M" }
+  if (n >= 1000) { return (n / 1000).toFixed(1) + "K" }
+  return "" + n
+}
+func build() {
+  var L = []
+  R(L, 0, 0, W, H, "#0e1119", 0)
+  R(L, 0, 0, W, 34, "rgba(255,255,255,0.03)", 0)
+  T(L, 10, 22, "进程", 12.5, "#e3e9f5")
+  T(L, 70, 22, "本步预算 " + fmt(budget.left) + " / " + fmt(budget.limit) + " 指令", 10.5, "#8f99ad")
+  // 表头
+  var hy = 40
+  R(L, 6, hy, W - 12, 22, "rgba(255,255,255,0.04)", 6)
+  T(L, 12, hy + 15, "名称", 10, "#6b7488")
+  T(L, 210, hy + 15, "状态", 10, "#6b7488")
+  T(L, 300, hy + 15, "工作量", 10, "#6b7488")
+  T(L, 380, hy + 15, "额度", 10, "#6b7488")
+  T(L, 450, hy + 15, "消息", 10, "#6b7488")
+  T(L, 510, hy + 15, "错误", 10, "#6b7488")
+  var y = hy + 26
+  for (var i = 0; i < procs.length; i++) {
+    if (i == sel) { R(L, 6, y - 15, W - 12, 24, "rgba(245,185,66,0.16)", 6) }
+    var p = procs[i]
+    var col = p.state == "error" ? "#ff8d9c" : (p.state == "suspended" ? "#f5d78e" : (p.state == "service" ? "#8fb8ff" : "#9ff0cf"))
+    T(L, 12, y, p.name, 11, "#dfe5f1")
+    T(L, 210, y, p.state, 10.5, col)
+    T(L, 300, y, fmt(p.used), 10.5, "#c8d2e3")
+    T(L, 380, y, fmt(p.quota), 10.5, "#c8d2e3")
+    T(L, 450, y, "" + p.msgs, 10.5, "#8f99ad")
+    var er = p.error == null ? "" : p.error
+    if (er.length > 26) { er = er.substr(0, 24) + "…" }
+    T(L, 510, y, er, 9.5, "#ff8d9c")
+    y = y + 24
+    if (y > H - 150) { break }
+  }
+  // 进程操作
+  var by = H - 140
+  R(L, 6, by - 6, W - 12, 34, "rgba(255,255,255,0.03)", 8)
+  var x = 12
+  btn(L, x, by, 56, 24, "挂起", false, false); x = x + 62
+  btn(L, x, by, 56, 24, "继续", false, false); x = x + 62
+  btn(L, x, by, 56, 24, "结束", false, false); x = x + 62
+  btn(L, x, by, 76, 24, "额度 -500", false, false); x = x + 82
+  btn(L, x, by, 76, 24, "额度 +500", false, false)
+  // 子系统
+  T(L, 10, by + 50, "直属子系统", 12, "#e3e9f5")
+  var sy = by + 60
+  for (var i = 0; i < subs.length; i++) {
+    var s = subs[i]
+    if (i == subSel) { R(L, 6, sy - 14, W - 12, 24, "rgba(245,185,66,0.16)", 6) }
+    T(L, 12, sy, s.name, 11, "#dfe5f1")
+    T(L, 150, sy, s.state == "running" ? "运行中" : (s.state == "paused" ? "已暂停" : s.state), 10.5, s.state == "running" ? "#9ff0cf" : "#f5d78e")
+    T(L, 230, sy, "速率 " + s.rate, 10.5, "#8f99ad")
+    T(L, 320, sy, "虚拟时间 " + s.clock.toFixed(1) + "s", 10.5, "#8f99ad")
+    var x2 = 430
+    btn(L, x2, sy - 15, 44, 20, s.paused ? "继续" : "暂停", false, false); x2 = x2 + 48
+    btn(L, x2, sy - 15, 44, 20, "单步", false, false); x2 = x2 + 48
+    btn(L, x2, sy - 15, 44, 20, "重启", false, false); x2 = x2 + 48
+    btn(L, x2, sy - 15, 44, 20, "快照", false, false)
+    sy = sy + 26
+    if (sy > H - 30) { break }
+  }
+  R(L, 0, H - 22, W, 22, "rgba(255,255,255,0.03)", 0)
+  T(L, 8, H - 7, msg == "" ? "挂起保留执行状态；结束释放运行资源" : msg, 10.5, "#8f99ad")
+  return L
+}
+func onClick(x, y) {
+  var hy = 40
+  var idx = ((y - hy - 26 + 15) / 24).floor()
+  if (y > hy + 10 && y < hy + 26 + 24 * procs.length) {
+    if (idx >= 0 && idx < procs.length) { sel = idx; dirty = true; return }
+  }
+  var by = H - 140
+  if (y > by - 6 && y < by + 28) {
+    var pid = sel < procs.length ? procs[sel].pid : 0
+    if (x > 12 && x < 68) { sys.request({ op: "proc_control", pid: pid, action: "suspend" }) }
+    if (x > 74 && x < 130) { sys.request({ op: "proc_control", pid: pid, action: "resume" }) }
+    if (x > 136 && x < 192) { sys.request({ op: "proc_control", pid: pid, action: "kill" }); sel = 0 }
+    if (x > 198 && x < 274) { sys.request({ op: "proc_control", pid: pid, action: "quota", value: procs[sel].quota - 500 }) }
+    if (x > 280 && x < 356) { sys.request({ op: "proc_control", pid: pid, action: "quota", value: procs[sel].quota + 500 }) }
+    refresh()
+    return
+  }
+  var sy = by + 60
+  for (var i = 0; i < subs.length; i++) {
+    if (y > sy - 15 && y < sy + 9) {
+      subSel = i
+      var s = subs[i]
+      var x2 = 430
+      if (x > x2 && x < x2 + 44) { sys.request({ op: "control_subsystem", id: s.id, action: s.paused ? "resume" : "pause" }); refresh(); return }
+      x2 = x2 + 48
+      if (x > x2 && x < x2 + 44) { sys.request({ op: "control_subsystem", id: s.id, action: "step" }); refresh(); return }
+      x2 = x2 + 48
+      if (x > x2 && x < x2 + 44) { sys.request({ op: "restart_subsystem", id: s.id }); refresh(); return }
+      x2 = x2 + 48
+      if (x > x2 && x < x2 + 44) { var r = sys.request({ op: "snapshot", id: s.id }); msg = r.ok ? "快照已保存到 " + r.path : "快照失败：" + r.error; dirty = true; return }
+      dirty = true
+      return
+    }
+    sy = sy + 26
+    if (sy > H - 30) { break }
+  }
+}
+func main() {
+  refresh()
+  sys.draw("main", build(), W, H)
+  while (true) {
+    var m = sys.recv()
+    if (m.type == "resize") { W = m.w; H = m.h; dirty = true }
+    else if (m.type == "mouse") { if (m.kind == "down") { onClick(m.x, m.y) } }
+    else if (m.type == "tick") { tick = tick + 1; if (tick % 2 == 0) { refresh() } }
+    else if (m.type == "close") { sys.exit(0) }
+    if (dirty) { sys.draw("main", build(), W, H); dirty = false }
+  }
+}

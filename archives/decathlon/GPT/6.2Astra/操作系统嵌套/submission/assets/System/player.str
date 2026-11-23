@@ -1,0 +1,38 @@
+display({"surface":"player","sections":["toolbar","flightbar","viewbox","playcontrols","status"]})
+@loop
+event = poll()
+input(event)
+now = time()
+dt = (now - app("lastClock")) * app("rate")
+setApp("lastClock",now)
+if app("state") != "playing" goto sample
+if app("rehearsal") goto live
+t = app("position") + dt
+if t < app("duration") goto advance
+if app("loop") goto repeat
+t = app("duration")
+setApp("state","paused")
+goto advance
+@repeat
+t = t % app("duration")
+@advance
+setApp("position",t)
+goto sample
+@live
+owed = dt
+@substep
+h = min(0.025,owed)
+integrate(h)
+owed = owed - h
+if owed > 0.000001 goto substep
+@sample
+t = app("position")
+if t != last goto publish
+if event == null goto rest
+@publish
+send(app("scenePid"),poseAt(t))
+send(app("fxPid"),t)
+last = t
+@rest
+wait 0.025
+goto loop

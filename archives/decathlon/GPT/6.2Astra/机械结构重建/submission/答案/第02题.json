@@ -1,0 +1,665 @@
+{
+ "problem": "02",
+ "parts": [
+  {
+   "name": "1",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        190,
+        110
+       ]
+      }
+     ],
+     "depth": 16,
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        55,
+        30,
+        135,
+        80
+       ]
+      }
+     ],
+     "depth": [
+      8,
+      16
+     ],
+     "op": "cut"
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      16
+     ],
+     "at": [
+      [
+       10,
+       10
+      ],
+      [
+       180,
+       10
+      ],
+      [
+       10,
+       100
+      ],
+      [
+       180,
+       100
+      ]
+     ],
+     "d": 9,
+     "through": true,
+     "cbore": {
+      "d": 15,
+      "depth": 6
+     }
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      16
+     ],
+     "at": [
+      [
+       35,
+       25
+      ],
+      [
+       145,
+       85
+      ]
+     ],
+     "d": 18,
+     "depth": 10
+    },
+    {
+     "type": "fillet",
+     "radius": 2,
+     "edges": [
+      [
+       0,
+       0,
+       8
+      ]
+     ]
+    },
+    {
+     "type": "chamfer",
+     "distance": 1,
+     "edges": [
+      [
+       80,
+       0,
+       0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": 10,
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 16
+      }
+     ],
+     "depth": [
+      10,
+      94
+     ],
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 12
+      }
+     ],
+     "depth": [
+      94,
+      110
+     ],
+     "op": "add"
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      110
+     ],
+     "at": [
+      0,
+      0
+     ],
+     "d": 5,
+     "depth": 14
+    }
+   ],
+   "placement": {
+    "translate": [
+     35,
+     25,
+     6
+    ]
+   }
+  },
+  {
+   "name": "3",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": 10,
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 16
+      }
+     ],
+     "depth": [
+      10,
+      94
+     ],
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 12
+      }
+     ],
+     "depth": [
+      94,
+      110
+     ],
+     "op": "add"
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      110
+     ],
+     "at": [
+      0,
+      0
+     ],
+     "d": 5,
+     "depth": 14
+    }
+   ],
+   "placement": {
+    "translate": [
+     145,
+     85,
+     6
+    ]
+   }
+  },
+  {
+   "name": "4",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        150,
+        90
+       ]
+      }
+     ],
+     "depth": 16,
+     "op": "add"
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      16
+     ],
+     "at": [
+      [
+       20,
+       10
+      ],
+      [
+       130,
+       70
+      ]
+     ],
+     "d": 12,
+     "through": true
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        55,
+        24,
+        95,
+        56
+       ]
+      }
+     ],
+     "depth": 8,
+     "op": "cut"
+    }
+   ],
+   "placement": {
+    "translate": [
+     15,
+     15,
+     100
+    ]
+   }
+  },
+  {
+   "name": "5",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        140,
+        80
+       ]
+      }
+     ],
+     "depth": 24,
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        48,
+        24,
+        92,
+        56
+       ]
+      }
+     ],
+     "depth": [
+      -12,
+      0
+     ],
+     "op": "add"
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      24
+     ],
+     "at": [
+      [
+       15,
+       10
+      ],
+      [
+       125,
+       70
+      ]
+     ],
+     "d": 16,
+     "through": true
+    },
+    {
+     "type": "extrude",
+     "plane": "XZ",
+     "loops": [
+      {
+       "path": [
+        [
+         50,
+         12
+        ],
+        [
+         100,
+         22
+        ],
+        [
+         100,
+         25
+        ],
+        [
+         50,
+         25
+        ]
+       ]
+      }
+     ],
+     "depth": [
+      -56,
+      -24
+     ],
+     "op": "cut"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        40,
+        21
+       ],
+       "d": 10
+      }
+     ],
+     "depth": [
+      86,
+      140
+     ],
+     "op": "cut"
+    }
+   ],
+   "placement": {
+    "translate": [
+     20,
+     15,
+     56
+    ]
+   }
+  },
+  {
+   "name": "6",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XZ",
+     "loops": [
+      {
+       "path": [
+        [
+         0,
+         0
+        ],
+        [
+         50,
+         10
+        ],
+        [
+         50,
+         14
+        ],
+        [
+         0,
+         14
+        ]
+       ]
+      }
+     ],
+     "depth": -32,
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        16,
+        9
+       ],
+       "d": 8
+      }
+     ],
+     "depth": [
+      36,
+      50
+     ],
+     "op": "cut"
+    }
+   ],
+   "placement": {
+    "translate": [
+     70,
+     39,
+     68
+    ]
+   }
+  },
+  {
+   "name": "7",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        16,
+        48
+       ]
+      }
+     ],
+     "depth": 68,
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        24,
+        61
+       ],
+       "d": 10
+      }
+     ],
+     "depth": 16,
+     "op": "cut"
+    },
+    {
+     "type": "extrude",
+     "plane": "YZ",
+     "loops": [
+      {
+       "circle": [
+        24,
+        61
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      10,
+      16
+     ],
+     "op": "cut"
+    }
+   ],
+   "placement": {
+    "translate": [
+     164,
+     31,
+     16
+    ]
+   }
+  },
+  {
+   "name": "8",
+   "features": [
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 8
+      }
+     ],
+     "depth": 68,
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 18
+      }
+     ],
+     "depth": [
+      68,
+      74
+     ],
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XY",
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 12
+      }
+     ],
+     "depth": [
+      74,
+      86
+     ],
+     "op": "add"
+    },
+    {
+     "type": "extrude",
+     "plane": "XZ",
+     "loops": [
+      {
+       "circle": [
+        0,
+        80
+       ],
+       "d": 4
+      }
+     ],
+     "depth": [
+      -7,
+      7
+     ],
+     "op": "cut"
+    }
+   ],
+   "placement": {
+    "translate": [
+     106,
+     55,
+     77
+    ],
+    "rotate": [
+     {
+      "axis": "Y",
+      "angle": 90
+     }
+    ]
+   }
+  }
+ ]
+}

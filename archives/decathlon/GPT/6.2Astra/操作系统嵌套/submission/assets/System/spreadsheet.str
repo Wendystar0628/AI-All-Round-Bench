@@ -1,0 +1,15 @@
+@main
+receive job
+if job.action != "calculate" goto main
+addresses = keys(job.cells)
+values = {}
+i = 0
+@cell
+if i >= length(addresses) goto publish
+address = at(addresses,i)
+values = entry(values,address,formula(job.cells,address))
+i = i + 1
+goto cell
+@publish
+commitBook(job,values)
+goto main

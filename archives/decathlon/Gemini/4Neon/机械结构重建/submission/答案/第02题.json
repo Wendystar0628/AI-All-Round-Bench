@@ -1,0 +1,326 @@
+{
+  "problem": "02",
+  "parts": [
+    {
+      "name": "1",
+      "title": "夹具底座",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底座基板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 190, 110]}],
+          "depth": 16
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "下导向槽",
+          "plane": "XY",
+          "origin": [0, 0, 8],
+          "loops": [{"rect": [55, 30, 135, 80]}],
+          "depth": 10
+        },
+        {
+          "type": "hole",
+          "name": "两导柱Φ18定位盲孔",
+          "plane": "XY",
+          "origin": [0, 0, 16],
+          "at": [[35, 25], [145, 85]],
+          "d": 18,
+          "depth": 10
+        },
+        {
+          "type": "hole",
+          "name": "四个Φ9/Φ15沉头安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 16],
+          "at": [[10, 10], [180, 10], [10, 100], [180, 100]],
+          "d": 9,
+          "through": true,
+          "cbore": {"d": 15, "depth": 6}
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[95, 0, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[0, 0, 8]]
+        }
+      ]
+    },
+    {
+      "name": "2",
+      "title": "左阶梯导柱",
+      "placement": {"translate": [35, 25, 6]},
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "下定位段Φ18",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"circle": [0, 0], "d": 18}],
+          "depth": 10
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "导向段Φ16",
+          "plane": "XY",
+          "origin": [0, 0, 10],
+          "loops": [{"circle": [0, 0], "d": 16}],
+          "depth": 84
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "上锁紧段Φ12",
+          "plane": "XY",
+          "origin": [0, 0, 94],
+          "loops": [{"circle": [0, 0], "d": 12}],
+          "depth": 16
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ5盲孔",
+          "plane": "XY",
+          "origin": [0, 0, 110],
+          "at": [0, 0],
+          "d": 5,
+          "depth": 14
+        }
+      ]
+    },
+    {
+      "name": "3",
+      "title": "右阶梯导柱",
+      "placement": {"translate": [145, 85, 6]},
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "下定位段Φ18",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"circle": [0, 0], "d": 18}],
+          "depth": 10
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "导向段Φ16",
+          "plane": "XY",
+          "origin": [0, 0, 10],
+          "loops": [{"circle": [0, 0], "d": 16}],
+          "depth": 84
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "上锁紧段Φ12",
+          "plane": "XY",
+          "origin": [0, 0, 94],
+          "loops": [{"circle": [0, 0], "d": 12}],
+          "depth": 16
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ5盲孔",
+          "plane": "XY",
+          "origin": [0, 0, 110],
+          "at": [0, 0],
+          "d": 5,
+          "depth": 14
+        }
+      ]
+    },
+    {
+      "name": "4",
+      "title": "上横梁",
+      "placement": {"translate": [15, 15, 100]},
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "横梁本体",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 150, 90]}],
+          "depth": 16
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "中央避空槽",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [55, 24, 95, 56]}],
+          "depth": 8
+        },
+        {
+          "type": "hole",
+          "name": "两Φ12柱孔",
+          "plane": "XY",
+          "origin": [0, 0, 16],
+          "at": [[20, 10], [130, 70]],
+          "d": 12,
+          "through": true
+        }
+      ]
+    },
+    {
+      "name": "5",
+      "title": "双孔滑动压头",
+      "placement": {"translate": [20, 15, 56]},
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "压头主体",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 140, 80]}],
+          "depth": 24
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底部压脚",
+          "plane": "XY",
+          "origin": [0, 0, -12],
+          "loops": [{"rect": [48, 24, 94, 56]}],
+          "depth": 12
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "斜楔配合斜槽",
+          "plane": "XZ",
+          "origin": [0, 24, 0],
+          "loops": [{"path": [[50, 12], [100, 18], [100, 26], [50, 26]]}],
+          "depth": [-32, 0]
+        },
+        {
+          "type": "hole",
+          "name": "推轴避让Φ10通孔",
+          "plane": "YZ",
+          "origin": [142, 0, 0],
+          "at": [40, 21],
+          "d": 10,
+          "depth": 58
+        },
+        {
+          "type": "hole",
+          "name": "两Φ16导柱孔",
+          "plane": "XY",
+          "origin": [0, 0, 24],
+          "at": [[15, 10], [125, 70]],
+          "d": 16,
+          "through": true
+        }
+      ]
+    },
+    {
+      "name": "6",
+      "title": "驱动斜楔",
+      "placement": {"translate": [70, 39, 68]},
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "斜楔本体",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"path": [[0, 0], [50, 6], [50, 10], [0, 10]]}],
+          "depth": [-32, 0]
+        },
+        {
+          "type": "hole",
+          "name": "右端Φ8推轴孔",
+          "plane": "YZ",
+          "origin": [52, 0, 0],
+          "at": [16, 9],
+          "d": 8,
+          "depth": 16
+        }
+      ]
+    },
+    {
+      "name": "7",
+      "title": "右止推座",
+      "placement": {"translate": [164, 31, 16]},
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "止推座本体",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 16, 48]}],
+          "depth": 73
+        },
+        {
+          "type": "hole",
+          "name": "Φ10通孔与右端Φ18沉台",
+          "plane": "YZ",
+          "origin": [16, 0, 0],
+          "at": [24, 61],
+          "d": 10,
+          "through": true,
+          "cbore": {"d": 18, "depth": 6}
+        }
+      ]
+    },
+    {
+      "name": "8",
+      "title": "调节推轴",
+      "placement": {"rotate": [{"axis": "Y", "angle": 90}], "translate": [106, 55, 77]},
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "Φ8推杆",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"circle": [0, 0], "d": 8}],
+          "depth": 68
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "Φ18轴肩",
+          "plane": "XY",
+          "origin": [0, 0, 68],
+          "loops": [{"circle": [0, 0], "d": 18}],
+          "depth": 6
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "Φ12手柄端",
+          "plane": "XY",
+          "origin": [0, 0, 74],
+          "loops": [{"circle": [0, 0], "d": 12}],
+          "depth": 12
+        },
+        {
+          "type": "hole",
+          "name": "Φ4横孔",
+          "plane": "XZ",
+          "origin": [0, -8, 0],
+          "at": [0, 80],
+          "d": 4,
+          "depth": 16
+        }
+      ]
+    }
+  ]
+}

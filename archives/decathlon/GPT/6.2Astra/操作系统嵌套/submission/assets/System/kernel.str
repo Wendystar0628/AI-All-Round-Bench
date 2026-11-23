@@ -1,0 +1,50 @@
+# STRATA / 内核 1.0
+# 每轮选择进程并委派最多 64 个指令单位
+@main
+cursor = (cursor + 1) % count()
+pid = slot(cursor)
+if status(pid) != "sleep" goto dispatch
+if clock() < deadline(pid) goto main
+ready(pid)
+@dispatch
+if status(pid) != "ready" goto main
+run(pid, 96)
+goto main
+
+@boot
+manager = spawn("/System/window.str")
+bootApp("player")
+return manager
+@send
+if status(arg0) == "ended" goto missing
+if status(arg0) == "error" goto missing
+if status(arg0) == "absent" goto missing
+deliver(arg0, arg1)
+if status(arg0) != "waiting" goto delivered
+ready(arg0)
+@delivered
+return true
+@missing
+return false
+@list
+return directory(arg0)
+@mkdir
+return makeDir(arg0)
+@move
+return renamePath(arg0,arg1)
+@read
+return fileGet(arg0)
+@write
+return filePut(arg0, arg1)
+@time
+return clock()
+@identity
+return self()
+@launch
+return spawn(arg0,arg1)
+@end
+return terminate(arg0)
+@double
+return arg0 * 2
+@display
+return submit(arg0)

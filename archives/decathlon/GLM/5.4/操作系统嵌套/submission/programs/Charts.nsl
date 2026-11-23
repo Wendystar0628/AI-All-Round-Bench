@@ -1,0 +1,229 @@
+// ===========================================================================
+//  Charts.nsl —— 图表工作台（数据连接、实时更新、柱状图/折线图、投送）
+//  数据来源：根系统电子表格的显式数据连接（经系统服务以副本跨层传递）
+//  数据接收与绘图由本进程完成，图表过渡使用本系统虚拟时间
+// ===========================================================================
+var W = 660
+var H = 450
+var dirty = true
+var conn = false
+var connState = "未连接"
+var workbook = "sample.sheet"
+var range = "A1:D4"
+var labelCol = "A"
+var seriesCols = "D"
+var chartType = "bar"
+var labels = []
+var series = []
+var version = 0
+var sourceTitle = ""
+var projOn = false
+var msg = ""
+var animT = 0
+var animFrom = 0
+var animTo = 0
+var tickN = 0
+var books = []
+
+func R(L, x, y, w, h, c, r) { L.push({ op: "rect", x: x, y: y, w: w, h: h, color: c, r: r }) }
+func T(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c }) }
+func TC(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c, align: "center" }) }
+func IC(L, name, x, y, s, c) { L.push({ op: "icon", name: name, x: x, y: y, size: s, color: c }) }
+func btn(L, x, y, w, h, label, hot, primary) {
+  var c = primary ? "#f5b942" : (hot ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.07)")
+  R(L, x, y, w, h, c, 7)
+  TC(L, x + w / 2, y + h / 2 + 4, label, 11, primary ? "#211803" : "#dfe5f1")
+}
+func colName(n) {
+  var s = ""
+  while (n > 0) {
+    var m = (n - 1) % 26
+    s = (65 + m).toChar() + s
+    n = ((n - 1) / 26).floor()
+  }
+  return s
+}
+func colIndex(s) {
+  var n = 0
+  for (var i = 0; i < s.length; i++) { n = n * 26 + (s.charCodeAt(i) - 64) }
+  return n
+}
+func sampleData() {
+  labels = ["项目 A", "项目 B", "项目 C"]
+  series = [[144, 96, 72]]
+  sourceTitle = "示例工作簿"
+  version = 0
+}
+func connect() {
+  var r = sys.request({ op: "host", service: "chart_connect", args: { workbook: workbook, range: range, labelCol: labelCol, series: seriesCols } })
+  if (r.ok) { conn = true; connState = "已连接"; msg = "连接已建立" } else { connState = "连接失败"; msg = r.error }
+  dirty = true
+}
+func disconnect() {
+  sys.request({ op: "host", service: "chart_disconnect", args: {} })
+  conn = false
+  connState = "已断开"
+  msg = "已断开，保留最后数据"
+  dirty = true
+}
+func applyUpdate(d) {
+  if (d == null) { return }
+  if (d.type == "closed") { conn = false; connState = "数据源已关闭"; msg = "源工作簿已关闭，保留已接收数据"; dirty = true; return }
+  if (d.type == "reconnected") { connState = "已连接"; dirty = true; return }
+  if (d.labels == null) { return }
+  animFrom = animT
+  animTo = 0
+  labels = d.labels
+  series = d.series
+  version = d.version
+  sourceTitle = d.sourceTitle
+  if (conn) { connState = "已连接 v" + version }
+  animT = 0
+  dirty = true
+}
+func build() {
+  var L = []
+  L.push({ op: "meta", kind: "charts", chartType: chartType, connState: connState, conn: conn, range: range, sourceTitle: sourceTitle, version: version, labels: labels, series: series })
+  R(L, 0, 0, W, H, "#0e1119", 0)
+  // 左侧连接面板
+  var pw = 210
+  R(L, 0, 0, pw, H, "rgba(255,255,255,0.025)", 0)
+  T(L, 12, 24, "数据连接", 12.5, "#e3e9f5")
+  T(L, 12, 44, "工作簿", 10, "#6b7488")
+  R(L, 12, 50, pw - 24, 24, "rgba(0,0,0,0.3)", 6)
+  T(L, 20, 66, workbook, 11, "#dfe5f1")
+  T(L, 12, 90, "区域", 10, "#6b7488")
+  R(L, 12, 96, pw - 24, 24, "rgba(0,0,0,0.3)", 6)
+  T(L, 20, 112, range, 11, "#dfe5f1")
+  T(L, 12, 136, "标签列", 10, "#6b7488")
+  R(L, 12, 142, 60, 24, "rgba(0,0,0,0.3)", 6)
+  T(L, 20, 158, labelCol, 11, "#dfe5f1")
+  T(L, 84, 136, "数值列", 10, "#6b7488")
+  R(L, 84, 142, 60, 24, "rgba(0,0,0,0.3)", 6)
+  T(L, 92, 158, seriesCols, 11, "#dfe5f1")
+  btn(L, 12, 180, 92, 26, conn ? "断开" : "连接", false, !conn)
+  btn(L, 110, 180, 88, 26, "下一个工作簿", false, false)
+  T(L, 12, 224, "状态：" + connState, 10, conn ? "#9ff0cf" : "#f5d78e")
+  T(L, 12, 242, "来源：" + sourceTitle, 10, "#8f99ad")
+  T(L, 12, 260, "版本：" + version, 10, "#8f99ad")
+  // 图表类型
+  T(L, 12, 288, "图表类型", 10, "#6b7488")
+  btn(L, 12, 294, 88, 26, chartType == "bar" ? "柱状图 ✓" : "柱状图", chartType == "bar", chartType == "bar")
+  btn(L, 106, 294, 92, 26, chartType == "line" ? "折线图 ✓" : "折线图", chartType == "line", chartType == "line")
+  btn(L, 12, 330, 186, 26, projOn ? "已投送到根桌面" : "投送到根桌面", false, projOn)
+  if (msg != "") { T(L, 12, 372, msg, 9.5, "#c8d2e3") }
+  // 图表区
+  var px = pw + 20
+  var py = 20
+  var pw2 = W - px - 20
+  var ph = H - 70
+  R(L, px, py, pw2, ph, "rgba(255,255,255,0.03)", 10)
+  drawChart(L, px + 46, py + 34, pw2 - 66, ph - 78)
+  TC(L, px + pw2 / 2, py + 20, sourceTitle == "" ? "图表工作台" : sourceTitle + " · " + range, 11.5, "#dfe5f1")
+  return L
+}
+func drawChart(L, x, y, w, h) {
+  var maxV = 1
+  for (var i = 0; i < series.length; i++) {
+    for (var j = 0; j < series[i].length; j++) { if (series[i][j] > maxV) { maxV = series[i][j] } }
+  }
+  maxV = maxV * 1.15
+  // 网格与坐标轴
+  for (var g = 0; g <= 4; g++) {
+    var yy = y + h - (h * g / 4)
+    R(L, x, yy, w, 1, "rgba(255,255,255,0.07)", 0)
+    T(L, x - 6, yy + 3, "" + ((maxV * g / 4).toFixed(0)), 9, "#6b7488")
+  }
+  R(L, x, y + h, w, 1.5, "rgba(255,255,255,0.18)", 0)
+  var n = labels.length
+  if (n == 0) { TC(L, x + w / 2, y + h / 2, "尚未建立数据连接", 11.5, "#6b7488"); return }
+  var slot = w / n
+  var k = animT
+  if (k > 1) { k = 1 }
+  if (chartType == "bar") {
+    for (var i = 0; i < n; i++) {
+      var v = series[0][i] * k
+      var bh = h * (v / maxV)
+      var bw = Math.min(46, slot * 0.5)
+      var bx = x + slot * i + (slot - bw) / 2
+      R(L, bx, y + h - bh, bw, bh, i % 2 == 0 ? "#f5b942" : "#c9922f", 3)
+      T(L, bx + bw / 2 - 12, y + h - bh - 6, "" + series[0][i].toFixed(0), 9.5, "#e3e9f5")
+      TC(L, x + slot * i + slot / 2, y + h + 14, labels[i], 9.5, "#9aa4ba")
+    }
+  } else {
+    for (var s = 0; s < series.length; s++) {
+      for (var i = 0; i < n; i++) {
+        var v = series[s][i] * k
+        var cx = x + slot * i + slot / 2
+        var cy = y + h - h * (v / maxV)
+        if (i > 0) {
+          var pv = series[s][i - 1] * k
+          var px2 = x + slot * (i - 1) + slot / 2
+          var py2 = y + h - h * (pv / maxV)
+          L.push({ op: "line", x1: px2, y1: py2, x2: cx, y2: cy, color: "#f5b942", w: 2 })
+        }
+        C(L, cx, cy, 3.4, "#f5b942")
+        T(L, cx - 10, cy - 8, "" + series[s][i].toFixed(0), 9, "#e3e9f5")
+      }
+      TC(L, x + slot * i + slot / 2, y + h + 14, labels[i], 9.5, "#9aa4ba")
+    }
+  }
+}
+func C(L, x, y, r, c) { L.push({ op: "circle", x: x, y: y, r: r, color: c }) }
+func onClick(x, y) {
+  if (x < 210) {
+    if (y > 50 && y < 74) {
+      var idx = 0
+      for (var i = 0; i < books.length; i++) { if (books[i].name == workbook) { idx = i } }
+      if (books.length > 0) { idx = (idx + 1) % books.length; workbook = books[idx].name }
+      dirty = true; return
+    }
+    if (y > 96 && y < 120) { range = range == "A1:D4" ? "A1:C4" : "A1:D4"; dirty = true; return }
+    if (y > 142 && y < 166 && x < 72) { labelCol = labelCol == "A" ? "B" : "A"; dirty = true; return }
+    if (y > 142 && y < 166 && x > 84) { seriesCols = seriesCols == "D" ? "C" : "D"; dirty = true; return }
+    if (y > 180 && y < 206) {
+      if (x < 104) { if (conn) { disconnect() } else { connect() } }
+      else {
+        var idx = 0
+        for (var i = 0; i < books.length; i++) { if (books[i].name == workbook) { idx = i } }
+        if (books.length > 0) { idx = (idx + 1) % books.length; workbook = books[idx].name }
+        dirty = true
+      }
+      return
+    }
+    if (y > 294 && y < 320) { chartType = x < 104 ? "bar" : "line"; animT = 0; dirty = true; return }
+    if (y > 330 && y < 356) { doProject(); return }
+    return
+  }
+}
+func doProject() {
+  if (projOn) { msg = "已经投送"; dirty = true; return }
+  var r = sys.request({ op: "host", service: "project", args: { source: "charts", title: sourceTitle + " · " + range } })
+  if (r.ok) { projOn = true; msg = "已投送到根桌面" } else { msg = "投送失败：" + r.error }
+  dirty = true
+}
+func main() {
+  sampleData()
+  var b = sys.request({ op: "host", service: "chart_books", args: {} })
+  if (b != null && b.books != null) { books = b.books }
+  var first = sys.poll()
+  if (first != null && first.type == "open") { range = first.path }
+  sys.draw("main", build(), W, H)
+  while (true) {
+    var m = sys.poll()
+    var guard = 0
+    while (m != null && guard < 30) {
+      guard = guard + 1
+      if (m.type == "resize") { W = m.w; H = m.h; dirty = true }
+      else if (m.type == "mouse") { if (m.kind == "down") { onClick(m.x, m.y) } }
+      else if (m.type == "chart_data") { applyUpdate(m) }
+      else if (m.type == "close") { sys.request({ op: "host", service: "chart_disconnect", args: {} }); sys.exit(0) }
+      m = sys.poll()
+    }
+    var ups = sys.request({ op: "chart_updates" })
+    for (var i = 0; i < ups.length; i++) { applyUpdate(ups[i]) }
+    if (animT < 1) { animT = animT + 0.08; if (animT > 1) { animT = 1 }; dirty = true }
+    if (dirty) { sys.draw("main", build(), W, H); dirty = false }
+    sys.sleep(0.05)
+  }
+}

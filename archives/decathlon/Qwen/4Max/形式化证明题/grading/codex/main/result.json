@@ -1,0 +1,63 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem1.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms problem1 和 #check @problem1 后仍编译通过，依赖仅 propext、Classical.choice、Quot.sound，打印命题与题面一致。源码未见跳过检查或改变命题含义。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中缺少第 2 题的提交文件及主定理 problem2。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "Problem3.lean 及追加检查的审计副本均编译失败：导入的 Mathlib.Algebra.GeomSum 模块不存在，退出码为 1；源码中主定理 problem3 的证明仍为 sorry。不满足本题编译与证明有效性门槛。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中缺少第 4 题的提交文件及主定理 problem4。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中缺少第 5 题的提交文件及主定理 problem5。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中缺少第 6 题的提交文件及主定理 problem6。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中缺少第 7 题的提交文件及主定理 problem7。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中缺少第 8 题的提交文件及主定理 problem8。"
+    }
+  ],
+  "metrics": {
+    "total_score": 12.5,
+    "max_score": 100,
+    "submitted_problems": 2,
+    "passed_problems": 1,
+    "missing_problems": 6
+  },
+  "notes": "评的是作答结束时工作目录的内容，已复制到本评分工作目录，不看 git 提交。实际对两份交付文件各作一次原文件单独编译，并在各自审计副本末尾追加 #print axioms 与 #check 后再次编译；第 1 题完成声明及公理核查，第 3 题因原有无效导入在展开主定理前失败，未修改或修复证明。第 3 题的该模块源码及编译产物在题设安装中均不存在。仅检查本题规则及当前提交；未运行媒体或性能测试。所有本次启动的编译进程均已自然退出，没有遗留自启进程。"
+}

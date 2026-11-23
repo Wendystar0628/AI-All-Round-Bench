@@ -1,0 +1,231 @@
+// ===========================================================================
+//  Files.nsl —— 子系统文件管理器（内核启动的程序）
+//  目录导航、新建/重命名/复制/移动/删除、按类型打开到对应应用
+// ===========================================================================
+var path = "/"
+var items = []
+var sel = -1
+var clipMode = ""
+var clipPath = ""
+var hist = []
+var W = 640
+var H = 380
+var dirty = true
+var status = ""
+var inputMode = ""      // "" | "newfile" | "newdir" | "rename"
+var inputBuf = ""
+var error = ""
+
+func R(L, x, y, w, h, c, r) { L.push({ op: "rect", x: x, y: y, w: w, h: h, color: c, r: r }) }
+func T(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c }) }
+func TC(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c, align: "center" }) }
+func IC(L, name, x, y, s, c) { L.push({ op: "icon", name: name, x: x, y: y, size: s, color: c }) }
+func btn(L, x, y, w, h, label, hot, primary) {
+  var c = primary ? "#f5b942" : (hot ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)")
+  R(L, x, y, w, h, c, 7)
+  TC(L, x + w / 2, y + h / 2 + 4, label, 11.5, primary ? "#211803" : "#dfe5f1")
+}
+
+func refresh() {
+  items = sys.fs_list(path)
+  dirty = true
+}
+func updir() {
+  if (path == "/") { return }
+  var parts = path.split("/")
+  var out = ""
+  for (var i = 0; i < parts.length - 1; i++) { if (parts[i] != "") { out = out + "/" + parts[i] } }
+  if (out == "") { out = "/" }
+  path = out
+  sel = -1
+  refresh()
+}
+func uniqueName(base, dir) {
+  var name = base
+  var n = 1
+  var exist = sys.fs_list(dir)
+  while (true) {
+    var found = false
+    for (var i = 0; i < exist.length; i++) { if (exist[i].name == name) { found = true } }
+    if (!found) { return name }
+    var dot = base.lastIndexOf(".")
+    if (dot > 0) { name = base.substr(0, dot) + "-" + n + base.substr(dot) } else { name = base + "-" + n }
+    n = n + 1
+    if (n > 99) { return name }
+  }
+  return name
+}
+func openItem(it) {
+  var p = it.path
+  if (it.dir) { path = p; sel = -1; refresh(); return }
+  if (p.indexOf(".nsl") > 0) { sys.request({ op: "launch", path: "/System/Editor.nsl", name: "editor", title: "编辑器", arg: p }); return }
+  if (p.indexOf(".scene") > 0 || p.indexOf(".rec") > 0) { sys.request({ op: "launch", path: "/System/Player.nsl", name: "player", title: "场景播放器", arg: p }); return }
+  if (p.indexOf(".snap") > 0) { status = "快照文件：请在「系统」应用中恢复"; dirty = true; return }
+  sys.request({ op: "launch", path: "/System/Editor.nsl", name: "editor", title: "编辑器", arg: p })
+}
+func deleteSel() {
+  if (sel < 0 || sel >= items.length) { return }
+  var it = items[sel]
+  var r = sys.fs_delete(it.path)
+  if (!r.ok) { error = r.error; dirty = true; return }
+  status = "已删除 " + it.name
+  sel = -1
+  refresh()
+}
+func copySel(mode) {
+  if (sel < 0 || sel >= items.length) { return }
+  clipMode = mode
+  clipPath = items[sel].path
+  status = (mode == "copy" ? "已复制 " : "已剪切 ") + items[sel].name
+  dirty = true
+}
+func paste() {
+  if (clipPath == "") { return }
+  var parts = clipPath.split("/")
+  var nm = parts[parts.length - 1]
+  var target = (path == "/" ? "" : path) + "/" + nm
+  var r
+  if (clipMode == "copy") { r = sys.fs_copy(clipPath, target) } else { r = sys.fs_move(clipPath, target) }
+  if (!r.ok) { error = r.error; dirty = true; return }
+  if (clipMode != "copy") { clipPath = "" }
+  refresh()
+}
+func commitInput() {
+  if (inputBuf == "") { inputMode = ""; dirty = true; return }
+  var target = (path == "/" ? "" : path) + "/" + inputBuf
+  if (inputMode == "newfile") {
+    var r = sys.fs_write(target, "", "text")
+    if (!r.ok) { error = r.error } else { status = "已新建 " + inputBuf }
+  } else if (inputMode == "newdir") {
+    sys.fs_mkdir(target)
+    status = "已新建目录 " + inputBuf
+  } else if (inputMode == "rename") {
+    if (sel >= 0 && sel < items.length) {
+      var r2 = sys.fs_move(items[sel].path, (path == "/" ? "" : path) + "/" + inputBuf)
+      if (!r2.ok) { error = r2.error } else { status = "已重命名" }
+    }
+  }
+  inputMode = ""
+  inputBuf = ""
+  sel = -1
+  refresh()
+}
+
+func build() {
+  var L = []
+  R(L, 0, 0, W, H, "#0e1119", 0)
+  // 工具栏
+  R(L, 0, 0, W, 36, "rgba(255,255,255,0.03)", 0)
+  IC(L, "chevronLeft", 8, 10, 16, "#c8d2e3")
+  IC(L, "chevronRight", 30, 10, 16, "#6b7488")
+  IC(L, "home", 54, 10, 15, "#9aa4ba")
+  R(L, 76, 6, W - 76 - 190, 24, "rgba(0,0,0,0.3)", 6)
+  T(L, 84, 23, path, 11.5, "#c8d2e3")
+  var bx = W - 184
+  IC(L, "plus", bx, 10, 16, "#c8d2e3"); bx = bx + 26
+  IC(L, "folder", bx, 10, 16, "#c8d2e3"); bx = bx + 26
+  IC(L, "copy", bx, 10, 15, "#9aa4ba"); bx = bx + 26
+  IC(L, "paste", bx, 10, 15, "#9aa4ba"); bx = bx + 26
+  IC(L, "trash", bx, 10, 15, "#ef8a9a")
+  // 列表
+  var cols = 4
+  if (W > 700) { cols = 5 }
+  var cw = (W - 16) / cols
+  for (var i = 0; i < items.length; i++) {
+    var cx = 8 + (i % cols) * cw
+    var cy = 46 + ((i / cols).floor()) * 96
+    if (i == sel) { R(L, cx, cy, cw - 6, 90, "rgba(245,185,66,0.18)", 9) }
+    IC(L, items[i].dir ? "folder" : "file", cx + cw / 2 - 18, cy + 8, 36, items[i].dir ? "#f5b942" : "#c8d2e3")
+    var nm = items[i].name
+    if (nm.length > 14) { nm = nm.substr(0, 13) + "…" }
+    TC(L, cx + cw / 2 - 3, cy + 66, nm, 10.5, "#dfe5f1")
+    if (!items[i].dir) { TC(L, cx + cw / 2 - 3, cy + 80, "" + items[i].size + " B", 9, "#6b7488") }
+  }
+  // 状态栏
+  R(L, 0, H - 22, W, 22, "rgba(255,255,255,0.03)", 0)
+  T(L, 8, H - 7, status, 10.5, "#8f99ad")
+  if (error != "") { T(L, W - 10, H - 7, error, 10.5, "#ff8d9c"); error = "" }
+  // 输入框
+  if (inputMode != "") {
+    R(L, 0, 0, W, H, "rgba(0,0,0,0.45)", 0)
+    R(L, W / 2 - 150, H / 2 - 34, 300, 68, "rgba(26,30,43,0.98)", 10)
+    T(L, W / 2 - 138, H / 2 - 12, inputMode == "newfile" ? "新建文件（含扩展名）" : (inputMode == "newdir" ? "新建目录" : "重命名"), 10.5, "#8f99ad")
+    R(L, W / 2 - 138, H / 2 - 2, 276, 24, "rgba(0,0,0,0.35)", 6)
+    T(L, W / 2 - 130, H / 2 + 14, inputBuf + "|", 11.5, "#e9edf6")
+  }
+  return L
+}
+
+func onClick(x, y) {
+  error = ""
+  if (inputMode != "") {
+    if (x > W / 2 + 60 && x < W / 2 + 138 && y > H / 2 + 22 && y < H / 2 + 44) { commitInput(); return }
+    if (x > W / 2 - 138 && x < W / 2 - 60 && y > H / 2 + 22 && y < H / 2 + 44) { inputMode = ""; inputBuf = ""; dirty = true; return }
+    return
+  }
+  if (y < 36) {
+    if (x < 24) { updir(); return }
+    if (x > 48 && x < 72) { path = "/"; sel = -1; refresh(); return }
+    var bx = W - 184
+    if (x >= bx && x < bx + 24) { inputMode = "newfile"; inputBuf = "新建文本.txt"; dirty = true; return }
+    bx = bx + 26
+    if (x >= bx && x < bx + 24) { inputMode = "newdir"; inputBuf = "新建目录"; dirty = true; return }
+    bx = bx + 26
+    if (x >= bx && x < bx + 24) { copySel("copy"); return }
+    bx = bx + 26
+    if (x >= bx && x < bx + 24) { paste(); return }
+    bx = bx + 26
+    if (x >= bx && x < bx + 24) { deleteSel(); return }
+    return
+  }
+  if (y > H - 22) { return }
+  var cols = 4
+  if (W > 700) { cols = 5 }
+  var cw = (W - 16) / cols
+  var col = ((x - 8) / cw).floor()
+  var row = ((y - 46) / 96).floor()
+  if (col < 0 || col >= cols || row < 0) { return }
+  var idx = row * cols + col
+  if (idx < items.length) { sel = idx; status = items[idx].path; dirty = true }
+  else { sel = -1; dirty = true }
+}
+func onDbl(x, y) {
+  var cols = 4
+  if (W > 700) { cols = 5 }
+  var cw = (W - 16) / cols
+  var col = ((x - 8) / cw).floor()
+  var row = ((y - 46) / 96).floor()
+  var idx = row * cols + col
+  if (idx >= 0 && idx < items.length) { openItem(items[idx]) }
+}
+func onKey(key, shift, ctrl) {
+  if (inputMode != "") {
+    if (key == "Enter") { commitInput(); return }
+    if (key == "Escape") { inputMode = ""; inputBuf = ""; dirty = true; return }
+    if (key == "Backspace") { if (inputBuf.length > 0) { inputBuf = inputBuf.substr(0, inputBuf.length - 1) }; dirty = true; return }
+    if (key.length == 1 && !ctrl) { inputBuf = inputBuf + key; dirty = true; return }
+    return
+  }
+  if (key == "Backspace") { updir(); return }
+  if (key == "Delete") { deleteSel(); return }
+  if (ctrl && key == "c") { copySel("copy"); return }
+  if (ctrl && key == "x") { copySel("cut"); return }
+  if (ctrl && key == "v") { paste(); return }
+  if (ctrl && key == "n") { inputMode = "newfile"; inputBuf = "新建文本.txt"; dirty = true; return }
+}
+func main() {
+  refresh()
+  var first = sys.poll()
+  if (first != null && first.type == "open") { openItem({ path: first.path, dir: false, name: "" }) }
+  sys.draw("main", build(), W, H)
+  while (true) {
+    var m = sys.recv()
+    if (m.type == "resize") { W = m.w; H = m.h; dirty = true }
+    else if (m.type == "mouse") {
+      if (m.kind == "down") { onClick(m.x, m.y) }
+      else if (m.kind == "dblclick") { onDbl(m.x, m.y) }
+    } else if (m.type == "key") { onKey(m.key, m.shift, m.ctrl) }
+    else if (m.type == "close") { sys.exit(0) }
+    if (dirty) { sys.draw("main", build(), W, H); dirty = false }
+  }
+}

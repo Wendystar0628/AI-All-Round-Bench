@@ -1,0 +1,123 @@
+{
+  "task": "攻城略地",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "总分",
+      "max": 100,
+      "score": 6.8,
+      "reason": "按指南唯一一次官方评测完成96张隐藏地图×五档对手共480局，64胜0平416负；官方输出score=6.8，95%区间3.9–9.8。源码通过指定命令编译且未见题面第八节违规，CPU超时与判负均为0。"
+    }
+  ],
+  "metrics": {
+    "score": 6.8,
+    "score_ci95": [
+      3.9,
+      9.8
+    ],
+    "r": -63.90482945460616,
+    "total_games": 480,
+    "total_points": 64.0,
+    "wins": 64,
+    "draws": 0,
+    "losses": 416,
+    "cpu_timeout_turns": 0,
+    "forfeit_losses": 0,
+    "by_opponent": [
+      {
+        "id": "tier1",
+        "name": "第1档",
+        "rating": 0.0,
+        "score_anchor": 10.0,
+        "games": 96,
+        "wins": 42,
+        "draws": 0,
+        "losses": 54,
+        "points": 42.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier2",
+        "name": "第2档",
+        "rating": 232.72971403075087,
+        "score_anchor": 20.0,
+        "games": 96,
+        "wins": 13,
+        "draws": 0,
+        "losses": 83,
+        "points": 13.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier3",
+        "name": "第3档",
+        "rating": 374.02562493412154,
+        "score_anchor": 40.0,
+        "games": 96,
+        "wins": 5,
+        "draws": 0,
+        "losses": 91,
+        "points": 5.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier4",
+        "name": "第4档",
+        "rating": 581.4837730581465,
+        "score_anchor": 60.0,
+        "games": 96,
+        "wins": 4,
+        "draws": 0,
+        "losses": 92,
+        "points": 4.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      },
+      {
+        "id": "tier5",
+        "name": "第5档",
+        "rating": 825.1484030205629,
+        "score_anchor": 80.0,
+        "games": 96,
+        "wins": 0,
+        "draws": 0,
+        "losses": 96,
+        "points": 0.0,
+        "cpu_timeout_turns": 0,
+        "forfeit_losses": 0,
+        "penalty_games": 0,
+        "opponent_cpu_timeout_turns": 0,
+        "opponent_forfeit_losses": 0,
+        "opponent_penalty_games": 0,
+        "simultaneous_forfeit_draws": 0
+      }
+    ],
+    "is_official_configuration": true,
+    "report": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Qwen\\4Max\\攻城略地\\codex\\performance\\work\\official_report.json"
+  },
+  "notes": "评的是作答结束时工作目录副本，不看 Git 提交。bot.cpp 用指定g++ -O2 -std=c++20编译；副本数据/main.cpp及engine.hpp SHA256与官方一致；编译及唯一一次评测均经process_job.py --cpus 0-15包装，官方8局并行、每档48甲48乙。正式evaluate进程PID 69612已退出，包装命令会话正常返回0；本评分目录无运行中的程序。只读进程清点命令已中断退出，未启动浏览器或服务器。评分表与本结果总分一致。"
+}

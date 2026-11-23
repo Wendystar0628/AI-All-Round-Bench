@@ -1,0 +1,7 @@
+{"problem":"19","parts":[{"name":"1","title":"斜交三轴变速箱壳(初稿)","features":[
+{"type":"extrude","name":"地脚法兰","plane":"XY","loops":[{"rect":[0,0,300,200]}],"depth":18},
+{"type":"extrude","name":"箱壳","plane":"XZ","loops":[{"path":[[18,18],[280,18],[280,104],[246,148],[185,148],[150,124],[94,148],[55,148],[18,106]]}],"depth":[-182,-18]},
+{"type":"extrude","name":"前凸缘Φ90","plane":"XZ","loops":[{"circle":[94,74],"d":90}],"depth":[-18,0]},
+{"type":"extrude","name":"后凸缘Φ90","plane":"XZ","loops":[{"circle":[94,74],"d":90}],"depth":[-200,-182]},
+{"type":"hole","name":"前接口沉台Φ50+孔Φ38","plane":"XZ","origin":[0,0,0],"at":[94,74],"d":38,"depth":200,"cbore":{"d":50,"depth":8}}
+]}]}

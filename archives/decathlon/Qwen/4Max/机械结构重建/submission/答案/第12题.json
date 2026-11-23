@@ -1,0 +1,25 @@
+{
+  "problem": "12",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏轴阶梯双腔泵座",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 84, 40]}], "depth": 8, "name": "底板84x40x8"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 4]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[42, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 30, 0], "loops": [{"circle": [42, 40], "d": 76}], "depth": 22, "name": "主腔座Φ76 Y8-30"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 24, 0], "loops": [{"circle": [54, 30], "d": 58}], "depth": 16, "name": "偏轴座Φ58 Y8-24"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 8, 0], "at": [42, 40], "d": 54, "depth": 12, "name": "主腔阶梯Φ54深12"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 8, 0], "at": [42, 40], "d": 42, "through": true, "name": "主腔Φ42通"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 8, 0], "at": [54, 30], "d": 38, "depth": 10, "name": "偏腔阶梯Φ38深10"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 8, 0], "at": [54, 30], "d": 30, "through": true, "name": "偏腔Φ30通"},
+        {"type": "hole", "plane": "YZ", "origin": [84, 0, 0], "at": [20, 40], "d": 24, "depth": 20, "name": "侧孔Φ24深20"},
+        {"type": "hole", "plane": "YZ", "origin": [84, 0, 0], "at": [20, 30], "d": 12, "depth": 16, "name": "侧孔Φ12深16"},
+        {"type": "hole", "plane": {"origin": [42, 20, 78], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 22, "depth": 46, "name": "斜孔Φ22深46 倾45方位0"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 8], "at": [[5, 5], [79, 5], [5, 35], [79, 35]], "d": 9, "through": true, "cbore": {"d": 15, "depth": 4}, "name": "4xΦ9沉Φ15"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 8], "at": [[20, 20], [64, 20]], "d": 8, "depth": 8, "name": "2xΦ8底孔"}
+      ]
+    }
+  ]
+}

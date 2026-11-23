@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Nested OS</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="root-desktop" data-system-id="outer" data-testid="os-desktop">
+  <div id="root-wallpaper"></div>
+  <div id="root-icons"></div>
+  <div id="root-windows"></div>
+  <div id="root-taskbar"></div>
+  <div id="root-startmenu" class="hidden"></div>
+  <div id="root-overlays"></div>
+  <div id="root-toasts"></div>
+</div>
+<script>
+  require('./src/host/boot.js');
+</script>
+</body>
+</html>

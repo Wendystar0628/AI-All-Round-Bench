@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>IMPULSE · 果冻与风浪物理实验室</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar ui">
+      <a class="brand" href="#" aria-label="返回初始画面">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span><b>IMPULSE</b><small>非线性物理实验室</small></span>
+      </a>
+      <nav class="scene-nav" aria-label="实验场景">
+        <button class="scene-tab active" data-scene="jelly"><span>01</span>果冻冲击<em>SOFT BODY</em></button>
+        <button class="scene-tab" data-scene="tank"><span>02</span>造浪水槽<em>FLUID DYNAMICS</em></button>
+      </nav>
+      <div class="header-actions">
+        <span class="gpu-status"><i></i><span id="gpuLabel">物理核心就绪</span></span>
+        <button id="helpBtn" class="icon-btn" title="实验说明" aria-label="实验说明">?</button>
+        <button id="soundBtn" class="icon-btn sound-on" title="开启声音" aria-label="声音开关">
+          <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5-1.5a6 6 0 010 9m2.5-12a10 10 0 010 15"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section id="stage" class="stage">
+        <div id="viewport" aria-label="三维物理模拟画面"></div>
+        <div class="stage-vignette ui"></div>
+        <div class="scene-heading ui">
+          <div class="eyebrow"><span id="experimentNo">EXPERIMENT 01</span><i></i><span id="methodLabel">VOLUMETRIC XPBD</span></div>
+          <h1 id="sceneTitle">柔软，也有回响。</h1>
+          <p id="sceneSubtitle">观察冲击如何在体积守恒的软体中传播、叠加与释放。</p>
+        </div>
+        <div class="view-tools ui">
+          <button id="cameraHome" title="重置视角" aria-label="重置视角"><svg viewBox="0 0 24 24"><path d="M4 8V4h4m8 0h4v4m0 8v4h-4M8 20H4v-4M8 12h8"/></svg></button>
+          <button id="cameraDetail" title="接触区特写" aria-label="接触区特写"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M16 16l5 5M8 10.5h5m-2.5-2.5v5"/></svg></button>
+          <span>拖动旋转 · 滚轮缩放</span>
+        </div>
+        <div class="live-badge ui"><i></i><span id="liveText">实时模拟</span><b id="slowBadge" hidden>¼ 慢放</b></div>
+
+        <div class="scene-annotations ui" id="jellyAnnotations">
+          <div class="annotation"><span>01</span><div><b>体积软体</b><small>四面体晶格 · 动态拓扑断裂</small></div></div>
+          <div class="annotation"><span>02</span><div><b>刚软双向耦合</b><small>冲击、包覆、回弹与滑移</small></div></div>
+        </div>
+        <div class="density-legend ui" id="densityLegend" hidden>
+          <span><i style="--c:#ff8b70"></i>低密度 <b id="legend0">0.45</b></span>
+          <span><i style="--c:#f5cf66"></i>轻悬浮 <b id="legend1">0.82</b></span>
+          <span><i style="--c:#6ee7dc"></i>中性 <b id="legend2">1.00</b></span>
+          <span><i style="--c:#a893ff"></i>高密度 <b id="legend3">2.40</b></span>
+        </div>
+
+        <div class="metrics ui">
+          <div><span id="metricLabel0">冲击能量</span><strong id="metric0">0<small>J</small></strong><i id="metricBar0"></i></div>
+          <div><span id="metricLabel1">最大形变</span><strong id="metric1">0<small>%</small></strong><i id="metricBar1"></i></div>
+          <div><span id="metricLabel2">体积保持</span><strong id="metric2">100<small>%</small></strong><i id="metricBar2"></i></div>
+        </div>
+
+        <div class="transport ui">
+          <button id="resetBtn" class="transport-icon" title="重置实验" aria-label="重置"><svg viewBox="0 0 24 24"><path d="M4 4v6h6M5.5 9a7.5 7.5 0 11.8 8"/></svg></button>
+          <button id="playBtn" class="transport-icon" title="暂停" aria-label="暂停或继续"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+          <button id="actionBtn" class="action-btn"><span class="action-pulse"></span><span id="actionLabel">释放重球</span><svg viewBox="0 0 24 24"><path d="M12 4v13m-5-5l5 5 5-5M5 20h14"/></svg></button>
+          <button id="waveBtn" class="secondary-action" hidden><i></i><span>启动造浪</span></button>
+          <button id="slowBtn" class="speed-btn" title="慢放">0.25×</button>
+          <div class="timeline"><div><span id="runState">等待释放</span><time id="timeLabel">00:00</time></div><progress id="timelineProgress" max="100" value="0"></progress></div>
+        </div>
+        <div id="toast" class="toast ui"></div>
+      </section>
+
+      <aside class="inspector ui">
+        <div class="inspector-head"><div><span>实验控制台</span><small>PARAMETERS / LIVE</small></div><button id="collapseBtn" title="收起参数">—</button></div>
+        <div id="inspectorContent">
+          <section class="preset-section">
+            <label>演示编排 <span>PRESETS</span></label>
+            <div class="preset-grid" id="jellyPresets">
+              <button data-run="jelly-center" class="active"><i class="preset-center"></i><span>正中单击<small>包覆与回弹</small></span></button>
+              <button data-run="jelly-multi"><i class="preset-multi"></i><span>连续冲击<small>叠振与断裂</small></span></button>
+              <button data-run="jelly-offset"><i class="preset-offset"></i><span>偏心冲击<small>倾斜与滚落</small></span></button>
+            </div>
+            <div class="preset-grid tank-presets" id="tankPresets" hidden>
+              <button data-run="tank-drop"><i class="preset-drop"></i><span>密度入水<small>浮沉与飞溅</small></span></button>
+              <button data-run="tank-full"><i class="preset-wave"></i><span>完整风浪<small>破碎与反射</small></span></button>
+            </div>
+          </section>
+
+          <div id="jellyControls">
+            <section class="control-section">
+              <div class="section-title"><span>果冻材料</span><small>JELLY</small></div>
+              <div class="control-row"><div><label for="softness">软硬程度</label><output id="softnessOut">55%</output></div><input id="softness" type="range" min="10" max="90" value="55"><div class="range-label"><span>柔韧</span><span>Q 弹</span></div></div>
+              <div class="control-row"><div><label for="toughness">结实程度</label><output id="toughnessOut">78%</output></div><input id="toughness" type="range" min="15" max="95" value="78"><div class="range-label"><span>易开裂</span><span>不易裂</span></div></div>
+              <div class="material-note"><i></i><span id="materialHint">适中回弹 · 重击下保持完整</span></div>
+            </section>
+            <section class="control-section">
+              <div class="section-title"><span>重球条件</span><small>IMPACTOR</small></div>
+              <div class="control-row"><div><label for="ballMass">重球质量</label><output id="ballMassOut">8.0 kg</output></div><input id="ballMass" type="range" min="2" max="18" value="8" step="0.5"><div class="range-label"><span>轻击</span><span>重击</span></div></div>
+              <div class="control-row"><div><label for="dropHeight">下落高度</label><output id="dropHeightOut">3.2 m</output></div><input id="dropHeight" type="range" min="1" max="6" value="3.2" step="0.1"><div class="range-label"><span>浅坑</span><span>剧烈变形</span></div></div>
+              <div class="impact-selector"><span>落点方式</span><div><button data-impact="center" class="active">正中</button><button data-impact="offset">偏心</button><button data-impact="multi">连续</button></div></div>
+            </section>
+          </div>
+
+          <div id="tankControls" hidden>
+            <section class="control-section">
+              <div class="section-title"><span>小球密度</span><small>ρ / g·cm⁻³</small></div>
+              <div id="densityControls"></div>
+              <p class="microcopy">四组小球尺寸相同；密度决定平衡位置与浸水体积。</p>
+            </section>
+            <section class="control-section">
+              <div class="section-title"><span>造浪装置</span><small>WAVE MAKER</small></div>
+              <div class="control-row"><div><label for="waveAmplitude">推板幅度</label><output id="waveAmplitudeOut">62%</output></div><input id="waveAmplitude" type="range" min="5" max="100" value="62"><div class="range-label"><span>平缓长波</span><span>翻卷破碎</span></div></div>
+              <div class="control-row"><div><label for="waveFrequency">造浪频率</label><output id="waveFrequencyOut">0.65 Hz</output></div><input id="waveFrequency" type="range" min="20" max="120" value="65"><div class="range-label"><span>稀疏</span><span>密集</span></div></div>
+            </section>
+          </div>
+
+          <section class="solver-card">
+            <div><span class="solver-icon">∿</span><div><b id="solverTitle">体积约束求解器</b><small id="solverDesc">XPBD · 四面体应力 · 裂纹扩展</small></div><i></i></div>
+            <p id="solverFoot">形变来自节点位移与材料应力，而非预录动画。</p>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="helpDialog" class="help-dialog ui">
+    <button id="closeHelp" class="help-close" aria-label="关闭">×</button>
+    <span class="eyebrow">BEHIND THE EXPERIMENT</span>
+    <h2>让每一次作用，都有回应。</h2>
+    <p>这是一座可交互的非线性物理实验台。两个场景共用光照与镜头语言，但使用不同的数值求解方法。</p>
+    <div class="help-columns"><div><b>01 / 果冻冲击</b><p>三维四面体体积软体以 XPBD 约束求解。冲击能量与材料应变共同驱动损伤，断裂后实时重建表面和连通碎块。</p></div><div><b>02 / 造浪水槽</b><p>WebGPU 计算着色器执行三维 PIC/FLIP 粒子—网格传输与压力投影。液面、水滴和白水均来自粒子状态。</p></div></div>
+    <div class="shortcut-list"><span><kbd>空格</kbd> 暂停 / 继续</span><span><kbd>R</kbd> 重置</span><span><kbd>1</kbd> 果冻场景</span><span><kbd>2</kbd> 水槽场景</span></div>
+    <small>声音会在首次点击后启用。所有资源均随作品离线交付。</small>
+  </dialog>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/water.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem1.lean 原文件单独编译成功，无错误、无 sorry 警告；追加 #print axioms problem1 和 #check @problem1 后再次编译成功，命题与题面一致，公理仅为 propext、Classical.choice、Quot.sound。未使用变量及 push_neg 弃用警告不影响得分。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem2.lean，也没有对应主定理 problem2 的其他答案文件，按缺交记 0 分。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem3.lean，也没有对应主定理 problem3 的其他答案文件，按缺交记 0 分。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem4.lean，也没有对应主定理 problem4 的其他答案文件，按缺交记 0 分。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem5.lean，也没有对应主定理 problem5 的其他答案文件，按缺交记 0 分。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem6.lean，也没有对应主定理 problem6 的其他答案文件，按缺交记 0 分。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem7.lean，也没有对应主定理 problem7 的其他答案文件，按缺交记 0 分。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 0,
+      "reason": "作答结束时工作目录中没有 Problem8.lean，也没有对应主定理 problem8 的其他答案文件，按缺交记 0 分。"
+    }
+  ],
+  "metrics": {
+    "通过题数": 1,
+    "缺交题数": 7,
+    "总分": 12.5
+  },
+  "notes": "评的是作答结束时工作目录的副本（work/submission），不看 git 提交。原始作答除题面外只含 Problem1.lean，第 2–8 题无对应答案文件。编译及公理、命题核验日志为 work/Problem1.original.log 和 work/Problem1.audit.log；静态检查未见跳过检查、篡改命题或额外公理。仅在副本上生成检查文件，未运行性能基准或采集性能数据。所有本次启动的编译进程均已退出。"
+}

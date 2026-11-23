@@ -1,0 +1,573 @@
+{
+  "task": "机械结构重建",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第01题",
+      "max": 3.5,
+      "score": 3.5,
+      "reason": "F(0.2mm)=0.9916，F(2mm)=0.9960，F综合=0.9924；窄档P=0.9983、R=0.9850。装配提交10件，按序号汇总P/R，共用整题平移。"
+    },
+    {
+      "name": "第02题",
+      "max": 3.5,
+      "score": 3.32,
+      "reason": "F(0.2mm)=0.9302，F(2mm)=0.9680，F综合=0.9378；窄档P=0.9561、R=0.9057。装配提交8件，按序号汇总P/R，共用整题平移。"
+    },
+    {
+      "name": "第03题",
+      "max": 3.5,
+      "score": 0.73,
+      "reason": "F(0.2mm)=0.1759，F(2mm)=0.3248，F综合=0.2057；窄档P=0.2978、R=0.1248。主体X宽建为86mm，参考为132mm。"
+    },
+    {
+      "name": "第04题",
+      "max": 3.5,
+      "score": 2.28,
+      "reason": "F(0.2mm)=0.5831，F(2mm)=0.8971，F综合=0.6459；窄档P=0.7850、R=0.4637。"
+    },
+    {
+      "name": "第05题",
+      "max": 3.5,
+      "score": 0.6,
+      "reason": "F(0.2mm)=0.1470，F(2mm)=0.2653，F综合=0.1706；窄档P=0.2949、R=0.0979。主体X宽建为96mm，参考为160mm。"
+    },
+    {
+      "name": "第06题",
+      "max": 3.5,
+      "score": 0.62,
+      "reason": "F(0.2mm)=0.1493，F(2mm)=0.2826，F综合=0.1760；窄档P=0.2407、R=0.1082。"
+    },
+    {
+      "name": "第07题",
+      "max": 3.5,
+      "score": 1.15,
+      "reason": "F(0.2mm)=0.2779，F(2mm)=0.5080，F综合=0.3240；窄档P=0.3888、R=0.2163。"
+    },
+    {
+      "name": "第08题",
+      "max": 3.5,
+      "score": 0.42,
+      "reason": "F(0.2mm)=0.0947，F(2mm)=0.2157，F综合=0.1189；窄档P=0.1702、R=0.0656。主体X宽建为126mm，参考为174mm。"
+    },
+    {
+      "name": "第09题",
+      "max": 4,
+      "score": 1.08,
+      "reason": "F(0.2mm)=0.2413，F(2mm)=0.3685，F综合=0.2668；窄档P=0.4692、R=0.1624。"
+    },
+    {
+      "name": "第10题",
+      "max": 4,
+      "score": 1.09,
+      "reason": "F(0.2mm)=0.2406，F(2mm)=0.3830，F综合=0.2691；窄档P=0.2773、R=0.2125。"
+    },
+    {
+      "name": "第11题",
+      "max": 4,
+      "score": 1.14,
+      "reason": "F(0.2mm)=0.2507，F(2mm)=0.4063，F综合=0.2818；窄档P=0.4198、R=0.1787。"
+    },
+    {
+      "name": "第12题",
+      "max": 4,
+      "score": 1.15,
+      "reason": "F(0.2mm)=0.2406，F(2mm)=0.4630，F综合=0.2851；窄档P=0.3655、R=0.1793。"
+    },
+    {
+      "name": "第13题",
+      "max": 4,
+      "score": 0.74,
+      "reason": "F(0.2mm)=0.1563，F(2mm)=0.2889，F综合=0.1828；窄档P=0.2433、R=0.1152。"
+    },
+    {
+      "name": "第14题",
+      "max": 4,
+      "score": 0.82,
+      "reason": "F(0.2mm)=0.1602，F(2mm)=0.3798，F综合=0.2041；窄档P=0.2279、R=0.1235。"
+    },
+    {
+      "name": "第15题",
+      "max": 4,
+      "score": 0.97,
+      "reason": "F(0.2mm)=0.2059，F(2mm)=0.3793，F综合=0.2406；窄档P=0.2782、R=0.1635。"
+    },
+    {
+      "name": "第16题",
+      "max": 4.4,
+      "score": 0.76,
+      "reason": "F(0.2mm)=0.1391，F(2mm)=0.3037，F综合=0.1720；窄档P=0.2626、R=0.0946。"
+    },
+    {
+      "name": "第17题",
+      "max": 4.4,
+      "score": 0.58,
+      "reason": "F(0.2mm)=0.0938，F(2mm)=0.2767，F综合=0.1303；窄档P=0.2271、R=0.0591。"
+    },
+    {
+      "name": "第18题",
+      "max": 4.4,
+      "score": 0.44,
+      "reason": "F(0.2mm)=0.0697，F(2mm)=0.2171，F综合=0.0992；窄档P=0.1780、R=0.0433。"
+    },
+    {
+      "name": "第19题",
+      "max": 4.4,
+      "score": 0.46,
+      "reason": "F(0.2mm)=0.0739，F(2mm)=0.2222，F综合=0.1036；窄档P=0.1979、R=0.0455。"
+    },
+    {
+      "name": "第20题",
+      "max": 4.4,
+      "score": 0.76,
+      "reason": "F(0.2mm)=0.1270，F(2mm)=0.3476，F综合=0.1711；窄档P=0.2979、R=0.0807。"
+    },
+    {
+      "name": "第21题",
+      "max": 4.4,
+      "score": 0.43,
+      "reason": "F(0.2mm)=0.0621，F(2mm)=0.2396，F综合=0.0976；窄档P=0.2052、R=0.0366。"
+    },
+    {
+      "name": "第22题",
+      "max": 4.4,
+      "score": 0.4,
+      "reason": "F(0.2mm)=0.0607，F(2mm)=0.2052，F综合=0.0896；窄档P=0.1808、R=0.0365。装配提交14件，按序号汇总P/R，共用整题平移。"
+    },
+    {
+      "name": "第23题",
+      "max": 4.4,
+      "score": 0.41,
+      "reason": "F(0.2mm)=0.0524，F(2mm)=0.2531，F综合=0.0926；窄档P=0.0698、R=0.0420。装配提交18件，按序号汇总P/R，共用整题平移。"
+    },
+    {
+      "name": "第24题",
+      "max": 4.4,
+      "score": 0.29,
+      "reason": "F(0.2mm)=0.0441，F(2mm)=0.1479，F综合=0.0648；窄档P=0.1525、R=0.0258。装配提交22件，按序号汇总P/R，共用整题平移。"
+    },
+    {
+      "name": "第25题",
+      "max": 4.4,
+      "score": 0.37,
+      "reason": "F(0.2mm)=0.0483，F(2mm)=0.2241，F综合=0.0835；窄档P=0.0477、R=0.0490。装配提交26件，按序号汇总P/R，共用整题平移。"
+    }
+  ],
+  "metrics": {
+    "total_score": 24.52,
+    "unrounded_total_score": 24.51630021472273,
+    "tier_scores": {
+      "简单档": 12.62,
+      "中档": 6.99,
+      "困难档": 4.91
+    },
+    "graded_questions": 25,
+    "feature_failures": 0,
+    "tool_violations": [],
+    "shape_results": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Gemini\\4Neon\\机械结构重建\\codex\\main\\work\\shape-results.json",
+    "question_metrics": [
+      {
+        "name": "第01题",
+        "fscore_strict": 0.9916,
+        "fscore_wide": 0.996,
+        "fscore": 0.9924,
+        "precision": 0.9983,
+        "recall": 0.985,
+        "wide_precision": 0.9999,
+        "wide_recall": 0.9921,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 3.5
+      },
+      {
+        "name": "第02题",
+        "fscore_strict": 0.9302,
+        "fscore_wide": 0.968,
+        "fscore": 0.9378,
+        "precision": 0.9561,
+        "recall": 0.9057,
+        "wide_precision": 0.9765,
+        "wide_recall": 0.9596,
+        "translation": [
+          -0.006,
+          0.004,
+          0.004
+        ],
+        "_raw": 3.3153380344637715
+      },
+      {
+        "name": "第03题",
+        "fscore_strict": 0.1759,
+        "fscore_wide": 0.3248,
+        "fscore": 0.2057,
+        "precision": 0.2978,
+        "recall": 0.1248,
+        "wide_precision": 0.4384,
+        "wide_recall": 0.2579,
+        "translation": [
+          -0.018,
+          0.054,
+          -0.014
+        ],
+        "_raw": 0.7270838748463632
+      },
+      {
+        "name": "第04题",
+        "fscore_strict": 0.5831,
+        "fscore_wide": 0.8971,
+        "fscore": 0.6459,
+        "precision": 0.785,
+        "recall": 0.4637,
+        "wide_precision": 0.976,
+        "wide_recall": 0.8301,
+        "translation": [
+          -0.004,
+          -0.005,
+          0.01
+        ],
+        "_raw": 2.2833693381026055
+      },
+      {
+        "name": "第05题",
+        "fscore_strict": 0.147,
+        "fscore_wide": 0.2653,
+        "fscore": 0.1706,
+        "precision": 0.2949,
+        "recall": 0.0979,
+        "wide_precision": 0.441,
+        "wide_recall": 0.1897,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.6032263675902867
+      },
+      {
+        "name": "第06题",
+        "fscore_strict": 0.1493,
+        "fscore_wide": 0.2826,
+        "fscore": 0.176,
+        "precision": 0.2407,
+        "recall": 0.1082,
+        "wide_precision": 0.3857,
+        "wide_recall": 0.223,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.6221480058484407
+      },
+      {
+        "name": "第07题",
+        "fscore_strict": 0.2779,
+        "fscore_wide": 0.508,
+        "fscore": 0.324,
+        "precision": 0.3888,
+        "recall": 0.2163,
+        "wide_precision": 0.5601,
+        "wide_recall": 0.4648,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 1.145340214204802
+      },
+      {
+        "name": "第08题",
+        "fscore_strict": 0.0947,
+        "fscore_wide": 0.2157,
+        "fscore": 0.1189,
+        "precision": 0.1702,
+        "recall": 0.0656,
+        "wide_precision": 0.2722,
+        "wide_recall": 0.1786,
+        "translation": [
+          24.052,
+          12.958,
+          11.995
+        ],
+        "_raw": 0.42038240554469836
+      },
+      {
+        "name": "第09题",
+        "fscore_strict": 0.2413,
+        "fscore_wide": 0.3685,
+        "fscore": 0.2668,
+        "precision": 0.4692,
+        "recall": 0.1624,
+        "wide_precision": 0.5599,
+        "wide_recall": 0.2746,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 1.0778909620748287
+      },
+      {
+        "name": "第10题",
+        "fscore_strict": 0.2406,
+        "fscore_wide": 0.383,
+        "fscore": 0.2691,
+        "precision": 0.2773,
+        "recall": 0.2125,
+        "wide_precision": 0.4112,
+        "wide_recall": 0.3584,
+        "translation": [
+          1.87,
+          7.994,
+          -0.013
+        ],
+        "_raw": 1.087172439164299
+      },
+      {
+        "name": "第11题",
+        "fscore_strict": 0.2507,
+        "fscore_wide": 0.4063,
+        "fscore": 0.2818,
+        "precision": 0.4198,
+        "recall": 0.1787,
+        "wide_precision": 0.5283,
+        "wide_recall": 0.3301,
+        "translation": [
+          0.062,
+          -0.043,
+          0.008
+        ],
+        "_raw": 1.1386253700252327
+      },
+      {
+        "name": "第12题",
+        "fscore_strict": 0.2406,
+        "fscore_wide": 0.463,
+        "fscore": 0.2851,
+        "precision": 0.3655,
+        "recall": 0.1793,
+        "wide_precision": 0.5823,
+        "wide_recall": 0.3843,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 1.151821797590455
+      },
+      {
+        "name": "第13题",
+        "fscore_strict": 0.1563,
+        "fscore_wide": 0.2889,
+        "fscore": 0.1828,
+        "precision": 0.2433,
+        "recall": 0.1152,
+        "wide_precision": 0.3886,
+        "wide_recall": 0.2299,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.7386807408448394
+      },
+      {
+        "name": "第14题",
+        "fscore_strict": 0.1602,
+        "fscore_wide": 0.3798,
+        "fscore": 0.2041,
+        "precision": 0.2279,
+        "recall": 0.1235,
+        "wide_precision": 0.4444,
+        "wide_recall": 0.3315,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.8247951990400665
+      },
+      {
+        "name": "第15题",
+        "fscore_strict": 0.2059,
+        "fscore_wide": 0.3793,
+        "fscore": 0.2406,
+        "precision": 0.2782,
+        "recall": 0.1635,
+        "wide_precision": 0.4579,
+        "wide_recall": 0.3238,
+        "translation": [
+          0.009,
+          0.03,
+          0.022
+        ],
+        "_raw": 0.9721455343169473
+      },
+      {
+        "name": "第16题",
+        "fscore_strict": 0.1391,
+        "fscore_wide": 0.3037,
+        "fscore": 0.172,
+        "precision": 0.2626,
+        "recall": 0.0946,
+        "wide_precision": 0.4252,
+        "wide_recall": 0.2362,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.7645329149658435
+      },
+      {
+        "name": "第17题",
+        "fscore_strict": 0.0938,
+        "fscore_wide": 0.2767,
+        "fscore": 0.1303,
+        "precision": 0.2271,
+        "recall": 0.0591,
+        "wide_precision": 0.3964,
+        "wide_recall": 0.2125,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.5792821401082292
+      },
+      {
+        "name": "第18题",
+        "fscore_strict": 0.0697,
+        "fscore_wide": 0.2171,
+        "fscore": 0.0992,
+        "precision": 0.178,
+        "recall": 0.0433,
+        "wide_precision": 0.3229,
+        "wide_recall": 0.1635,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.4408125180456152
+      },
+      {
+        "name": "第19题",
+        "fscore_strict": 0.0739,
+        "fscore_wide": 0.2222,
+        "fscore": 0.1036,
+        "precision": 0.1979,
+        "recall": 0.0455,
+        "wide_precision": 0.3179,
+        "wide_recall": 0.1708,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.4603914263560594
+      },
+      {
+        "name": "第20题",
+        "fscore_strict": 0.127,
+        "fscore_wide": 0.3476,
+        "fscore": 0.1711,
+        "precision": 0.2979,
+        "recall": 0.0807,
+        "wide_precision": 0.4291,
+        "wide_recall": 0.2921,
+        "translation": [
+          46.821,
+          0.031,
+          0.02
+        ],
+        "_raw": 0.7606509570835996
+      },
+      {
+        "name": "第21题",
+        "fscore_strict": 0.0621,
+        "fscore_wide": 0.2396,
+        "fscore": 0.0976,
+        "precision": 0.2052,
+        "recall": 0.0366,
+        "wide_precision": 0.3546,
+        "wide_recall": 0.1809,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.4335977793078519
+      },
+      {
+        "name": "第22题",
+        "fscore_strict": 0.0607,
+        "fscore_wide": 0.2052,
+        "fscore": 0.0896,
+        "precision": 0.1808,
+        "recall": 0.0365,
+        "wide_precision": 0.3017,
+        "wide_recall": 0.1555,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.3982804570206716
+      },
+      {
+        "name": "第23题",
+        "fscore_strict": 0.0524,
+        "fscore_wide": 0.2531,
+        "fscore": 0.0926,
+        "precision": 0.0698,
+        "recall": 0.042,
+        "wide_precision": 0.2515,
+        "wide_recall": 0.2548,
+        "translation": [
+          16.095,
+          2.054,
+          19.974
+        ],
+        "_raw": 0.41143285805030194
+      },
+      {
+        "name": "第24题",
+        "fscore_strict": 0.0441,
+        "fscore_wide": 0.1479,
+        "fscore": 0.0648,
+        "precision": 0.1525,
+        "recall": 0.0258,
+        "wide_precision": 0.2627,
+        "wide_recall": 0.1029,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "_raw": 0.288168433455778
+      },
+      {
+        "name": "第25题",
+        "fscore_strict": 0.0483,
+        "fscore_wide": 0.2241,
+        "fscore": 0.0835,
+        "precision": 0.0477,
+        "recall": 0.049,
+        "wide_precision": 0.2109,
+        "wide_recall": 0.2392,
+        "translation": [
+          14.407,
+          4.501,
+          24.465
+        ],
+        "_raw": 0.37113044667114303
+      }
+    ]
+  },
+  "notes": "评分版本：评作答结束时工作目录中的内容，副本为 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Gemini\\4Neon\\机械结构重建\\codex\\main\\work\\submission，未按 git 提交评分。工具核查：已审阅最新受测会话 E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\Gemini\\4Neon\\机械结构重建\\run-a179e6ce17c4432fa3b44ad91cb2c4da\\session.log 的312次工具调用。第49行命令 python -c 遍历25题目录，仅显示图纸索引；第55行写入笔记/cat_dims.py，按视图分组并显示现有JSON字段，后续python 笔记/cat_dims.py及Select-String仅提取读数；第685行py -3.12 -X utf8 -c只遍历显示第19题已有视图/标注字段，因title键不存在报错；第840行命令仅列出23—25题斜角现有标注。第185行import OCP只检查预览依赖，未调用几何计算；其余建模调用为官方preview.py（含连续预览）。未发现程序计算新尺寸/坐标/法向、候选生成筛选、CAD建模、改工具或子代理；提交工具非字节码文件与官方一致。评分采用未修改官方grade.py；0.2mm整题仅平移，2mm复用平移，F综合=0.8F(0.2mm)+0.2F(2mm)，满分线0.99；无性能基准或计时、帧率、资源采集。 第612/671/785/851行读取的是本会话工具自动落盘的命令输出，未读取其他题目、历史答案或出题资料；manage_task仅查询预览后台任务状态，没有调用子代理。全部25题已完成形状评分与工具核查；总分按未舍入分项求和后保留两位小数。评分进程已自然退出，未启动浏览器或服务器。"
+}

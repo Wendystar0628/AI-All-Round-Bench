@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": ["start", "--", "--data-dir", "{dataDir}", "--width", "{width}", "--height", "{height}", "--remote-debugging-port={port}"],
+    "cwd": "."
+  },
+  "mainWindow": {
+    "title": "Nested OS",
+    "debugging": "Chromium DevTools Protocol at http://127.0.0.1:{port}; evaluate in the main page context"
+  },
+  "fixtures": {
+    "outer": {
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "documents": "/Documents",
+      "kernelTemplate": "/System/kernel.template.os",
+      "compiler": "/System/compiler.os",
+      "flightController": "/System/flight-controller.os"
+    },
+    "inner": {
+      "helicopter": "/Demo/helicopter-24.scene",
+      "minimalScene": "/Demo/minimal.scene",
+      "documents": "/Documents",
+      "kernelTemplate": "/System/kernel.template.os",
+      "compiler": "/System/compiler.os",
+      "flightController": "/System/flight-controller.os",
+      "windowManager": "/System/wm.os",
+      "programs": "/Programs"
+    }
+  },
+  "interfaces": {
+    "context": "main window renderer",
+    "ready": "await window.bench.ready()",
+    "reset": "await window.bench.reset()",
+    "inspect": "await window.bench.inspect()"
+  },
+  "notes": "All local controls are in the main DOM, including recursively nested desktops. Only external sites use isolated webview contexts. Projection controls are duplicated inside the projection window and route to the source app."
+}

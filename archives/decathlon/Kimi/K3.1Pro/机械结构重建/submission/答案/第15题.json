@@ -1,0 +1,41 @@
+{
+  "problem": "15",
+  "parts": [
+    {
+      "name": "1", "title": "双轴错层传动箱体",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 98, 54]}], "depth": 6},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 3]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[20, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 2, 0], "loops": [{"path": [[7, 6], [91, 6], [91, 62], [59, 100], [7, 100], [7, 62]]}], "depth": -50},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 2, 0], "loops": [{"circle": [35, 61], "d": 78}], "depth": 4},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, -2, 0], "loops": [{"circle": [35, 61], "d": 70}], "depth": 2},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 4, 0], "loops": [{"circle": [67, 43], "d": 74}], "depth": 6},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, -2, 0], "loops": [{"circle": [67, 43], "d": 68}], "depth": 2},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 62], "loops": [{"rect": [14, 10, 52, 44]}], "depth": -56},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 52], "loops": [{"rect": [58, 10, 84, 44]}], "depth": -46},
+        {"type": "hole", "plane": "XZ", "origin": [0, -4, 0], "at": [[35, 61]], "d": 38, "through": true},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, -4, 0], "loops": [{"circle": [35, 61], "d": 48}], "depth": -4},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, -4, 0], "loops": [{"circle": [35, 61], "d": 52}], "depth": -2},
+        {"type": "hole", "plane": "XZ", "origin": [0, -4, 0], "at": [[67, 43]], "d": 32, "through": true},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, -4, 0], "loops": [{"circle": [67, 43], "d": 44}], "depth": -4},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, -4, 0], "loops": [{"circle": [67, 43], "d": 50}], "depth": -2},
+        {"type": "hole", "plane": "YZ", "origin": [91, 0, 0], "at": [[27, 43]], "d": 42, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [[35, 27], [67, 27]], "d": 10, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 100], "at": [[67, 10]], "d": 10, "through": true},
+        {
+          "type": "hole",
+          "plane": {"origin": [73, 27, 86], "normal": [0.7071067812, 0, 0.7071067812], "x_dir": [0.7071067812, 0, -0.7071067812]},
+          "at": [[0, 0]], "d": 30, "depth": 58
+        },
+        {
+          "type": "hole",
+          "plane": {"origin": [51, 52, 100], "normal": [0, 0.4226182617, 0.9063077870], "x_dir": [1, 0, 0]},
+          "at": [[0, 0]], "d": 10, "depth": 62
+        },
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[7, 7], [91, 7], [7, 47], [91, 47]], "d": 10, "through": true, "cbore": {"d": 16, "depth": 2}},
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 0], "loops": [{"rect": [40, 0, 60, 10]}], "depth": 4}
+      ]
+    }
+  ]
+}

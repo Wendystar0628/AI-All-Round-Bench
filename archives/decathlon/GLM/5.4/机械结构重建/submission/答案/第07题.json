@@ -1,0 +1,271 @@
+{
+ "problem": "07",
+ "parts": [
+  {
+   "name": "1",
+   "title": "双轴错层回油支承座",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        150,
+        90
+       ]
+      }
+     ],
+     "depth": 8
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "loops": [
+      {
+       "rect": [
+        10,
+        15,
+        55,
+        75
+       ]
+      }
+     ],
+     "depth": 40
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "loops": [
+      {
+       "rect": [
+        95,
+        15,
+        140,
+        75
+       ]
+      }
+     ],
+     "depth": 50
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "loops": [
+      {
+       "rect": [
+        55,
+        25,
+        95,
+        65
+       ]
+      }
+     ],
+     "depth": 17
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      75,
+      25,
+      18
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 20
+      }
+     ],
+     "depth": 10
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      75,
+      15,
+      18
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 10,
+     "depth": 20
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "at": [
+      [
+       10,
+       10
+      ],
+      [
+       140,
+       10
+      ],
+      [
+       10,
+       80
+      ],
+      [
+       140,
+       80
+      ]
+     ],
+     "d": 13,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "at": [
+      [
+       32,
+       30
+      ],
+      [
+       32,
+       60
+      ],
+      [
+       117,
+       30
+      ],
+      [
+       117,
+       60
+      ]
+     ],
+     "d": 8,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      117,
+      8,
+      40
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 8,
+     "depth": 30
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "path": [
+        [
+         55,
+         25
+        ],
+        [
+         75,
+         25
+        ],
+        [
+         55,
+         45
+        ]
+       ]
+      }
+     ],
+     "depth": [
+      -100,
+      0
+     ]
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "path": [
+        [
+         95,
+         25
+        ],
+        [
+         75,
+         25
+        ],
+        [
+         95,
+         45
+        ]
+       ]
+      }
+     ],
+     "depth": [
+      -100,
+      0
+     ]
+    }
+   ]
+  }
+ ]
+}

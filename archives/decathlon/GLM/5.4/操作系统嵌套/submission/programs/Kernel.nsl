@@ -1,0 +1,509 @@
+// ===========================================================================
+//  Kernel.nsl —— 子系统内核
+//  由父系统中的承载进程执行。本文件实现：
+//    · 进程表 / 就绪队列 / 时间片轮转调度 / 每进程执行额度
+//    · 睡眠唤醒、消息投递与顺序接收
+//    · 文件系统（目录树、配额）与文件系统调用
+//    · 系统调用分发（程序的一切服务都从这里经过）
+//    · 编译队列（常驻编译器进程）与直属子系统的创建、控制与快照
+//  修改本文件并重启子系统后，新规则立即生效。
+// ===========================================================================
+var clock = 0
+var procs = {}
+var ready = []
+var nextPid = 1
+var wmPid = 0
+var compilerPid = 0
+var shared = {}
+var fsDirs = {}
+var compileCache = {}
+var bootTime = 0
+var tickCount = 0
+var lastError = ""
+var compileQueue = []
+var compiling = null
+
+// ------------------------------- 文件系统 ---------------------------------
+func fsNormalize(p) {
+  var parts = p.split("/")
+  var out = []
+  for (var i = 0; i < parts.length; i++) {
+    var s = parts[i]
+    if (s == "" || s == ".") { continue }
+    if (s == "..") { if (out.length > 0) { out.pop() } continue }
+    out.push(s)
+  }
+  var r = ""
+  for (var i = 0; i < out.length; i++) { r = r + "/" + out[i] }
+  if (r == "") { r = "/" }
+  return r
+}
+func fsInit() {
+  fsDirs["/"] = true
+  var keys = sys.fs_keys()
+  for (var i = 0; i < keys.length; i++) {
+    var parts = keys[i].split("/")
+    var acc = ""
+    for (var j = 0; j < parts.length; j++) {
+      if (parts[j] == "") { continue }
+      acc = acc + "/" + parts[j]
+      if (j < parts.length - 1) { fsDirs[acc] = true }
+    }
+  }
+  fsDirs["/System"] = true
+  fsDirs["/Demo"] = true
+  fsDirs["/Documents"] = true
+  fsDirs["/Programs"] = true
+  fsDirs["/Snapshots"] = true
+  fsDirs["/Systems"] = true
+}
+func fsList(dir) {
+  var d = fsNormalize(dir)
+  var prefix = d == "/" ? "/" : d + "/"
+  var out = []
+  var seen = {}
+  var keys = sys.fs_keys()
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i]
+    if (k == d) { continue }
+    if (k.indexOf(prefix) != 0) { continue }
+    var rest = k.substr(prefix.length)
+    var j = rest.indexOf("/")
+    var name = j < 0 ? rest : rest.substr(0, j)
+    if (name == "") { continue }
+    if (!seen[name]) {
+      seen[name] = true
+      var isDir = j >= 0
+      out.push({ name: name, dir: isDir, path: (d == "/" ? "" : d) + "/" + name, size: isDir ? 0 : sys.fs_size(k) })
+    }
+  }
+  var dk = fsDirs.keys()
+  for (var i = 0; i < dk.length; i++) {
+    var k = dk[i]
+    if (k.indexOf(prefix) != 0) { continue }
+    var rest = k.substr(prefix.length)
+    if (rest == "" || rest.indexOf("/") >= 0) { continue }
+    if (!seen[rest]) { seen[rest] = true; out.push({ name: rest, dir: true, path: (d == "/" ? "" : d) + "/" + rest, size: 0 }) }
+  }
+  return out
+}
+func fsRead(p) {
+  return sys.fs_read(fsNormalize(p))
+}
+func fsWrite(p, data, kind) {
+  var path = fsNormalize(p)
+  var used = sys.storage_used()
+  var old = sys.fs_read(path)
+  var oldLen = old == null ? 0 : old.length
+  if (used + data.length - oldLen > sys.storage_quota()) { return { ok: false, error: "存储配额不足" } }
+  var r = sys.fs_write(path, data, kind)
+  if (r.ok) { compileCache[path] = null }
+  return r
+}
+func fsMkdir(p) {
+  fsDirs[fsNormalize(p)] = true
+  return { ok: true }
+}
+func fsDelete(p) {
+  var path = fsNormalize(p)
+  var del = sys.fs_delete(path)
+  fsDirs[path] = null
+  var keys = sys.fs_keys()
+  var prefix = path + "/"
+  for (var i = 0; i < keys.length; i++) { if (keys[i].indexOf(prefix) == 0) { sys.fs_delete(keys[i]) } }
+  var dk = fsDirs.keys()
+  for (var i = 0; i < dk.length; i++) { if (dk[i].indexOf(prefix) == 0) { fsDirs[dk[i]] = null } }
+  compileCache[path] = null
+  return del
+}
+func fsMove(a, b) { compileCache[fsNormalize(a)] = null; return sys.fs_move(fsNormalize(a), fsNormalize(b)) }
+func fsCopy(a, b) { return sys.fs_copy(fsNormalize(a), fsNormalize(b)) }
+
+// ------------------------------- 进程 -------------------------------------
+func newProc(pid, name) {
+  procs[pid] = { pid: pid, name: name, state: "ready", msgs: [], wakeAt: 0, quota: 3000, used: 0, err: null, started: clock, isService: false }
+}
+func ret(pid, v) {
+  sys.resume(pid, v)
+  var p = procs[pid]
+  if (p != null) { p.state = "ready" }
+  ready.push(pid)
+}
+func killProc(pid) {
+  var p = procs[pid]
+  if (p == null) { return }
+  procs[pid] = null
+  sys.kill(pid)
+  var nr = []
+  for (var i = 0; i < ready.length; i++) { if (ready[i] != pid) { nr.push(ready[i]) } }
+  ready = nr
+}
+func onExit(pid) {
+  var p = procs[pid]
+  var nm = p == null ? "" : p.name
+  killProc(pid)
+  if (pid == wmPid) { wmPid = 0 }
+  notifyWM({ type: "exit", pid: pid, name: nm })
+}
+func notifyWM(msg) {
+  if (wmPid == 0) { return }
+  var t = procs[wmPid]
+  if (t == null) { return }
+  t.msgs.push(msg)
+  if (t.state == "waitmsg") {
+    var m = t.msgs.shift()
+    t.state = "ready"
+    sys.resume(wmPid, m)
+    ready.push(wmPid)
+  }
+}
+func notifyLaunched(pid, title, appId) {
+  notifyWM({ type: "launched", pid: pid, title: title, appId: appId })
+}
+
+// ------------------------------- 编译队列 ---------------------------------
+func strSum(s) {
+  var n = 0
+  for (var i = 0; i < s.length; i++) { n = (n * 31 + s.charCodeAt(i)) % 1000000007 }
+  return n
+}
+func wakeProc(pid) {
+  var p = procs[pid]
+  if (p == null) { return }
+  if (p.state == "waitmsg" && p.msgs.length > 0) {
+    var m = p.msgs.shift()
+    p.state = "ready"
+    sys.resume(pid, m)
+    ready.push(pid)
+  }
+}
+func pumpCompile() {
+  if (compiling != null) { return }
+  if (compileQueue.length == 0) { return }
+  if (compilerPid == 0 || procs[compilerPid] == null) { return }
+  compiling = compileQueue.shift()
+  var cp = procs[compilerPid]
+  cp.msgs.push({ op: "compile", src: compiling.src })
+  wakeProc(compilerPid)
+}
+func finishCompile(res) {
+  var c = compiling
+  compiling = null
+  if (c.selfCompile) {
+    if (res != null && res.ok) {
+      var r0 = sys.spawn(res.prog, "compiler")
+      if (r0.ok) {
+        killProc(compilerPid)
+        compilerPid = r0.pid
+        newProc(compilerPid, "compiler")
+        ready.push(compilerPid)
+        fsWrite("/System/Compiler.sum", "" + strSum(c.src))
+        sys.log("编译器已用自身重新编译")
+      }
+    } else {
+      sys.log("编译器自举失败，继续使用原有编译器")
+    }
+    pumpCompile()
+    return
+  }
+  if (res != null && res.ok) {
+    if (c.path != null) { sys.save_bin(c.path + ".bin", res.prog); fsWrite(c.path + ".sum", "" + strSum(c.src)) }
+    var r = sys.spawn(res.prog, c.name)
+    if (r.ok) {
+      newProc(r.pid, c.name)
+      if (c.name == "wm") { wmPid = r.pid }
+      ready.push(r.pid)
+      if (c.name.indexOf("kernel:") == 0) { procs[r.pid].quota = 200000 }
+      if (c.attach != null) { sys.subsystem_attach(c.attach, r.pid) }
+      if (c.title != null) { notifyLaunched(r.pid, c.title, c.name) }
+      if (c.arg != null) { sys.send(r.pid, { type: "open", path: c.arg }) }
+      if (c.requester != null) { sys.send(c.requester, { type: "compiled", ok: true, pid: r.pid }) }
+    } else {
+      if (c.requester != null) { sys.send(c.requester, { type: "compiled", ok: false, error: "无法创建进程" }) }
+    }
+  } else {
+    var em = res == null ? "编译器无响应" : res.error
+    if (c.requester != null) { sys.send(c.requester, { type: "compiled", ok: false, error: em }) }
+    notifyWM({ type: "notify", title: "编译失败", body: c.name + "：" + em })
+  }
+  pumpCompile()
+}
+func requestCompile(src, name, title, arg, requester, selfCompile, attach, path) {
+  compileQueue.push({ src: src, name: name, title: title, arg: arg, requester: requester, selfCompile: selfCompile, attach: attach, path: path })
+  pumpCompile()
+}
+func startCompiler() {
+  var bin = sys.load_bin("/System/Compiler.bin")
+  if (bin == null) { return 0 }
+  var r = sys.spawn(bin, "compiler")
+  if (!r.ok) { return 0 }
+  newProc(r.pid, "compiler")
+  ready.push(r.pid)
+  var src = fsRead("/System/Compiler.nsl")
+  var sum = strSum(src)
+  var oldSum = fsRead("/System/Compiler.sum")
+  if (oldSum == null || oldSum != "" + sum) { requestCompile(src, "compiler", null, null, null, true, null) }
+  return r.pid
+}
+func startApp(path, name, title) {
+  var src = fsRead(path)
+  if (src == null) { return false }
+  // 预编译缓存：源文件校验和一致时直接载入可执行文件
+  var sum = "" + strSum(src)
+  var oldSum = fsRead(path + ".sum")
+  if (oldSum == sum) {
+    var bin = sys.load_bin(path + ".bin")
+    if (bin != null) {
+      var r = sys.spawn(bin, name)
+      if (r.ok) {
+        newProc(r.pid, name)
+        if (name == "wm") { wmPid = r.pid }
+        ready.push(r.pid)
+        if (name.indexOf("kernel:") == 0) { procs[r.pid].quota = 200000 }
+        if (title != null) { notifyLaunched(r.pid, title, name) }
+        return true
+      }
+    }
+  }
+  requestCompile(src, name, title, null, null, false, null, path)
+  return true
+}
+
+// ------------------------------- 调度 -------------------------------------
+func wakeTimers() {
+  var ks = procs.keys()
+  for (var i = 0; i < ks.length; i++) {
+    var p = procs[ks[i]]
+    if (p == null) { continue }
+    if (p.state == "sleep" && p.wakeAt <= clock) {
+      p.state = "ready"
+      sys.resume(p.pid, null)
+      ready.push(p.pid)
+    }
+  }
+}
+func runScheduler() {
+  var guard = 0
+  while (guard < 800) {
+    guard = guard + 1
+    var b = sys.budget()
+    if (b <= 0) { break }
+    if (ready.length == 0) { break }
+    var pid = ready.shift()
+    var p = procs[pid]
+    if (p == null || p.state != "ready") { continue }
+    var q = p.quota
+    if (q > b) { q = b }
+    var r = sys.step(pid, q)
+    p.used = p.used + r.used
+    if (r.status == "sys") {
+      handleSys(pid, r)
+    } else if (r.status == "exit") {
+      onExit(pid)
+    } else if (r.status == "error") {
+      p.state = "error"
+      p.err = r.error
+      lastError = p.name + ": " + r.error
+      notifyWM({ type: "proc_error", pid: pid, name: p.name, error: r.error })
+    } else {
+      ready.push(pid)
+    }
+  }
+}
+
+// ------------------------------- 系统调用分发 -----------------------------
+func handleSys(pid, r) {
+  var op = r.sys
+  var a = r.args
+  var p = procs[pid]
+  if (p == null) { return }
+
+  if (op == "pid") { ret(pid, pid); return }
+  if (op == "time") { ret(pid, clock); return }
+  if (op == "screen") { ret(pid, sys.screen()); return }
+  if (op == "yield") { ret(pid, null); return }
+  if (op == "sleep") { p.state = "sleep"; p.wakeAt = clock + a[0]; return }
+  if (op == "poll") {
+    if (p.msgs.length > 0) { ret(pid, p.msgs.shift()) } else { ret(pid, null) }
+    return
+  }
+  if (op == "recv") {
+    if (p.msgs.length > 0) { ret(pid, p.msgs.shift()) } else { p.state = "waitmsg" }
+    return
+  }
+  if (op == "send") {
+    var t = procs[a[0]]
+    if (t == null) { ret(pid, { ok: false, error: "目标进程不存在" }); return }
+    t.msgs.push(a[1])
+    if (t.state == "waitmsg") {
+      var m = t.msgs.shift()
+      t.state = "ready"
+      sys.resume(t.pid, m)
+      ready.push(t.pid)
+    }
+    ret(pid, { ok: true })
+    return
+  }
+  if (op == "reply") {
+    if (pid == compilerPid) { finishCompile(a[0]); sys.resume(pid, null); ready.push(pid); return }
+    ret(pid, true); return
+  }
+  if (op == "publish") { shared[a[0]] = a[1]; ret(pid, true); return }
+  if (op == "read") {
+    if (!shared.has(a[0])) { ret(pid, null); return }
+    ret(pid, shared[a[0]])
+    return
+  }
+  if (op == "exit") { killProc(pid); notifyWM({ type: "exit", pid: pid, name: p.name }); return }
+  if (op == "log") { sys.log("[" + p.name + "] " + a[0]); ret(pid, true); return }
+
+  // ---- 显示 ----
+  if (op == "draw") { sys.display(pid + ":" + a[0], a[1], a[2], a[3]); ret(pid, true); return }
+  if (op == "scene") { sys.scene(pid + ":" + a[0], a[1], a[2], a[3]); ret(pid, true); return }
+  if (op == "scene_load") { ret(pid, sys.scene_load(a[0])); return }
+  if (op == "blit_size") {
+    var b = sys.buffer_get(pid + ":" + a[0])
+    if (b == null) { ret(pid, { w: 0, h: 0 }); return }
+    ret(pid, { w: b.w, h: b.h }); return
+  }
+
+  // ---- 文件 ----
+  if (op == "fs_list") { ret(pid, fsList(a[0])); return }
+  if (op == "fs_read") { ret(pid, fsRead(a[0])); return }
+  if (op == "fs_write") { ret(pid, fsWrite(a[0], a[1], a[2])); return }
+  if (op == "fs_mkdir") { ret(pid, fsMkdir(a[0])); return }
+  if (op == "fs_delete") { ret(pid, fsDelete(a[0])); return }
+  if (op == "fs_move") { ret(pid, fsMove(a[0], a[1])); return }
+  if (op == "fs_copy") { ret(pid, fsCopy(a[0], a[1])); return }
+  if (op == "fs_quota") { ret(pid, { used: sys.storage_used(), limit: sys.storage_quota() }); return }
+
+  // ---- 启动程序 / 子系统 ----
+  if (op == "launch") {
+    var ok = startApp(a[0], a[1], a[2] == null ? a[1] : a[2])
+    if (!ok) { ret(pid, { ok: false, error: "无法启动程序：" + a[0] }); return }
+    ret(pid, { ok: true, queued: true })
+    return
+  }
+  if (op == "request") { handleRequest(pid, a[0]); return }
+
+  ret(pid, { ok: false, error: "未知系统调用 " + op })
+}
+
+func handleRequest(pid, msg) {
+  var op = msg.op
+  if (op == "create_subsystem") {
+    var r = sys.subsystem_create(msg.name)
+    if (!r.ok) { ret(pid, r); return }
+    var src = fsRead("/System/Kernel.nsl")
+    fsMkdir("/Systems/" + r.id)
+    fsWrite("/Systems/" + r.id + "/kernel.nsl", src)
+    requestCompile(src, "kernel:" + r.id, null, null, pid, false, r.id)
+    ret(pid, { ok: true, id: r.id, name: r.name, queued: true })
+    return
+  }
+  if (op == "list_subsystems") { ret(pid, sys.subsystem_list()); return }
+  if (op == "subsystem_info") { ret(pid, sys.subsystem_info(msg.id)); return }
+  if (op == "control_subsystem") { ret(pid, sys.subsystem_control(msg.id, msg.action, msg)); return }
+  if (op == "restart_subsystem") { ret(pid, sys.subsystem_restart(msg.id)); return }
+  if (op == "snapshot") { ret(pid, sys.subsystem_snapshot(msg.id, msg.path)); return }
+  if (op == "restore") { ret(pid, sys.subsystem_restore(msg.path, msg.id)); return }
+  if (op == "fork") { ret(pid, sys.subsystem_fork(msg.path, msg.id)); return }
+  if (op == "host") { ret(pid, sys.host_request(msg.service, msg.args)); return }
+  if (op == "chart_updates") { ret(pid, sys.chart_updates()); return }
+  if (op == "proc_list") { ret(pid, procTable()); return }
+  if (op == "proc_info") { ret(pid, procInfo(msg.pid)); return }
+  if (op == "proc_control") { ret(pid, procControl(msg.pid, msg.action, msg.value)); return }
+  if (op == "budget") { ret(pid, { limit: sys.budget_limit(), left: sys.budget() }); return }
+  if (op == "compile") { requestCompile(msg.src, "program", "程序", null, pid, false, null); ret(pid, { ok: true, queued: true }); return }
+  if (op == "self_compile") {
+    var src2 = fsRead("/System/Compiler.nsl")
+    requestCompile(src2, "compiler", null, null, pid, true, null)
+    ret(pid, { ok: true, queued: true })
+    return
+  }
+  if (op == "kernel_source") { ret(pid, { ok: true, path: "/System/Kernel.nsl", src: fsRead("/System/Kernel.nsl") }); return }
+  ret(pid, { ok: false, error: "未知请求 " + op })
+}
+
+func procTable() {
+  var out = []
+  var ks = procs.keys()
+  for (var i = 0; i < ks.length; i++) {
+    var p = procs[ks[i]]
+    if (p == null) { continue }
+    out.push({ pid: p.pid, name: p.name, state: p.state, used: p.used, quota: p.quota, msgs: p.msgs.length, error: p.err })
+  }
+  return out
+}
+func procInfo(pid) {
+  var p = procs[pid]
+  if (p == null) { return null }
+  return { pid: p.pid, name: p.name, state: p.state, used: p.used, quota: p.quota, msgs: p.msgs, error: p.err }
+}
+func procControl(pid, action, value) {
+  var p = procs[pid]
+  if (p == null) { return { ok: false, error: "进程不存在" } }
+  if (action == "suspend") {
+    if (p.state == "ready" || p.state == "run") {
+      p.state = "suspended"
+      var nr = []
+      for (var i = 0; i < ready.length; i++) { if (ready[i] != pid) { nr.push(ready[i]) } }
+      ready = nr
+    }
+    return { ok: true }
+  }
+  if (action == "resume") {
+    if (p.state == "suspended") { p.state = "ready"; ready.push(pid) }
+    return { ok: true }
+  }
+  if (action == "kill") { killProc(pid); return { ok: true } }
+  if (action == "quota") { p.quota = value; return { ok: true } }
+  return { ok: false, error: "未知进程操作" }
+}
+
+// ------------------------------- 主循环 -----------------------------------
+func main() {
+  bootTime = 0
+  fsInit()
+  compilerPid = startCompiler()
+  startApp("/System/WM.nsl", "wm", "桌面")
+  startApp("/System/Files.nsl", "files", "文件管理器")
+  startApp("/System/Player.nsl", "player", "场景播放器")
+  startApp("/System/Charts.nsl", "charts", "图表工作台")
+  startApp("/System/Tasks.nsl", "tasks", "进程管理器")
+  startApp("/System/Systems.nsl", "systems", "系统")
+  startApp("/System/Editor.nsl", "editor", "编辑器")
+  sys.log("内核已启动")
+  while (true) {
+    var dt = sys.wait_tick()
+    clock = clock + dt
+    tickCount = tickCount + 1
+    deliverInput()
+    wakeTimers()
+    runScheduler()
+    if (tickCount % 30 == 0) { broadcast({ type: "tick" }) }
+  }
+}
+func broadcast(msg) {
+  var ks = procs.keys()
+  for (var i = 0; i < ks.length; i++) {
+    var p = procs[ks[i]]
+    if (p == null || p.pid == compilerPid) { continue }
+    p.msgs.push(msg)
+    if (p.state == "waitmsg") {
+      var m = p.msgs.shift()
+      p.state = "ready"
+      sys.resume(p.pid, m)
+      ready.push(p.pid)
+    }
+  }
+}
+func deliverInput() {
+  var ev = sys.input()
+  var guard = 0
+  while (ev != null && guard < 64) {
+    guard = guard + 1
+    if (wmPid != 0 && procs[wmPid] != null) { notifyWM({ type: "input", ev: ev }) }
+    ev = sys.input()
+  }
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>core test</title></head>
+<body style="background:#111;color:#0f0;font:12px monospace;white-space:pre-wrap">
+<script src="js/util.js"></script>
+<script src="js/path.js"></script>
+<script src="js/font.js"></script>
+<script src="js/expr.js"></script>
+<script src="js/model.js"></script>
+<script src="js/eval.js"></script>
+<script>
+const log = [];
+function T(name, fn) { try { const r = fn(); log.push('OK  ' + name + ' :: ' + JSON.stringify(r)); } catch(e) { log.push('ERR ' + name + ' :: ' + e.message + '\n' + e.stack); } }
+
+T('tri rect+hole', () => {
+  const outer = [[0,0],[100,0],[100,100],[0,100]];
+  const hole = [[30,30],[70,30],[70,70],[30,70]];
+  const r = U.triangulate([outer, hole]);
+  return {v: r.verts.length, t: r.tris.length};
+});
+T('tri glyph', () => {
+  const g = FONT.glyphContours('锻', 'Microsoft YaHei');
+  const polys = g.contours.map(c => PT.flattenContour(c, 0.02));
+  const r = U.triangulate(polys);
+  return {contours: g.contours.length, pts: polys.map(p=>p.length), tris: r.tris.length};
+});
+T('font detect', () => FONT.detectFonts().map(f=>f.name));
+T('trim', () => {
+  const p = PT.ellipsePath(0,0,100,50);
+  const t = PT.trimPath(p, 0, 0.5);
+  return {contours: t.contours.length, pts: t.contours[0].pts.length, len: PT.pathLength(t).toFixed(1)};
+});
+T('boolean', () => {
+  const A = PT.flattenToPolys(PT.rectPath(0,0,100,100));
+  const B = PT.flattenToPolys(PT.ellipsePath(80,80,60,60));
+  const u = PT.booleanOp(A, B, 'union');
+  const s = PT.booleanOp(A, B, 'subtract');
+  const i = PT.booleanOp(A, B, 'intersect');
+  return {union: u.map(p=>p.length), sub: s.map(p=>p.length), inter: i.map(p=>p.length)};
+});
+T('morph', () => {
+  const a = PT.rectPath(-50,-50,100,100), b = PT.ellipsePath(0,0,60,60);
+  const m = PT.morphPath(a,b,0.5);
+  return {n: m.contours[0].pts.length, bb: PT.pathBBox(m)};
+});
+T('expr parse', () => {
+  const ast = EXPR.parse('thisComp.layer("控制器").transform.rotation + wiggle(2,10) + loopOut("cycle")');
+  return {deps: EXPR.collectDeps(ast), ast: ast.k};
+});
+T('expr eval', () => {
+  const ctx = { ident: n => n==='time'?1:(n==='value'?[5,5]:0), member: (o,n)=>o&&o[n], call: (n,a)=> n==='wiggle'?[1,2]:0 };
+  return EXPR.evaluate(EXPR.parse('value + wiggle(2,10) + [1,2]*3'), ctx);
+});
+T('keyframes', () => {
+  const p = MODEL.newProp([0,0]);
+  p.spatial = true;
+  MODEL.setKey(p, 0, [0,0]);
+  MODEL.setKey(p, 1, [100,0]);
+  p.keys[0].outS = [0,0]; p.keys[1].inS = [0,0];
+  const vals = [0,0.25,0.5,0.75,1].map(t => MODEL.evalKeyframes(p, t).map(v=>Math.round(v*10)/10));
+  return vals;
+});
+T('bezier ease', () => {
+  const p = MODEL.newProp(0);
+  MODEL.setKey(p, 0, 0); MODEL.setKey(p, 1, 100);
+  return [0,0.25,0.5,0.75,1].map(t=>Math.round(MODEL.evalKeyframes(p,t)*10)/10);
+});
+window.__out = log.join('\n');
+document.body.textContent = log.join('\n');
+</script>
+</body></html>

@@ -1,0 +1,218 @@
+// ===========================================================================
+//  Editor.nsl —— 子系统文本与程序编辑器
+//  新建/打开/编辑/保存；可以启动程序、查看编译错误、打开内核源文件
+// ===========================================================================
+var lines = []
+var cx = 0
+var cy = 0
+var file = ""
+var W = 680
+var H = 420
+var dirty = true
+var msg = "就绪"
+var scroll = 0
+var confirmSave = false
+var pendingOpen = ""
+
+func R(L, x, y, w, h, c, r) { L.push({ op: "rect", x: x, y: y, w: w, h: h, color: c, r: r }) }
+func T(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c }) }
+func TC(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c, align: "center" }) }
+func IC(L, name, x, y, s, c) { L.push({ op: "icon", name: name, x: x, y: y, size: s, color: c }) }
+func btn(L, x, y, w, h, label, hot, primary) {
+  var c = primary ? "#f5b942" : (hot ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)")
+  R(L, x, y, w, h, c, 7)
+  TC(L, x + w / 2, y + h / 2 + 4, label, 11.5, primary ? "#211803" : "#dfe5f1")
+}
+func text() {
+  var s = ""
+  for (var i = 0; i < lines.length; i++) { s = s + lines[i]; if (i < lines.length - 1) { s = s + "\n" } }
+  return s
+}
+func setText(s) {
+  lines = s.split("\n")
+  if (lines.length == 0) { lines = [""] }
+  cx = 0; cy = 0; scroll = 0
+  dirty = true
+}
+func load(p) {
+  var d = sys.fs_read(p)
+  if (d == null) { msg = "无法读取 " + p; dirty = true; return }
+  file = p
+  setText(d)
+  msg = "已打开 " + p
+  dirty = true
+}
+func save() {
+  if (file == "") { file = "/Documents/未命名.nsl" }
+  var r = sys.fs_write(file, text(), file.indexOf(".nsl") > 0 ? "nsl" : "text")
+  if (!r.ok) { msg = "保存失败：" + r.error; dirty = true; return }
+  msg = "已保存 " + file
+  dirty = true
+}
+func run() {
+  var c = sys.request({ op: "compile", src: text() })
+  if (!c.ok) { msg = "编译错误：" + c.error; dirty = true; return }
+  if (file == "") { file = "/Documents/未命名.nsl" }
+  save()
+  var r = sys.request({ op: "launch", path: file, name: "program", title: "程序" })
+  if (!r.ok) { msg = "启动失败：" + r.error } else { msg = "已启动程序" }
+  dirty = true
+}
+func insertChar(ch) {
+  var l = lines[cy]
+  lines[cy] = l.substr(0, cx) + ch + l.substr(cx)
+  cx = cx + ch.length
+  dirty = true
+}
+func newline() {
+  var l = lines[cy]
+  var tail = l.substr(cx)
+  lines[cy] = l.substr(0, cx)
+  var nl = []
+  for (var i = 0; i < lines.length; i++) {
+    nl.push(lines[i])
+    if (i == cy) { nl.push(tail) }
+  }
+  lines = nl
+  cy = cy + 1
+  cx = 0
+  dirty = true
+}
+func backspace() {
+  if (cx > 0) {
+    var l = lines[cy]
+    lines[cy] = l.substr(0, cx - 1) + l.substr(cx)
+    cx = cx - 1
+    dirty = true
+    return
+  }
+  if (cy > 0) {
+    var prev = lines[cy - 1]
+    var cur = lines[cy]
+    var nl = []
+    for (var i = 0; i < lines.length; i++) { if (i != cy) { nl.push(lines[i]) } }
+    lines = nl
+    cy = cy - 1
+    cx = prev.length
+    lines[cy] = prev + cur
+    dirty = true
+  }
+}
+func del() {
+  var l = lines[cy]
+  if (cx < l.length) { lines[cy] = l.substr(0, cx) + l.substr(cx + 1); dirty = true; return }
+  if (cy < lines.length - 1) {
+    lines[cy] = l + lines[cy + 1]
+    var nl = []
+    for (var i = 0; i < lines.length; i++) { if (i != cy + 1) { nl.push(lines[i]) } }
+    lines = nl
+    dirty = true
+  }
+}
+func build() {
+  var L = []
+  R(L, 0, 0, W, H, "#0b0d13", 0)
+  R(L, 0, 0, W, 36, "rgba(255,255,255,0.03)", 0)
+  var x = 8
+  btn(L, x, 6, 52, 24, "打开", false, false); x = x + 58
+  btn(L, x, 6, 52, 24, "保存", false, true); x = x + 58
+  btn(L, x, 6, 52, 24, "运行", false, false); x = x + 58
+  btn(L, x, 6, 72, 24, "编译自身", false, false); x = x + 78
+  T(L, W - 8, 23, file == "" ? "未命名" : file, 10.5, "#8f99ad")
+  // 行号与正文
+  var lh = 18
+  var visible = ((H - 36 - 24) / lh).floor()
+  if (cy < scroll) { scroll = cy }
+  if (cy >= scroll + visible) { scroll = cy - visible + 1 }
+  for (var i = 0; i < visible; i++) {
+    var li = i + scroll
+    if (li >= lines.length) { break }
+    var yy = 36 + i * lh + 13
+    T(L, 8, yy, "" + (li + 1), 10, "#454d61")
+    T(L, 36, yy, lines[li], 12, "#dbe3f2")
+    if (li == cy) {
+      var w = 0
+      for (var k = 0; k < cx; k++) { w = w + (lines[li].charCodeAt(k) > 255 ? 12 : 7.2) }
+      R(L, 36 + w, yy - 12, 2, 15, "#f5b942", 1)
+    }
+  }
+  // 状态栏
+  R(L, 0, H - 24, W, 24, "rgba(255,255,255,0.03)", 0)
+  T(L, 8, H - 8, msg, 10.5, msg.indexOf("错误") >= 0 || msg.indexOf("失败") >= 0 ? "#ff8d9c" : "#8f99ad")
+  T(L, W - 8, H - 8, "行 " + (cy + 1) + " 列 " + (cx + 1), 10.5, "#6b7488")
+  if (confirmSave) {
+    R(L, 0, 0, W, H, "rgba(0,0,0,0.45)", 0)
+    R(L, W / 2 - 170, H / 2 - 46, 340, 92, "rgba(28,32,45,0.98)", 10)
+    T(L, W / 2 - 150, H / 2 - 20, "有未保存的修改，要先保存吗？", 12, "#e3e9f5")
+    btn(L, W / 2 - 150, H / 2 + 2, 90, 26, "保存并继续", false, true)
+    btn(L, W / 2 - 50, H / 2 + 2, 80, 26, "放弃", false, false)
+    btn(L, W / 2 + 40, H / 2 + 2, 80, 26, "取消", false, false)
+  }
+  return L
+}
+func onClick(x, y) {
+  if (confirmSave) {
+    if (x > W / 2 - 150 && x < W / 2 - 60 && y > H / 2 + 2 && y < H / 2 + 28) { save(); confirmSave = false; if (pendingOpen != "") { load(pendingOpen); pendingOpen = "" } }
+    else if (x > W / 2 - 50 && x < W / 2 + 30 && y > H / 2 + 2 && y < H / 2 + 28) { confirmSave = false; if (pendingOpen != "") { load(pendingOpen); pendingOpen = "" } }
+    else if (x > W / 2 + 40 && x < W / 2 + 120 && y > H / 2 + 2 && y < H / 2 + 28) { confirmSave = false; pendingOpen = "" }
+    dirty = true
+    return
+  }
+  if (y < 36) {
+    if (x < 60) { pendingOpen = "/System/Kernel.nsl"; confirmSave = true; dirty = true; return }
+    if (x > 66 && x < 118) { save(); return }
+    if (x > 124 && x < 176) { run(); return }
+    if (x > 182 && x < 254) {
+      var r = sys.request({ op: "self_compile" })
+      msg = r.ok ? "已用自身重新编译编译器" : "编译失败：" + r.error
+      dirty = true
+      return
+    }
+    return
+  }
+  if (y > H - 24) { return }
+  var lh = 18
+  var li = scroll + ((y - 36) / lh).floor()
+  if (li < 0 || li >= lines.length) { return }
+  cy = li
+  var s = lines[li]
+  var px = 36
+  cx = s.length
+  for (var k = 0; k < s.length; k++) {
+    var cw = s.charCodeAt(k) > 255 ? 12 : 7.2
+    if (x < px + cw / 2) { cx = k; break }
+    px = px + cw
+  }
+  dirty = true
+}
+func onKey(key, shift, ctrl) {
+  if (confirmSave) { if (key == "Escape") { confirmSave = false; pendingOpen = ""; dirty = true } ; return }
+  if (ctrl && (key == "s" || key == "S")) { save(); return }
+  if (ctrl && (key == "r" || key == "R")) { run(); return }
+  if (key == "Enter") { newline(); return }
+  if (key == "Backspace") { backspace(); return }
+  if (key == "Delete") { del(); return }
+  if (key == "Tab") { insertChar("  "); return }
+  if (key == "ArrowLeft") { if (cx > 0) { cx = cx - 1; dirty = true }; return }
+  if (key == "ArrowRight") { if (cx < lines[cy].length) { cx = cx + 1; dirty = true }; return }
+  if (key == "ArrowUp") { if (cy > 0) { cy = cy - 1; if (cx > lines[cy].length) { cx = lines[cy].length }; dirty = true }; return }
+  if (key == "ArrowDown") { if (cy < lines.length - 1) { cy = cy + 1; if (cx > lines[cy].length) { cx = lines[cy].length }; dirty = true }; return }
+  if (key == "Home") { cx = 0; dirty = true; return }
+  if (key == "End") { cx = lines[cy].length; dirty = true; return }
+  if (key.length == 1 && !ctrl) { insertChar(key); return }
+}
+func main() {
+  lines = [""]
+  var first = sys.poll()
+  if (first != null && first.type == "open") { load(first.path) }
+  sys.draw("main", build(), W, H)
+  while (true) {
+    var m = sys.recv()
+    if (m.type == "resize") { W = m.w; H = m.h; dirty = true }
+    else if (m.type == "mouse") { if (m.kind == "down") { onClick(m.x, m.y) } }
+    else if (m.type == "key") { onKey(m.key, m.shift, m.ctrl) }
+    else if (m.type == "open") { load(m.path) }
+    else if (m.type == "close") { sys.exit(0) }
+    if (dirty) { sys.draw("main", build(), W, H); dirty = false }
+  }
+}

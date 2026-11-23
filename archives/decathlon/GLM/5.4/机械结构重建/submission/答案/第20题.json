@@ -1,0 +1,356 @@
+{
+ "problem": "20",
+ "parts": [
+  {
+   "name": "1",
+   "title": "双级迷宫旋流分离壳",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        150,
+        150
+       ]
+      }
+     ],
+     "depth": 8
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      75,
+      75,
+      8
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 120
+      }
+     ],
+     "depth": 62
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      75,
+      75,
+      70
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 80
+      }
+     ],
+     "depth": 12
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      75,
+      75,
+      82
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 46,
+     "depth": 60
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      75,
+      75,
+      82
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 24,
+     "through": true
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": {
+      "origin": [
+       75,
+       75,
+       70
+      ],
+      "normal": [
+       0.5,
+       0.5,
+       0.70711
+      ],
+      "x_dir": [
+       0.70711,
+       -0.70711,
+       0
+      ]
+     },
+     "origin": [
+      75,
+      75,
+      70
+     ],
+     "loops": [
+      {
+       "circle": [
+        40,
+        0
+       ],
+       "d": 34
+      }
+     ],
+     "depth": 40
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": {
+      "origin": [
+       75,
+       75,
+       70
+      ],
+      "normal": [
+       -0.5,
+       0.5,
+       0.70711
+      ],
+      "x_dir": [
+       0.70711,
+       0.70711,
+       0
+      ]
+     },
+     "origin": [
+      75,
+      75,
+      70
+     ],
+     "loops": [
+      {
+       "circle": [
+        40,
+        0
+       ],
+       "d": 34
+      }
+     ],
+     "depth": 40
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": {
+      "origin": [
+       75,
+       75,
+       70
+      ],
+      "normal": [
+       -0.5,
+       -0.5,
+       0.70711
+      ],
+      "x_dir": [
+       0.70711,
+       -0.70711,
+       0
+      ]
+     },
+     "origin": [
+      75,
+      75,
+      70
+     ],
+     "loops": [
+      {
+       "circle": [
+        40,
+        0
+       ],
+       "d": 34
+      }
+     ],
+     "depth": 40
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": {
+      "origin": [
+       75,
+       75,
+       70
+      ],
+      "normal": [
+       0.5,
+       -0.5,
+       0.70711
+      ],
+      "x_dir": [
+       0.70711,
+       0.70711,
+       0
+      ]
+     },
+     "origin": [
+      75,
+      75,
+      70
+     ],
+     "loops": [
+      {
+       "circle": [
+        40,
+        0
+       ],
+       "d": 34
+      }
+     ],
+     "depth": 40
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      45,
+      15,
+      40
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 46
+      }
+     ],
+     "depth": 14
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      45,
+      1,
+      40
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 24,
+     "depth": 30
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "at": [
+      [
+       8,
+       8
+      ],
+      [
+       142,
+       8
+      ],
+      [
+       8,
+       142
+      ],
+      [
+       142,
+       142
+      ]
+     ],
+     "d": 10,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "at": [
+      [
+       8,
+       8
+      ],
+      [
+       142,
+       8
+      ],
+      [
+       8,
+       142
+      ],
+      [
+       142,
+       142
+      ]
+     ],
+     "d": 18,
+     "depth": 6
+    },
+    {
+     "type": "chamfer",
+     "distance": 1,
+     "edges": [
+      [
+       75,
+       0,
+       0
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>网络安全攻防战 · 汐域守护进程</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="canvas-wrap"></div>
+  <div id="vignette"></div>
+
+  <!-- 战斗 HUD -->
+  <div id="hud" class="hidden">
+    <div id="topbar">
+      <div class="brand"><span class="b1" id="hud-map">分段内网</span><span class="b2">汐域守护进程 // SEC-OPS v2.6</span></div>
+      <div class="res-group">
+        <div class="res compute" title="算力：用于部署塔与备份还原"><span class="ric">⬢</span><span class="rv" id="res-compute">0</span><span class="rl">算力</span></div>
+        <div class="res intel" title="情报：用于隔离节点、升级分支与情报道具"><span class="ric">◈</span><span class="rv" id="res-intel">0</span><span class="rl">情报</span></div>
+        <div class="res integrity" title="中枢完整度：敌人抵达出口时下降，归零即失败"><span class="ric">❤</span><span class="rv" id="res-integrity">20</span><div class="integrity-bar"><i id="integrity-fill"></i></div></div>
+        <div class="res wave" title="当前波次"><span class="ric">≋</span><span class="rv" id="res-wave">0/14</span><span class="rl">波次</span></div>
+      </div>
+      <div class="spacer"></div>
+      <div class="speed-group">
+        <button class="speed-btn" data-speed="1">1×</button>
+        <button class="speed-btn" data-speed="2">2×</button>
+        <button class="speed-btn" data-speed="3">3×</button>
+      </div>
+      <button class="icon-btn" id="btn-pause" title="暂停 / 继续 (空格)">⏸</button>
+      <button class="icon-btn" id="btn-mute" title="静音">🔊</button>
+      <button class="icon-btn" id="btn-home" title="回到默认视角 (Home)">⌂</button>
+      <button class="icon-btn" id="btn-help" title="图鉴 / 说明">📖</button>
+      <button class="icon-btn" id="btn-menu" title="菜单">☰</button>
+    </div>
+
+    <div id="bossbar" class="panel hidden">
+      <div class="bname" id="boss-name">BOSS</div>
+      <div class="bhp"><i id="boss-fill"></i></div>
+      <div class="bphase" id="boss-phase"></div>
+    </div>
+
+    <div id="forecast" class="panel">
+      <div class="panel-title">流量预报 · INBOUND</div>
+      <div class="fc-body" id="fc-body"></div>
+      <div class="fc-next"><span id="fc-timer">下一波 --</span><button class="btn small primary" id="callwave">提前放行 +15⬢</button></div>
+    </div>
+
+    <div id="selpanel" class="panel hidden">
+      <div class="panel-title" id="sp-title">目标详情</div>
+      <div class="sp-body" id="sp-body"></div>
+    </div>
+
+    <div id="deploybar"></div>
+    <div id="toasts"></div>
+    <div id="eventlog"></div>
+    <div id="wavebanner"></div>
+  </div>
+
+  <!-- 暂停 -->
+  <div id="pause-overlay" class="hidden">
+    <div class="pause-box panel" style="padding:40px 60px;">
+      <h2>系统挂起</h2>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="btn primary" id="pause-resume">继续防守</button>
+        <button class="btn" id="pause-restart">重开本图</button>
+        <button class="btn" id="pause-codex">图鉴 / 说明</button>
+        <button class="btn danger" id="pause-exit">返回关卡选择</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 屏幕容器 -->
+  <div id="screens"></div>
+
+  <!-- 演示覆盖层 -->
+  <div id="demo-overlay" class="hidden">
+    <div class="letterbox top"></div>
+    <div class="letterbox bottom"></div>
+    <div id="demo-title"></div>
+    <div id="demo-exit">演示中 · 点击或按 Esc 退出</div>
+    <div id="subtitle"></div>
+  </div>
+  <div id="virtual-cursor" class="hidden">
+    <svg viewBox="0 0 24 24"><path d="M3 2 L3 20 L8 15 L11 22 L14 21 L11 14 L18 14 Z" fill="#ffffff" stroke="#0a1424" stroke-width="1.2"/></svg>
+  </div>
+
+  <div id="tooltip" class="hidden"></div>
+</div>
+
+<script src="lib/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/routing.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/models.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+// /Apps/player.nx —— 三维场景播放器（界面进程）：打开场景资源、播放控制、镜头与点选、飞行排演。
+// 它启动三个协作进程：时序（player-timeline）、飞行场景（player-scene）、环境特效（player-fx）；排演时场景进程再启动飞控程序。
+import "/System/lib/ui.nx";
+
+var FILE = ""; var H = 0; var NAME = ""; var LOADED = false; var LOADERR = "";
+var TL = 0; var SC = 0; var FX = 0;
+var POS = 0; var DUR = 0; var STATE = "stopped"; var RATE = 1; var LOOP = false; var SHOWN = -1; var LIVE = false; var FPS = 30;
+var CAMS = ["show", "follow", "orbit"]; var CAMN = { show: "演出镜头", follow: "跟随镜头", orbit: "自由环绕" };
+var CAM = "show"; var YAW = 38; var PITCH = 12; var DIST = 24;
+var SEL = "点击画面中的部件查看名称与损坏状态"; var INFO = null; var PADS = []; var CANFLY = false; var SMODE = "none";
+var SEEKING = false; var VDRAG = null; var NOTE = ""; var RATES = [0.25, 0.5, 1, 2, 4]; var SOFF = false; var FOFF = false;
+var VR = { x: 0, y: 0, w: 1, h: 1 }; var SR = { x: 0, w: 1 }; var SAVEN = 0; var ENV = null;
+
+function tl(m) { sys("send", TL, m); return 0; }
+function sc(m) { sys("send", SC, m); return 0; }
+function openFile(path) {
+  var text = sys("read", path);
+  if (iserr(text)) { LOADERR = text.error; NOTE = text.error; ui_dirty(); return 0; }
+  if (H != 0) { sys("scene_close", H); H = 0; }
+  var h = sys("scene_open", text);
+  if (iserr(h)) { LOADERR = h.error; NOTE = "无法载入场景：" + h.error; LOADED = false; ui_notify("无法载入场景", h.error); ui_dirty(); return 0; }
+  H = h; FILE = path; LOADED = false; LOADERR = ""; NOTE = "正在载入 " + path + " …"; LIVE = false; INFO = null; SEL = "点击画面中的部件查看名称与损坏状态";
+  sc({ t: "load", file: path, h: H });
+  ui_title(baseName(path) + " — 场景播放器");
+  ui_dirty();
+  return 0;
+}
+function setStatus() {
+  var st = STATE; if (!LOADED) { st = (LOADERR != "") ? "error" : "loading"; }
+  UI.status = { kind: "player", state: st, position: POS, duration: DUR, rate: RATE, scene: FILE, frameTime: SHOWN, loop: LOOP, camera: CAM, mode: (LIVE) ? "rehearsal" : SMODE, selection: SEL };
+  return 0;
+}
+function stateText() {
+  if (!LOADED) { return (LOADERR != "") ? "载入失败" : "载入中"; }
+  if (LIVE) { return (STATE == "playing") ? "排演中" : "排演已暂停"; }
+  if (STATE == "playing") { return "播放中"; } if (STATE == "paused") { return "已暂停"; } if (STATE == "ended") { return "已到结尾"; }
+  return "已停止";
+}
+function tbtn(id, x, y, ic, tip, on, dis) {
+  var b = btn(id, x, y, 32, 28, ""); b.ic = ic; b.ics = 16; b.tip = tip; b.lb = tip; b.v = 2;
+  if (on) { b.on = true; } if (dis) { b.dis = true; }
+  return b;
+}
+function draw(v) {
+  var W = v.w; var Hh = v.h;
+  rect(0, 0, W, Hh, TH.bg);
+  // 顶栏
+  rect(0, 0, W, 34, TH.panel);
+  var b = btn("player-open", 6, 4, 70, 26, "打开"); b.ic = "open"; b.s = 12;
+  var t = text(84, 0, max(40, W - 380), 34, (FILE == "") ? "未打开场景" : (NAME + "  ·  " + FILE)); t.s = 12; t.c = TH.dim;
+  b = btn("player-camera", W - 300, 4, 104, 26, CAMN[CAM]); b.ic = "camera"; b.s = 12; b.tip = "切换镜头：演出 / 跟随 / 自由环绕（拖动与滚轮调整）";
+  var st = text(W - 190, 0, 184, 34, stateText() + " · " + RATE + "× · " + FPS + " 帧/秒"); st.s = 11.5; st.al = 2; st.c = (STATE == "playing") ? TH.ok : TH.dim; st.id = "player-state";
+  // 底部两行控制
+  var rowR = 38; var rowT = 40;
+  var narrow = W < 640;
+  var rh = rowR; if (narrow) { rh = rowR * 2; }
+  var vy = 34; var vh = Hh - 34 - rowT - rh; if (vh < 40) { vh = 40; }
+  VR = { x: 0, y: vy, w: W, h: vh };
+  var view = { k: "view3d", id: "player-view", x: 0, y: vy, w: W, h: vh, scene: H, lb: "三维视图" };
+  push(UI.L, view); hit("player-view", 0, vy, W, vh, null);
+  if (!LOADED) { var lt = text(0, vy + vh / 2 - 12, W, 24, (NOTE != "") ? NOTE : "打开一个 .scene 场景文件"); lt.al = 1; lt.c = TH.dim; }
+  // 画面上的读数
+  var hud = fmt(POS, 2) + " / " + fmt(DUR, 2) + " 秒   画面时刻 " + ((SHOWN < 0) ? "—" : fmt(SHOWN, 2));
+  rect(8, vy + 8, 250, 22, "rgba(10,14,22,0.55)").r = 6;
+  t = text(16, vy + 8, 240, 22, hud); t.s = 11.5; t.f = 1; t.id = "player-readout";
+  if (ENV != null && W > 520) { rect(W - 258, vy + 8, 250, 22, "rgba(10,14,22,0.55)").r = 6; t = text(W - 250, vy + 8, 236, 22, ENV.time + " · " + ENV.weather); t.s = 11; t.c = TH.dim; t.al = 2; }
+  if (SOFF || FOFF) { rect(8, vy + 34, 250, 20, "rgba(60,40,10,0.7)").r = 6; t = text(16, vy + 34, 240, 20, ((SOFF) ? "飞行场景进程已挂起 " : "") + ((FOFF) ? "环境特效进程已挂起" : "")); t.s = 11; t.c = TH.warn; }
+  if (INFO != null && (LIVE || INFO.crashed)) {
+    var ly = vy + 34; if (SOFF || FOFF) { ly = ly + 24; }
+    var lines = [];
+    if (LIVE) {
+      push(lines, "控制周期 " + fmt(INFO.period, 1) + " ms" + ((INFO.period > 30) ? "  ← 偏长" : ""));
+      push(lines, "物理滞后 " + fmt(max(0, INFO.lag) * 1000, 0) + " ms");
+    }
+    push(lines, "离地 " + fmt(INFO.agl, 1) + " m  地速 " + fmt(INFO.speed, 1) + " m/s");
+    push(lines, "倾角 " + fmt(INFO.tilt, 0) + "°  航向 " + fmt(INFO.hdg, 0) + "°  旋翼 " + fmt(INFO.rpm * 100, 0) + "%");
+    if (INFO.fault != null) { push(lines, "故障：尾桨传动"); }
+    if (INFO.crashed) { push(lines, "已坠毁（撞击速度 " + fmt(INFO.impact, 1) + " m/s）"); }
+    if (LIVE && INFO.ctlState == 5) { push(lines, "飞控异常：" + INFO.ctlErr); } else if (LIVE && INFO.ctlState == 3) { push(lines, "飞控进程已挂起"); } else if (LIVE && (INFO.ctlState == 4 || INFO.ctlState < 0)) { push(lines, "飞控进程已结束"); }
+    rect(8, ly, 250, len(lines) * 18 + 8, "rgba(10,14,22,0.55)").r = 6;
+    var li = 0;
+    while (li < len(lines)) { t = text(16, ly + 4 + li * 18, 236, 18, lines[li]); t.s = 11.5; t.f = 1; t.key = "hud" + li; if (indexOf(lines[li], "偏长", 0) >= 0 || indexOf(lines[li], "故障", 0) >= 0 || indexOf(lines[li], "异常", 0) >= 0 || indexOf(lines[li], "坠毁", 0) >= 0) { t.c = TH.warn; } li = li + 1; }
+    var ti = { k: "text", id: "rehearsal-telemetry", x: 0, y: 0, w: 1, h: 1, t: json({ period: INFO.period, lag: INFO.lag, agl: INFO.agl, tilt: INFO.tilt, crashed: INFO.crashed, ctl: INFO.ctlState }), hid: true };
+    push(UI.L, ti);
+  }
+  rect(8, vy + vh - 30, min(W - 16, 420), 22, "rgba(10,14,22,0.55)").r = 6;
+  t = text(16, vy + vh - 30, min(W - 32, 404), 22, SEL); t.s = 11.5; t.id = "player-selection";
+  if (NOTE != "" && LOADED) { t = text(W - 430, vy + vh - 30, 422, 22, NOTE); t.s = 11.5; t.al = 2; t.c = TH.warn; t.id = "player-note"; }
+  // 播放控制
+  var y1 = vy + vh;
+  rect(0, y1, W, rowT, TH.panel);
+  var x = 6; var by = y1 + 6;
+  tbtn("player-play", x, by, "play", "播放 / 继续", STATE == "playing", !LOADED); x = x + 34;
+  tbtn("player-pause", x, by, "pause", "暂停", STATE == "paused", !LOADED || STATE != "playing"); x = x + 34;
+  tbtn("player-stop", x, by, "stop", "停止并回到开头", false, !LOADED); x = x + 34;
+  tbtn("player-step", x, by, "step", "逐帧前进（1/30 秒）", false, !LOADED || LIVE); x = x + 34;
+  tbtn("player-replay", x, by, "replay", "从头重播", false, !LOADED); x = x + 34;
+  tbtn("player-loop", x, by, "loop", "循环播放", LOOP, !LOADED || LIVE); x = x + 38;
+  var rightW = 196;
+  var sw = W - x - rightW - 10; if (sw < 40) { sw = 40; }
+  SR = { x: x, w: sw };
+  var track = rect(x, by + 11, sw, 6, TH.panel3); track.r = 3;
+  var frac = 0; if (DUR > 0) { frac = clamp(POS / DUR, 0, 1); }
+  rect(x, by + 11, max(2, floor(sw * frac)), 6, (LIVE) ? TH.warn : TH.accent).r = 3;
+  var knob = rect(x + floor(sw * frac) - 6, by + 7, 12, 14, "#ffffff"); knob.r = 6; knob.sh = 1;
+  var sk = { k: "rect", id: "player-seek", x: x, y: by, w: sw, h: 28, c: "transparent", lb: "进度条", cur: "pointer", data: { "value": fmt(POS, 3), "max": fmt(DUR, 3) } };
+  push(UI.L, sk); hit("player-seek", x, by, sw, 28, null);
+  x = x + sw + 8;
+  var ti2 = input("player-time", x, by, 58, 28, "秒"); ti2.mono = true; ti2.lb = "当前时间（秒），回车跳转"; ti2.s = 12;
+  t = text(x + 60, by, 62, 28, "/ " + fmt(DUR, 2) + " 秒"); t.s = 11.5; t.c = TH.dim; t.f = 1; t.id = "player-duration";
+  b = btn("player-rate", x + 124, by, 58, 28, RATE + "×"); b.tip = "播放速率（点击切换）"; b.lb = "播放速率"; b.dis = LIVE; b.data = { "value": RATE }; b.s = 12;
+  // 排演
+  var y2 = y1 + rowT;
+  rect(0, y2, W, rh, TH.panel2);
+  x = 6; by = y2 + 6;
+  b = btn("rehearsal-start", x, by, 86, 26, (LIVE) ? "结束排演" : "转入排演"); b.v = (LIVE) ? 0 : 1; b.s = 12; b.dis = !LOADED || !CANFLY; b.tip = "从当前位置起由飞控进程驾驶，可改变风、航向与故障"; x = x + 92;
+  label(x, by, 22, 26, "风"); var wi = input("rehearsal-wind", x + 20, by, 70, 26, "速度 方向°"); wi.lb = "风：速度(米/秒) 方向(度)，回车生效"; wi.s = 12; wi.mono = true; x = x + 96;
+  label(x, by, 34, 26, "航向"); var hi = input("rehearsal-heading", x + 32, by, 46, 26, "度"); hi.lb = "目标航向(度)，回车生效"; hi.s = 12; hi.mono = true; x = x + 84;
+  b = btn("rehearsal-fault", x, by, 72, 26, "触发故障"); b.v = 3; b.s = 12; b.dis = !LIVE; b.tip = "此刻触发尾桨传动故障"; x = x + 78;
+  if (narrow) { x = 6; by = by + rowR; }
+  label(x, by, 34, 26, "飞控"); var ci = input("rehearsal-controller", x + 32, by, max(120, min(190, W - x - 330)), 26, "飞控程序路径"); ci.lb = "飞控程序文件，回车重新载入"; ci.s = 11.5; ci.mono = true; x = x + 36 + max(120, min(190, W - x - 330));
+  b = btn("rehearsal-reload", x, by, 44, 26, "重载"); b.s = 12; b.dis = !LIVE; b.tip = "重新编译并启动飞控程序"; x = x + 48;
+  b = btn("rehearsal-hover", x, by, 44, 26, "悬停"); b.s = 12; b.dis = !LIVE; x = x + 48;
+  b = btn("rehearsal-land", x, by, 70, 26, "降落 B 坪"); b.s = 12; b.dis = !LIVE || len(PADS) < 2; x = x + 74;
+  b = btn("rehearsal-home", x, by, 70, 26, "返回 A 坪"); b.s = 12; b.dis = !LIVE || len(PADS) < 1; x = x + 74;
+  b = btn("rehearsal-save", x, by, 72, 26, "保存记录"); b.s = 12; b.ic = "save"; b.dis = !LOADED || !CANFLY; b.tip = "把这次飞行保存为本系统文件（/Flights）";
+  setStatus();
+  return 0;
+}
+function seekAt(x) { if (DUR <= 0 || LIVE) { return 0; } var p = clamp((x - SR.x) / SR.w, 0, 1) * DUR; POS = p; tl({ t: "seek", pos: p }); ui_dirty(); return 0; }
+function sendCam() { sc({ t: "camera", mode: CAM, yaw: YAW, pitch: PITCH, dist: DIST }); tl({ t: "redraw" }); return 0; }
+function ptr(m, h, v) {
+  if (m.k == "down" && h != null && h.id == "player-seek" && m.b == 0) { SEEKING = true; seekAt(m.x); return 0; }
+  if (m.k == "move" && SEEKING) { seekAt(m.x); return 0; }
+  if (m.k == "up" && SEEKING) { SEEKING = false; return 0; }
+  if (m.k == "down" && h != null && h.id == "player-view" && m.b == 0) { VDRAG = { x: m.x, y: m.y, moved: false, vw: VR.w, vh: VR.h, vy: VR.y }; return 0; }
+  if (m.k == "move" && VDRAG != null) {
+    var dx = m.x - VDRAG.x; var dy = m.y - VDRAG.y;
+    if (!VDRAG.moved && abs(dx) + abs(dy) < 5) { return 0; }
+    if (!VDRAG.moved && CAM != "orbit") { CAM = "orbit"; }
+    VDRAG.moved = true; VDRAG.x = m.x; VDRAG.y = m.y;
+    YAW = YAW - dx * 0.35; PITCH = clamp(PITCH + dy * 0.25, -8, 80);
+    sendCam(); ui_dirty();
+    return 0;
+  }
+  if (m.k == "up" && VDRAG != null) {
+    var d = VDRAG; VDRAG = null;
+    if (!d.moved && LOADED) { sc({ t: "pick", x: m.x, y: m.y - d.vy, w: d.vw, h: d.vh }); }
+    return 0;
+  }
+  if (m.k == "wheel" && h != null && h.id == "player-view") {
+    if (CAM != "orbit") { CAM = "orbit"; }
+    DIST = clamp(DIST * ((m.dy > 0) ? 1.1 : 0.9), 6, 160);
+    sendCam(); ui_dirty();
+  }
+  return 0;
+}
+function parseNums(s) {
+  var out = []; var parts = split(replace(replace(trim(s), ",", " "), "，", " "), " "); var i = 0;
+  while (i < len(parts)) { var n = num(parts[i]); if (n != null) { push(out, n); } i = i + 1; }
+  return out;
+}
+function applyWind() {
+  var n = parseNums(ui_val("rehearsal-wind"));
+  if (len(n) < 1) { NOTE = "风的格式：速度 方向，例如 8 90"; return 0; }
+  var sp = clamp(n[0], 0, 30); var dir = 0; if (len(n) > 1) { dir = n[1]; }
+  var wx = sp * cos(dir * 0.0174533); var wz = -sp * sin(dir * 0.0174533);
+  if (LIVE) { sc({ t: "input", kind: "wind", value: [wx, wz] }); NOTE = "风已设为 " + sp + " 米/秒，吹向 " + dir + "°"; } else { NOTE = "转入排演后才能改变风"; }
+  return 0;
+}
+function applyHeading() {
+  var n = parseNums(ui_val("rehearsal-heading"));
+  if (len(n) < 1) { NOTE = "请输入目标航向（度）"; return 0; }
+  if (LIVE) {
+    // 朝该航向前方 80 米处飞去
+    var hd = n[0]; var px = 0; var pz = 0; if (INFO != null) { px = INFO.target.x; pz = INFO.target.z; }
+    sc({ t: "input", kind: "target", value: { mode: "fly", hdg: hd } });
+    NOTE = "目标航向 " + hd + "°";
+  } else { NOTE = "转入排演后才能改变航向"; }
+  return 0;
+}
+function startRehearsal() {
+  if (LIVE) { tl({ t: "stop" }); LIVE = false; NOTE = "排演结束；可以保存记录或回放"; return 0; }
+  sc({ t: "ctl", path: trim(ui_val("rehearsal-controller")) });
+  sc({ t: "rehearse", pos: POS });
+  tl({ t: "live" });
+  LIVE = true; NOTE = "排演中：直升机由飞控进程驾驶";
+  if (CAM == "show") { CAM = "follow"; sendCam(); }
+  return 0;
+}
+function click(id, data, m, v) {
+  NOTE = "";
+  if (id == "player-open") {
+    var items = []; var dirs = ["/Demo", "/Flights", "/Documents"]; var i = 0;
+    while (i < len(dirs)) {
+      var l = sys("list", dirs[i]); i = i + 1;
+      if (iserr(l)) { continue; }
+      var j = 0;
+      while (j < len(l)) { if (endsWith(l[j].name, ".scene")) { push(items, { id: l[j].path, text: l[j].path, ic: "scene" }); } j = j + 1; }
+    }
+    push(items, { id: "?", text: "输入路径…", ic: "open" });
+    ui_menu(6, 32, items, "open");
+  }
+  else if (id == "player-play") { tl({ t: "play" }); }
+  else if (id == "player-pause") { tl({ t: "pause" }); }
+  else if (id == "player-stop") { if (LIVE) { LIVE = false; } tl({ t: "stop" }); }
+  else if (id == "player-step") { tl({ t: "step" }); }
+  else if (id == "player-replay") { if (LIVE) { LIVE = false; } tl({ t: "replay" }); }
+  else if (id == "player-loop") { LOOP = !LOOP; tl({ t: "loop", on: LOOP }); }
+  else if (id == "player-rate") { var k = indexOf(RATES, RATE, 0); RATE = RATES[(k + 1) % len(RATES)]; tl({ t: "rate", rate: RATE }); }
+  else if (id == "player-camera") { var c = indexOf(CAMS, CAM, 0); CAM = CAMS[(c + 1) % len(CAMS)]; sendCam(); }
+  else if (id == "rehearsal-start") { startRehearsal(); }
+  else if (id == "rehearsal-fault") { sc({ t: "input", kind: "fault", value: "tail" }); NOTE = "已触发故障：尾桨传动"; }
+  else if (id == "rehearsal-reload") { sc({ t: "ctl", path: trim(ui_val("rehearsal-controller")) }); NOTE = "飞控程序已重新载入"; }
+  else if (id == "rehearsal-hover") { if (INFO != null) { sc({ t: "input", kind: "target", value: { mode: "fly", x: INFO.target.x, z: INFO.target.z, alt: max(10, INFO.agl) } }); NOTE = "悬停"; } }
+  else if (id == "rehearsal-land") { sc({ t: "input", kind: "target", value: { mode: "land", x: PADS[1].pos[0], z: PADS[1].pos[2], alt: 12 } }); NOTE = "飞往 B 坪并降落"; }
+  else if (id == "rehearsal-home") { sc({ t: "input", kind: "target", value: { mode: "land", x: PADS[0].pos[0], z: PADS[0].pos[2], alt: 12 } }); NOTE = "飞回 A 坪并降落"; }
+  else if (id == "rehearsal-save") { SAVEN = SAVEN + 1; sc({ t: "save", path: "/Flights/排演-" + floor(sys("time") / 1000) + "-" + SAVEN + ".scene" }); }
+  return 0;
+}
+function enter(id) {
+  if (id == "player-time") { var n = num(trim(ui_val("player-time"))); if (n != null) { tl({ t: "seek", pos: n }); } UI.focus = ""; }
+  else if (id == "rehearsal-wind") { applyWind(); }
+  else if (id == "rehearsal-heading") { applyHeading(); }
+  else if (id == "rehearsal-controller") { sc({ t: "ctl", path: trim(ui_val("rehearsal-controller")) }); NOTE = "飞控程序：" + trim(ui_val("rehearsal-controller")); }
+  return 0;
+}
+function key(m) {
+  if (UI.focus != "") { return 0; }
+  if (m.key == " ") { if (STATE == "playing") { tl({ t: "pause" }); } else { tl({ t: "play" }); } }
+  else if (m.key == "ArrowRight") { tl({ t: "step" }); }
+  else if (m.key == "Home") { tl({ t: "seek", pos: 0 }); }
+  return 0;
+}
+function menu(id, tag, data) {
+  if (tag != "open" || id == null) { return 0; }
+  if (id == "?") { ui_dialog("prompt", "打开场景", "输入本系统中的场景文件路径：", (FILE == "") ? "/Demo/helicopter-24.scene" : FILE, "open", null); }
+  else { openFile(id); }
+  return 0;
+}
+function dialog(tag, b, value) { if (tag == "open" && b == 0 && trim(value) != "") { openFile(trim(value)); } return 0; }
+function msg(m, from) {
+  var t = m.t;
+  if (t == "tl") {
+    POS = m.pos; DUR = m.dur; STATE = m.state; RATE = m.rate; LOOP = m.loop; SHOWN = m.shown; SOFF = m.sceneOff; FOFF = m.fxOff;
+    if (LIVE && !m.live) { LIVE = false; }
+    if (UI.focus != "player-time") { UI.vals["player-time"] = fmt(POS, 2); }
+    ui_dirty();
+  }
+  else if (t == "loaded") {
+    if (!m.ok) { LOADED = false; LOADERR = m.error; NOTE = m.error; ui_notify("无法打开场景", m.error); }
+    else {
+      LOADED = true; NAME = m.name; DUR = m.dur; FPS = m.fps; PADS = m.pads; CANFLY = m.canFly; SMODE = m.mode; NOTE = ""; CAM = "show"; ENV = m.env;
+      if (ENV != null && (!has(ENV, "time") || !has(ENV, "weather"))) { ENV = null; }
+      tl({ t: "cfg", h: H, dur: m.dur, fps: m.fps });
+    }
+    ui_dirty();
+  }
+  else if (t == "info") { INFO = m; if (m.mode == "live") { DUR = m.dur; } ui_dirty(); }
+  else if (t == "picked") {
+    if (m.name != "") { SEL = "部件：" + m.name + " · 损坏 " + fmt(m.dmg * 100, 0) + "%" + ((m.det) ? " · 已脱落" : ""); }
+    else if (m.ground != null) {
+      if (LIVE && INFO != null) {
+        var hd = atan2(-(m.ground[2] - INFO.target.z), m.ground[0] - INFO.target.x) / 0.0174533;
+        sc({ t: "input", kind: "target", value: { mode: "fly", x: m.ground[0], z: m.ground[2], hdg: hd, alt: max(10, INFO.target.alt) } });
+        SEL = "目标点 (" + fmt(m.ground[0], 0) + ", " + fmt(m.ground[2], 0) + ")，已设为目标航向";
+        ui_set("rehearsal-heading", fmt(hd, 0));
+      } else { SEL = "地面 (" + fmt(m.ground[0], 0) + ", " + fmt(m.ground[1], 1) + ", " + fmt(m.ground[2], 0) + ")"; }
+    } else { SEL = "没有点到部件"; }
+    ui_dirty();
+  }
+  else if (t == "saved") {
+    if (m.ok) { NOTE = "记录已保存：" + m.path; ui_notify("排演记录已保存", m.path + "（" + fmt(m.dur, 1) + " 秒，" + m.n + " 次控制写入）"); }
+    else { NOTE = "保存失败：" + m.error; ui_notify("保存失败", m.error); }
+    ui_dirty();
+  }
+  else if (t == "note") { NOTE = m.text; ui_dirty(); }
+  else if (t == "child_exit") { if (m.err != "" && (m.pid == TL || m.pid == SC || m.pid == FX)) { NOTE = "协作进程异常：" + m.err; ui_dirty(); } }
+  return 0;
+}
+function restored(m) { tl({ t: "redraw" }); return 0; }
+function closing() { if (H != 0) { sys("scene_close", H); } ui_quit(); return 0; }
+
+ui_open("player", "场景播放器", 760, 540, { minw: 420, minh: 330 });
+SC = sys("spawn", "/Apps/player-scene.nx", { ui: UI.pid }, true);
+FX = sys("spawn", "/Apps/player-fx.nx", { ui: UI.pid }, true);
+TL = sys("spawn", "/Apps/player-timeline.nx", { ui: UI.pid, scene: SC, fx: FX }, true);
+sc({ t: "tl", pid: TL });
+ui_set("rehearsal-controller", "/Programs/flightctl.nx");
+ui_set("rehearsal-wind", "0 0"); ui_set("rehearsal-heading", "");
+UI.focus = "";
+var A0 = sys("args");
+if (type(A0) == "map" && type(A0.file) == "str") { openFile(A0.file); } else { openFile("/Demo/helicopter-24.scene"); }
+ui_run({ draw: draw, click: click, ptr: ptr, key: key, enter: enter, menu: menu, dialog: dialog, msg: msg, close: closing, restored: restored });

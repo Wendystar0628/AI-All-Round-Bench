@@ -1,0 +1,178 @@
+{
+  "problem": "05",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双层交汇混流阀箱",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [-12, -12, 108, 80]}],
+          "depth": 10
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "斜肩箱体主体",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"path": [[0, 10], [96, 10], [96, 34], [66, 64], [0, 64]]}],
+          "depth": [-68, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左侧Φ34凸台",
+          "plane": "YZ",
+          "origin": [-8, 0, 0],
+          "loops": [{"circle": [34, 40], "d": 34}],
+          "depth": 10
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左上腔",
+          "plane": "XY",
+          "origin": [0, 0, 24],
+          "loops": [{"rect": [10, 10, 46, 58]}],
+          "depth": 32
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "上腔导流隔板",
+          "plane": "XY",
+          "origin": [0, 0, 24],
+          "loops": [{"rect": [26, 20, 32, 48]}],
+          "depth": 32
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "右下混流腔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "loops": [{"rect": [56, 10, 84, 58]}],
+          "depth": 26
+        },
+        {
+          "type": "hole",
+          "name": "前侧Φ26主入口孔",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "at": [28, 40],
+          "d": 26,
+          "depth": 14
+        },
+        {
+          "type": "hole",
+          "name": "左侧Φ20同轴通道",
+          "plane": "YZ",
+          "origin": [-8, 0, 0],
+          "at": [34, 40],
+          "d": 20,
+          "depth": 22,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "左下Φ14水平通道",
+          "plane": "YZ",
+          "origin": [0, 0, 0],
+          "at": [34, 18],
+          "d": 14,
+          "depth": 58,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "隔墙上孔Φ14",
+          "plane": "YZ",
+          "origin": [44, 0, 0],
+          "at": [48, 42],
+          "d": 14,
+          "depth": 16,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "隔墙下孔Φ16",
+          "plane": "YZ",
+          "origin": [44, 0, 0],
+          "at": [22, 24],
+          "d": 16,
+          "depth": 16,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "后侧Φ24出口孔",
+          "plane": "XZ",
+          "origin": [0, 68, 0],
+          "at": [70, 26],
+          "d": 24,
+          "depth": 16,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右斜面45度Φ16斜孔",
+          "plane": {
+            "origin": [81, 34, 49],
+            "normal": [0.7071068, 0, 0.7071068],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 16,
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "后顶30度Φ8斜孔",
+          "plane": {
+            "origin": [62, 54, 64],
+            "normal": [0, 0.5, 0.8660254],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 8,
+          "depth": 38
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ5盲孔",
+          "plane": "XY",
+          "origin": [0, 0, 64],
+          "at": [[6, 12], [6, 56]],
+          "d": 5,
+          "depth": 10
+        },
+        {
+          "type": "hole",
+          "name": "底板四角Φ8安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 10],
+          "at": [[-6, -6], [-6, 74], [102, -6], [102, 74]],
+          "d": 8,
+          "through": true
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[40, -12, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[-12, -12, 5]]
+        }
+      ]
+    }
+  ]
+}

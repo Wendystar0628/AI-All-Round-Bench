@@ -1,0 +1,168 @@
+// /apps/editor.nos — 子系统文本与程序编辑器
+// 支持新建、打开、编辑、保存并直接运行 NOS 程序，支持打开直属子系统内核源文件与自举编译编译器。
+
+let winId = ARGS.windowId;
+let filePath = "/Programs/sum.nos";
+if (ARGS.launch != null && ARGS.launch.openPath != null) {
+  filePath = ARGS.launch.openPath;
+}
+let pathInput = filePath;
+let content = "";
+let savedContent = "";
+let statusMsg = "就绪";
+let lastRunPid = null;
+let outputLogs = [];
+let dirty = true;
+
+fn open_file(path) {
+  let r = syscall("fs_read", path);
+  if (r != null && r.ok) {
+    filePath = r.path;
+    pathInput = r.path;
+    content = r.content;
+    savedContent = r.content;
+    statusMsg = "已打开 " + filePath + " (" + str(r.size) + " 字节)";
+  } else {
+    filePath = path;
+    pathInput = path;
+    content = "";
+    savedContent = "";
+    statusMsg = "新建或未找到文件: " + path;
+  }
+  dirty = true;
+}
+
+fn save_file() {
+  let target = trim(pathInput);
+  if (target == "") target = "/Documents/untitled.nos";
+  let r = syscall("fs_write", target, content);
+  if (r != null && r.ok) {
+    filePath = r.path;
+    pathInput = r.path;
+    savedContent = content;
+    statusMsg = "已保存 " + filePath + " (" + str(r.size) + " 字节)";
+  } else {
+    statusMsg = "保存失败: " + (r != null ? str(r.error) : "");
+  }
+  dirty = true;
+}
+
+fn run_current() {
+  save_file();
+  let sp = syscall("spawn", filePath, {}, { kind: "user" });
+  if (sp != null && sp.ok) {
+    lastRunPid = sp.pid;
+    statusMsg = "已启动进程 PID " + str(sp.pid) + " (" + filePath + ")";
+    outputLogs = ["[启动] PID " + str(sp.pid) + " -> " + filePath];
+  } else {
+    statusMsg = "运行失败: " + (sp != null ? str(sp.error) : "");
+    outputLogs = ["[错误] " + statusMsg];
+  }
+  dirty = true;
+}
+
+fn self_host_compiler() {
+  save_file();
+  let sp = syscall("spawn", "/sys/compiler.nos", {
+    inputPath: "/sys/compiler.nos",
+    outputPath: "/sys/compiler.bc"
+  }, { kind: "user", name: "自举编译器" });
+  if (sp != null && sp.ok) {
+    lastRunPid = sp.pid;
+    statusMsg = "已启动自举编译进程 PID " + str(sp.pid);
+    outputLogs = ["[自举] 正在用当前编译器编译 /sys/compiler.nos -> /sys/compiler.bc ..."];
+  } else {
+    statusMsg = "启动自举编译失败: " + (sp != null ? str(sp.error) : "");
+  }
+  dirty = true;
+}
+
+fn refresh_run_logs() {
+  if (lastRunPid == null) return;
+  let ps = syscall("ps");
+  if (ps == null || ps.procs == null) return;
+  for (let i = 0; i < len(ps.procs); i += 1) {
+    let p = ps.procs[i];
+    if (p.pid == lastRunPid) {
+      let lines = [];
+      push(lines, "[PID " + str(p.pid) + "] 状态=" + p.state + " 步数=" + str(p.stepsTotal));
+      if (p.logs != null) {
+        for (let j = 0; j < len(p.logs); j += 1) {
+          push(lines, p.logs[j].text);
+        }
+      }
+      if (p.result != null) push(lines, "[返回值] " + str(p.result));
+      if (p.error != null) push(lines, "[异常] " + str(p.error));
+      if (join(lines, "\n") != join(outputLogs, "\n")) {
+        outputLogs = lines;
+        dirty = true;
+      }
+      break;
+    }
+  }
+}
+
+fn render_ui() {
+  let isUnsaved = (content != savedContent);
+  let ui = {
+    kind: "editor_app",
+    filePath: filePath,
+    pathInput: pathInput,
+    content: content,
+    isUnsaved: isUnsaved,
+    statusMsg: statusMsg,
+    outputLogs: outputLogs,
+    quickFiles: [
+      "/Programs/sum.nos",
+      "/Programs/sender.nos",
+      "/Programs/receiver.nos",
+      "/Programs/busy.nos",
+      "/apps/flight_ctrl.nos",
+      "/sys/wm.nos",
+      "/sys/compiler.nos",
+      "/apps/files.nos",
+      "/apps/chart_ui.nos"
+    ]
+  };
+  syscall("app_present", winId, ui, null, null);
+}
+
+open_file(filePath);
+
+while (true) {
+  let msg = syscall("recv", 0.15);
+  if (msg != null && msg.data != null) {
+    let d = msg.data;
+    if (d.type == "ui_event" && d.event != null) {
+      let ev = d.event;
+      let pl = ev.payload != null ? ev.payload : {};
+      if (ev.action == "edit_text") {
+        content = str(ev.value);
+        dirty = true;
+      } else if (ev.action == "edit_path") {
+        pathInput = str(ev.value);
+        dirty = true;
+      } else if (ev.action == "open_file") {
+        open_file(pl.path != null ? pl.path : pathInput);
+      } else if (ev.action == "new_file") {
+        filePath = "/Documents/prog_" + str(floor(syscall("time") * 10)) + ".nos";
+        pathInput = filePath;
+        content = "// 新建程序\nlet s = 0;\nfor (let i = 1; i <= 100; i += 1) { s += i; }\nsyscall(\"log\", \"结果=\" + str(s));\nreturn s;\n";
+        savedContent = "";
+        statusMsg = "新建未保存";
+        dirty = true;
+      } else if (ev.action == "save_file") {
+        save_file();
+      } else if (ev.action == "run_file") {
+        run_current();
+      } else if (ev.action == "self_host") {
+        self_host_compiler();
+      }
+    }
+  }
+  refresh_run_logs();
+  if (dirty) {
+    render_ui();
+    dirty = false;
+  }
+}

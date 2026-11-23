@@ -1,0 +1,131 @@
+// /apps/flight_ctrl.nos — 24 号直升机闭环飞控程序（可编辑、可替换）
+// 接口说明：
+//   1. 读取带时间戳的传感器：let s = syscall("flight_read_sensors", ARGS.windowId);
+//      传感器字段：t, pos[3], vel[3], rot[3](pitch,yaw,roll), angVel[3], groundY,
+//                  altitude, rpm, targetPos[3], targetHeading, landAtTarget, crashed
+//   2. 写入控制量（保持至下次写入，错过周期不补发）：
+//      syscall("flight_write_controls", ARGS.windowId, { collective, pitch, roll, yaw });
+//      范围：collective [0..1.6], pitch [-1..1], roll [-1..1], yaw [-1..1]
+
+let winId = ARGS.windowId;
+let altInt = 0;
+let lastSensorT = -1;
+let estPitch = 0;
+let estRoll = 0;
+let gustHist = [0, 0, 0, 0, 0, 0, 0, 0];
+
+fn wrap_angle(a) {
+  while (a > 3.14159265) a -= 6.2831853;
+  while (a < -3.14159265) a += 6.2831853;
+  return a;
+}
+
+// 姿态与阵风状态观测滤波（每个控制周期真实参与预算竞争）
+fn estimate_attitude_and_gust(s, dt) {
+  let accP = 0;
+  let accR = 0;
+  let wSum = 0;
+  let n = 48;
+  for (let i = 0; i < n; i += 1) {
+    let w = 1.0 / (1.0 + i * 0.15);
+    let predP = s.rot[0] + s.angVel[0] * dt * (i * 0.004);
+    let predR = s.rot[2] + s.angVel[2] * dt * (i * 0.004);
+    accP += predP * w;
+    accR += predR * w;
+    wSum += w;
+  }
+  estPitch = 0.72 * s.rot[0] + 0.28 * (accP / wSum);
+  estRoll = 0.72 * s.rot[2] + 0.28 * (accR / wSum);
+  let gIdx = floor(s.t * 30) % len(gustHist);
+  gustHist[gIdx] = s.angVel[0] * s.angVel[0] + s.angVel[2] * s.angVel[2];
+}
+
+syscall("log", "飞控进程已启动，目标窗口: " + str(winId));
+
+while (true) {
+  let s = syscall("flight_read_sensors", winId);
+  if (s == null) {
+    syscall("sleep", 0.033);
+    continue;
+  }
+  if (s.crashed) {
+    syscall("flight_write_controls", winId, { collective: 0, pitch: 0, roll: 0, yaw: 0 });
+    syscall("sleep", 0.05);
+    continue;
+  }
+
+  let dt = 0.0333;
+  if (lastSensorT >= 0 && s.t > lastSensorT) {
+    dt = clamp(s.t - lastSensorT, 0.01, 0.5);
+  }
+  lastSensorT = s.t;
+  estimate_attitude_and_gust(s, dt);
+
+  // 计算到目标点（例如 2 号停机坪或点击指定的航路点）的水平误差
+  let tx = s.targetPos[0];
+  let ty = s.targetPos[1];
+  let tz = s.targetPos[2];
+  let dx = tx - s.pos[0];
+  let dz = tz - s.pos[2];
+  let horizDist = sqrt(dx * dx + dz * dz);
+
+  // 目标高度策略：远距巡航保持安全高度，抵达目标点上方后悬停并平缓降落
+  let targetY = ty + 8.5;
+  if (s.landAtTarget && horizDist < 2.2) {
+    if (s.altitude > 1.8) {
+      targetY = s.groundY + max(0.3, s.altitude - 1.4);
+    } else {
+      targetY = s.groundY - 0.1;
+    }
+  } else if (horizDist < 5.0) {
+    targetY = ty + 4.5;
+  }
+
+  // 高度闭环 PID -> 总距 collective（重力悬停基准约 0.52）
+  let altErr = targetY - s.pos[1];
+  altInt = clamp(altInt + altErr * dt, -3.0, 3.0);
+  let vyDes = clamp(altErr * 1.35 + altInt * 0.25, -4.5, 5.5);
+  let collective = clamp(0.52 + (vyDes - s.vel[1]) * 0.24, 0.08, 1.35);
+  if (s.landAtTarget && horizDist < 2.0 && s.altitude < 0.25) {
+    collective = 0.12;
+  }
+
+  // 将世界系目标速度投影到机体水平前向与右向
+  let yaw = s.rot[1];
+  let cy = cos(yaw);
+  let sy = sin(yaw);
+  let maxSpd = horizDist > 8.0 ? 8.5 : clamp(horizDist * 0.9, 0.0, 6.0);
+  let vxDes = horizDist > 0.25 ? (dx / horizDist) * maxSpd : 0;
+  let vzDes = horizDist > 0.25 ? (dz / horizDist) * maxSpd : 0;
+
+  let vErrX = vxDes - s.vel[0];
+  let vErrZ = vzDes - s.vel[2];
+  // 机头前向为 (-sin(yaw), -cos(yaw))，右侧为 (cos(yaw), -sin(yaw))
+  let fwdErr = -sy * vErrX - cy * vErrZ;
+  let rightErr = cy * vErrX - sy * vErrZ;
+
+  // 期望俯仰角与滚转角（前飞低头 pitch < 0，右飞右倾 roll < 0）
+  let pitchDes = clamp(-fwdErr * 0.055, -0.32, 0.32);
+  let rollDes = clamp(-rightErr * 0.055, -0.32, 0.32);
+
+  // 姿态内环 PD 控制（抑制机体固有不稳定发散与侧风扰动；控制周期拉长时会因相位滞后而振荡发散）
+  let pitchCmd = clamp((pitchDes - estPitch) * 5.4 - s.angVel[0] * 1.85, -1.0, 1.0);
+  let rollCmd = clamp((rollDes - estRoll) * 5.4 - s.angVel[2] * 1.85, -1.0, 1.0);
+
+  // 航向闭环控制（含主旋翼反扭矩配平 0.35）
+  let desHead = s.targetHeading;
+  if (horizDist > 4.0) {
+    desHead = atan2(-dx, -dz);
+  }
+  let yawErr = wrap_angle(desHead - yaw);
+  let yawCmd = clamp(0.35 + yawErr * 2.2 - s.angVel[1] * 1.15, -1.0, 1.0);
+
+  syscall("flight_write_controls", winId, {
+    collective: collective,
+    pitch: pitchCmd,
+    roll: rollCmd,
+    yaw: yawCmd
+  });
+
+  syscall("sleep", 0.032);
+}

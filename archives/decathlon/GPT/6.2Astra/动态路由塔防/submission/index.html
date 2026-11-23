@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>汐域 · 网络安全攻防战</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <svg viewBox="0 0 40 40">
+          <path
+            d="M3 9 19 2l17 7v9l-9 4v-8l-8-4-7 3v8l-9-4zm1 12 9 4 7-3v-8l8 4v8l-9 5-6-3v4l7 3 16-8v4l-16 8-16-8z"
+            fill="currentColor"
+          />
+        </svg>
+        <div><b>网络安全攻防战</b><small>NEXUS DEFENSE SYSTEM</small></div>
+      </div>
+      <nav>
+        <button id="battleNav" class="active">战术终端</button
+        ><button onclick="openMaps()">关卡选择</button><button onclick="manual()">攻防图鉴</button>
+      </nav>
+      <div class="headend">
+        <span class="led"></span> <span>守护进程在线</span
+        ><button id="sound" title="声音设置"></button><button id="menu" title="系统菜单"></button>
+      </div>
+    </header>
+    <main>
+      <section class="titlebar">
+        <div class="missionnum" id="mapnum">01</div>
+        <div class="heading">
+          <div class="eyebrow" id="sector"></div>
+          <h1 id="maptitle"></h1>
+        </div>
+        <span id="maptag" class="tag"></span>
+        <div class="metrics" id="metrics"></div>
+      </section>
+      <div class="bodygrid">
+        <section id="viewport">
+          <div id="canvasHost"></div>
+          <div id="labels"></div>
+          <div class="viewheading"><i></i> 战术视图 <em>/ TACTICAL VIEW</em></div>
+          <div class="viewtools">
+            <button onclick="homeCam()" title="复位镜头" id="resetcam"></button
+            ><button onclick="zoomCam(1.14)" title="放大">＋</button
+            ><button onclick="zoomCam(.88)" title="缩小">−</button>
+          </div>
+          <div class="viewfoot">
+            <span><i class="line orange"></i>入口 A</span
+            ><span><i class="line blue"></i>入口 B</span
+            ><span id="legC"><i class="line green"></i>入口 C</span
+            ><span><i class="square"></i>交换节点</span><span><i class="plat"></i>设备平台</span>
+          </div>
+          <div class="axismark">⌖ <span>ISO</span></div>
+          <div id="tileTip" hidden></div>
+          <div id="bossHud" hidden></div>
+          <div id="notice"></div>
+          <div id="context"></div>
+          <div id="sub"></div>
+        </section>
+        <aside>
+          <div class="panelhead">
+            <span class="eyebrow">OPERATIONS</span><span class="serial">OPS / 01</span>
+          </div>
+          <div class="asideh">
+            <h2>作战控制台</h2>
+            <span class="live">● LIVE</span>
+          </div>
+          <div id="wavezone"></div>
+          <div class="sidegroup">
+            <div class="grouphead"><b>流量预报</b><span>FORECAST</span></div>
+            <div id="forecast"></div>
+          </div>
+          <div class="sidegroup logs">
+            <div class="grouphead"><button class="logTitle" onclick="eventHistory()" title="查看完整事件记录">事件日志 ↗</button><span class="blink">●</span></div>
+            <div id="logs"></div>
+          </div>
+          <div id="netwatch"></div>
+          <div class="actions">
+            <button id="start"></button>
+            <div class="playrow"><button id="pause"></button><button id="speed"></button></div>
+          </div>
+        </aside>
+      </div>
+      <section id="dock">
+        <div class="dockhead">
+          <div class="tabs">
+            <button id="tab0" onclick="dock(0)">设备部署</button
+            ><button id="tab1" onclick="dock(1)">战术道具</button>
+          </div>
+          <span class="dockhint" id="dockhint"></span>
+        </div>
+        <div id="cards"></div>
+      </section>
+    </main>
+    <footer>
+      <span><i></i> 汐域自治防御系统 <b>/</b> NEXUS OS</span
+      ><span>中键旋转 <b>·</b> Shift + 中键平移 <b>·</b> 滚轮缩放</span><strong>SYS. V2.6.0</strong>
+    </footer>
+    <div id="overlay"></div>
+    <div id="dragSim"></div>
+    <div id="cursorSim">➤</div>
+    <script src="three.min.js"></script>
+    <script src="data.js"></script>
+    <script src="art.js"></script>
+    <script src="game.js"></script>
+    <script src="ui.js"></script>
+  </body>
+</html>

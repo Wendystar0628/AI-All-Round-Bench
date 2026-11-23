@@ -1,0 +1,69 @@
+// /Programs/flightctl.nx —— 飞控程序（普通程序文件，可以修改或另写一份替换）。
+// 接口：
+//   sys("dev_read", BUS + ".sensors") → { t: 时间戳(毫秒), v: 传感器值 }，传感器值为
+//     { t: 机体时间(秒), pos:[x,y,z], vel:[vx,vy,vz], att:[滚转,俯仰,偏航](弧度), rate:[滚转率,偏航率,俯仰率],
+//       agl: 离地高度, rpm: 旋翼转速(0~1), ground: 是否接地, crashed: 是否坠毁,
+//       target: { mode:"idle"|"fly"|"land", x, z, alt(离地高度), hdg(度，可缺省) } }
+//   sys("dev_write", BUS + ".controls", { col: 总距 0~1, pitch: 前后 -1~1(正为低头前飞), roll: 左右 -1~1(正为右滚), yaw: 尾桨 -1~1(正为左转) }, true)
+// 控制量保持到下一次写入；本程序每个周期读一次传感器、写一次控制量，和其他进程一样竞争执行预算。
+// 周期变长（预算不足、被持续计算挤占、时间速率调快）时，姿态回路来不及纠正，机体就会抖动乃至发散。
+
+var A = sys("args");
+var BUS = A.bus;
+var PERIOD = 16;            // 控制周期（毫秒）
+var KP = 6.0; var KD = 0.75; // 姿态回路增益（回路带宽高，要求控制周期短）
+var HOVER = 0.481;
+var landed = false;
+
+function clamp(v, a, b) { if (v < a) { return a; } if (v > b) { return b; } return v; }
+function wrap(a) { while (a > 3.141592653589793) { a = a - 6.283185307179586; } while (a < -3.141592653589793) { a = a + 6.283185307179586; } return a; }
+
+while (true) {
+  var r = sys("dev_read", BUS + ".sensors");
+  if (r != null && type(r.v) == "map") {
+    var s = r.v; var tg = s.target;
+    var roll = s.att[0]; var pitch = s.att[1]; var yaw = s.att[2];
+    var col = 0; var cp = 0; var cr = 0; var cy = 0;
+    if (s.crashed || tg.mode == "idle") {
+      col = 0; landed = false;
+    } else {
+      // 位置 → 期望速度 → 期望加速度
+      var ex = tg.x - s.pos[0]; var ez = tg.z - s.pos[2];
+      var dist = sqrt(ex * ex + ez * ez);
+      var vmax = 15; if (tg.mode == "land") { vmax = 9; }
+      var sp = min(vmax, 0.55 * dist);
+      var vdx = 0; var vdz = 0;
+      if (dist > 0.05) { vdx = ex / dist * sp; vdz = ez / dist * sp; }
+      var ax = 1.15 * (vdx - s.vel[0]); var az = 1.15 * (vdz - s.vel[2]);
+      var am = sqrt(ax * ax + az * az);
+      if (am > 3.0) { ax = ax / am * 3.0; az = az / am * 3.0; }
+      // 换到机头方向：前向与右向分量 → 期望俯仰与滚转
+      var cs = cos(yaw); var sn = sin(yaw);
+      var af = ax * cs - az * sn; var ar = ax * sn + az * cs;
+      var pitchDes = -af / 9.81; var rollDes = ar / 9.81;
+      // 高度
+      var altDes = tg.alt;
+      var speedH = sqrt(s.vel[0] * s.vel[0] + s.vel[2] * s.vel[2]);
+      if (tg.mode == "land") {
+        if (dist < 2.2 && speedH < 1.6) { altDes = -1; } else if (altDes < 6) { altDes = 6; }
+      }
+      var vzDes = clamp(1.3 * (altDes - s.agl), -3.2, 5.5);
+      if (tg.mode == "land" && altDes < 0) { vzDes = -1.3; if (s.agl < 2.5) { vzDes = -0.55; } }
+      col = HOVER / max(0.6, cos(roll) * cos(pitch)) + 0.11 * (vzDes - s.vel[1]);
+      if (s.ground && s.rpm < 0.93) { col = 0.12; rollDes = 0; pitchDes = 0; }       // 在地面等旋翼转速上来再离地
+      if (tg.mode == "land" && s.ground && altDes < 0) { landed = true; }
+      if (tg.mode != "land") { landed = false; }
+      if (landed) { col = 0.05; rollDes = 0; pitchDes = 0; }
+      // 姿态回路（比例-微分）
+      cr = KP * (rollDes - roll) - KD * s.rate[0];
+      cp = -(KP * (pitchDes - pitch) - KD * s.rate[2]);
+      // 航向：飞行途中机头对准前进方向，接近目标后保持给定航向
+      var hd = yaw;
+      if (dist > 7) { hd = atan2(-ez, ex); } else if (type(tg.hdg) == "num") { hd = tg.hdg * 0.017453292519943295; }
+      cy = 2.3 * wrap(hd - yaw) - 1.1 * s.rate[1] + (2.4 * (0.22 + 1.62 * col) - 2.4) / 3.6;
+      if (s.ground && s.agl < 0.3) { cy = 0; cr = 0; cp = 0; }
+    }
+    sys("dev_write", BUS + ".controls", { col: clamp(col, 0, 1), pitch: clamp(cp, -1, 1), roll: clamp(cr, -1, 1), yaw: clamp(cy, -1, 1) }, true);
+  }
+  sys("sleep", PERIOD);
+}

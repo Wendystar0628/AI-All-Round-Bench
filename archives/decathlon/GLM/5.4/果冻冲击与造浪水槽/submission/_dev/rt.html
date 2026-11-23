@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000;overflow:hidden}canvas{width:100vw;height:100vh;display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script src="../js/math.js"></script>
+<script src="../js/engine.js"></script>
+<script src="../js/shaders.js"></script>
+<script src="../js/render.js"></script>
+<script>
+(async () => {
+  const log = [];
+  try {
+    const gfx = new Gfx(document.getElementById('c'));
+    await gfx.init();
+    const R = new Renderer(gfx);
+    await R.init();
+    log.push('pipelines ok');
+    const mb = new MeshBuilder();
+    Geo.sphere(mb, 0.5, 40, 24, [0.9,0.3,0.2], 0, 0.5, 0);
+    Geo.box(mb, 4, 0.1, 4, [0.25,0.27,0.3], 0, 0, 0);
+    const mesh = mb.build(gfx);
+    const mb2 = new MeshBuilder();
+    Geo.sphere(mb2, 0.25, 24, 16, [0.3,0.6,0.9], 1.2, 0.4, 0.6);
+    const mesh2 = mb2.build(gfx);
+    let t = 0;
+    const scene = { light:{dir:[0.5,0.8,0.4],color:[1,0.96,0.9],intensity:3.2}, fill:{dir:[-0.7,0.3,0.6],color:[0.35,0.55,1.0],intensity:0.9}, rim:{dir:[-0.2,0.5,-0.9],color:[0.5,0.8,1.0],intensity:1.4}, exposure:1.15 };
+    function frame() {
+      const dpr = Math.min(devicePixelRatio, 2);
+      gfx.resize(innerWidth, innerHeight, dpr);
+      R.setSize(gfx.width, gfx.height);
+      t += 0.016; R.time = t;
+      R.cam.pos = [1.8,1.2,2.4]; R.cam.target=[0,0.3,0];
+      R._shadowDir = scene.light.dir;
+      R.computeShadow([0,0.3,0], 2.5);
+      R.resetDraws();
+      const d1 = R.pushDraw(M4.ident(), [1,1,1,1], [0.25,0.9,1,0], [0,0,0,0]);
+      const d2 = R.pushDraw(M4.ident(), [1,1,1,1], [0.3,0.2,1,0], [0,0,0,0]);
+      R.flushDraws();
+      R.uploadGlobals(scene);
+      const enc = gfx.device.createCommandEncoder();
+      const sh = R.beginShadow();
+      sh.pass.setVertexBuffer(0, mesh.vb); sh.pass.setIndexBuffer(mesh.ib, 'uint32'); sh.pass.setBindGroup(1, R.drawBindGroup, [d1]); sh.pass.drawIndexed(mesh.indexCount);
+      sh.pass.setVertexBuffer(0, mesh2.vb); sh.pass.setIndexBuffer(mesh2.ib, 'uint32'); sh.pass.setBindGroup(1, R.drawBindGroup, [d2]); sh.pass.drawIndexed(mesh2.indexCount);
+      sh.pass.end();
+      const pass = enc.beginRenderPass({
+        colorAttachments:[{view:R.sceneColor.createView(), loadOp:'clear', storeOp:'store', clearValue:{r:0.02,g:0.03,b:0.05,a:1}}],
+        depthStencilAttachment:{view:R.sceneDepth.createView(), depthClearValue:1, depthLoadOp:'clear', depthStoreOp:'store'}
+      });
+      drawFullscreen(pass, R.pipeSky, R.globalBindGroup);
+      pass.setPipeline(R.pipeMesh); pass.setBindGroup(0, R.globalBindGroup);
+      pass.setVertexBuffer(0, mesh.vb); pass.setIndexBuffer(mesh.ib,'uint32'); pass.setBindGroup(1, R.drawBindGroup,[d1]); pass.drawIndexed(mesh.indexCount);
+      pass.setVertexBuffer(0, mesh2.vb); pass.setIndexBuffer(mesh2.ib,'uint32'); pass.setBindGroup(1, R.drawBindGroup,[d2]); pass.drawIndexed(mesh2.indexCount);
+      pass.end();
+      const post = enc.beginRenderPass({colorAttachments:[{view:gfx.context.getCurrentTexture().createView(), loadOp:'clear', storeOp:'store', clearValue:{r:0,g:0,b:0,a:1}}]});
+      const bg = gfx.device.createBindGroup({layout:R.bglPost, entries:[{binding:0,resource:{buffer:R.globalsBuf}},{binding:1,resource:R.sceneColor.createView()},{binding:2,resource:R.samplerLin}]});
+      drawFullscreen(post, R.pipePost, bg);
+      post.end();
+      gfx.device.queue.submit([enc.finish()]);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  } catch(e) { log.push('ERR '+e.message+'\n'+e.stack); console.log(log.join('\n')); }
+  window.__log = log;
+})();
+</script></body></html>

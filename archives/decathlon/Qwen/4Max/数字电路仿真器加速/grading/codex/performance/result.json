@@ -1,0 +1,109 @@
+{
+    "task":  "数字电路仿真器加速",
+    "complete":  true,
+    "grader":  "GPT 6.1 Sol",
+    "items":  [
+                  {
+                      "name":  "总分",
+                      "max":  100,
+                      "score":  3.1,
+                      "reason":  "提交及基线重新编译成功，未见题面第十节第1–7条违规或作弊；隐藏正确性7/7、性能输入9/9均通过。官方 evaluate.py 的9项性能平均分为3.1，正确性系数为1，最终3.1分；综合加速比仅0.269654倍，全部输入慢于基线。"
+                  }
+              ],
+    "metrics":  {
+                    "correctness_passed":  7,
+                    "correctness_total":  7,
+                    "correctness_factor":  "7/7",
+                    "performance_passed":  9,
+                    "performance_inputs":  9,
+                    "performance_score":  3.1,
+                    "G":  0.26965407910728795,
+                    "score":  3.1,
+                    "per_input":  [
+                                      {
+                                          "case":  "input_01",
+                                          "family":  "深链",
+                                          "R_i_ms":  1045.863,
+                                          "C_i_ms":  2970.665,
+                                          "s_i":  0.3520635951882828,
+                                          "points_i":  3.9,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_02",
+                                          "family":  "深链",
+                                          "R_i_ms":  1012.599,
+                                          "C_i_ms":  3040.497,
+                                          "s_i":  0.3330373290945527,
+                                          "points_i":  3.7,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_03",
+                                          "family":  "深链",
+                                          "R_i_ms":  1014.495,
+                                          "C_i_ms":  3085.83,
+                                          "s_i":  0.32875919930780373,
+                                          "points_i":  3.7,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_04",
+                                          "family":  "阵列乘法器",
+                                          "R_i_ms":  962.953,
+                                          "C_i_ms":  3158.448,
+                                          "s_i":  0.3048817013925827,
+                                          "points_i":  3.5,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_05",
+                                          "family":  "阵列乘法器",
+                                          "R_i_ms":  970.982,
+                                          "C_i_ms":  3710.293,
+                                          "s_i":  0.26169954771766,
+                                          "points_i":  3.0,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_06",
+                                          "family":  "阵列乘法器",
+                                          "R_i_ms":  963.518,
+                                          "C_i_ms":  3079.487,
+                                          "s_i":  0.31288263272421674,
+                                          "points_i":  3.5,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_07",
+                                          "family":  "寄存器堆",
+                                          "R_i_ms":  993.027,
+                                          "C_i_ms":  4993.022,
+                                          "s_i":  0.19888296106045597,
+                                          "points_i":  2.1,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_08",
+                                          "family":  "寄存器堆",
+                                          "R_i_ms":  1023.158,
+                                          "C_i_ms":  4891.993,
+                                          "s_i":  0.20914952249522842,
+                                          "points_i":  2.3,
+                                          "status":  "PASS"
+                                      },
+                                      {
+                                          "case":  "input_09",
+                                          "family":  "寄存器堆",
+                                          "R_i_ms":  982.259,
+                                          "C_i_ms":  5215.852,
+                                          "s_i":  0.18832186956224986,
+                                          "points_i":  2.0,
+                                          "status":  "PASS"
+                                      }
+                                  ],
+                    "evaluate_report":  "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Qwen\\4Max\\数字电路仿真器加速\\codex\\performance\\work\\evaluate_report.json",
+                    "solution_sha256":  "A8E30B249A2593D8D3F0F3E9348507622586D9917125608D2A863C67079210E2"
+                },
+    "notes":  "评的是作答结束时工作目录中的内容，不看 git 提交。原始提交已复制到 work\\submission（不复制评分表），solution.cpp SHA256与原件一致，未改动提交源码。使用官方 grader.cpp 与 reference_solution.cpp 重新编译；全部编译及唯一一次官方 evaluate.py 均通过指定Python及 process_job.py --cpus 0-15 包装，官方亲和性、高优先级、OMP_NUM_THREADS=16及3次交错中位数设置保留。基线全部通过，无评测环境错误。评测程序和包装进程已退出，Job收尾完成；未启动浏览器或网页服务器。"
+}

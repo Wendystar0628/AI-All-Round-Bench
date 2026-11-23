@@ -1,0 +1,11 @@
+// 消息接收：等待消息并逐条打印；收到 "bye" 后结束。
+sys("print", "接收进程 pid=" + sys("pid") + " 开始等待消息");
+var count = 0;
+while (true) {
+  var m = sys("recv");
+  count = count + 1;
+  sys("print", "第 " + count + " 条，来自 pid " + m.from + "：" + str(m.body));
+  if (m.body == "bye") { break; }
+}
+sys("print", "接收结束，共 " + count + " 条");
+sys("exit", 0);

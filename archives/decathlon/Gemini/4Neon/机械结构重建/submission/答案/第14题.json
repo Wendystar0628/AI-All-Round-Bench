@@ -1,0 +1,182 @@
+{
+  "problem": "14",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏置双出口泵体铸件",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "地脚底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 160, 116], "r": 5}],
+          "depth": 14
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "泵体主壳体",
+          "plane": "XZ",
+          "origin": [0, 14, 0],
+          "loops": [{"path": [[16, 14], [144, 14], [144, 62], [108, 100], [54, 100], [16, 62]]}],
+          "depth": [-88, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前大凸缘Φ82",
+          "plane": "XZ",
+          "origin": [0, 4, 0],
+          "loops": [{"circle": [76, 58], "d": 82}],
+          "depth": [-14, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后凸缘Φ76",
+          "plane": "XZ",
+          "origin": [0, 100, 0],
+          "loops": [{"circle": [76, 58], "d": 76}],
+          "depth": [-12, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前左加强肋",
+          "plane": "XZ",
+          "origin": [0, 6, 0],
+          "loops": [{"path": [[24, 14], [46, 14], [46, 56]]}],
+          "depth": [-8, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右出口管颈Φ46",
+          "plane": "YZ",
+          "origin": [126, 0, 0],
+          "loops": [{"circle": [58, 68], "d": 46}],
+          "depth": 40
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右出口端法兰Φ68",
+          "plane": "YZ",
+          "origin": [166, 0, 0],
+          "loops": [{"circle": [58, 68], "d": 68}],
+          "depth": 10
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "顶偏置出口凸台Φ38",
+          "plane": "XY",
+          "origin": [0, 0, 96],
+          "loops": [{"circle": [62, 54], "d": 38}],
+          "depth": 18
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "主泵腔Φ66",
+          "plane": "XZ",
+          "origin": [0, 26, 0],
+          "loops": [{"circle": [76, 58], "d": 66}],
+          "depth": [-64, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "腔底回油槽",
+          "plane": "XY",
+          "origin": [0, 0, 18],
+          "loops": [{"rect": [54, 44, 98, 72]}],
+          "depth": 14
+        },
+        {
+          "type": "hole",
+          "name": "前轴Φ32/Φ46阶梯孔",
+          "plane": "XZ",
+          "origin": [0, 2, 0],
+          "at": [76, 58],
+          "d": 32,
+          "depth": 30,
+          "cbore": {"d": 46, "depth": 12}
+        },
+        {
+          "type": "hole",
+          "name": "后轴Φ54孔",
+          "plane": "XZ",
+          "origin": [0, 114, 0],
+          "at": [76, 58],
+          "d": 54,
+          "depth": 30,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右出口Φ28流道孔",
+          "plane": "YZ",
+          "origin": [178, 0, 0],
+          "at": [58, 68],
+          "d": 28,
+          "depth": 76
+        },
+        {
+          "type": "hole",
+          "name": "顶出口Φ18竖孔",
+          "plane": "XY",
+          "origin": [0, 0, 116],
+          "at": [62, 54],
+          "d": 18,
+          "depth": 36
+        },
+        {
+          "type": "hole",
+          "name": "底部Φ10排油孔",
+          "plane": "XY",
+          "origin": [0, 0, 20],
+          "at": [76, 58],
+          "d": 10,
+          "depth": 22
+        },
+        {
+          "type": "hole",
+          "name": "前左Φ8斜孔",
+          "plane": {
+            "origin": [44, 12, 82],
+            "normal": [0, -0.866025404, 0.5],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 8,
+          "depth": 42
+        },
+        {
+          "type": "hole",
+          "name": "后右Φ10回油斜孔",
+          "plane": {
+            "origin": [108, 104, 84],
+            "normal": [0, 0.819152044, 0.573576436],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 44
+        },
+        {
+          "type": "hole",
+          "name": "地脚四个Φ9/Φ16沉头安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "at": [[10, 10], [150, 10], [10, 106], [150, 106]],
+          "d": 9,
+          "through": true,
+          "cbore": {"d": 16, "depth": 5}
+        }
+      ]
+    }
+  ]
+}

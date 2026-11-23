@@ -1,0 +1,97 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>相态实验室 · Phase Lab</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <svg viewBox="0 0 44 44">
+          <g fill="none" stroke="#c5b0ff" stroke-width="2.3">
+            <ellipse cx="22" cy="22" rx="19" ry="9" transform="rotate(-40 22 22)" />
+            <ellipse cx="22" cy="22" rx="19" ry="9" transform="rotate(78 22 22)" />
+            <ellipse cx="22" cy="22" rx="19" ry="9" transform="rotate(17 22 22)" />
+          </g>
+          <circle cx="22" cy="22" r="3" fill="#cfbcff" />
+        </svg>
+        <div><strong>相态实验室</strong><small>PHASE LAB</small></div>
+      </div>
+      <nav>
+        <button id="jellyTab" class="active"><i data-icon="cube"></i>果冻冲击</button
+        ><button id="tankTab"><i data-icon="waves"></i>造浪水槽</button>
+      </nav>
+      <button id="sound" class="sound"><i data-icon="mute"></i><span>声音关闭</span></button>
+    </header>
+    <main>
+      <section class="heading">
+        <div>
+          <div class="eyebrow"><b></b> DYNAMICS WORKSPACE</div>
+          <h1>动力学工作台</h1>
+        </div>
+        <div class="system"><em></em> 系统就绪</div>
+      </section>
+      <div class="workspace">
+        <section class="viewer">
+          <div id="stage">
+            <div id="viewport"></div>
+            <div class="hud">
+              <div class="eyebrow">EXPERIMENT <span id="expNo">01</span> <b></b></div>
+              <h2 id="sceneTitle">重球冲击果冻</h2>
+            </div>
+            <div class="live"><em></em> LIVE VIEW</div>
+            <div class="axis">
+              <svg viewBox="0 0 55 45">
+                <path d="M23 29V8M23 29L45 35M23 29L7 36" stroke="#878199" fill="none" />
+                <g fill="#aca6c3" font-family="monospace" font-size="8">
+                  <text x="21" y="7">Y</text>
+                  <text x="47" y="39">X</text>
+                  <text x="0" y="41">Z</text>
+                </g>
+              </svg>
+            </div>
+            <div id="samples" aria-label="冲击目标">
+              <button title="冲击紫晶果冻"><b></b>紫晶</button
+              ><button title="冲击薄荷果冻"><b></b>薄荷</button
+              ><button title="冲击琥珀果冻"><b></b>琥珀</button>
+            </div>
+            <div class="hint"><i data-icon="mouse"></i>拖动旋转 · 滚轮缩放</div>
+          </div>
+          <div class="transport">
+            <button id="pause" title="暂停或继续"><i data-icon="pause"></i></button
+            ><button id="reset" title="重置场景"><i data-icon="reset"></i></button
+            ><span class="divider"></span><span id="clock">00:00.00</span>
+            <div class="timeline"><b></b></div>
+            <button id="speed">1.0×</button
+            ><button id="full" title="全屏"><i data-icon="full"></i></button>
+          </div>
+        </section>
+        <aside>
+          <div class="panelhead">
+            <div>
+              <i data-icon="sliders"></i>
+              <h3>实验控制</h3>
+            </div>
+            <small>CONTROLS</small>
+          </div>
+          <div id="controls"></div>
+        </aside>
+      </div>
+      <section class="presets">
+        <div class="presethead">
+          <h3><i data-icon="film"></i> 预设演示</h3>
+          <small>DEMO SEQUENCES <span>/ 04</span></small>
+        </div>
+        <div id="cards"></div>
+      </section>
+    </main>
+    <script src="three.min.js"></script>
+    <script src="soft.js"></script>
+    <script src="fluid.js"></script>
+    <script src="scene.js"></script>
+    <script src="liquid-skin.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

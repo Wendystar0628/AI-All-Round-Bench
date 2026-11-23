@@ -1,0 +1,176 @@
+{
+  "problem": "12",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏轴阶梯双腔泵座",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 168, 104]}],
+          "depth": 14
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "双斜肩泵座主体",
+          "plane": "XZ",
+          "origin": [0, 10, 0],
+          "loops": [{"path": [[16, 14], [152, 14], [152, 56], [112, 96], [56, 96], [16, 56]]}],
+          "depth": [-84, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前大支承颈Φ76",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"circle": [80, 58], "d": 76}],
+          "depth": [-14, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后支承颈Φ58",
+          "plane": "XZ",
+          "origin": [0, 92, 0],
+          "loops": [{"circle": [88, 56], "d": 58}],
+          "depth": [-10, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左内腔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "loops": [{"rect": [28, 20, 72, 84]}],
+          "depth": 66
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "右内腔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "loops": [{"rect": [88, 20, 136, 84]}],
+          "depth": 44
+        },
+        {
+          "type": "hole",
+          "name": "前大支承Φ42/Φ54阶梯孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [80, 58],
+          "d": 42,
+          "depth": 32,
+          "cbore": {"d": 54, "depth": 14}
+        },
+        {
+          "type": "hole",
+          "name": "主轴Φ30通孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [80, 58],
+          "d": 30,
+          "depth": 70
+        },
+        {
+          "type": "hole",
+          "name": "后支承Φ24/Φ38阶梯孔",
+          "plane": "XZ",
+          "origin": [0, 104, 0],
+          "at": [88, 56],
+          "d": 24,
+          "depth": 36,
+          "reverse": true,
+          "cbore": {"d": 38, "depth": 12}
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "前下卸载窗",
+          "plane": "XZ",
+          "origin": [0, 8, 0],
+          "loops": [{"rect": [32, 20, 56, 32]}],
+          "depth": [-16, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "后下卸载窗",
+          "plane": "XZ",
+          "origin": [0, 80, 0],
+          "loops": [{"rect": [108, 20, 132, 32]}],
+          "depth": [-16, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左侧斜顶矩形槽",
+          "plane": "XY",
+          "origin": [0, 0, 56],
+          "loops": [{"rect": [30, 26, 46, 78]}],
+          "depth": 34
+        },
+        {
+          "type": "hole",
+          "name": "左侧Φ12孔",
+          "plane": "YZ",
+          "origin": [14, 0, 0],
+          "at": [52, 28],
+          "d": 12,
+          "depth": 18,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "隔墙Φ8孔",
+          "plane": "YZ",
+          "origin": [70, 0, 0],
+          "at": [52, 24],
+          "d": 8,
+          "depth": 22,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右侧斜面Φ22斜孔",
+          "plane": {
+            "origin": [132, 52, 76],
+            "normal": [0.707106781, 0, 0.707106781],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 22,
+          "depth": 46
+        },
+        {
+          "type": "hole",
+          "name": "底板四个Φ9/Φ15沉头安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "at": [[8, 8], [160, 8], [8, 96], [160, 96]],
+          "d": 9,
+          "through": true,
+          "cbore": {"d": 15, "depth": 5}
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[84, 0, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[0, 0, 7]]
+        }
+      ]
+    }
+  ]
+}

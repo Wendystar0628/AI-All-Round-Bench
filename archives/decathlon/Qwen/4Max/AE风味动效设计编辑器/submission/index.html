@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>铸帧 ForgeFrame · AE风味动效设计编辑器</title>
+<link rel="stylesheet" href="css/ui.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="brand"><span class="brand-mark">铸</span><span class="brand-text">铸帧<small>FORGEFRAME</small></span></div>
+    <div class="menu-bar">
+      <div class="menu" data-menu="file"><button class="menu-btn">文件</button>
+        <div class="menu-pop">
+          <button data-act="new">新建空工程</button>
+          <button data-act="open">打开工程… <kbd>Ctrl+O</kbd></button>
+          <button data-act="save">保存工程 <kbd>Ctrl+S</kbd></button>
+          <button data-act="demo">载入「锻字」示例</button>
+        </div>
+      </div>
+      <div class="menu" data-menu="edit"><button class="menu-btn">编辑</button>
+        <div class="menu-pop">
+          <button data-act="undo">撤销 <kbd>Ctrl+Z</kbd></button>
+          <button data-act="redo">重做 <kbd>Ctrl+Y</kbd></button>
+          <button data-act="dup">复制图层 <kbd>Ctrl+D</kbd></button>
+          <button data-act="del">删除图层 <kbd>Del</kbd></button>
+          <button data-act="precomp">预合成… <kbd>Ctrl+Shift+C</kbd></button>
+        </div>
+      </div>
+      <div class="menu" data-menu="layer"><button class="menu-btn">图层</button>
+        <div class="menu-pop" id="layerMenuPop"></div>
+      </div>
+      <div class="menu" data-menu="help"><button class="menu-btn">帮助</button>
+        <div class="menu-pop help-pop">
+          <div class="help-block">
+            <b>快捷键</b>
+            <div>空格 播放/暂停 · F9 缓入缓出</div>
+            <div>Ctrl+Z / Ctrl+Y 撤销重做</div>
+            <div>Ctrl+Shift+C 预合成 · Ctrl+D 复制</div>
+            <div>Ctrl+C / Ctrl+V 复制粘贴(图层/关键帧)</div>
+            <div>←/→ 逐帧 · Shift 加速 · Home/End 首尾</div>
+            <div>V 选择 · A 锚点 · R 旋转 · S 缩放</div>
+            <div>Q 矩形 · E 椭圆 · G 钢笔 · T 文字</div>
+            <div>P 图钉 · F 场 · Ctrl+S 保存</div>
+          </div>
+          <div class="help-block">
+            <b>内置字体「铸锋体」</b>
+            <div id="fontRangeInfo">支持汉字与 A-Z、0-9，字形可转几何。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="transport">
+      <button id="btnStart" title="跳到工作区起点">⏮</button>
+      <button id="btnPrevFrame" title="上一帧">‹</button>
+      <button id="btnPlay" class="play" title="播放/暂停 (空格)">▶</button>
+      <button id="btnNextFrame" title="下一帧">›</button>
+      <button id="btnEnd" title="跳到工作区终点">⏭</button>
+      <button id="btnLoop" class="on" title="循环工作区">⟳</button>
+    </div>
+    <div class="timecode" id="timecode">00:00.000</div>
+    <div class="top-right">
+      <div class="comp-badge" id="compBadge">—</div>
+      <button id="btnAudio" class="audio on" title="声音开关">♪ 声音开</button>
+    </div>
+  </header>
+
+  <div id="main">
+    <aside id="left">
+      <div id="toolbar"></div>
+      <div id="projectPanel">
+        <div class="panel-head">项目 <span class="panel-sub" id="projName"></span></div>
+        <div class="proj-actions">
+          <button id="btnNewComp" title="新建合成">＋合成</button>
+          <button id="btnNewGraph" title="新建节点图">＋节点图</button>
+        </div>
+        <div id="projTree"></div>
+        <div class="panel-head" style="margin-top:8px">快速创建</div>
+        <div id="quickCreate"></div>
+      </div>
+    </aside>
+
+    <div id="center">
+      <div id="canvasWrap">
+        <canvas id="glcanvas"></canvas>
+        <canvas id="overlay"></canvas>
+        <div id="canvasHud">
+          <div class="hud-group" id="hudToggles">
+            <button data-t="grid" title="网格">网格</button>
+            <button data-t="paths" class="on" title="运动路径">路径</button>
+            <button data-t="fields" class="on" title="场范围">场</button>
+            <button data-t="lights" class="on" title="灯光/摄像机">灯</button>
+          </div>
+          <div class="hud-group">
+            <button id="hudZoomOut">−</button>
+            <span id="hudZoom">100%</span>
+            <button id="hudZoomIn">＋</button>
+            <button id="hudFit">适配</button>
+          </div>
+        </div>
+        <div id="emptyHint" class="hidden">
+          <div class="empty-inner">
+            <div class="empty-glyph">铸</div>
+            <p>空合成 · 从左侧工具或「快速创建」开始</p>
+            <p class="dim">Q 矩形 · E 椭圆 · G 钢笔 · T 文字</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside id="right">
+      <div class="panel-head">属性 <span class="panel-sub" id="inspSub"></span></div>
+      <div id="inspector"></div>
+    </aside>
+  </div>
+
+  <div id="bottom">
+    <div id="bottomBar">
+      <div class="view-tabs">
+        <button data-view="timeline" class="on">时间轴</button>
+        <button data-view="curve">曲线</button>
+        <button data-view="nodes">节点</button>
+      </div>
+      <div class="bottom-tools" id="tlTools">
+        <button id="tlSnap" class="on" title="吸附">⌖ 吸附</button>
+        <button id="tlExpandAll" title="展开全部属性">展开</button>
+        <button id="tlCollapseAll" title="收起全部">收起</button>
+        <span class="sep"></span>
+        <button id="tlZoomOut">−</button>
+        <input type="range" id="tlZoom" min="0" max="100" value="30">
+        <button id="tlZoomIn">＋</button>
+      </div>
+      <div class="bottom-tools hidden" id="cvTools">
+        <button id="cvValue" class="on">值曲线</button>
+        <button id="cvSpeed">速度曲线</button>
+        <span class="cv-legend" id="cvLegend"></span>
+      </div>
+      <div class="bottom-tools hidden" id="ndTools">
+        <button id="ndAdd">＋ 添加节点</button>
+        <button id="ndGroup">封装为组</button>
+        <button id="ndFit">适配视图</button>
+        <span class="nd-crumb" id="ndCrumb"></span>
+      </div>
+      <div class="bottom-right">
+        <span id="selInfo"></span>
+      </div>
+    </div>
+    <div id="bottomViews">
+      <div id="timelineView" class="bview"><canvas id="tlCanvas"></canvas></div>
+      <div id="curveView" class="bview hidden"><canvas id="cvCanvas"></canvas></div>
+      <div id="nodeView" class="bview hidden">
+        <div id="nodeCanvas"><svg id="nodeWires"></svg><div id="nodeCards"></div></div>
+        <div id="nodePalette" class="hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="statusbar">
+    <span id="statusHint">就绪</span>
+    <span class="status-right">
+      <span id="exprStatus"></span>
+      <span id="renderInfo"></span>
+    </span>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="ctxMenu" class="hidden"></div>
+<input type="file" id="fileOpen" accept=".json,.forge" style="display:none">
+<div id="toast"></div>
+
+<script src="js/core/util.js"></script>
+<script src="js/core/glyphs.js"></script>
+<script src="js/core/model.js"></script>
+<script src="js/core/eval.js"></script>
+<script src="js/core/geometry.js"></script>
+<script src="js/core/nodes.js"></script>
+<script src="js/core/particles.js"></script>
+<script src="js/core/audio.js"></script>
+<script src="js/render/gl.js"></script>
+<script src="js/render/shaders.js"></script>
+<script src="js/render/render2d.js"></script>
+<script src="js/render/render3d.js"></script>
+<script src="js/render/compositor.js"></script>
+<script src="js/ui/app.js"></script>
+<script src="js/ui/inspector.js"></script>
+<script src="js/ui/timeline.js"></script>
+<script src="js/ui/curves.js"></script>
+<script src="js/ui/nodeeditor.js"></script>
+<script src="js/ui/canvasview.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

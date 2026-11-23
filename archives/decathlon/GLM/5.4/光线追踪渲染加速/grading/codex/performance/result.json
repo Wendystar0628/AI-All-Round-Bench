@@ -1,0 +1,61 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 47.9,
+      "reason": "按指南回溯至第 2 个真实历史交付版本计分：基线最小用时 519.0402 ms、提交 136.7611 ms，加速 3.795233 倍，速度分 47.87727376；5 次性能画面及 12 个隐藏输入全部通过，c=h=1，qch 保留一位小数为 47.9。"
+    }
+  ],
+  "metrics": {
+    "baseline_ms": 519.0402,
+    "submission_ms": 136.7611,
+    "speedup": 3.7952327087161484,
+    "q": 47.87727376439619,
+    "c": 1,
+    "h": 1,
+    "score_unrounded": 47.87727376439619,
+    "performance_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_factors": [
+      1,
+      1,
+      1
+    ],
+    "performance_exception_pixels": [
+      806,
+      806,
+      806,
+      806,
+      806
+    ],
+    "performance_exception_limit": 3232,
+    "performance_rmse": 3.9153963309429325e-05,
+    "final_version_score": 0,
+    "previous_1_score": 0,
+    "results_path": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GLM\\5.5\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_previous_2\\results.json"
+  },
+  "notes": "先评作答结束时工作目录的副本 submission/solution.cu，不看 git 提交。最终版官方得分 0（R=519.3653 ms，C=111.0775 ms，s=4.675702099885216，q=57.69905814418902，c=0，h=1/12）；回溯第 1 个版本也得 0。按指南继续按时间倒序，回溯第 2 个版本获得首个非零分后停止，未寻找最高分。实际计分源码为 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GLM\\5.5\\光线追踪渲染加速\\codex\\performance\\work\\historical\\previous_2\\solution.cu，由最终目录保存的 scratch/device_part_scalarbox.cu 与 scratch/host_part.cu 原样拼接还原；归档 run-47b1b4e81ef44320a3f50e9111d020fa/session.log 第 231209 行（2026-11-21T10:30:21.332Z）明确执行该拼接并整份覆盖 solution.cu，命令结果及后续第 232330 行可确认其当过交付文件。最近历史版本为 2026-11-21T10:32:04.835Z，第 233700 行覆盖的 noinline 版，报告 evaluation_previous_1/results.json。最终版报告 evaluation_final/results.json；实际计分报告 E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\GLM\\5.5\\光线追踪渲染加速\\codex\\performance\\work\\evaluation_previous_2\\results.json。所有编译和正式测量均经过指定 process_job.py --cpus 16-27，官方入口保留 --cpus 16-27，三次评测串行且均 formal=true、基线有效。源码正常路径有 stderr 的 build total 冗余诊断；未伪造 render_ms 或评分输出，未将该诊断认定为实质性违规。未见读答案、预存图像、跨场景缓存、CPU 像素/射线计算、改绑核优先级或干扰评测行为。 最终源码第 105–107 行将 mb/mc/md 与射线距离一起声明为 float，整数叶描述符会丢失低位（如 0x80000004 转为 float32 后变为 0x80000000），与最终版大量漏交的正式测试结果相符；计分的标量历史版本使用 uint32_t 描述符。全部自行启动的评测会话已结束，按报告记录的 PID 核查无存活进程；未启动浏览器或网页服务器，清理记录见 work/process_cleanup.json。"
+}

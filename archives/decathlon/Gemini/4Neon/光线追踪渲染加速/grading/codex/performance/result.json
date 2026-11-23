@@ -1,0 +1,68 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 80.4,
+      "reason": "官方 evaluate.py 完整评测：基线最小 511.328 ms，提交最小 71.4596 ms，加速 7.155483658 倍，q=80.407433915。5 次计时画面及 12 个隐藏输入全部通过，c=h=1，按未舍入 qch 得 80.407433915，报告保留一位小数；源码核查未发现实质性违规。"
+    }
+  ],
+  "metrics": {
+    "baseline_min_ms": 511.328,
+    "submission_min_ms": 71.4596,
+    "speedup": 7.155483657899008,
+    "q": 80.4074339153365,
+    "c": 1,
+    "h": 1,
+    "score_unrounded": 80.4074339153365,
+    "timed_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_passed": 3,
+    "timed_exception_pixels": [
+      822,
+      822,
+      822,
+      822,
+      822
+    ],
+    "timed_exception_limit": 3232,
+    "baseline_times_ms": [
+      511.328,
+      513.0609,
+      512.9364,
+      513.414,
+      512.9708
+    ],
+    "submission_times_ms": [
+      71.7617,
+      71.4966,
+      71.5161,
+      71.4596,
+      72.1724
+    ],
+    "official_results": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Gemini\\4Neon\\光线追踪渲染加速\\codex\\performance\\work\\official_report\\results.json"
+  },
+  "notes": "评的是作答结束时工作目录的内容，已复制到 work\\submission；不看 git 提交，未使用原提交的可执行文件或基线计时。所有编译与测量经指定 process_job.py --cpus 16-27 包装，官方入口保留 --cpus 16-27，仅运行一次完整 evaluate.py。正式报告 valid=true、formal=true；基线 5 次全部通过，3 个公开边界全部通过。扫描命中的锁页内存用于输入上传，D2H 仅回传建树/队列计数，源码核对未发现作弊或实质性违规，详见 work\\rule_review.txt。评测程序已全部自然退出，已核对本会话记录的 PID 无遗留，未启动浏览器或服务器。"
+}

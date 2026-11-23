@@ -1,0 +1,56 @@
+// /Programs/sender.nos — 消息发送示例程序
+// 查找 receiver 进程并按顺序发送多条带时间戳的消息，用于验证 FIFO 消息通信。
+
+let me = syscall("getpid");
+let targetPid = null;
+if (ARGS != null && ARGS.targetPid != null) {
+  targetPid = ARGS.targetPid;
+}
+
+// 若未指定目标，查找运行中的 receiver.nos
+let tries = 0;
+while (targetPid == null && tries < 40) {
+  let found = syscall("find_proc", "receiver");
+  if (found != null && len(found) > 0) {
+    targetPid = found[0].pid;
+    break;
+  }
+  syscall("sleep", 0.05);
+  tries += 1;
+}
+
+if (targetPid == null) {
+  syscall("log", "未找到 receiver 进程，请先运行 /Programs/receiver.nos");
+  return { ok: false, error: "no receiver" };
+}
+
+let count = 5;
+if (ARGS != null && ARGS.count != null) count = ARGS.count;
+let prefix = "消息";
+if (ARGS != null && ARGS.prefix != null) prefix = ARGS.prefix;
+
+let sent = 0;
+for (let i = 1; i <= count; i += 1) {
+  let payload = {
+    seq: i,
+    text: prefix + " #" + str(i),
+    sentAt: syscall("time"),
+    from: me.pid
+  };
+  let res = syscall("send", targetPid, payload);
+  // 立即篡改本地 payload，验证接收方拿到的是发送时的值副本
+  payload.text = "已被发送方修改";
+  if (res && res.ok) {
+    sent += 1;
+    syscall("log", "已发送 -> PID " + str(targetPid) + ": " + prefix + " #" + str(i));
+  } else {
+    let err = "发送失败";
+    if (res != null && res.error != null) err = str(res.error);
+    syscall("log", "发送失败 (" + str(i) + "): " + err);
+    break;
+  }
+  syscall("sleep", 0.08);
+}
+
+syscall("set_result", { sent: sent, targetPid: targetPid });
+return sent;

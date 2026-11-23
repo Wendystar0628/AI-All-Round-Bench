@@ -1,0 +1,243 @@
+{
+  "problem": "11",
+  "parts": [
+    {
+      "name": "1",
+      "title": "三腔分层伺服分配箱",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [-12, -12, 172, 112]}],
+          "depth": 14
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "斜肩主体",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"path": [[0, 14], [160, 14], [160, 56], [122, 94], [0, 94]]}],
+          "depth": [-100, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左侧接口凸台",
+          "plane": "YZ",
+          "origin": [-8, 0, 0],
+          "loops": [{"rect": [22, 48, 78, 84]}],
+          "depth": 8
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "底面定位槽",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [58, 32, 98, 68]}],
+          "depth": 6
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左上腔",
+          "plane": "XY",
+          "origin": [0, 0, 50],
+          "loops": [{"rect": [12, 12, 54, 88]}],
+          "depth": 32
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左下腔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "loops": [{"rect": [12, 12, 54, 88]}],
+          "depth": 28
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左腔隔板窗口",
+          "plane": "XY",
+          "origin": [0, 0, 40],
+          "loops": [{"rect": [22, 34, 44, 66]}],
+          "depth": 12
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "中前腔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "loops": [{"rect": [64, 12, 102, 46]}],
+          "depth": 68
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "中后腔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "loops": [{"rect": [64, 54, 102, 88]}],
+          "depth": 68
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "右腔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "loops": [{"rect": [112, 12, 148, 88]}],
+          "depth": 38
+        },
+        {
+          "type": "hole",
+          "name": "左凸台Φ22/Φ32阶梯孔",
+          "plane": "YZ",
+          "origin": [-10, 0, 0],
+          "at": [50, 66],
+          "d": 22,
+          "depth": 26,
+          "reverse": true,
+          "cbore": {"d": 32, "depth": 8}
+        },
+        {
+          "type": "hole",
+          "name": "左下侧Φ12孔",
+          "plane": "YZ",
+          "origin": [-2, 0, 0],
+          "at": [76, 24],
+          "d": 12,
+          "depth": 18,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "前左上Φ28入口孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [34, 66],
+          "d": 28,
+          "depth": 18
+        },
+        {
+          "type": "hole",
+          "name": "前右下Φ30入口孔",
+          "plane": "XZ",
+          "origin": [0, -2, 0],
+          "at": [130, 30],
+          "d": 30,
+          "depth": 18
+        },
+        {
+          "type": "hole",
+          "name": "中后腔Φ26孔",
+          "plane": "XZ",
+          "origin": [0, 102, 0],
+          "at": [83, 28],
+          "d": 26,
+          "depth": 18,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "左中上Φ22连孔",
+          "plane": "YZ",
+          "origin": [52, 0, 0],
+          "at": [30, 66],
+          "d": 22,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "左中下Φ18连孔",
+          "plane": "YZ",
+          "origin": [52, 0, 0],
+          "at": [70, 28],
+          "d": 18,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "中右Φ16连孔",
+          "plane": "YZ",
+          "origin": [100, 0, 0],
+          "at": [50, 34],
+          "d": 16,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "中隔板Φ20孔",
+          "plane": "XZ",
+          "origin": [0, 44, 0],
+          "at": [83, 30],
+          "d": 20,
+          "depth": 12
+        },
+        {
+          "type": "hole",
+          "name": "斜面Φ18斜孔",
+          "plane": {
+            "origin": [140, 50, 76],
+            "normal": [0.707106781, 0, 0.707106781],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 18,
+          "depth": 56
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ10斜孔",
+          "plane": {
+            "origin": [83, 22, 96],
+            "normal": [0, 0.5, 0.866025404],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 44
+        },
+        {
+          "type": "hole",
+          "name": "底板四个Φ9安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 14],
+          "at": [[-6, -6], [166, -6], [-6, 106], [166, 106]],
+          "d": 9,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "name": "顶面两个Φ6定位孔",
+          "plane": "XY",
+          "origin": [0, 0, 94],
+          "at": [[6, 18], [6, 82]],
+          "d": 6,
+          "depth": 12
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[80, -12, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[-12, -12, 7]]
+        }
+      ]
+    }
+  ]
+}

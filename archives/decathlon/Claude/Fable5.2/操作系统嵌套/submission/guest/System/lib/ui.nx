@@ -1,0 +1,253 @@
+// /System/lib/ui.nx —— 应用界面库：向窗口管理程序申请窗口、把界面画成显示列表、处理它转来的输入消息。
+// 应用把界面元素提交给显示接口（sys("draw")），输入经消息到达；命中判断在本库里完成。
+
+var TH = { bg: "#141925", panel: "#1b2231", panel2: "#232c3f", panel3: "#2b3650", line: "#303b54", text: "#e6ebf5", dim: "#93a0b8",
+           accent: "#2ec4b6", accent2: "#1a8f86", ok: "#5fd38d", warn: "#f5b942", danger: "#f0616d", paper: "#f4f6fa", ink: "#1c2433" };
+var UI = { app: "", title: "", wid: "", pid: 0, wm: 0, views: [], cur: null, L: null, hits: null, ox: 0, oy: 0, stack: [],
+           focus: "", vals: {}, s2: 0, e2: 0, winFocus: true, down: "", downView: 0, dirty: true, quit: false, pending: [],
+           proj: null, info: null, cap: false, status: null, depth: 2, sysid: "", paused: false };
+
+function ui_theme(depth) {
+  var acc = ["#8b6cf0", "#8b6cf0", "#2ec4b6", "#f5a524", "#f06595", "#7bd66b", "#5aa9ff", "#c58bf2"];
+  var acc2 = ["#6a4fd0", "#6a4fd0", "#1a8f86", "#b87512", "#b8416b", "#4f9a43", "#3577c2", "#8f5cc0"];
+  var i = depth; if (i >= len(acc)) { i = 2 + (depth - 2) % 6; }
+  TH.accent = acc[i]; TH.accent2 = acc2[i];
+  return 0;
+}
+
+// ---------- 图元 ----------
+function rect(x, y, w, h, c) { var p = { k: "rect", x: x, y: y, w: w, h: h, c: c }; push(UI.L, p); return p; }
+function text(x, y, w, h, t) { var p = { k: "text", x: x, y: y, w: w, h: h, t: t, c: TH.text, s: 13 }; push(UI.L, p); return p; }
+function icon(x, y, s, name, c) { var p = { k: "icon", x: x, y: y, w: s, h: s, n: name, c: c }; push(UI.L, p); return p; }
+function line(x1, y1, x2, y2, c, lw) { var p = { k: "line", x1: x1, y1: y1, x2: x2, y2: y2, c: c, lw: lw }; push(UI.L, p); return p; }
+function poly(pts, c, fill, lw) { var p = { k: "poly", pts: pts, c: c, fill: fill, lw: lw }; push(UI.L, p); return p; }
+function hit(id, x, y, w, h, data) { push(UI.hits, { id: id, x: x + UI.ox, y: y + UI.oy, w: w, h: h, data: data, kind: "" }); return 0; }
+function btn(id, x, y, w, h, t) {
+  var p = { k: "btn", id: id, x: x, y: y, w: w, h: h, t: t, v: 0 };
+  push(UI.L, p); hit(id, x, y, w, h, null);
+  return p;
+}
+// 带数据的按钮：点击时把 data 交给 click 处理函数
+function btnd(id, x, y, w, h, t, data) {
+  var p = { k: "btn", id: id, x: x, y: y, w: w, h: h, t: t, v: 0 };
+  push(UI.L, p); hit(id, x, y, w, h, data);
+  return p;
+}
+function input(id, x, y, w, h, ph) {
+  if (!has(UI.vals, id)) { UI.vals[id] = ""; }
+  var f = UI.focus == id && UI.winFocus && UI.cur.active;
+  var p = { k: "input", id: id, x: x, y: y, w: w, h: h, v: UI.vals[id], ph: ph, focus: f };
+  if (UI.focus == id) { p.s2 = UI.s2; p.e2 = UI.e2; }
+  push(UI.L, p);
+  push(UI.hits, { id: id, x: x + UI.ox, y: y + UI.oy, w: w, h: h, data: null, kind: "input" });
+  return p;
+}
+function gbegin(x, y, w, h) {
+  var g = { k: "g", x: x, y: y, w: w, h: h, items: [] };
+  push(UI.L, g);
+  push(UI.stack, [UI.L, UI.ox, UI.oy]);
+  UI.L = g.items; UI.ox = UI.ox + x; UI.oy = UI.oy + y;
+  return g;
+}
+function gend() { var s = pop(UI.stack); UI.L = s[0]; UI.ox = s[1]; UI.oy = s[2]; return 0; }
+function ui_val(id) { if (has(UI.vals, id)) { return UI.vals[id]; } return ""; }
+function ui_set(id, v) { UI.vals[id] = str(v); if (UI.focus == id) { UI.s2 = len(UI.vals[id]); UI.e2 = UI.s2; } UI.dirty = true; return 0; }
+function ui_focus(id) { UI.focus = id; var v = ui_val(id); UI.s2 = len(v); UI.e2 = UI.s2; UI.dirty = true; return 0; }
+function ui_dirty() { UI.dirty = true; return 0; }
+function ui_hit(view, x, y) {
+  var hs = view.hits; var i = len(hs) - 1;
+  while (i >= 0) {
+    var h = hs[i];
+    if (x >= h.x && y >= h.y && x < h.x + h.w && y < h.y + h.h) { return h; }
+    i = i - 1;
+  }
+  return null;
+}
+// 常用组合
+function label(x, y, w, h, t) { var p = text(x, y, w, h, t); p.c = TH.dim; p.s = 12; return p; }
+function panel(x, y, w, h) { var p = rect(x, y, w, h, TH.panel); return p; }
+function clamp(v, a, b) { if (v < a) { return a; } if (v > b) { return b; } return v; }
+function fmt(n, d) { return fixed(n, d); }
+function fmtSize(n) {
+  if (n < 1024) { return str(n) + " B"; }
+  if (n < 1048576) { return fixed(n / 1024, 1) + " KB"; }
+  return fixed(n / 1048576, 1) + " MB";
+}
+function fmtNum(n) {
+  if (n >= 1000000) { return fixed(n / 1000000, 2) + "M"; }
+  if (n >= 10000) { return fixed(n / 1000, 1) + "k"; }
+  return str(floor(n));
+}
+function endsWith(s, suf) { return len(s) >= len(suf) && substr(s, len(s) - len(suf)) == suf; }
+function startsWith(s, pre) { return len(s) >= len(pre) && substr(s, 0, len(pre)) == pre; }
+function baseName(p) { var i = len(p) - 1; while (i >= 0 && substr(p, i, 1) != "/") { i = i - 1; } return substr(p, i + 1); }
+function dirName(p) { var i = len(p) - 1; while (i > 0 && substr(p, i, 1) != "/") { i = i - 1; } if (i <= 0) { return "/"; } return substr(p, 0, i); }
+function joinPath(d, n) { if (d == "/") { return "/" + n; } return d + "/" + n; }
+function iserr(v) { return type(v) == "map" && has(v, "error"); }
+
+// ---------- 窗口与消息循环 ----------
+function wm_send(m) { return sys("send", UI.wm, m); }
+function ui_open(app, title, w, h, opts) {
+  UI.app = app; UI.title = title; UI.pid = sys("pid"); UI.wm = sys("wm");
+  sys("app", app);
+  var k = sys("kinfo");
+  UI.depth = k.depth; UI.sysid = k.id; UI.info = k;
+  ui_theme(k.depth);
+  var sid = sys("surface");
+  var m = { t: "open", app: app, title: title, w: w, h: h, sid: sid };
+  if (type(opts) == "map") { var ks = keys(opts); var i = 0; while (i < len(ks)) { m[ks[i]] = opts[ks[i]]; i = i + 1; } }
+  wm_send(m);
+  // 等窗口管理程序答复；其间到达的其他消息先存着
+  while (true) {
+    var r = sys("recv");
+    if (r.from == UI.wm && type(r.body) == "map" && r.body.t == "opened") {
+      UI.wid = r.body.wid;
+      push(UI.views, { sid: sid, w: r.body.w, h: r.body.h, hits: [], proj: false, active: true });
+      break;
+    }
+    push(UI.pending, r);
+  }
+  return 0;
+}
+function ui_title(t) { UI.title = t; wm_send({ t: "title", wid: UI.wid, title: t }); return 0; }
+function ui_menu(x, y, items, tag) {
+  // 输入来自投送视图时，菜单显示在投送所在的目标桌面上
+  if (UI.downView == 1 && UI.proj != null) { sys("bus_send", { to: UI.proj.target, svc: "wm", k: "proj_menu", win: UI.wid, x: x, y: y, items: items, tag: tag }); return 0; }
+  wm_send({ t: "menu", wid: UI.wid, x: x, y: y, items: items, tag: tag });
+  return 0;
+}
+function ui_dialog(kind, title, body, value, tag, btns) { wm_send({ t: "dialog", wid: UI.wid, kind: kind, title: title, text: body, value: value, tag: tag, btns: btns }); return 0; }
+function ui_notify(title, body) { wm_send({ t: "notify", title: title, text: body }); return 0; }
+function ui_launch(app, args) { wm_send({ t: "launch", app: app, args: args }); return 0; }
+function ui_quit() {
+  UI.quit = true;
+  if (UI.proj != null) { sys("bus_send", { to: UI.proj.target, svc: "wm", k: "proj_end", win: UI.wid }); }
+  wm_send({ t: "close", wid: UI.wid });
+  return 0;
+}
+function ui_redraw(A) {
+  var i = 0;
+  while (i < len(UI.views)) {
+    var v = UI.views[i];
+    UI.cur = v; UI.L = []; UI.hits = []; UI.ox = 0; UI.oy = 0; UI.stack = [];
+    var f = A.draw; f(v);
+    if (UI.status != null) { push(UI.L, { k: "meta", d: UI.status }); }
+    v.hits = UI.hits;
+    sys("draw", v.sid, UI.L);
+    i = i + 1;
+  }
+  return 0;
+}
+function ui_edit(A, m) {
+  // 文本事件：把 [s,e) 换成 text；内容由本程序保存，设备只负责显示
+  var id = UI.focus; var v = ui_val(id);
+  var s = clamp(m.s, 0, len(v)); var e = clamp(m.e, s, len(v));
+  var nv = substr(v, 0, s) + m.text + substr(v, e);
+  UI.vals[id] = nv; UI.s2 = s + len(m.text); UI.e2 = UI.s2; UI.dirty = true;
+  if (has(A, "input")) { var f = A.input; f(id, nv); }
+  return 0;
+}
+function ui_input_event(A, m, vi) {
+  var view = UI.views[vi];
+  if (view == null) { return 0; }
+  if (m.t == "ptr") {
+    var h = ui_hit(view, m.x, m.y);
+    if (m.k == "down") {
+      UI.down = ""; UI.downView = vi;
+      if (h != null) { UI.down = h.id; }
+      if (h != null && h.kind == "input") { if (UI.focus != h.id) { UI.focus = h.id; UI.s2 = len(ui_val(h.id)); UI.e2 = UI.s2; UI.dirty = true; } }
+      else if (UI.focus != "" && m.b == 0) { UI.focus = ""; UI.dirty = true; }
+      UI.cap = true;
+    }
+    if (has(A, "ptr")) { var f = A.ptr; f(m, h, view); }
+    if (m.k == "up") {
+      UI.cap = false;
+      if (h != null && h.id == UI.down && m.b == 0 && h.kind != "input" && has(A, "click")) { var g = A.click; g(h.id, h.data, m, view); UI.dirty = true; }
+      UI.down = "";
+    }
+    return 0;
+  }
+  if (m.t == "text") { if (UI.focus != "") { ui_edit(A, m); } return 0; }
+  if (m.t == "sel") { if (UI.focus != "") { UI.s2 = m.s; UI.e2 = m.e; } return 0; }
+  if (m.t == "key") {
+    if (UI.focus != "" && m.key == "Enter" && has(A, "enter")) { var fe = A.enter; fe(UI.focus); UI.dirty = true; return 0; }
+    if (UI.focus != "" && m.key == "Escape") { UI.focus = ""; UI.dirty = true; }
+    if (has(A, "key")) { var fk = A.key; fk(m); }
+    return 0;
+  }
+  if (m.t == "drag") { if (has(A, "drag")) { var fd = A.drag; fd(m, view); } return 0; }
+  return 0;
+}
+function ui_project(target) {
+  if (UI.proj != null) { sys("bus_send", { to: UI.proj.target, svc: "wm", k: "proj_open", win: UI.wid, app: UI.app, title: UI.title, sid: UI.proj.sid, w: UI.views[0].w, h: UI.views[0].h }); return 0; }
+  var psid = sys("surface");
+  UI.proj = { target: target, sid: psid, ready: false };
+  sys("bus_send", { to: target, svc: "wm", k: "proj_open", win: UI.wid, app: UI.app, title: UI.title, sid: psid, w: UI.views[0].w, h: UI.views[0].h });
+  return 0;
+}
+function ui_proj_drop() {
+  if (UI.proj == null) { return 0; }
+  if (len(UI.views) > 1) { pop(UI.views); }
+  sys("surface_free", UI.proj.sid);
+  UI.proj = null;
+  wm_send({ t: "proj_state", wid: UI.wid, on: false });
+  return 0;
+}
+function ui_handle(A, m, from) {
+  if (type(m) != "map") { return 0; }
+  var t = m.t;
+  if (has(m, "k") && !has(m, "t")) {
+    // 经系统总线到达的跨系统消息
+    var k = m.k;
+    if (k == "proj_ack" && UI.proj != null) {
+      if (!UI.proj.ready) { UI.proj.ready = true; push(UI.views, { sid: UI.proj.sid, w: m.w, h: m.h, hits: [], proj: true, active: true }); }
+      else { UI.views[1].w = m.w; UI.views[1].h = m.h; }
+      wm_send({ t: "proj_state", wid: UI.wid, on: true, target: UI.proj.target });
+      UI.dirty = true;
+    } else if (k == "proj_size" && UI.proj != null && UI.proj.ready) { UI.views[1].w = m.w; UI.views[1].h = m.h; UI.dirty = true; }
+    else if (k == "proj_input" && UI.proj != null && UI.proj.ready) {
+      if (m.e.t == "focus") { UI.views[1].active = m.e.on; UI.dirty = true; }
+      else { ui_input_event(A, m.e, 1); }
+    }
+    else if (k == "proj_closed") { ui_proj_drop(); UI.dirty = true; if (has(A, "note")) { var fn = A.note; fn("投送窗口已关闭"); } }
+    else if (has(A, "bus")) { var fb = A.bus; fb(m); }
+    return 0;
+  }
+  if (t == "ptr" || t == "key" || t == "text" || t == "sel" || t == "drag") { ui_input_event(A, m, 0); return 0; }
+  if (t == "resize") { UI.views[0].w = m.w; UI.views[0].h = m.h; UI.dirty = true; if (has(A, "resize")) { var fr = A.resize; fr(m.w, m.h); } return 0; }
+  if (t == "focus") { UI.winFocus = m.on; UI.views[0].active = m.on; UI.dirty = true; return 0; }
+  if (t == "closing") { if (has(A, "close")) { var fc = A.close; fc(); } else { ui_quit(); } return 0; }
+  if (t == "project") { ui_project(m.target); return 0; }
+  if (t == "menu_pick") { if (has(A, "menu")) { var fm = A.menu; fm(m.id, m.tag, m.data); UI.dirty = true; } return 0; }
+  if (t == "dialog_r") { if (has(A, "dialog")) { var fd = A.dialog; fd(m.tag, m.btn, m.value); UI.dirty = true; } return 0; }
+  if (t == "sys_restored") {
+    // 快照恢复或分叉：范围内的投送保留（分叉时指向新实例），范围外的投送不带过来
+    if (UI.proj != null) {
+      if (m.remap != null && has(m.remap, UI.proj.target)) { UI.proj.target = m.remap[UI.proj.target]; }
+      else if (indexOf(m.scope, UI.proj.target, 0) < 0) { ui_proj_drop(); }
+    }
+    UI.sysid = m.id;
+    if (has(A, "restored")) { var fx = A.restored; fx(m); }
+    UI.dirty = true;
+    return 0;
+  }
+  if (has(A, "msg")) { var f = A.msg; f(m, from); }
+  return 0;
+}
+// 主循环：A 是处理函数表 {draw, click, ptr, key, input, enter, msg, bus, tick, tickMs, close, menu, dialog, drag, resize, restored}
+function ui_run(A) {
+  var next = sys("time");
+  while (!UI.quit) {
+    var m = null;
+    if (len(UI.pending) > 0) { m = remove(UI.pending, 0); }
+    else if (has(A, "tick") && A.tickMs > 0) {
+      var now = sys("time");
+      if (now >= next) { var ft = A.tick; ft(now); next = next + A.tickMs; if (next < now) { next = now + A.tickMs; } }
+      else { m = sys("recv", next - now); }
+    } else { m = sys("recv"); }
+    if (m != null) { ui_handle(A, m.body, m.from); }
+    if (UI.dirty && !UI.quit && len(UI.pending) == 0) { UI.dirty = false; ui_redraw(A); }
+  }
+  sys("exit", 0);
+  return 0;
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>网络安全攻防战 · 汐域守护进程控制台</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Real-time 3D WebGL Viewport -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Crisp 3D-Projected World Labels, Health Bars & Floating Combat Readouts -->
+  <div id="world-overlay"></div>
+
+  <!-- ================= MAIN MENU & LEVEL SELECT (Daemon OS Launchpad) ================= -->
+  <div id="menu-overlay" class="menu-overlay">
+    <div class="menu-shell">
+      <header class="menu-header">
+        <div class="brand-block">
+          <div class="brand-kicker">XIYU AUTONOMOUS SYSTEM // DAEMON OPS OS v4.2</div>
+          <h1 class="brand-title">网络安全攻防战</h1>
+          <p class="brand-desc">自治域「汐域」正遭攻击组织「蛰影」全面渗透。作为守护进程，你需在维持业务连通的前提下，灵活隔离交换节点、动态重塑入侵路线，守护全域核心中枢。</p>
+        </div>
+        <div class="menu-top-actions">
+          <button id="btn-menu-codex" class="btn-secondary"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h6.5a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4V4z"/><path d="M20 4h-6.5a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20V4z"/></svg></span> 设备手册 / 威胁档案</button>
+        </div>
+      </header>
+
+      <section class="menu-section">
+        <div class="sec-head">
+          <span class="sec-code">01 // SECTOR DEPLOYMENT</span>
+          <h2>选择受护网段（三图均可直接进入）</h2>
+        </div>
+        <div id="map-select-grid" class="map-select-grid"></div>
+      </section>
+
+      <section class="menu-section">
+        <div class="sec-head">
+          <span class="sec-code">02 // LIVE TACTICAL REPLAY</span>
+          <h2>实战演示（实时引擎演算 · 总时长 58s）</h2>
+        </div>
+        <div id="demo-select-grid" class="demo-select-grid"></div>
+      </section>
+
+      <footer class="menu-footer">
+        <span>镜头操作：<b>中键拖动</b> 环绕 ｜ <b>Shift + 中键</b> 平移 ｜ <b>滚轮</b> 缩放 ｜ <b>左键</b> 点选与拖放部署 ｜ <b>R</b> 复位视角</span>
+        <span>快捷键：<b>空格</b> 暂停 ｜ <b>F1</b> 图鉴手册 ｜ <b>ESC</b> 取消 / 菜单</span>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ================= COMBAT HUD ================= -->
+  <div id="hud-root" class="hud-root hidden">
+    <!-- Top Telemetry Bar -->
+    <header class="top-bar">
+      <div class="top-left">
+        <div class="sector-pill">
+          <span id="hud-map-type" class="sector-type">企业内网</span>
+          <strong id="hud-map-name" class="sector-name">分段内网</strong>
+        </div>
+
+        <div class="kpi-pill kpi-compute" title="算力：随战斗增长与消灭敌人回收，用于部署升级塔与备份还原">
+          <span class="kpi-label">算力</span>
+          <strong id="hud-compute" class="kpi-val">260</strong>
+        </div>
+
+        <div class="kpi-pill kpi-intel" title="情报：波次奖励、重点威胁与守住隔离节点产出，用于隔离节点、分支升级与情报道具">
+          <span class="kpi-label">情报</span>
+          <strong id="hud-intel" class="kpi-val">45</strong>
+        </div>
+
+        <div class="kpi-pill kpi-integrity" title="中枢完整度：敌人突破核心则下降，归零即防御失败">
+          <div class="int-top">
+            <span class="kpi-label">中枢完整度</span>
+            <strong id="hud-integrity-val" class="kpi-val">20 / 20</strong>
+          </div>
+          <div class="int-track"><div id="hud-integrity-bar" class="int-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+
+      <div class="top-center">
+        <div class="wave-pill">
+          <span class="wave-tag">波次</span>
+          <strong id="hud-wave-num" class="wave-num">0 / 14</strong>
+          <span id="hud-wave-name" class="wave-name">布防准备中</span>
+        </div>
+        <button id="btn-call-wave" class="btn-accent-sm hidden">提前迎战</button>
+        <button id="btn-forecast" class="btn-tool-pill"><span class="ico-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5" opacity="0.55"/><path d="M12 12l6-4"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></span> 流量预报</button>
+      </div>
+
+      <div class="top-right">
+        <button id="btn-pause" class="btn-icon" title="暂停 / 继续 (Space)"></button>
+        <button id="btn-speed" class="btn-tool-pill speed-btn" title="切换倍速 (1× / 2×)">1×</button>
+        <button id="btn-reset-cam" class="btn-tool-pill" title="回归默认全景视角 (R)"><span class="ico-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/><circle cx="12" cy="12" r="3"/></svg></span> 复位视角</button>
+        <div class="audio-wrap">
+          <button id="btn-audio" class="btn-icon" title="音量与静音设置"></button>
+          <div id="audio-popover" class="audio-popover hidden">
+            <div class="aud-title">音频控制台</div>
+            <label>主音量 <input id="vol-master" type="range" min="0" max="100" value="65" /></label>
+            <label>环境音乐 <input id="vol-bgm" type="range" min="0" max="100" value="42" /></label>
+            <label>战斗音效 <input id="vol-sfx" type="range" min="0" max="100" value="72" /></label>
+            <button id="btn-mute-toggle" class="btn-secondary-sm">一键静音</button>
+          </div>
+        </div>
+        <button id="btn-codex" class="btn-tool-pill" title="设备手册与威胁档案 (F1)"><span class="ico-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h6.5a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4V4z"/><path d="M20 4h-6.5a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20V4z"/></svg></span> 图鉴</button>
+        <button id="btn-menu" class="btn-tool-pill" title="系统菜单 (Esc)"><span class="ico-xs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span> 菜单</button>
+      </div>
+    </header>
+
+    <!-- Traffic Forecast Dropdown Panel -->
+    <div id="forecast-panel" class="forecast-panel hidden"></div>
+
+    <!-- Boss Top Health Bar -->
+    <div id="boss-bar-wrap" class="boss-bar-wrap hidden"></div>
+
+    <!-- High-Priority Event / Warning Toast Banner -->
+    <div id="alert-banner" class="alert-banner hidden"></div>
+
+    <!-- Interceptor Facing Prompt -->
+    <div id="dir-prompt" class="dir-prompt hidden">设定拦截器朝向（移动鼠标或按方向键转向 · 左键/回车确认 · 右键/ESC取消）</div>
+
+    <!-- Live Route Topology Status Strip (Entry -> Exit + Preview Diff + Changed Highlight!) -->
+    <div id="route-strip" class="route-strip"></div>
+
+    <!-- Left-side System Event Log -->
+    <div id="sys-log-box" class="sys-log-box"></div>
+
+    <!-- Interactive Drag-and-Drop Floating Tooltip -->
+    <div id="drag-tooltip" class="drag-tooltip hidden"></div>
+
+    <!-- Right-side Context Inspector Panel -->
+    <aside id="inspector-panel" class="inspector-panel hidden"></aside>
+
+    <!-- Demo Subtitle Bar (Shown during 实战演示 & videoExport) -->
+    <div id="demo-subtitle-bar" class="demo-subtitle-bar hidden">
+      <div class="demo-sub-head">
+        <span id="demo-tag" class="demo-tag">实战演示</span>
+        <div class="demo-prog-track"><div id="demo-progress-fill" class="demo-prog-fill"></div></div>
+        <button id="btn-exit-demo" class="btn-exit-demo">退出演示 (ESC)</button>
+      </div>
+      <div id="demo-subtitle-text" class="demo-subtitle-text"></div>
+    </div>
+
+    <!-- Bottom Deployment & Tactical Item Dock -->
+    <footer id="deploy-dock" class="deploy-dock"></footer>
+  </div>
+
+  <!-- Virtual Cursor for Live Demos -->
+  <div id="demo-cursor" class="demo-cursor hidden">
+    <svg class="cursor-svg" viewBox="0 0 28 28">
+      <polygon points="3,2 23,13 14,15 11,24" fill="#e8fbff" stroke="#081422" stroke-width="2.2" stroke-linejoin="round"/>
+    </svg>
+    <div class="cursor-ripple"></div>
+    <div id="demo-cursor-badge" class="demo-cursor-badge hidden"></div>
+  </div>
+
+  <!-- ================= CODEX MODAL (设备手册 / 威胁档案 / 拓扑说明) ================= -->
+  <div id="codex-modal" class="modal-backdrop hidden">
+    <div class="modal-window codex-window">
+      <div class="modal-head">
+        <div>
+          <div class="modal-kicker">XIYU DAEMON DATABASE</div>
+          <h3>汐域守护进程图鉴与作战手册</h3>
+        </div>
+        <div class="codex-tabs">
+          <button class="codex-tab active" data-codex-tab="devices">设备手册（塔与道具）</button>
+          <button class="codex-tab" data-codex-tab="threats">威胁档案（敌军与领主）</button>
+          <button class="codex-tab" data-codex-tab="systems">拓扑、状态与操作</button>
+        </div>
+        <button id="btn-close-codex" class="btn-close-modal">✕</button>
+      </div>
+      <div id="codex-body" class="codex-body"></div>
+    </div>
+  </div>
+
+  <!-- ================= PAUSE MENU MODAL ================= -->
+  <div id="pause-modal" class="modal-backdrop hidden">
+    <div class="modal-window pause-window">
+      <div class="modal-kicker">DAEMON PROCESS SUSPENDED</div>
+      <h3>系统菜单 · 战斗已暂停</h3>
+      <div class="pause-actions">
+        <button id="btn-resume-game" class="btn-primary">继续守护防线</button>
+        <button id="btn-pause-codex" class="btn-secondary">查阅设备手册与威胁档案</button>
+        <button id="btn-restart-map" class="btn-secondary">重新部署本图</button>
+        <button id="btn-back-menu" class="btn-danger-outline">返回关卡选择</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INCIDENT REPORT MODAL (结算报告) ================= -->
+  <div id="report-modal" class="modal-backdrop hidden">
+    <div id="report-content" class="modal-window report-window"></div>
+  </div>
+
+  <!-- Classic bundled script: 100% Chrome file:// double-click compatible! -->
+  <script src="dist/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+{
+  "problem": "04",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏心双级迷宫泵盖",
+      "features": [
+        {
+          "type": "revolve",
+          "plane": "XZ",
+          "axis": "y",
+          "loops": [
+            {"path": [[37, 0], [72, 0], [72, 8], [45, 8], [45, 21], [34, 21], [34, 35], [25, 35], [25, 27], [15, 27], [15, 8], [37, 8]]}
+          ]
+        },
+        {"type": "chamfer", "distance": 1, "edges": [[62.3538290724, 36, 0]], "name": "大法兰下外圆棱C1"},
+        {
+          "type": "hole",
+          "plane": "XY",
+          "origin": [0, 0, 35],
+          "at": [[-40, 44], [40, 44], [-40, -44], [40, -44]],
+          "d": 9,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "plane": "XY",
+          "origin": [0, 0, 35],
+          "at": [[-58, 0]],
+          "d": 12,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "plane": "XY",
+          "origin": [0, 0, 35],
+          "at": [[12, -18]],
+          "d": 8,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "plane": "XZ",
+          "origin": [0, -72, 0],
+          "at": [[12, 14]],
+          "d": 8,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "plane": "YZ",
+          "origin": [72, 0, 0],
+          "at": [[0, 14]],
+          "d": 6,
+          "through": true
+        },
+        {
+          "type": "hole",
+          "plane": {"origin": [33, 0, 33], "normal": [0.5, 0, 0.8660254038], "x_dir": [0.8660254038, 0, -0.5]},
+          "at": [[0, 0]],
+          "d": 6,
+          "depth": 28
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "plane": "XY",
+          "loops": [{"rect": [-78, 28, -58, 40]}],
+          "depth": 8
+        },
+        {
+          "type": "hole",
+          "plane": "XY",
+          "origin": [0, 0, 8],
+          "at": [[-68, 34]],
+          "d": 6,
+          "through": true
+        }
+      ]
+    }
+  ]
+}

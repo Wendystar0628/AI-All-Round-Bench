@@ -1,0 +1,199 @@
+// ===========================================================================
+//  Systems.nsl —— 直属子系统管理（每层都有）
+//  新建、暂停、继续、单步、调速、重启、关闭、快照、恢复、分叉、打开内核源文件
+// ===========================================================================
+var W = 620
+var H = 420
+var dirty = true
+var subs = []
+var sel = -1
+var msg = ""
+var snaps = []
+var tick = 0
+var tab = 0        // 0 子系统 1 快照
+var confirmStop = -1
+
+func R(L, x, y, w, h, c, r) { L.push({ op: "rect", x: x, y: y, w: w, h: h, color: c, r: r }) }
+func T(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c }) }
+func TC(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c, align: "center" }) }
+func IC(L, name, x, y, s, c) { L.push({ op: "icon", name: name, x: x, y: y, size: s, color: c }) }
+func btn(L, x, y, w, h, label, hot, primary) {
+  var c = primary ? "#f5b942" : (hot ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)")
+  R(L, x, y, w, h, c, 7)
+  TC(L, x + w / 2, y + h / 2 + 4, label, 11, primary ? "#211803" : "#dfe5f1")
+}
+func refresh() {
+  subs = sys.request({ op: "list_subsystems" })
+  snaps = sys.fs_list("/Snapshots")
+  if (sel >= subs.length) { sel = subs.length - 1 }
+  dirty = true
+}
+func stateColor(s) {
+  if (s == "running") { return "#9ff0cf" }
+  if (s == "paused") { return "#f5d78e" }
+  if (s == "error") { return "#ff8d9c" }
+  return "#8f99ad"
+}
+func build() {
+  var L = []
+  R(L, 0, 0, W, H, "#0e1119", 0)
+  // 顶栏
+  R(L, 0, 0, W, 36, "rgba(255,255,255,0.03)", 0)
+  T(L, 10, 23, "直属子系统", 12.5, "#e3e9f5")
+  var tabx = 150
+  if (tab == 0) { R(L, tabx, 8, 62, 22, "rgba(245,185,66,0.18)", 6) }
+  T(L, tabx + 10, 23, "子系统", 11, tab == 0 ? "#f5b942" : "#8f99ad")
+  if (tab == 1) { R(L, tabx + 70, 8, 62, 22, "rgba(245,185,66,0.18)", 6) }
+  T(L, tabx + 80, 23, "快照", 11, tab == 1 ? "#f5b942" : "#8f99ad")
+  if (tab == 0) {
+    btn(L, W - 96, 6, 86, 24, "+ 新建子系统", false, true)
+    // 列表
+    var y = 48
+    for (var i = 0; i < subs.length; i++) {
+      var s = subs[i]
+      if (i == sel) { R(L, 8, y - 15, 190, 26, "rgba(245,185,66,0.16)", 7) }
+      R(L, 14, y - 9, 7, 7, stateColor(s.state), 4)
+      T(L, 28, y, s.name, 11.5, "#dfe5f1")
+      T(L, 150, y, s.state, 9.5, stateColor(s.state))
+      y = y + 30
+      if (y > H - 60) { break }
+    }
+    if (subs.length == 0) { T(L, 16, 70, "还没有子系统。", 11, "#6b7488"); T(L, 16, 90, "新建后，本系统会用内核程序启动它。", 11, "#6b7488") }
+    // 详情
+    if (sel >= 0 && sel < subs.length) {
+      var s = subs[sel]
+      var px = 210
+      R(L, px, 44, W - px - 10, H - 76, "rgba(255,255,255,0.03)", 10)
+      T(L, px + 14, 66, s.name, 14, "#ffffff")
+      T(L, px + 14, 88, "标识 " + s.id + " · 层级 " + s.depth + " · " + s.state, 10.5, "#8f99ad")
+      T(L, px + 14, 110, "虚拟时间 " + s.clock.toFixed(2) + " s · 速率 " + s.rate.toFixed(2) + "×", 10.5, "#c8d2e3")
+      if (s.error != null && s.error != "") { T(L, px + 14, 130, "内核错误：" + s.error, 10, "#ff8d9c") }
+      var y2 = 150
+      var bx = px + 14
+      btn(L, bx, y2, 66, 26, s.paused ? "继续" : "暂停", false, !s.paused); bx = bx + 72
+      btn(L, bx, y2, 60, 26, "单步", false, false); bx = bx + 66
+      btn(L, bx, y2, 60, 26, "调速 -", false, false); bx = bx + 66
+      btn(L, bx, y2, 60, 26, "调速 +", false, false)
+      y2 = y2 + 34
+      bx = px + 14
+      btn(L, bx, y2, 66, 26, "重启", false, false); bx = bx + 72
+      btn(L, bx, y2, 66, 26, "快照", false, false); bx = bx + 72
+      btn(L, bx, y2, 66, 26, "分叉", false, false); bx = bx + 72
+      btn(L, bx, y2, 66, 26, "关闭", false, false)
+      y2 = y2 + 36
+      T(L, px + 14, y2 + 8, "内核源文件：/Systems/" + s.id + "/kernel.nsl", 10, "#8f99ad")
+      btn(L, px + 14, y2 + 18, 110, 24, "打开内核源文件", false, false)
+      if (confirmStop == sel) {
+        R(L, px + 130, y2 + 12, 240, 56, "rgba(30,20,24,0.98)", 8)
+        T(L, px + 140, y2 + 32, "关闭会停止整棵子树，确定？", 10.5, "#ffb3bd")
+        btn(L, px + 140, y2 + 40, 54, 20, "确定", false, true)
+        btn(L, px + 200, y2 + 40, 54, 20, "取消", false, false)
+      }
+    }
+  } else {
+    T(L, 12, 60, "快照文件（保存在父系统 /Snapshots）", 11, "#8f99ad")
+    var y = 82
+    for (var i = 0; i < snaps.length; i++) {
+      var s = snaps[i]
+      R(L, 8, y - 15, W - 16, 26, "rgba(255,255,255,0.04)", 7)
+      IC(L, "snapshot", 16, y - 11, 16, "#9aa4ba")
+      T(L, 40, y, s.name, 11, "#dfe5f1")
+      T(L, W - 150, y, "" + s.size + " B", 10, "#6b7488")
+      btn(L, W - 96, y - 15, 82, 24, "恢复到原子树", false, false)
+      y = y + 30
+      if (y > H - 60) { break }
+    }
+    if (snaps.length == 0) { T(L, 16, 100, "还没有快照。在「子系统」页选中一个实例后点「快照」。", 11, "#6b7488") }
+  }
+  R(L, 0, H - 24, W, 24, "rgba(255,255,255,0.03)", 0)
+  T(L, 8, H - 8, msg == "" ? "暂停会停止整棵子树；重启重新载入内核源文件并保留已保存的文件" : msg, 10.5, "#8f99ad")
+  return L
+}
+func onClick(x, y) {
+  if (y < 36) {
+    if (x > 150 && x < 212) { tab = 0; dirty = true; return }
+    if (x > 220 && x < 282) { tab = 1; refresh(); return }
+    if (tab == 0 && x > W - 96) {
+      var r = sys.request({ op: "create_subsystem", name: "" })
+      if (!r.ok) { msg = "创建失败：" + r.error } else { msg = "已创建 " + r.name; sel = subs.length }
+      refresh()
+      return
+    }
+    return
+  }
+  if (tab == 1) {
+    var sy = 82
+    for (var i = 0; i < snaps.length; i++) {
+      if (y > sy - 15 && y < sy + 11 && x > W - 96) {
+        var r2 = sys.request({ op: "restore", path: snaps[i].path, id: null })
+        msg = r2.ok ? "已恢复快照" : "恢复失败：" + r2.error
+        dirty = true
+        return
+      }
+      sy = sy + 30
+      if (sy > H - 60) { break }
+    }
+    return
+  }
+  if (x < 205) {
+    var idx = ((y - 33) / 30).floor()
+    if (idx >= 0 && idx < subs.length) { sel = idx; dirty = true }
+    return
+  }
+  if (sel < 0 || sel >= subs.length) { return }
+  var s = subs[sel]
+  var px = 210
+  var y2 = 150
+  if (y > y2 && y < y2 + 26) {
+    var bx = px + 14
+    if (x > bx && x < bx + 66) { sys.request({ op: "control_subsystem", id: s.id, action: s.paused ? "resume" : "pause" }); refresh(); return }
+    bx = bx + 72
+    if (x > bx && x < bx + 60) { sys.request({ op: "control_subsystem", id: s.id, action: "step" }); refresh(); return }
+    bx = bx + 66
+    if (x > bx && x < bx + 60) { sys.request({ op: "control_subsystem", id: s.id, action: "rate", rate: s.rate * 0.5 }); refresh(); return }
+    bx = bx + 66
+    if (x > bx && x < bx + 60) { sys.request({ op: "control_subsystem", id: s.id, action: "rate", rate: s.rate * 2 }); refresh(); return }
+    return
+  }
+  y2 = y2 + 34
+  if (y > y2 && y < y2 + 26) {
+    var bx2 = px + 14
+    if (x > bx2 && x < bx2 + 66) { sys.request({ op: "restart_subsystem", id: s.id }); msg = "已重启"; refresh(); return }
+    bx2 = bx2 + 72
+    if (x > bx2 && x < bx2 + 66) {
+      var r3 = sys.request({ op: "snapshot", id: s.id })
+      msg = r3.ok ? "快照已保存：" + r3.path : "快照失败：" + r3.error
+      dirty = true; return
+    }
+    bx2 = bx2 + 72
+    if (x > bx2 && x < bx2 + 66) {
+      var r4 = sys.request({ op: "snapshot", id: s.id })
+      if (r4.ok) { var r5 = sys.request({ op: "fork", path: r4.path, id: null }); msg = r5.ok ? "已分叉为 " + r5.name : "分叉失败：" + r5.error } else { msg = "快照失败：" + r4.error }
+      refresh(); return
+    }
+    bx2 = bx2 + 72
+    if (x > bx2 && x < bx2 + 66) { confirmStop = sel; dirty = true; return }
+    return
+  }
+  y2 = y2 + 36
+  if (y > y2 + 18 && y < y2 + 42 && x > px + 14 && x < px + 124) {
+    sys.request({ op: "launch", path: "/System/Editor.nsl", name: "editor", title: "内核源文件", arg: "/Systems/" + s.id + "/kernel.nsl" })
+    return
+  }
+  if (confirmStop == sel && y > y2 + 40 && y < y2 + 60) {
+    if (x > px + 140 && x < px + 194) { sys.request({ op: "control_subsystem", id: s.id, action: "stop" }); confirmStop = -1; msg = "已关闭 " + s.name; refresh(); return }
+    if (x > px + 200 && x < px + 254) { confirmStop = -1; dirty = true; return }
+  }
+}
+func main() {
+  refresh()
+  sys.draw("main", build(), W, H)
+  while (true) {
+    var m = sys.recv()
+    if (m.type == "resize") { W = m.w; H = m.h; dirty = true }
+    else if (m.type == "mouse") { if (m.kind == "down") { onClick(m.x, m.y) } }
+    else if (m.type == "tick") { tick = tick + 1; if (tick % 3 == 0) { refresh() } }
+    else if (m.type == "close") { sys.exit(0) }
+    if (dirty) { sys.draw("main", build(), W, H); dirty = false }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "problem": "08",
+  "parts": [
+    {"name": "1", "title": "交错隔板双层润滑箱", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [-12, -12, 186, 130]}], "depth": 12},
+      {"type": "extrude", "name": "箱体", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [0, 0, 174, 118]}], "depth": 84},
+      {"type": "extrude", "name": "后侧三角肋", "plane": "XZ", "loops": [{"path": [[54, 12], [118, 12], [118, 40]]}], "depth": [-126, -118]},
+      {"type": "extrude", "op": "cut", "name": "左腔", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [10, 10, 54, 108]}], "depth": 74},
+      {"type": "extrude", "op": "cut", "name": "右腔", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [118, 10, 164, 108]}], "depth": 74},
+      {"type": "extrude", "op": "cut", "name": "中腔下层", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [62, 10, 110, 108]}], "depth": 32},
+      {"type": "extrude", "op": "cut", "name": "中腔上层", "plane": "XY", "origin": [0, 0, 52], "loops": [{"rect": [62, 10, 110, 108]}], "depth": 34},
+      {"type": "extrude", "op": "cut", "name": "左隔板上缺口", "plane": "XY", "origin": [0, 0, 66], "loops": [{"rect": [54, 10, 62, 52]}], "depth": 20},
+      {"type": "extrude", "op": "cut", "name": "左隔板下孔Φ20", "plane": "YZ", "origin": [54, 0, 0], "loops": [{"circle": [78, 30], "d": 20}], "depth": 8},
+      {"type": "extrude", "op": "cut", "name": "右隔板上孔Φ16", "plane": "YZ", "origin": [110, 0, 0], "loops": [{"circle": [32, 70], "d": 16}], "depth": 8},
+      {"type": "extrude", "op": "cut", "name": "右隔板下窗口", "plane": "XY", "origin": [0, 0, 12], "loops": [{"rect": [110, 66, 118, 100]}], "depth": 22},
+      {"type": "hole", "name": "中板回流孔2-Φ18", "plane": "XY", "origin": [0, 0, 52], "at": [[86, 78], [86, 32]], "d": 18, "depth": 8},
+      {"type": "hole", "name": "顶部加油口Φ30", "plane": "XY", "origin": [0, 0, 96], "at": [86, 78], "d": 30, "depth": 10},
+      {"type": "hole", "name": "前壁孔Φ24", "plane": "XZ", "origin": [0, 0, 0], "at": [30, 64], "d": 24, "depth": 10},
+      {"type": "extrude", "op": "cut", "name": "前壁矩形窗", "plane": "XZ", "loops": [{"rect": [68, 62, 104, 74]}], "depth": [-10, 0]},
+      {"type": "hole", "name": "后壁孔Φ24", "plane": "ZX", "origin": [0, 118, 0], "at": [28, 142], "d": 24, "depth": 10},
+      {"type": "hole", "name": "底部排油孔Φ12", "plane": "XY", "origin": [0, 0, 12], "at": [140, 78], "d": 12, "through": true},
+      {"type": "hole", "name": "盖板螺孔2-Φ5", "plane": "XY", "origin": [0, 0, 96], "at": [[5, 30], [169, 88]], "d": 5, "depth": 16},
+      {"type": "hole", "name": "底板孔4-Φ8", "plane": "XY", "origin": [0, 0, 12], "at": [[-6, -6], [180, -6], [-6, 124], [180, 124]], "d": 8, "through": true},
+      {"type": "fillet", "radius": 2, "edges": [[-12, -12, 6]], "name": "底板左前外竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[87, -12, 0]], "name": "前下直棱C1"}
+    ]}
+  ]
+}

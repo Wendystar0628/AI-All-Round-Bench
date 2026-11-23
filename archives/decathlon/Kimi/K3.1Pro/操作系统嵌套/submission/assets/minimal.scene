@@ -1,0 +1,14 @@
+{
+  "format": "nexus-scene-1",
+  "id": "minimal-cube",
+  "title": "最小场景：一灯一物一相机",
+  "duration": 6,
+  "fps": 30,
+  "environment": {"sky": [0.16, 0.19, 0.25], "terrain": {"size": 40, "resolution": 12, "amplitude": 0}, "objects": [], "scatter": []},
+  "lights": [{"type": "directional", "direction": [-0.6, 1, 0.45], "color": [1, 0.85, 0.65]}],
+  "camera": {"fov": 47, "position": [7, 5, 8], "target": [0, 1, 0]},
+  "parts": [{"id": "cube", "name": "唯一的物体", "mesh": "box", "position": [0, 0, 0], "scale": [1, 1, 1], "color": [0.55, 0.35, 0.85], "roughness": 0.35}],
+  "timeline": [{"t": 0, "position": [0, 2, 0], "rotation": [0, 0, 0], "rotor": 0}, {"t": 6, "position": [0, 2, 0], "rotation": [0, 6.283, 0], "rotor": 0}],
+  "impactTime": 99,
+  "failureTime": 99
+}

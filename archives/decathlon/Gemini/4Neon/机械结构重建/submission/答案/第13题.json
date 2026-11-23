@@ -1,0 +1,188 @@
+{
+  "problem": "13",
+  "parts": [
+    {
+      "name": "1",
+      "title": "斜耳叉架减速箱体",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 160, 120], "r": 6}],
+          "depth": 16
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "减速箱主壳体",
+          "plane": "XZ",
+          "origin": [0, 14, 0],
+          "loops": [{"path": [[14, 16], [148, 16], [140, 84], [124, 100], [42, 100], [20, 82]]}],
+          "depth": [-92, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前低速Φ66凸缘",
+          "plane": "XZ",
+          "origin": [0, 6, 0],
+          "loops": [{"circle": [60, 56], "d": 66}],
+          "depth": [-14, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后低速Φ66凸缘",
+          "plane": "XZ",
+          "origin": [0, 102, 0],
+          "loops": [{"circle": [60, 56], "d": 66}],
+          "depth": [-12, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右侧高速Φ54凸缘",
+          "plane": "YZ",
+          "origin": [134, 0, 0],
+          "loops": [{"circle": [60, 70], "d": 54}],
+          "depth": 22
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前侧三角加强肋",
+          "plane": "XZ",
+          "origin": [0, 8, 0],
+          "loops": [{"path": [[96, 16], [136, 16], [120, 82]]}],
+          "depth": [-8, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前左斜叉耳",
+          "plane": "XZ",
+          "origin": [0, 20, 0],
+          "loops": [{"path": [[24, 82], [52, 98], [44, 128], [20, 122]]}],
+          "depth": [-16, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后左斜叉耳",
+          "plane": "XZ",
+          "origin": [0, 84, 0],
+          "loops": [{"path": [[24, 82], [52, 98], [44, 128], [20, 122]]}],
+          "depth": [-16, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "主齿轮腔",
+          "plane": "XY",
+          "origin": [0, 0, 26],
+          "loops": [{"rect": [32, 26, 124, 94]}],
+          "depth": 58
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "上层内腔",
+          "plane": "XY",
+          "origin": [0, 0, 84],
+          "loops": [{"rect": [44, 34, 114, 86]}],
+          "depth": 8
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "下层导油槽",
+          "plane": "XY",
+          "origin": [0, 0, 20],
+          "loops": [{"rect": [36, 42, 120, 78]}],
+          "depth": 6
+        },
+        {
+          "type": "hole",
+          "name": "低速轴Φ30通孔",
+          "plane": "XZ",
+          "origin": [0, 4, 0],
+          "at": [60, 56],
+          "d": 30,
+          "depth": 112
+        },
+        {
+          "type": "hole",
+          "name": "低速前Φ44沉孔",
+          "plane": "XZ",
+          "origin": [0, 4, 0],
+          "at": [60, 56],
+          "d": 44,
+          "depth": 14
+        },
+        {
+          "type": "hole",
+          "name": "低速后Φ44沉孔",
+          "plane": "XZ",
+          "origin": [0, 116, 0],
+          "at": [60, 56],
+          "d": 44,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "高速右Φ24/Φ36阶梯孔",
+          "plane": "YZ",
+          "origin": [158, 0, 0],
+          "at": [60, 70],
+          "d": 24,
+          "depth": 40,
+          "cbore": {"d": 36, "depth": 12}
+        },
+        {
+          "type": "hole",
+          "name": "左叉耳Φ16销孔",
+          "plane": "XZ",
+          "origin": [0, 18, 0],
+          "at": [34, 112],
+          "d": 16,
+          "depth": 84
+        },
+        {
+          "type": "hole",
+          "name": "底部Φ10排油孔",
+          "plane": "XY",
+          "origin": [0, 0, 22],
+          "at": [96, 60],
+          "d": 10,
+          "depth": 24
+        },
+        {
+          "type": "hole",
+          "name": "空间斜注油Φ12孔",
+          "plane": {
+            "origin": [116, 94, 102],
+            "normal": [-0.405579788, -0.405579788, 0.819152044],
+            "x_dir": [0.707106781, -0.707106781, 0]
+          },
+          "at": [0, 0],
+          "d": 12,
+          "depth": 50
+        },
+        {
+          "type": "hole",
+          "name": "底部四个Φ9/Φ16沉头安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 16],
+          "at": [[10, 10], [150, 10], [10, 110], [150, 110]],
+          "d": 9,
+          "through": true,
+          "cbore": {"d": 16, "depth": 6}
+        }
+      ]
+    }
+  ]
+}

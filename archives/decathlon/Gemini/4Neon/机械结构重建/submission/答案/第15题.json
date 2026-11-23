@@ -1,0 +1,213 @@
+{
+  "problem": "15",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层传动箱体",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 210, 130]}],
+          "depth": 16
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "双斜肩传动箱主体",
+          "plane": "XZ",
+          "origin": [0, 14, 0],
+          "loops": [{"path": [[14, 16], [196, 16], [196, 66], [148, 114], [56, 114], [14, 72]]}],
+          "depth": [-102, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左上前Φ78轴承凸台",
+          "plane": "XZ",
+          "origin": [0, 4, 0],
+          "loops": [{"circle": [62, 76], "d": 78}],
+          "depth": [-14, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "左上后Φ74轴承凸台",
+          "plane": "XZ",
+          "origin": [0, 112, 0],
+          "loops": [{"circle": [62, 76], "d": 74}],
+          "depth": [-14, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右下前Φ68轴承凸台",
+          "plane": "XZ",
+          "origin": [0, 4, 0],
+          "loops": [{"circle": [142, 54], "d": 68}],
+          "depth": [-14, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "右下后Φ70轴承凸台",
+          "plane": "XZ",
+          "origin": [0, 112, 0],
+          "loops": [{"circle": [142, 54], "d": 70}],
+          "depth": [-14, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "底板前下槽",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [88, 0, 120, 24]}],
+          "depth": 8
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "左齿轮腔",
+          "plane": "XY",
+          "origin": [0, 0, 26],
+          "loops": [{"rect": [26, 26, 96, 104]}],
+          "depth": 76
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "右齿轮腔",
+          "plane": "XY",
+          "origin": [0, 0, 26],
+          "loops": [{"rect": [108, 26, 182, 104]}],
+          "depth": 54
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "隔板方窗",
+          "plane": "XY",
+          "origin": [0, 0, 32],
+          "loops": [{"rect": [94, 42, 110, 88]}],
+          "depth": 32
+        },
+        {
+          "type": "hole",
+          "name": "左上轴Φ38通孔",
+          "plane": "XZ",
+          "origin": [0, 2, 0],
+          "at": [62, 76],
+          "d": 38,
+          "depth": 128
+        },
+        {
+          "type": "hole",
+          "name": "左上前Φ52沉孔",
+          "plane": "XZ",
+          "origin": [0, 2, 0],
+          "at": [62, 76],
+          "d": 52,
+          "depth": 14
+        },
+        {
+          "type": "hole",
+          "name": "左上后Φ50沉孔",
+          "plane": "XZ",
+          "origin": [0, 128, 0],
+          "at": [62, 76],
+          "d": 50,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右下轴Φ32通孔",
+          "plane": "XZ",
+          "origin": [0, 2, 0],
+          "at": [142, 54],
+          "d": 32,
+          "depth": 128
+        },
+        {
+          "type": "hole",
+          "name": "右下前Φ44沉孔",
+          "plane": "XZ",
+          "origin": [0, 2, 0],
+          "at": [142, 54],
+          "d": 44,
+          "depth": 14
+        },
+        {
+          "type": "hole",
+          "name": "右下后Φ42沉孔",
+          "plane": "XZ",
+          "origin": [0, 128, 0],
+          "at": [142, 54],
+          "d": 42,
+          "depth": 14,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "左侧Φ10排油孔",
+          "plane": "YZ",
+          "origin": [12, 0, 0],
+          "at": [65, 24],
+          "d": 10,
+          "depth": 20,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "右侧斜面Φ30斜孔",
+          "plane": {
+            "origin": [172, 65, 90],
+            "normal": [0.707106781, 0, 0.707106781],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 30,
+          "depth": 58
+        },
+        {
+          "type": "hole",
+          "name": "顶面Φ10斜孔",
+          "plane": {
+            "origin": [104, 24, 116],
+            "normal": [0, 0.422618262, 0.906307787],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "底板四个Φ10/Φ16沉头安装孔",
+          "plane": "XY",
+          "origin": [0, 0, 16],
+          "at": [[7, 7], [203, 7], [7, 123], [203, 123]],
+          "d": 10,
+          "through": true,
+          "cbore": {"d": 16, "depth": 6}
+        },
+        {
+          "type": "chamfer",
+          "name": "前下直棱C1",
+          "distance": 1,
+          "edges": [[155, 0, 0]]
+        },
+        {
+          "type": "fillet",
+          "name": "底板左前外竖棱R2",
+          "radius": 2,
+          "edges": [[0, 0, 8]]
+        }
+      ]
+    }
+  ]
+}

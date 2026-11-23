@@ -1,0 +1,59 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem1 的命题与题面一致。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem2 的命题与题面一致。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem3 的命题与题面一致。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem4 的命题与题面一致。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem5 的命题与题面一致。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem6 的命题与题面一致。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem7 的命题与题面一致。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "原稿单独编译通过，无 sorry 警告；#print axioms 仅有 propext、Classical.choice、Quot.sound，#check @problem8 的命题与题面一致。"
+    }
+  ],
+  "metrics": {
+    "total_score": 100.0
+  },
+  "notes": "评的是作答结束时工作目录的内容，已复制到 work/submission；不看 git 提交。8 题均完成原稿独立编译、追加公理与类型打印后的复编译及源码有效性检查。第 4、5、6、8 题仅有普通样式及弃用警告，不影响得分。核查副本曾因评分脚本添加了不支持的 pp.width 选项报错，移除该选项后全部重跑通过，不属于提交问题。编译日志见 work/logs；未运行性能基准或采集性能数据。源码检查未见绕过编译、篡改命题或伪造输出。"
+}

@@ -1,0 +1,8 @@
+{"problem":"18","parts":[{"name":"1","title":"复合环腔涡轮轴承箱(初稿)","features":[
+{"type":"extrude","name":"地脚法兰","plane":"XY","loops":[{"rect":[0,0,300,196]}],"depth":18},
+{"type":"extrude","name":"箱体","plane":"XZ","loops":[{"path":[[24,18],[276,18],[276,104],[240,155],[89,164],[24,108]]}],"depth":[-176,-20]},
+{"type":"extrude","name":"前轴承凸缘Φ118","plane":"XZ","loops":[{"circle":[125,90],"d":118}],"depth":[-20,0]},
+{"type":"extrude","name":"左接管Φ52","plane":"YZ","loops":[{"circle":[144,90],"d":52}],"depth":[-26,24]},
+{"type":"hole","name":"轴承孔Φ64","plane":"XZ","origin":[0,0,0],"at":[125,90],"d":64,"depth":60},
+{"type":"hole","name":"地脚孔Φ10/Φ18","plane":"XY","origin":[0,0,18],"at":[[12,12],[288,12],[12,184],[288,184]],"d":10,"through":true,"cbore":{"d":18,"depth":6}}
+]}]}

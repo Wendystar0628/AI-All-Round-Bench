@@ -1,0 +1,26 @@
+# 输入消息经窗口管理器派送
+@main
+receive event
+id = target(event)
+if event.action != "pointer" goto dispatch
+i = 0
+best = -1
+id = ""
+@scan
+if i >= windows() goto chosen
+box = bounds(i)
+i = i + 1
+if box.visible == false goto scan
+if event.x < box.x goto scan
+if event.y < box.y goto scan
+if event.x > box.right goto scan
+if event.y > box.bottom goto scan
+if box.z < best goto scan
+id = box.id
+best = box.z
+goto scan
+@chosen
+focus(id)
+@dispatch
+route(id,event)
+goto main

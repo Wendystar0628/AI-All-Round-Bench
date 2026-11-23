@@ -1,0 +1,4 @@
+@loop
+receive sample
+display(sampleScene(sample))
+goto loop

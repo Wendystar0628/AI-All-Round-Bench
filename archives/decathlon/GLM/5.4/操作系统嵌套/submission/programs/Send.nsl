@@ -1,0 +1,12 @@
+// 消息发送：每 0.5 秒向接收进程发送一条带计数的消息
+var target = 0
+var n = 0
+var m = sys.recv()
+if (m != null && m.type == "set_target") { target = m.pid }
+sys.log("发送端就绪，目标 " + target)
+while (true) {
+  n = n + 1
+  var r = sys.send(target, { text: "消息 " + n, seq: n, t: sys.time() })
+  if (!r.ok) { sys.log("发送失败：" + r.error) }
+  sys.sleep(0.5)
+}

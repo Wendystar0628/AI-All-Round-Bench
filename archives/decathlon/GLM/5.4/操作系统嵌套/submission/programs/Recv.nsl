@@ -1,0 +1,10 @@
+// 消息接收：等待并按顺序打印收到的消息
+var count = 0
+sys.log("接收端就绪 pid=" + sys.pid())
+while (true) {
+  var m = sys.recv()
+  if (m == null) { sys.sleep(0.1) } else {
+    count = count + 1
+    sys.log("收到第 " + count + " 条：" + m.text)
+  }
+}

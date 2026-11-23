@@ -1,0 +1,8 @@
+{"problem":"12","parts":[{"name":"1","title":"偏轴阶梯双腔泵座(初稿)","features":[
+{"type":"extrude","name":"底板","plane":"XY","loops":[{"rect":[0,0,180,124]}],"depth":14},
+{"type":"extrude","name":"座体","plane":"XZ","loops":[{"path":[[16,14],[164,14],[164,56],[126,96],[56,96],[16,56]]}],"depth":[-112,-12]},
+{"type":"extrude","name":"前大支承颈Φ76","plane":"XZ","loops":[{"circle":[82,58],"d":76}],"depth":[-12,0]},
+{"type":"extrude","name":"后凸台Φ58","plane":"XZ","loops":[{"circle":[118,58],"d":58}],"depth":[-124,-112]},
+{"type":"hole","name":"前孔Φ42+Φ54","plane":"XZ","origin":[0,0,0],"at":[82,58],"d":42,"depth":40,"cbore":{"d":54,"depth":10}},
+{"type":"hole","name":"地脚沉孔","plane":"XY","origin":[0,0,14],"at":[[8,8],[172,8],[8,116],[172,116]],"d":9,"through":true,"cbore":{"d":15,"depth":5}}
+]}]}

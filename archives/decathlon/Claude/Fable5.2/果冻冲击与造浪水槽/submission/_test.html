@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>test</title></head>
+<body><canvas id="c" width="640" height="360"></canvas>
+<script src="js/core.js"></script>
+<script src="js/wgsl_common.js"></script>
+<script src="js/water.js"></script>
+<script src="js/jelly.js"></script>
+<script>
+window.__ready = (async () => {
+  await JW.GPU.init(document.getElementById('c'));
+  return true;
+})();
+</script></body></html>

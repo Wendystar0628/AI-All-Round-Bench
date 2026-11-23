@@ -1,0 +1,43 @@
+{
+  "problem": "18",
+  "parts": [
+    {
+      "name": "1",
+      "title": "复合环腔涡轮轴承箱",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 120, 80], "r": 6}], "depth": 12, "name": "地脚120x80x12 R6四角"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 60, 0], "loops": [{"circle": [50, 60], "d": 116}], "depth": 40, "name": "主轴承座Φ116 Y20-60"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 22, 0], "loops": [{"circle": [50, 60], "d": 108}], "depth": 8, "name": "前轴承座Φ108"},
+        {"type": "fillet", "radius": 4, "edges": [[88.2, 20, 98.2]], "name": "前轴承座根部R4"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 14, 0], "at": [50, 60], "d": 64, "depth": 10, "name": "轴承阶梯Φ64深10"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 14, 0], "at": [50, 60], "d": 60, "depth": 20, "name": "轴承阶梯Φ60深20"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 14, 0], "at": [50, 60], "d": 46, "through": true, "name": "轴承阶梯Φ46通"},
+        {"type": "chamfer", "distance": 2, "edges": [[72.6, 14, 82.6]], "name": "前轴承口C2"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 30, 0], "at": [50, 60], "d": 100, "depth": 10, "name": "主环腔Φ100宽10"},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 24, 0], "loops": [{"circle": [50, 60], "d": 116}, {"circle": [50, 60], "d": 106}], "depth": 10, "name": "环腔1 Φ116/Φ106宽10"},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 36, 0], "loops": [{"circle": [50, 60], "d": 116}, {"circle": [50, 60], "d": 108}], "depth": 12, "name": "环腔2 Φ116/Φ108宽12"},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "origin": [0, 48, 0], "loops": [{"circle": [50, 60], "d": 114}, {"circle": [50, 60], "d": 104}], "depth": 16, "name": "环腔3 Φ114/Φ104宽16"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 30, 0], "at": [70, 45], "d": 64, "depth": 12, "name": "偏置副环腔Φ64宽12"},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [104, 0, 0], "loops": [{"circle": [40, 60], "d": 64}], "depth": 8, "name": "右副轴承凸台Φ64"},
+        {"type": "hole", "plane": "YZ", "origin": [112, 0, 0], "at": [40, 60], "d": 32, "through": true, "reverse": true, "name": "右副轴承孔Φ32通"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[8, 8], [112, 8], [8, 72], [112, 72]], "d": 10, "through": true, "cbore": {"d": 18, "depth": 6}, "name": "4x地脚锪孔Φ10沉Φ18"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [50, 40], "d": 10, "through": true, "name": "底排液Φ10"},
+        {"type": "extrude", "op": "add", "plane": {"origin": [50, 40, 118], "normal": [-0.374709505, -0.374709505, 0.848048096], "x_dir": [-0.70710678, 0.70710678, 0]}, "loops": [{"circle": [0, 0], "d": 52}], "depth": 62, "name": "轴系油座1 Φ52长62"},
+        {"type": "hole", "plane": {"origin": [26.8, 16.8, 170.6], "normal": [-0.374709505, -0.374709505, 0.848048096], "x_dir": [-0.70710678, 0.70710678, 0]}, "at": [0, 0], "d": 20, "depth": 96, "cbore": {"d": 34, "depth": 7}, "name": "油座1通道Φ20深96"},
+        {"type": "fillet", "radius": 1.2, "edges": [[8.4, 35.2, 170.6]], "name": "油座1外端R1.2"},
+        {"type": "extrude", "op": "add", "plane": {"origin": [50, 40, 118], "normal": [-0.508650051, -0.508650051, 0.69465837], "x_dir": [-0.70710678, 0.70710678, 0]}, "loops": [{"circle": [0, 0], "d": 52}], "depth": 62, "name": "轴系油座2 Φ52长62"},
+        {"type": "hole", "plane": {"origin": [18.5, 8.5, 161.1], "normal": [-0.508650051, -0.508650051, 0.69465837], "x_dir": [-0.70710678, 0.70710678, 0]}, "at": [0, 0], "d": 20, "depth": 96, "cbore": {"d": 34, "depth": 7}, "name": "油座2通道Φ20深96"},
+        {"type": "fillet", "radius": 1.2, "edges": [[0.1, 26.9, 161.1]], "name": "油座2外端R1.2"},
+        {"type": "extrude", "op": "add", "plane": {"origin": [50, 40, 118], "normal": [-0.927183855, 0, 0.374606593], "x_dir": [0, 1, 0]}, "loops": [{"circle": [0, 0], "d": 52}], "depth": 62, "name": "轴系油座3 Φ52长62"},
+        {"type": "hole", "plane": {"origin": [-7.5, 40, 141.2], "normal": [-0.927183855, 0, 0.374606593], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 20, "depth": 96, "cbore": {"d": 34, "depth": 7}, "name": "油座3通道Φ20深96"},
+        {"type": "extrude", "op": "add", "plane": {"origin": [0, 40, 60], "normal": [-1, 0, 0], "x_dir": [0, 1, 0]}, "loops": [{"circle": [0, 0], "d": 52}], "depth": 90, "name": "轴系油座4 Φ52长90 水平"},
+        {"type": "hole", "plane": {"origin": [-90, 40, 60], "normal": [-1, 0, 0], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 20, "depth": 96, "cbore": {"d": 34, "depth": 7}, "name": "油座4通道Φ20深96"},
+        {"type": "fillet", "radius": 1.2, "edges": [[-90, 66, 60]], "name": "油座4外端R1.2"},
+        {"type": "hole", "plane": {"origin": [50, 20, 90], "normal": [0, -0.866025404, 0.5], "x_dir": [1, 0, 0]}, "at": [0, 0], "d": 8, "depth": 100, "name": "迷宫交叉油孔1Φ8深100 倾60方位270"},
+        {"type": "hole", "plane": {"origin": [50, 60, 90], "normal": [0, 0.809016994, 0.587785252], "x_dir": [1, 0, 0]}, "at": [0, 0], "d": 9, "depth": 100, "name": "迷宫交叉油孔2Φ9深100 倾54方位90"},
+        {"type": "hole", "plane": {"origin": [80, 40, 90], "normal": [-0.559192903, 0, 0.829037573], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 10, "depth": 100, "name": "迷宫交叉油孔3Φ10深100 倾34方位180"},
+        {"type": "hole", "plane": {"origin": [20, 40, 90], "normal": [0.64278761, 0, 0.766044443], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 11, "depth": 100, "name": "迷宫交叉油孔4Φ11深100 倾40方位0"}
+      ]
+    }
+  ]
+}

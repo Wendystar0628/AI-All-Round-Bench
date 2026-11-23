@@ -1,0 +1,233 @@
+// ===========================================================================
+//  Player.nsl —— 三维场景播放器（播放控制、进度、镜头、排演、投送）
+//  与 Flight.nsl（飞行场景）、Fx.nsl（环境特效）协作：
+//    播放器只负责时间轴与界面，场景状态由这两个进程计算并提交
+// ===========================================================================
+var W = 760
+var H = 520
+var dirty = true
+var playing = false
+var loop = true
+var rate = 1
+var t = 0
+var duration = 15
+var scenePath = "/Demo/helicopter-24.scene"
+var sceneName = "helicopter-24.scene"
+var flightPid = 0
+var fxBid = 0
+var ctrlPid = 0
+var camMode = "follow"
+var mode = "record"
+var wind = 0
+var heading = 0
+var faultT = -1
+var sel = ""
+var msg = ""
+var lastTick = 0
+var viewX = 0
+var viewY = 0
+var viewW = 100
+var viewH = 100
+var projTarget = ""
+var projOn = false
+var scenes = []
+
+func R(L, x, y, w, h, c, r) { L.push({ op: "rect", x: x, y: y, w: w, h: h, color: c, r: r }) }
+func T(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c }) }
+func TC(L, x, y, s, size, c) { L.push({ op: "text", x: x, y: y, s: s, size: size, color: c, align: "center" }) }
+func IC(L, name, x, y, s, c) { L.push({ op: "icon", name: name, x: x, y: y, size: s, color: c }) }
+func C(L, x, y, r, c) { L.push({ op: "circle", x: x, y: y, r: r, color: c }) }
+func btn(L, x, y, w, h, label, hot, primary) {
+  var c = primary ? "#f5b942" : (hot ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.07)")
+  R(L, x, y, w, h, c, 7)
+  TC(L, x + w / 2, y + h / 2 + 4, label, 11, primary ? "#211803" : "#dfe5f1")
+}
+func fmtTime(v) {
+  var m = (v / 60).floor()
+  var s = v - m * 60
+  var r = s.toFixed(2)
+  if (s < 10) { r = "0" + r }
+  return m + ":" + r
+}
+func loadScenes() {
+  var items = sys.fs_list("/Demo")
+  scenes = []
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].name.indexOf(".scene") > 0) { scenes.push(items[i]) }
+  }
+}
+func openScene(p) {
+  scenePath = p
+  var parts = p.split("/")
+  sceneName = parts[parts.length - 1]
+  var sc = sys.scene_load(p)
+  if (sc != null && sc.duration != null) { duration = sc.duration }
+  t = 0
+  sendFlight({ type: "open", path: p })
+  sendFlight({ type: "seek", t: 0 })
+  dirty = true
+}
+func sendFlight(m) { if (flightPid > 0) { sys.send(flightPid, m) } }
+func startHelpers() {
+  var r1 = sys.request({ op: "launch", path: "/System/Flight.nsl", name: "flight", title: null })
+  if (r1.ok && r1.pid != null) { flightPid = r1.pid }
+  var r2 = sys.request({ op: "launch", path: "/System/Fx.nsl", name: "fx", title: null })
+  if (r2.ok && r2.pid != null) { fxBid = r2.pid }
+  sendFlight({ type: "open", path: scenePath })
+}
+func sendTick() {
+  var now = sys.time()
+  var dt = now - lastTick
+  if (lastTick == 0) { dt = 0.033 }
+  if (dt > 0.1) { dt = 0.1 }
+  lastTick = now
+  t = t + dt * rate
+  if (t > duration) { if (loop) { t = 0 } else { t = duration; playing = false } }
+  sendFlight({ type: "tick", dt: dt, rate: rate, playing: true, loop: loop })
+  dirty = true
+}
+func build() {
+  var L = []
+  L.push({ op: "meta", kind: "player", playing: playing, position: t, duration: duration, rate: rate, scene: scenePath, mode: mode, loop: loop })
+  R(L, 0, 0, W, H, "#0a0c12", 0)
+  viewX = 0; viewY = 34; viewW = W; viewH = H - 34 - 96
+  // 三维视图：场景层来自 Flight 进程，特效层来自 Fx 进程
+  var sceneBuf = "0:scene"
+  var fxBuf = "0:fx"
+  if (flightPid > 0) { sceneBuf = flightPid + ":scene" }
+  if (fxBid > 0) { fxBuf = fxBid + ":fx" }
+  L.push({ op: "scene3d", x: viewX, y: viewY, w: viewW, h: viewH, scene: sceneBuf, fx: fxBuf })
+  // 顶部工具栏
+  R(L, 0, 0, W, 34, "rgba(12,14,20,0.94)", 0)
+  IC(L, "player", 8, 8, 18, "#c8d2e3")
+  T(L, 32, 22, sceneName, 11.5, "#dfe5f1")
+  T(L, 32, 34, "场景", 8, "#6b7488")
+  var x = W - 330
+  btn(L, x, 6, 54, 22, "打开场景", false, false); x = x + 60
+  btn(L, x, 6, 44, 22, playing ? "暂停" : "播放", false, true); x = x + 50
+  btn(L, x, 6, 44, 22, "停止", false, false); x = x + 50
+  btn(L, x, 6, 40, 22, "−", false, false); x = x + 44
+  TC(L, x + 18, 21, rate.toFixed(2) + "×", 10.5, "#c8d2e3"); x = x + 40
+  btn(L, x, 6, 40, 22, "+", false, false); x = x + 46
+  btn(L, x, 6, 40, 22, loop ? "循环开" : "循环关", false, loop)
+  x = x + 46
+  btn(L, x, 6, 54, 22, projOn ? "已投送" : "投送", false, projOn)
+  // 底部控制条
+  var by = H - 96
+  R(L, 0, by, W, 96, "rgba(12,14,20,0.96)", 0)
+  // 进度条
+  var bx = 16
+  var bw = W - 32
+  R(L, bx, by + 12, bw, 5, "rgba(255,255,255,0.14)", 3)
+  var k = t / duration
+  if (k < 0) { k = 0 }
+  if (k > 1) { k = 1 }
+  R(L, bx, by + 12, bw * k, 5, "#f5b942", 3)
+  C(L, bx + bw * k, by + 14.5, 5.5, "#ffffff")
+  TC(L, W / 2, by + 36, fmtTime(t) + " / " + fmtTime(duration), 11, "#c8d2e3")
+  // 控制按钮
+  var y2 = by + 48
+  var x2 = 16
+  btn(L, x2, y2, 54, 24, playing ? "暂停" : "播放", false, true); x2 = x2 + 60
+  btn(L, x2, y2, 54, 24, "停止", false, false); x2 = x2 + 60
+  btn(L, x2, y2, 54, 24, "逐帧", false, false); x2 = x2 + 60
+  btn(L, x2, y2, 54, 24, "重播", false, false); x2 = x2 + 60
+  btn(L, x2, y2, 64, 24, camMode == "follow" ? "跟随" : (camMode == "show" ? "演出" : "自由"), false, false); x2 = x2 + 70
+  // 排演控制
+  var rx = W - 330
+  T(L, rx, y2 + 16, "排演", 10.5, "#8f99ad")
+  btn(L, rx + 34, y2, 66, 24, mode == "rehearsal" ? "结束排演" : "开始排演", false, mode == "rehearsal"); 
+  btn(L, rx + 106, y2, 46, 24, "风 " + wind, false, false)
+  btn(L, rx + 156, y2, 52, 24, "航向", false, false)
+  btn(L, rx + 212, y2, 52, 24, "故障", false, false)
+  btn(L, rx + 268, y2, 52, 24, "飞控", false, false)
+  // 点选结果
+  if (sel != "") { T(L, 16, by + 84, "已选中部件：" + sel, 10, "#f5b942") }
+  if (msg != "") { TC(L, W / 2, by + 84, msg, 10, "#8f99ad") }
+  return L
+}
+func onClick(x, y) {
+  var x0 = W - 330
+  if (y < 34) {
+    if (x > x0 && x < x0 + 54) {
+      var idx = 0
+      for (var i = 0; i < scenes.length; i++) { if (scenes[i].path == scenePath) { idx = i } }
+      idx = (idx + 1) % scenes.length
+      if (scenes.length > 0) { openScene(scenes[idx].path) }
+      return
+    }
+    if (x > x0 + 60 && x < x0 + 104) { playing = !playing; if (playing) { lastTick = 0 }; dirty = true; return }
+    if (x > x0 + 110 && x < x0 + 154) { playing = false; t = 0; sendFlight({ type: "seek", t: 0 }); dirty = true; return }
+    if (x > x0 + 160 && x < x0 + 200) { rate = rate / 2; if (rate < 0.25) { rate = 0.25 }; dirty = true; return }
+    if (x > x0 + 244 && x < x0 + 284) { rate = rate * 2; if (rate > 4) { rate = 4 }; dirty = true; return }
+    if (x > x0 + 290 && x < x0 + 330) { loop = !loop; dirty = true; return }
+    if (x > x0 + 336 && x < x0 + 390) { doProject(); return }
+    return
+  }
+  var by = H - 96
+  if (y > by + 8 && y < by + 24) {
+    var k = (x - 16) / (W - 32)
+    if (k < 0) { k = 0 }
+    if (k > 1) { k = 1 }
+    t = duration * k
+    playing = false
+    sendFlight({ type: "seek", t: t })
+    dirty = true
+    return
+  }
+  if (y > by + 48 && y < by + 72) {
+    if (x > 16 && x < 70) { playing = !playing; if (playing) { lastTick = 0 }; dirty = true; return }
+    if (x > 76 && x < 130) { playing = false; t = 0; sendFlight({ type: "seek", t: 0 }); dirty = true; return }
+    if (x > 136 && x < 190) { playing = false; t = t + 1 / 30; if (t > duration) { t = duration }; sendFlight({ type: "seek", t: t }); dirty = true; return }
+    if (x > 196 && x < 250) { t = 0; playing = true; lastTick = 0; sendFlight({ type: "seek", t: 0 }); dirty = true; return }
+    if (x > 256 && x < 320) {
+      if (camMode == "follow") { camMode = "show" } else if (camMode == "show") { camMode = "orbit" } else { camMode = "follow" }
+      sendFlight({ type: "camera", mode: camMode })
+      dirty = true; return
+    }
+    var rx = W - 330
+    if (x > rx + 34 && x < rx + 100) {
+      if (mode == "rehearsal") { mode = "record"; sendFlight({ type: "mode", mode: "record" }); sendFlight({ type: "seek", t: t }) } else { mode = "rehearsal"; t = 0; sendFlight({ type: "mode", mode: "rehearsal" }); if (ctrlPid == 0) { var r = sys.request({ op: "launch", path: "/System/FlightController.nsl", name: "controller", title: null }); if (r.ok && r.pid != null) { ctrlPid = r.pid } } }
+      dirty = true; return
+    }
+    if (x > rx + 106 && x < rx + 152) { wind = wind + 1; if (wind > 3) { wind = -3 }; sendFlight({ type: "wind", x: wind * 1.2, z: wind * 0.6 }); dirty = true; return }
+    if (x > rx + 158 && x < rx + 208) { heading = heading + 45; if (heading >= 360) { heading = 0 }; sendFlight({ type: "target", heading: heading }); dirty = true; return }
+    if (x > rx + 214 && x < rx + 264) { faultT = t; sendFlight({ type: "fault", t: t }); msg = "已触发故障"; dirty = true; return }
+    if (x > rx + 270 && x < rx + 322) { sys.request({ op: "launch", path: "/System/Editor.nsl", name: "editor", title: "飞控程序", arg: "/System/FlightController.nsl" }); return }
+    return
+  }
+  // 三维视图点选
+  if (x > viewX && x < viewX + viewW && y > viewY && y < viewY + viewH) {
+    sendFlight({ type: "pick", x: (x - viewX) / viewW, y: (y - viewY) / viewH })
+  }
+}
+func doProject() {
+  if (projOn) { msg = "已经投送到 " + projTarget; dirty = true; return }
+  var r = sys.request({ op: "host", service: "project", args: { source: "player", scene: scenePath } })
+  if (r.ok) { projOn = true; projTarget = r.target || "根桌面"; msg = "已投送到 " + projTarget } else { msg = "投送失败：" + r.error }
+  dirty = true
+}
+func main() {
+  loadScenes()
+  var first = sys.poll()
+  if (first != null && first.type == "open") { scenePath = first.path }
+  var sc = sys.scene_load(scenePath)
+  if (sc != null && sc.duration != null) { duration = sc.duration }
+  startHelpers()
+  sys.draw("main", build(), W, H)
+  while (true) {
+    var m = sys.poll()
+    var guard = 0
+    while (m != null && guard < 40) {
+      guard = guard + 1
+      if (m.type == "resize") { W = m.w; H = m.h; dirty = true }
+      else if (m.type == "mouse") { if (m.kind == "down") { onClick(m.x, m.y) } }
+      else if (m.type == "pick") { sel = m.name; msg = ""; dirty = true }
+      else if (m.type == "close") { if (flightPid > 0) { sys.send(flightPid, { type: "close" }) }; if (fxBid > 0) { sys.send(fxBid, { type: "close" }) }; if (ctrlPid > 0) { sys.send(ctrlPid, { type: "close" }) }; sys.exit(0) }
+      m = sys.poll()
+    }
+    if (playing) { sendTick() }
+    if (dirty) { sys.draw("main", build(), W, H); dirty = false }
+    sys.sleep(0.033)
+  }
+}

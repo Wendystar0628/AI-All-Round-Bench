@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>熔构 FORGE — 动效工作台</title>
+<link rel="stylesheet" href="vendor/fonts/index.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+<header class="menubar">
+  <div class="brand"><span class="brand-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 6l8-3 8 3v10l-8 5-8-5V6Z" stroke="currentColor" stroke-width="1.6"/><path d="m4 6 8 4 8-4m-8 4v11m-4-8 4 2 4-2" stroke="currentColor" stroke-width="1.6"/></svg></span><b>熔构</b><span class="brand-en">FORGE</span></div>
+  <nav id="menus"><button data-menu="file">文件</button><button data-menu="edit">编辑</button><button data-menu="comp">合成</button><button data-menu="layer">图层</button><button data-menu="view">视图</button></nav>
+  <div class="doc-title"><span class="doc-mark"></span><span id="doc-name">锻字</span><span class="doc-divider"></span><small>动效工作台</small></div>
+  <div class="header-right"><span class="local"><i></i><span id="doc-status">本地工程</span></span><button id="save" class="save"></button></div>
+</header>
+<div class="tools">
+  <div class="toolset" id="toolset"></div>
+  <div class="tool-caption"><i></i><span>工作空间</span><span class="tool-sep">/</span><b>动效设计</b></div>
+  <div class="tool-end"><button class="icon" id="undo" title="撤销 Ctrl+Z"></button><button class="icon" id="redo" title="重做 Ctrl+Shift+Z"></button><span class="sep"></span><button class="icon" id="help" title="键盘快捷键"></button></div>
+</div>
+<main class="workspace">
+  <aside class="project panel">
+    <div class="panel-head"><div class="head-title" id="project-title"></div><button class="icon" id="project-add" title="新建合成"></button></div>
+    <div class="project-body">
+      <div id="project-summary"></div>
+      <div class="section-label"><span>工程资源</span><button class="icon" id="project-options" title="工程选项"></button></div>
+      <div id="project-tree"></div>
+    </div>
+    <div id="project-bottom" class="project-bottom"></div>
+  </aside>
+  <section class="viewer panel">
+    <div class="panel-head viewer-head"><div class="view-crumb"><span id="viewer-icon"></span><span>合成</span><span class="slash">/</span><b id="comp-title">锻字</b></div><div class="view-actions"><button id="view-mode" class="subtle" title="切换摄像机视图"></button><button class="icon" id="focus-view" title="最大化合成视图"></button></div></div>
+    <div id="stage-area" class="stage-area"><div id="stage" class="stage"><canvas id="render"></canvas><svg id="overlay" aria-hidden="true"></svg><div id="empty-stage"></div></div></div>
+    <div class="viewer-foot">
+      <div class="vf-left"><select id="zoom-view" title="预览缩放"><option value="fit">适合</option><option value=".25">25%</option><option value=".5">50%</option><option value="1">100%</option></select><span class="sep"></span><button class="icon" id="guide" title="图层控件"></button><button class="icon" id="grid" title="透明网格"></button></div>
+      <div class="transport" id="transport"></div>
+      <div class="vf-right"><span id="view-size"></span><span class="sep"></span><div id="audio-meter" class="audio-meter" title="音频电平" role="meter" aria-label="音频电平" aria-valuemin="0" aria-valuemax="100"><i></i><i></i><i></i><i></i><i></i></div><button class="icon" id="sound" title="静音"></button></div>
+    </div>
+  </section>
+  <aside class="inspector panel">
+    <div class="panel-head"><div class="ins-tabs" id="ins-tabs"></div><button class="icon" id="ins-menu" title="图层操作"></button></div>
+    <div class="ins-content" id="inspector"></div>
+  </aside>
+</main>
+<section class="bottom panel">
+  <div class="bottom-head">
+    <div id="bottom-tabs" class="bottom-tabs"></div>
+    <div class="timeline-tools" id="timeline-tools"></div>
+  </div>
+  <div class="bottom-content" id="bottom-content"></div>
+</section>
+<footer class="statusbar"><div><span class="status-dot"></span><span id="status">就绪</span></div><div class="status-right"><span id="engine-status">WebGL 2</span><span class="sep"></span><span id="fps-status">30 FPS</span><span class="sep"></span><span>熔构 1.0</span></div></footer>
+</div>
+<input type="file" id="file-input" accept=".json,.forge" hidden>
+<div id="popup" hidden></div>
+<dialog id="dialog"></dialog>
+<div id="toast" role="status"></div>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/polygon-clipping.min.js"></script>
+<script src="project.js"></script>
+<script src="render.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

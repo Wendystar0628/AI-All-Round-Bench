@@ -1,0 +1,106 @@
+// /Apps/systems.nx —— 子系统管理：新建、暂停、继续、单步、调速、重启、关闭直属子系统，以及快照、恢复与分叉。
+import "/System/lib/ui.nx";
+
+var KIDS = []; var SNAPS = []; var MSG = ""; var SELSNAP = ""; var KI = null;
+var ST = { running: "运行中", paused: "已暂停", error: "内核错误", booting: "启动中", stopped: "已关闭" };
+
+function refresh() {
+  KIDS = sys("sys_list"); KI = sys("kinfo");
+  var l = sys("list", "/Snapshots"); SNAPS = [];
+  if (!iserr(l)) { var i = 0; while (i < len(l)) { if (endsWith(l[i].name, ".snap")) { push(SNAPS, l[i]); } i = i + 1; } }
+  ui_dirty();
+  return 0;
+}
+function kbtn(id, x, y, w, t, sysid, dis) {
+  var b = btnd(id, x, y, w, 24, t, sysid);
+  b.key = id + ":" + sysid; b.s = 11.5; b.data = { "target-system-id": sysid }; b.dis = dis;
+  return b;
+}
+function draw(v) {
+  var W = v.w; var H = v.h;
+  rect(0, 0, W, H, TH.bg); rect(0, 0, W, 40, TH.panel);
+  var b = btn("systems-create", 8, 6, 104, 28, "新建子系统"); b.v = 1; b.ic = "plus";
+  var t = text(120, 6, W - 130, 28, (MSG != "") ? MSG : "本系统 " + KI.id + "（第 " + KI.depth + " 层）的直属子系统 · 单步 = " + fmt(KI.stepMs, 2) + " ms × 速率"); t.s = 11.5; t.c = (MSG != "") ? TH.warn : TH.dim; t.id = "systems-status";
+  var y = 48; var i = 0;
+  if (len(KIDS) == 0) { t = text(14, y, W - 28, 26, "还没有子系统。新建后，子系统桌面会出现在本桌面的系统窗口里。"); t.c = TH.dim; y = y + 34; }
+  while (i < len(KIDS)) {
+    var k = KIDS[i]; i = i + 1;
+    var r = rect(8, y, W - 16, 78, TH.panel); r.r = 8; r.bw = 1; r.bc = TH.line; r.key = "row" + k.id;
+    t = text(18, y + 4, 90, 22, k.id); t.b = 600; t.s = 13.5;
+    var sc = TH.ok; if (k.state == "paused") { sc = TH.warn; } else if (k.state == "error") { sc = TH.danger; } else if (k.state == "booting" || k.state == "stopped") { sc = TH.dim; }
+    t = text(108, y + 4, 70, 22, ST[k.state]); t.c = sc; t.s = 11.5; t.id = "system-state"; t.data = { "target-system-id": k.id, "state": k.state };
+    t = text(180, y + 4, W - 200, 22, "父系统 " + KI.id + " · 速率 " + k.rate + "× · 拨付 " + fmtNum(k.grant.budget) + "/步 · 上步 " + fmtNum(k.last) + " · 内核自身累计 " + fmtNum(k.own) + " · 存储 " + fmtSize(k.stor)); t.c = TH.dim; t.s = 11;
+    if (k.err != "") { t = text(18, y + 26, W - 40, 18, k.err); t.c = TH.danger; t.s = 11; t.f = 1; }
+    var x = 16; var by = y + 48;
+    var run = k.state == "running"; var pau = k.state == "paused";
+    if (k.state == "stopped" || k.state == "error") { kbtn("system-start", x, by, 46, "启动", k.id, false).v = 1; x = x + 50; }
+    kbtn("system-pause", x, by, 46, "暂停", k.id, !run); x = x + 50;
+    kbtn("system-resume", x, by, 46, "继续", k.id, !pau); x = x + 50;
+    kbtn("system-step", x, by, 46, "单步", k.id, !pau); x = x + 50;
+    kbtn("system-rate-down", x, by, 30, "慢", k.id, false); x = x + 34;
+    kbtn("system-rate-up", x, by, 30, "快", k.id, false); x = x + 34;
+    kbtn("system-restart", x, by, 46, "重启", k.id, false); x = x + 50;
+    kbtn("system-snapshot", x, by, 46, "快照", k.id, !(run || pau)); x = x + 50;
+    kbtn("kernel-open", x, by, 72, "内核源文件", k.id, false); x = x + 76;
+    kbtn("system-stop", x, by, 46, "关闭", k.id, k.state == "stopped"); x = x + 50;
+    if (W > x + 60) { kbtn("system-remove", x, by, 46, "移除", k.id, false).v = 3; }
+    y = y + 86;
+  }
+  t = text(14, y + 2, W - 28, 22, "快照（/Snapshots）：恢复到原实例，或分叉为独立的新子树"); t.c = TH.dim; t.s = 11.5; y = y + 26;
+  if (len(SNAPS) == 0) { t = text(14, y, W - 28, 24, "还没有快照。"); t.c = TH.dim; t.s = 12; }
+  i = 0;
+  while (i < len(SNAPS) && y < H - 30) {
+    var s = SNAPS[len(SNAPS) - 1 - i]; i = i + 1;
+    var rr = rect(8, y, W - 16, 30, (SELSNAP == s.path) ? TH.panel3 : TH.panel); rr.r = 6; rr.key = "snap" + s.path;
+    t = text(18, y, max(60, W - 420), 30, s.name + "（" + fmtSize(s.size) + "）"); t.s = 12; t.id = "snapshot-row"; t.data = { "file-path": s.path };
+    var x2 = W - 392;
+    if (x2 < 150) { x2 = 150; }
+    var j = 0;
+    while (j < len(KIDS) && j < 2) {
+      var kk = KIDS[j]; j = j + 1;
+      var rb = btnd("snapshot-restore", x2, y + 3, 100, 24, "恢复到 " + kk.id, [kk.id, s.path]); rb.key = "rs" + s.path + kk.id; rb.s = 11; rb.data = { "target-system-id": kk.id, "file-path": s.path };
+      x2 = x2 + 104;
+    }
+    var fb = btnd("snapshot-fork", W - 180, y + 3, 52, 24, "分叉", s.path); fb.key = "fk" + s.path; fb.v = 1; fb.s = 11.5; fb.data = { "file-path": s.path };
+    var eb = btnd("snapshot-export", W - 124, y + 3, 60, 24, "存到本机", s.path); eb.key = "ex" + s.path; eb.s = 11; eb.data = { "file-path": s.path };
+    var db = btnd("snapshot-delete", W - 60, y + 3, 46, 24, "删除", s.path); db.key = "dl" + s.path; db.v = 3; db.s = 11.5; db.data = { "file-path": s.path };
+    y = y + 34;
+  }
+  return 0;
+}
+function kid(id) { var i = 0; while (i < len(KIDS)) { if (KIDS[i].id == id) { return KIDS[i]; } i = i + 1; } return null; }
+function report(r, okText) { if (iserr(r)) { MSG = r.error; ui_notify("操作失败", r.error); } else { MSG = okText; } return 0; }
+function click(id, data, m, v) {
+  MSG = "";
+  var r = true;
+  if (id == "systems-create") { r = sys("sys_create", ""); if (iserr(r)) { report(r, ""); } else { MSG = "已新建 " + r.id; } }
+  else if (id == "system-pause") { sys("sys_ctl", data, "pause", null); }
+  else if (id == "system-resume") { sys("sys_ctl", data, "resume", null); }
+  else if (id == "system-step") { sys("sys_ctl", data, "step", null); MSG = data + " 执行了一个逻辑时间步"; }
+  else if (id == "system-rate-down") { var k = kid(data); if (k != null) { sys("sys_ctl", data, "rate", max(0.125, k.rate / 2)); } }
+  else if (id == "system-rate-up") { var k2 = kid(data); if (k2 != null) { sys("sys_ctl", data, "rate", min(16, k2.rate * 2)); } }
+  else if (id == "system-restart") { sys("sys_ctl", data, "restart", null); MSG = data + " 正在重启"; }
+  else if (id == "system-start") { sys("sys_ctl", data, "start", null); }
+  else if (id == "system-stop") { sys("sys_ctl", data, "stop", null); }
+  else if (id == "system-remove") { ui_dialog("confirm", "移除子系统", "移除 " + data + " 会丢弃它的文件与整棵子树（已保存的快照保留）。", "", "rm:" + data, ["移除", "取消"]); }
+  else if (id == "system-snapshot") {
+    var path = "/Snapshots/" + data + "-" + floor(sys("time")) + ".snap";
+    r = sys("sys_ctl", data, "snapshot", path);
+    if (iserr(r)) { report(r, ""); } else { MSG = "快照已保存 " + path; ui_notify("快照已保存", path + "（" + fmtSize(r.size) + "）"); }
+  }
+  else if (id == "kernel-open") { var k3 = kid(data); if (k3 != null) { ui_launch("editor", { file: k3.kpath }); } }
+  else if (id == "snapshot-restore") { r = sys("sys_ctl", data[0], "restore", data[1]); report(r, "已把 " + data[0] + " 恢复到快照"); if (!iserr(r)) { ui_notify("已恢复快照", data[0] + " ← " + data[1]); } }
+  else if (id == "snapshot-fork") { r = sys("sys_ctl", "", "fork", data, ""); if (iserr(r)) { report(r, ""); } else { MSG = "已分叉为新实例 " + r.id; ui_notify("已从快照分叉", "新实例 " + r.id); } }
+  else if (id == "snapshot-delete") { sys("delete", data); }
+  else if (id == "snapshot-export") { var d = sys("read", data); if (!iserr(d)) { sys("bus_send", { to: "outer", svc: "host", k: "host_export", name: baseName(data), data: d }); MSG = "已请求根系统保存到本机"; } }
+  refresh();
+  return 0;
+}
+function dialog(tag, b, value) { if (substr(tag, 0, 3) == "rm:" && b == 0) { sys("sys_ctl", substr(tag, 3), "remove", null); refresh(); } return 0; }
+function tick(now) { refresh(); return 0; }
+
+ui_open("systems", "子系统管理", 720, 420, { minw: 560, minh: 260 });
+var A0 = sys("args");
+if (type(A0) == "map" && type(A0.file) == "str") { SELSNAP = A0.file; }
+refresh();
+ui_run({ draw: draw, click: click, dialog: dialog, tick: tick, tickMs: 600 });

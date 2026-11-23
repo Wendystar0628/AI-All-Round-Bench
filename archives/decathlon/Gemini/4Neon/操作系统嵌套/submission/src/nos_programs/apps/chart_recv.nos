@@ -1,0 +1,93 @@
+// /apps/chart_recv.nos — 图表工作台数据接收进程
+// 与 chart_ui.nos 协作：管理实时数据订阅生命周期、版本单调推进、缓存已接收数据并经消息发往绘图进程。
+
+let winId = ARGS.windowId;
+let uiPid = ARGS.uiPid;
+
+let connState = "disconnected"; // disconnected | connected | source_closed | restored_pending_reconnect
+let activeDocId = null;
+let activeTitle = "";
+let activeRange = "A1:D4";
+let lastVersion = -1;
+let cachedRows = null;
+
+while (true) {
+  let msg = syscall("recv", 0.25);
+  if (msg == null || msg.data == null) continue;
+  let d = msg.data;
+
+  if (d.type == "cmd_connect") {
+    activeDocId = d.docId;
+    activeTitle = d.sourceTitle != null ? str(d.sourceTitle) : "";
+    activeRange = d.range != null ? str(d.range) : "A1:D4";
+    lastVersion = -1;
+    connState = "connected";
+    syscall("live_subscribe", winId, activeDocId, activeRange);
+    syscall("send", uiPid, {
+      type: "conn_status",
+      connectionState: connState,
+      sourceTitle: activeTitle,
+      docId: activeDocId,
+      range: activeRange,
+      version: lastVersion
+    });
+    syscall("log", "建立实时连接: " + activeTitle + " (" + activeRange + ")");
+  } else if (d.type == "cmd_disconnect") {
+    syscall("live_unsubscribe", winId);
+    connState = "disconnected";
+    syscall("send", uiPid, {
+      type: "conn_status",
+      connectionState: connState,
+      sourceTitle: activeTitle,
+      docId: activeDocId,
+      range: activeRange,
+      version: lastVersion
+    });
+    syscall("log", "已主动断开数据连接（保留缓存图表）");
+  } else if (d.type == "live_restored_pending") {
+    connState = "restored_pending_reconnect";
+    syscall("send", uiPid, {
+      type: "conn_status",
+      connectionState: connState,
+      sourceTitle: activeTitle,
+      docId: activeDocId,
+      range: activeRange,
+      version: lastVersion
+    });
+  } else if (d.type == "live_update") {
+    if (connState != "connected") continue;
+    if (d.docId != null && activeDocId != null && d.docId != activeDocId) continue;
+
+    if (d.status == "source_closed") {
+      connState = "source_closed";
+      syscall("send", uiPid, {
+        type: "conn_status",
+        connectionState: connState,
+        sourceTitle: activeTitle,
+        docId: activeDocId,
+        range: activeRange,
+        version: lastVersion
+      });
+      syscall("log", "数据源工作簿已关闭，保留最后一次接收的数据");
+      continue;
+    }
+
+    let ver = num(d.version);
+    // 版本只前进不后退
+    if (ver > lastVersion) {
+      lastVersion = ver;
+      if (d.sourceTitle != null) activeTitle = str(d.sourceTitle);
+      cachedRows = clone(d.rows);
+      syscall("send", uiPid, {
+        type: "data_version",
+        connectionState: connState,
+        sourceTitle: activeTitle,
+        docId: activeDocId,
+        range: d.range != null ? d.range : activeRange,
+        version: ver,
+        rows: cachedRows
+      });
+      syscall("log", "收到版本 v" + str(ver) + " (" + str(len(cachedRows)) + " 行)");
+    }
+  }
+}

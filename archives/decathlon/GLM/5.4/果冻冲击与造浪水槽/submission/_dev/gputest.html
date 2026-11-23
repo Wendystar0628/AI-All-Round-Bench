@@ -1,0 +1,56 @@
+<!doctype html><html><body style="margin:0;background:#000">
+<canvas id="c" width="800" height="450"></canvas>
+<script>
+(async () => {
+  const out = [];
+  try {
+    out.push('gpu=' + !!navigator.gpu);
+    const adapter = await navigator.gpu.requestAdapter();
+    out.push('adapter=' + !!adapter);
+    if (adapter) {
+      const info = adapter.info || {};
+      out.push('vendor=' + info.vendor + ' arch=' + info.architecture + ' desc=' + info.description);
+      const dev = await adapter.requestDevice();
+      out.push('device ok');
+      const c = document.getElementById('c');
+      const ctx = c.getContext('webgpu');
+      const fmt = navigator.gpu.getPreferredCanvasFormat();
+      ctx.configure({device: dev, format: fmt, alphaMode: 'opaque'});
+      const mod = dev.createShaderModule({code: `
+        @vertex fn vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f {
+          var p = array<vec2f,3>(vec2f(0.0,0.6), vec2f(-0.6,-0.5), vec2f(0.6,-0.5));
+          return vec4f(p[i],0.0,1.0);
+        }
+        @fragment fn fs() -> @location(0) vec4f { return vec4f(0.2,0.8,0.9,1.0); }
+      `});
+      const pipe = await dev.createRenderPipelineAsync({layout:'auto', vertex:{module:mod, entryPoint:'vs'}, fragment:{module:mod, entryPoint:'fs', targets:[{format:fmt}]}, primitive:{topology:'triangle-list'}});
+      // compute test
+      const cmod = dev.createShaderModule({code:`
+        @group(0) @binding(0) var<storage, read_write> d: array<f32>;
+        @compute @workgroup_size(64) fn main(@builtin(global_invocation_id) id: vec3u) {
+          let i = id.x; if (i < 1024u) { d[i] = d[i] * 2.0 + 1.0; }
+        }`});
+      const cpipe = await dev.createComputePipelineAsync({layout:'auto', compute:{module:cmod, entryPoint:'main'}});
+      const buf = dev.createBuffer({size: 4096, usage: GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_SRC|GPUBufferUsage.COPY_DST});
+      const data = new Float32Array(1024).fill(1);
+      dev.queue.writeBuffer(buf, 0, data);
+      const bg = dev.createBindGroup({layout: cpipe.getBindGroupLayout(0), entries:[{binding:0, resource:{buffer:buf}}]});
+      const enc = dev.createCommandEncoder();
+      const cp = enc.beginComputePass(); cp.setPipeline(cpipe); cp.setBindGroup(0,bg); cp.dispatchWorkgroups(16); cp.end();
+      const rb = dev.createBuffer({size:4096, usage: GPUBufferUsage.MAP_READ|GPUBufferUsage.COPY_DST});
+      enc.copyBufferToBuffer(buf,0,rb,0,4096);
+      const rp = enc.beginRenderPass({colorAttachments:[{view: ctx.getCurrentTexture().createView(), loadOp:'clear', storeOp:'store', clearValue:{r:0.05,g:0.05,b:0.08,a:1}}]});
+      rp.setPipeline(pipe); rp.draw(3); rp.end();
+      dev.queue.submit([enc.finish()]);
+      await rb.mapAsync(GPUMapMode.READ);
+      const v = new Float32Array(rb.getMappedRange());
+      out.push('compute result[0..3]=' + Array.from(v.slice(0,4)).join(','));
+      await dev.queue.onSubmittedWorkDone();
+      out.push('format=' + fmt);
+    }
+  } catch(e) { out.push('ERR ' + e.message); }
+  document.title = out.join(' | ');
+  window.__result = out.join(' | ');
+  console.log(out.join(' | '));
+})();
+</script></body></html>

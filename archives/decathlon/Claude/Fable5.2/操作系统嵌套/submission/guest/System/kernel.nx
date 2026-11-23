@@ -1,0 +1,1151 @@
+// /System/kernel.nx —— 子系统的内核程序（模板）。
+// 每个子系统在父系统里有一份副本：/System/kernels/<实例标识>.nx，由父系统的承载进程执行。
+// 进程表、调度、等待与唤醒、消息投递、文件系统、系统调用分发、子系统承载都写在这里；
+// 改写本文件并重启对应子系统后，子系统就按新的规则运行。
+
+// ---------- 系统状态 ----------
+var MYID = ""; var MYNAME = ""; var DEPTH = 0; var PATH = [];
+var DISK = {};            // 文件系统：路径 → {k:"f"|"d", d:内容, m:修改时间, h:内容哈希}
+var STOR = 0;             // 本系统文件占用（字符数）
+var CLOCK = 0;            // 虚拟时间（毫秒）
+var STEPN = 0;            // 已经历的逻辑步
+var PROCS = []; var PMAP = {}; var PIDSEQ = 0;
+var RQ = [];              // 就绪队列
+var CFG = { budget: 400000, mem: 64000000, storage: 64000000, sliceSteps: 2, procMem: 0, childShare: 0.6 };
+var TK = null;            // 父系统本步给出的拨付
+var EFF = 0;              // 本步实际可用预算
+var KOWN = 0; var KOWN_LAST = 0; var STEP_USED = 0; var STEP_START = 0;
+var SURF = {}; var SIDSEQ = 0;       // 显示面：sid → {pid, list}
+var SCENES = {}; var SCSEQ = 0;      // 三维场景：句柄 → {pid, res, staged, layers, t}
+var DEV = {};                        // 设备寄存器（传感器/控制量）
+var CHILDREN = {}; var CSTOR = 0;    // 直属子系统
+var WMPID = 0; var DW = 800; var DH = 500;
+var BLOCK = { block: true };
+var SC = {};                         // 系统调用表：名字 → 处理函数
+var KLOG = [];
+var RNG = 20240601;
+var TREE_DIRTY = true; var EPOCH = 0; var SYSMEM = 0; var LAST_STOR = -1;
+var COMPILER = "/System/compiler.nxb";
+var WM_PATH = "/System/wm.nx";
+var STEP_MS = 16.666666666666668;
+var FROZEN = false;
+
+function klog(s) { push(KLOG, "[" + floor(CLOCK) + "] " + s); if (len(KLOG) > 200) { remove(KLOG, 0); } }
+function err(msg) { return { error: msg }; }
+function iserr(v) { return type(v) == "map" && has(v, "error"); }
+
+// ---------- 文件系统 ----------
+function fs_norm(path) {
+  if (type(path) != "str") { return "/"; }
+  var parts = split(path, "/"); var out = []; var i = 0;
+  while (i < len(parts)) {
+    var s = parts[i];
+    if (s == "..") { if (len(out) > 0) { pop(out); } }
+    else if (s != "" && s != ".") { push(out, s); }
+    i = i + 1;
+  }
+  return "/" + join(out, "/");
+}
+function fs_parent(path) {
+  var i = len(path) - 1;
+  while (i > 0 && substr(path, i, 1) != "/") { i = i - 1; }
+  if (i <= 0) { return "/"; }
+  return substr(path, 0, i);
+}
+function fs_base(path) {
+  var i = len(path) - 1;
+  while (i >= 0 && substr(path, i, 1) != "/") { i = i - 1; }
+  return substr(path, i + 1);
+}
+function fs_isdir(path) { return path == "/" || (has(DISK, path) && DISK[path].k == "d"); }
+function fs_isfile(path) { return has(DISK, path) && DISK[path].k == "f"; }
+function fs_mkdirs(path) {
+  if (path == "/" || has(DISK, path)) { return fs_isdir(path); }
+  if (!fs_mkdirs(fs_parent(path))) { return false; }
+  DISK[path] = { k: "d", m: CLOCK };
+  return true;
+}
+function stor_limit() {
+  var lim = CFG.storage;
+  if (TK != null && TK.storage < lim) { lim = TK.storage; }
+  return lim;
+}
+function fs_write(path, data) {
+  if (type(data) != "str") { return err("只能写入文本"); }
+  if (path == "/" || fs_isdir(path)) { return err("这是一个目录：" + path); }
+  var old = 0;
+  if (has(DISK, path)) { old = len(DISK[path].d); }
+  var delta = len(data) - old;
+  if (delta > 0 && STOR + CSTOR + delta > stor_limit()) { return err("存储配额不足"); }
+  if (!fs_mkdirs(fs_parent(path))) { return err("上级路径不是目录"); }
+  DISK[path] = { k: "f", d: data, m: CLOCK, h: hash(data) };
+  STOR = STOR + delta;
+  return true;
+}
+function fs_read(path) {
+  if (!fs_isfile(path)) { return err("找不到文件 " + path); }
+  return DISK[path].d;
+}
+function fs_list(dir) {
+  if (!fs_isdir(dir)) { return err("找不到目录 " + dir); }
+  var pre = dir + "/"; if (dir == "/") { pre = "/"; }
+  var n = len(pre); var ks = keys(DISK); var out = []; var i = 0;
+  while (i < len(ks)) {
+    var p = ks[i];
+    if (len(p) > n && substr(p, 0, n) == pre && indexOf(p, "/", n) < 0) {
+      var e = DISK[p];
+      if (e.k == "d") { push(out, { name: substr(p, n), path: p, dir: true, size: 0, m: e.m }); }
+      else { push(out, { name: substr(p, n), path: p, dir: false, size: len(e.d), m: e.m }); }
+    }
+    i = i + 1;
+  }
+  return out;
+}
+function fs_delete(path) {
+  if (!has(DISK, path)) { return err("找不到 " + path); }
+  if (DISK[path].k == "d") {
+    var pre = path + "/"; var n = len(pre); var ks = keys(DISK); var i = 0;
+    while (i < len(ks)) {
+      var p = ks[i];
+      if (len(p) > n && substr(p, 0, n) == pre) { if (DISK[p].k == "f") { STOR = STOR - len(DISK[p].d); } del(DISK, p); }
+      i = i + 1;
+    }
+  } else { STOR = STOR - len(DISK[path].d); }
+  del(DISK, path);
+  return true;
+}
+function fs_rename(a, b) {
+  if (!has(DISK, a)) { return err("找不到 " + a); }
+  if (a == b) { return true; }
+  if (has(DISK, b)) { return err("目标已存在：" + b); }
+  if (substr(b, 0, len(a) + 1) == a + "/") { return err("不能移动到自身内部"); }
+  if (!fs_mkdirs(fs_parent(b))) { return err("上级路径不是目录"); }
+  if (DISK[a].k == "d") {
+    var pre = a + "/"; var n = len(pre); var ks = keys(DISK); var i = 0;
+    while (i < len(ks)) {
+      var p = ks[i];
+      if (len(p) > n && substr(p, 0, n) == pre) { DISK[b + "/" + substr(p, n)] = DISK[p]; del(DISK, p); }
+      i = i + 1;
+    }
+  }
+  DISK[b] = DISK[a]; del(DISK, a);
+  return true;
+}
+function fs_copy(a, b) {
+  if (!has(DISK, a)) { return err("找不到 " + a); }
+  if (DISK[a].k == "f") { return fs_write(b, DISK[a].d); }
+  if (!fs_mkdirs(b)) { return err("无法创建目录 " + b); }
+  var pre = a + "/"; var n = len(pre); var ks = keys(DISK); var i = 0;
+  while (i < len(ks)) {
+    var p = ks[i];
+    if (len(p) > n && substr(p, 0, n) == pre) {
+      var q = b + "/" + substr(p, n);
+      if (DISK[p].k == "d") { fs_mkdirs(q); }
+      else { var r = fs_write(q, DISK[p].d); if (iserr(r)) { return r; } }
+    }
+    i = i + 1;
+  }
+  return true;
+}
+function fs_recount() {
+  var ks = keys(DISK); var i = 0; var n = 0;
+  while (i < len(ks)) { if (DISK[ks[i]].k == "f") { n = n + len(DISK[ks[i]].d); } i = i + 1; }
+  STOR = n;
+}
+
+// ---------- 进程 ----------
+// 状态：0 就绪/运行 1 等待消息 2 定时等待 3 挂起 4 已结束 5 异常 6 等待下一步（承载进程） 7 等待编译
+function newProc(name, path, args, owner, linked) {
+  PIDSEQ = PIDSEQ + 1;
+  var p = { pid: PIDSEQ, name: name, path: path, args: args, owner: owner, linked: linked, ctx: null, st: 7, inq: false,
+            wake: 0, inbox: [], used: 0, last: 0, stepUsed: 0, quota: 0, slice: 0, out: [], err: "", exit: null,
+            sys: null, waitpid: 0, onexit: 0, born: CLOCK, prev: 0, forced: false, app: "" };
+  push(PROCS, p); PMAP[p.pid] = p;
+  return p;
+}
+function slice_for(p) { return floor(CFG.budget * CFG.sliceSteps); }
+function ready(p) {
+  p.st = 0;
+  if (!p.inq) { p.inq = true; p.slice = slice_for(p); push(RQ, p); }
+}
+function startProc(p, bin) {
+  var c = vm_new(bin);
+  if (type(c) == "map") { p.st = 5; p.err = "无法装载：" + c.error; procGone(p); return false; }
+  p.ctx = c;
+  if (p.sys == null && CFG.procMem > 0) { vm_limit(c, CFG.procMem); }
+  ready(p);
+  return true;
+}
+var CACHEIDX = {};
+// 编译缓存按源文件内容寻址：内容相同的源文件（例如各子系统的内核副本）共用一份可执行文件
+function cachePath(path) { return "/System/cache/" + DISK[path].h + ".nxb"; }
+function cacheValid(cache) {
+  if (!fs_isfile(cache) || !fs_isfile(cache + ".dep")) { return false; }
+  var deps = parse(DISK[cache + ".dep"].d);
+  if (type(deps) != "arr") { return false; }
+  var i = 0;
+  while (i < len(deps)) {
+    var d = deps[i];
+    if (!fs_isfile(d[0]) || DISK[d[0]].h != d[1]) { return false; }
+    i = i + 1;
+  }
+  return true;
+}
+// 启动程序：源文件有有效缓存就直接装载，否则先运行编译器进程
+function exec(path, args, owner, linked) {
+  path = fs_norm(path);
+  if (!fs_isfile(path)) { return err("找不到程序 " + path); }
+  var p = newProc(fs_base(path), path, args, owner, linked);
+  if (len(path) > 4 && substr(path, len(path) - 4) == ".nxb") { startProc(p, DISK[path].d); return p; }
+  var cache = cachePath(path);
+  if (cacheValid(cache)) { startProc(p, DISK[cache].d); return p; }
+  compileFor(path, cache, p);
+  return p;
+}
+function compileFor(src, out, target) {
+  if (!fs_isfile(COMPILER)) { target.st = 5; target.err = "缺少编译器 " + COMPILER; procGone(target); return 0; }
+  var cp = newProc("compiler", COMPILER, { src: src, out: out }, 0, false);
+  cp.onexit = target.pid; cp.app = "compile";
+  target.st = 7; target.waitpid = cp.pid;
+  startProc(cp, DISK[COMPILER].d);
+  return cp.pid;
+}
+function compileDone(cp, ok) {
+  var t = null;
+  if (has(PMAP, cp.onexit)) { t = PMAP[cp.onexit]; }
+  var out = cp.args.out;
+  if (ok && fs_isfile(out + ".dep")) {
+    // 把所用编译器的哈希记入依赖：编译器更新后旧缓存自动失效
+    var deps = parse(DISK[out + ".dep"].d);
+    if (type(deps) == "arr") {
+      push(deps, [COMPILER, DISK[COMPILER].h]); fs_write(out + ".dep", json(deps));
+      var srcp = cp.args.src;
+      if (has(CACHEIDX, srcp) && CACHEIDX[srcp] != out && fs_isfile("/System/kernel.nx") && CACHEIDX[srcp] != cachePath("/System/kernel.nx")) {
+        if (has(DISK, CACHEIDX[srcp])) { fs_delete(CACHEIDX[srcp]); }
+        if (has(DISK, CACHEIDX[srcp] + ".dep")) { fs_delete(CACHEIDX[srcp] + ".dep"); }
+      }
+      CACHEIDX[srcp] = out;
+    }
+  }
+  if (cp.args.self == true) {
+    // 编译器编译自身：成功后替换系统编译器，保留上一版
+    if (ok && fs_isfile(out)) {
+      var chk = vm_new(DISK[out].d);
+      if (type(chk) == "map") { ok = false; cp.err = chk.error; }
+      else { vm_kill(chk); fs_write("/System/compiler.prev.nxb", DISK[COMPILER].d); fs_write(COMPILER, DISK[out].d); fs_delete(out); klog("编译器已更新"); }
+    }
+  }
+  if (t == null || t.st != 7) { return 0; }
+  if (ok && fs_isfile(out)) {
+    if (t.sys != null) { childBoot(t); } else { startProc(t, DISK[out].d); }
+  } else {
+    t.st = 5; t.err = "编译失败：" + cp.err;
+    if (t.sys != null) { childError(CHILDREN[t.sys], t.err); }
+    procGone(t);
+  }
+  return 0;
+}
+function wake(p, v) {
+  if (p.st == 1 || p.st == 2 || p.st == 6) { vm_ret(p.ctx, v); ready(p); }
+}
+function deliver(p, msg) {
+  // 投递规则：按到达顺序排在收件箱末尾；接收方正在等待时立即交给它
+  if (p.st == 4 || p.st == 5) { return false; }
+  if (p.st == 1 && len(p.inbox) == 0) { wake(p, msg); return true; }
+  if (len(p.inbox) >= 4096) { return false; }
+  push(p.inbox, msg);
+  return true;
+}
+function kmsg(pid, body) {
+  if (!has(PMAP, pid)) { return false; }
+  return deliver(PMAP[pid], { from: 0, body: body });
+}
+function procRelease(p) {
+  // 释放运行资源：显示面、场景、联动进程
+  var ks = keys(SURF); var i = 0;
+  while (i < len(ks)) { if (SURF[ks[i]].pid == p.pid) { sys("gfx", MYID, "free", num(ks[i]), null, null); del(SURF, ks[i]); } i = i + 1; }
+  ks = keys(SCENES); i = 0;
+  while (i < len(ks)) { if (SCENES[ks[i]].pid == p.pid) { sys("gfx", MYID, "scene_close", num(ks[i]), null, null); del(SCENES, ks[i]); } i = i + 1; }
+  i = 0;
+  while (i < len(PROCS)) {
+    var q = PROCS[i];
+    if (q.owner == p.pid && q.linked && q.st != 4 && q.st != 5) { procKill(q, "随所属应用结束"); }
+    i = i + 1;
+  }
+  if (p.ctx != null) { vm_kill(p.ctx); }
+  p.inbox = [];
+}
+function procGone(p) {
+  if (p.onexit != 0) { compileDone(p, p.st == 4 && p.exit == 0); }
+  if (WMPID > 0 && p.pid != WMPID) { kmsg(WMPID, { t: "proc_exit", pid: p.pid, err: p.err, name: p.name }); }
+  if (p.owner > 0) { kmsg(p.owner, { t: "child_exit", pid: p.pid, code: p.exit, err: p.err }); }
+  prune();
+}
+function procExit(p, code) {
+  if (p.st == 4 || p.st == 5) { return 0; }
+  p.st = 4; p.exit = code;
+  if (p.sys != null) { childStopped(p); }
+  procRelease(p); procGone(p);
+  return 0;
+}
+function procFault(p, msg) {
+  if (p.st == 4 || p.st == 5) { return 0; }
+  p.st = 5; p.err = str(msg);
+  klog("进程 " + p.pid + " " + p.name + " 异常：" + p.err);
+  if (p.sys != null) { childError(CHILDREN[p.sys], p.err); p.ctx = null; }
+  procRelease(p); procGone(p);
+  return 0;
+}
+function procKill(p, why) {
+  if (p.st == 4 || p.st == 5) { return 0; }
+  if (p.sys != null) { childStop(CHILDREN[p.sys]); return 0; }
+  p.st = 4; p.exit = -1; p.err = why;
+  procRelease(p); procGone(p);
+  return 0;
+}
+function prune() {
+  // 只保留最近结束的十几个进程记录
+  var dead = 0; var i = 0;
+  while (i < len(PROCS)) { if (PROCS[i].st == 4 || PROCS[i].st == 5) { dead = dead + 1; } i = i + 1; }
+  i = 0;
+  while (dead > 14 && i < len(PROCS)) {
+    var p = PROCS[i];
+    if ((p.st == 4 || p.st == 5) && (p.sys == null || !has(CHILDREN, p.sys) || CHILDREN[p.sys].pid != p.pid)) { del(PMAP, p.pid); remove(PROCS, i); dead = dead - 1; } else { i = i + 1; }
+  }
+}
+
+// ---------- 调度 ----------
+// 预置策略：时间片轮转。就绪进程排队，队首进程一直运行到阻塞或用完时间片（默认 2 个逻辑步的系统预算），
+// 用完后排到队尾；进程额度（quota）是每个逻辑步的上限，达到上限的进程本步让出、保留队首位置。
+function schedule(limit, forcedOnly) {
+  var i = 0;
+  while (i < len(RQ)) {
+    var left = limit - (vm_total() - STEP_START);
+    if (left <= 0) { break; }
+    var p = RQ[i];
+    if (p.st != 0) { remove(RQ, i); p.inq = false; continue; }
+    if (forcedOnly && !p.forced) { i = i + 1; continue; }
+    var q = p.slice;
+    if (q > left) { q = left; }
+    if (p.quota > 0) {
+      var ql = p.quota - p.stepUsed;
+      if (ql <= 0) { i = i + 1; continue; }
+      if (q > ql) { q = ql; }
+    }
+    var r = vm_run(p.ctx, q);
+    var used = r[1];
+    p.used = p.used + used; p.stepUsed = p.stepUsed + used; p.slice = p.slice - used;
+    var code = r[0];
+    if (code == 1) { dispatch(p, r[2], r[3]); }
+    else if (code == 2) { procExit(p, r[2]); }
+    else if (code == 3) { procFault(p, r[2]); }
+    else if (code == 4) { p.st = 1; }
+    if (p.st == 0 && p.slice <= 0 && i < len(RQ) && RQ[i] == p) { remove(RQ, i); push(RQ, p); p.slice = slice_for(p); }
+  }
+  return 0;
+}
+function dispatch(p, name, a) {
+  if (!has(SC, name)) { vm_ret(p.ctx, err("未知的系统调用 " + str(name))); return 0; }
+  var h = SC[name];
+  var v = h(p, a);
+  if (v != BLOCK) { vm_ret(p.ctx, v); }
+  return 0;
+}
+
+// ---------- 基本系统调用 ----------
+function sc_time(p, a) { return CLOCK; }
+function sc_sleep(p, a) {
+  var ms = a[0]; if (type(ms) != "num" || ms < 0) { ms = 0; }
+  p.st = 2; p.wake = CLOCK + ms;
+  return BLOCK;
+}
+function sc_pid(p, a) { return p.pid; }
+function sc_args(p, a) { return p.args; }
+function sc_spawn(p, a) {
+  var q = exec(a[0], a[1], p.pid, a[2] == true);
+  if (iserr(q)) { return q; }
+  return q.pid;
+}
+function sc_kill(p, a) {
+  if (!has(PMAP, a[0])) { return false; }
+  var q = PMAP[a[0]];
+  if (q.st == 4 || q.st == 5) { return false; }
+  procKill(q, "被进程 " + p.pid + " 结束");
+  if (q == p) { return BLOCK; }
+  return true;
+}
+function sc_exit(p, a) { var c = a[0]; if (type(c) != "num") { c = 0; } procExit(p, c); return BLOCK; }
+function sc_fail(p, a) { procFault(p, str(a[0])); return BLOCK; }
+function sc_print(p, a) {
+  push(p.out, str(a[0]));
+  if (len(p.out) > 200) { remove(p.out, 0); }
+  return true;
+}
+function sc_send(p, a) {
+  if (!has(PMAP, a[0])) { return false; }
+  return deliver(PMAP[a[0]], { from: p.pid, body: a[1] });
+}
+function sc_recv(p, a) {
+  if (len(p.inbox) > 0) { return remove(p.inbox, 0); }
+  p.st = 1; p.wake = 0;
+  if (type(a[0]) == "num") { p.wake = CLOCK + a[0]; }
+  return BLOCK;
+}
+function sc_poll(p, a) { if (len(p.inbox) > 0) { return remove(p.inbox, 0); } return null; }
+function sc_read(p, a) { return fs_read(fs_norm(a[0])); }
+function sc_write(p, a) { return fs_write(fs_norm(a[0]), a[1]); }
+function sc_list(p, a) { return fs_list(fs_norm(a[0])); }
+function sc_mkdir(p, a) { var d = fs_norm(a[0]); if (has(DISK, d)) { return err("已存在：" + d); } if (fs_mkdirs(d)) { return true; } return err("无法创建 " + d); }
+function sc_delete(p, a) { return fs_delete(fs_norm(a[0])); }
+function sc_rename(p, a) { return fs_rename(fs_norm(a[0]), fs_norm(a[1])); }
+function sc_copy(p, a) { return fs_copy(fs_norm(a[0]), fs_norm(a[1])); }
+function sc_stat(p, a) {
+  var path = fs_norm(a[0]);
+  if (path == "/") { return { dir: true, size: 0, m: 0 }; }
+  if (!has(DISK, path)) { return null; }
+  var e = DISK[path];
+  if (e.k == "d") { return { dir: true, size: 0, m: e.m }; }
+  return { dir: false, size: len(e.d), m: e.m, hash: e.h };
+}
+function sc_rand(p, a) { RNG = (RNG * 1103515245 + 12345) % 2147483648; return RNG / 2147483648; }
+function procInfo(q) {
+  var o = { pid: q.pid, name: q.name, path: q.path, st: q.st, used: q.used, last: q.last, quota: q.quota, inbox: len(q.inbox),
+            err: q.err, owner: q.owner, sys: q.sys, app: q.app, mem: 0, pending: 0, own: 0, wake: q.wake, exit: q.exit };
+  if (q.ctx != null && q.st != 4 && q.st != 5) { var s = vm_stat(q.ctx); o.mem = s.mem; o.pending = s.pending; o.own = s.own; o.line = s.line; }
+  if (q.sys != null && has(CHILDREN, q.sys)) { var c = CHILDREN[q.sys]; o.lag = c.pdt; o.inbox = len(c.inq); }
+  return o;
+}
+function sc_ps(p, a) {
+  var out = []; var i = 0;
+  while (i < len(PROCS)) { push(out, procInfo(PROCS[i])); i = i + 1; }
+  return out;
+}
+function sc_pstate(p, a) { if (!has(PMAP, a[0])) { return -1; } return PMAP[a[0]].st; }
+function sc_plog(p, a) { if (!has(PMAP, a[0])) { return null; } var q = PMAP[a[0]]; return { out: q.out, err: q.err, st: q.st, exit: q.exit, name: q.name }; }
+function sc_suspend(p, a) {
+  if (!has(PMAP, a[0])) { return false; }
+  var q = PMAP[a[0]];
+  if (q.st == 3 || q.st == 4 || q.st == 5 || q.st == 7) { return false; }
+  if (q.sys != null) { return childCtl(CHILDREN[q.sys], "pause", null); }
+  q.prev = q.st; q.st = 3;
+  if (q == p) { vm_ret(p.ctx, true); q.prev = 0; return BLOCK; }
+  return true;
+}
+function sc_resume(p, a) {
+  if (!has(PMAP, a[0])) { return false; }
+  var q = PMAP[a[0]];
+  if (q.sys != null) { return childCtl(CHILDREN[q.sys], "resume", null); }
+  if (q.st != 3) { return false; }
+  if (q.prev == 1) {
+    // 挂起期间到达的消息仍在收件箱里，继续后按顺序处理
+    if (len(q.inbox) > 0) { vm_ret(q.ctx, remove(q.inbox, 0)); ready(q); } else { q.st = 1; }
+  } else if (q.prev == 2) { q.st = 2; }
+  else { ready(q); }
+  return true;
+}
+function sc_setquota(p, a) {
+  if (!has(PMAP, a[0])) { return false; }
+  var n = a[1]; if (type(n) != "num" || n < 0) { n = 0; }
+  PMAP[a[0]].quota = floor(n);
+  if (PMAP[a[0]].sys != null) { CHILDREN[PMAP[a[0]].sys].grant.budget = floor(n); }
+  return true;
+}
+function sc_kinfo(p, a) {
+  return { id: MYID, name: MYNAME, depth: DEPTH, path: PATH, clock: CLOCK, step: STEPN, budget: CFG.budget, grant: TK.budget, eff: EFF,
+           used: STEP_USED, kown: KOWN_LAST, mem: SYSMEM, memQuota: mem_limit(), memCfg: CFG.mem, memGrant: TK.mem,
+           stor: STOR + CSTOR, storQuota: stor_limit(), storCfg: CFG.storage, storGrant: TK.storage, slice: CFG.sliceSteps,
+           procMem: CFG.procMem, w: DW, h: DH, stepMs: STEP_MS };
+}
+function sc_kconf(p, a) {
+  var k = a[0]; var v = a[1];
+  if (type(v) != "num" || !has(CFG, k)) { return false; }
+  if (k == "budget" && v < 2000) { v = 2000; }
+  if (v < 0) { v = 0; }
+  CFG[k] = v;
+  return true;
+}
+function sc_dmesg(p, a) { return KLOG; }
+function sc_app(p, a) { p.app = str(a[0]); return true; }
+
+// ---------- 设备寄存器（带时间戳；用于飞控的传感器与控制量） ----------
+function sc_dev_write(p, a) {
+  var name = str(a[0]);
+  if (!has(DEV, name)) { DEV[name] = { v: null, t: 0, n: 0, q: [] }; }
+  var d = DEV[name];
+  d.v = a[1]; d.t = CLOCK; d.n = d.n + 1;
+  if (a[2] == true) { push(d.q, { v: a[1], t: CLOCK }); if (len(d.q) > 512) { remove(d.q, 0); } }
+  return CLOCK;
+}
+function sc_dev_read(p, a) {
+  var name = str(a[0]);
+  if (!has(DEV, name)) { return null; }
+  var d = DEV[name];
+  return { v: d.v, t: d.t, n: d.n };
+}
+function sc_dev_take(p, a) {
+  var name = str(a[0]);
+  if (!has(DEV, name)) { return []; }
+  var q = DEV[name].q; DEV[name].q = [];
+  return q;
+}
+function sc_dev_free(p, a) { del(DEV, str(a[0])); return true; }
+
+// ---------- 显示接口 ----------
+function sc_surface(p, a) {
+  SIDSEQ = SIDSEQ + 1;
+  SURF[SIDSEQ] = { pid: p.pid, list: null };
+  return SIDSEQ;
+}
+function sc_draw(p, a) {
+  var sid = a[0];
+  if (sid == 0) { if (p.pid != WMPID) { return err("只有窗口管理程序可以绘制桌面"); } if (!has(SURF, 0)) { SURF[0] = { pid: p.pid, list: null }; } }
+  if (!has(SURF, sid) || SURF[sid].pid != p.pid) { return err("无效的显示面"); }
+  SURF[sid].list = a[1];
+  sys("gfx", MYID, "draw", sid, a[1], null);
+  return true;
+}
+function sc_surface_free(p, a) {
+  var sid = a[0];
+  if (!has(SURF, sid) || SURF[sid].pid != p.pid) { return false; }
+  del(SURF, sid); sys("gfx", MYID, "free", sid, null, null);
+  return true;
+}
+function sc_scene_open(p, a) {
+  if (type(a[0]) != "str") { return err("场景资源必须是文本"); }
+  if (SYSMEM + len(a[0]) * 2 > mem_limit()) { return err("内存配额不足，无法载入场景"); }
+  SCSEQ = SCSEQ + 1;
+  SCENES[SCSEQ] = { pid: p.pid, res: a[0], staged: {}, layers: {}, t: 0 };
+  var r = sys("gfx", MYID, "scene_open", SCSEQ, a[0], null);
+  if (iserr(r)) { del(SCENES, SCSEQ); return r; }
+  return SCSEQ;
+}
+function sc_scene_layer(p, a) {
+  var h = a[0];
+  if (!has(SCENES, h)) { return err("无效的场景"); }
+  SCENES[h].staged[str(a[1])] = { t: a[2], d: a[3] };
+  sys("gfx", MYID, "scene_layer", h, a[1], [a[2], a[3]]);
+  return true;
+}
+function sc_scene_present(p, a) {
+  var h = a[0];
+  if (!has(SCENES, h)) { return err("无效的场景"); }
+  var s = SCENES[h]; var ks = keys(s.staged); var i = 0;
+  while (i < len(ks)) { s.layers[ks[i]] = s.staged[ks[i]]; i = i + 1; }
+  s.staged = {}; s.t = a[1];
+  sys("gfx", MYID, "scene_present", h, a[1], null);
+  return true;
+}
+function sc_scene_close(p, a) {
+  var h = a[0];
+  if (!has(SCENES, h) || SCENES[h].pid != p.pid) { return false; }
+  del(SCENES, h); sys("gfx", MYID, "scene_close", h, null, null);
+  return true;
+}
+// 恢复后把保存的显示内容重新提交给显示设备：第一次呈现就是保存时刻的画面
+function resync() {
+  var ks = keys(SURF); var i = 0;
+  while (i < len(ks)) { var s = SURF[ks[i]]; if (s.list != null) { sys("gfx", MYID, "draw", num(ks[i]), s.list, null); } i = i + 1; }
+  ks = keys(SCENES); i = 0;
+  while (i < len(ks)) {
+    var h = num(ks[i]); var sc = SCENES[ks[i]];
+    sys("gfx", MYID, "scene_open", h, sc.res, null);
+    var ls = keys(sc.layers); var j = 0;
+    while (j < len(ls)) { sys("gfx", MYID, "scene_layer", h, ls[j], [sc.layers[ls[j]].t, sc.layers[ls[j]].d]); j = j + 1; }
+    sys("gfx", MYID, "scene_present", h, sc.t, null);
+    i = i + 1;
+  }
+  return 0;
+}
+// 后代系统的显示提交：逐层向上转发（origin 是提交者的系统标识）
+function sc_gfx(p, a) {
+  if (p.sys == null) { return err("无权调用"); }
+  return sys("gfx", a[0], a[1], a[2], a[3], a[4]);
+}
+function sc_wm(p, a) { return WMPID; }
+function sc_wm_register(p, a) { WMPID = p.pid; return { w: DW, h: DH, id: MYID, name: MYNAME, depth: DEPTH, path: PATH }; }
+function sc_child_input(p, a) {
+  if (p.pid != WMPID || !has(CHILDREN, a[0])) { return false; }
+  var c = CHILDREN[a[0]];
+  if (len(c.inq) > 2000) { return false; }
+  push(c.inq, { k: "in", e: a[1] });
+  return true;
+}
+function sc_child_size(p, a) {
+  if (!has(CHILDREN, a[0])) { return false; }
+  var c = CHILDREN[a[0]];
+  c.w = a[1]; c.h = a[2];
+  return true;
+}
+
+// ---------- 跨系统消息（逐层路由） ----------
+function treeHas(node, id) {
+  if (node.id == id) { return true; }
+  var i = 0;
+  while (i < len(node.kids)) { if (treeHas(node.kids[i], id)) { return true; } i = i + 1; }
+  return false;
+}
+function childFor(id) {
+  var ks = keys(CHILDREN); var i = 0;
+  while (i < len(ks)) {
+    var c = CHILDREN[ks[i]];
+    if (c.id == id) { return c; }
+    if (c.info != null && treeHas({ id: c.id, kids: c.info.kids }, id)) { return c; }
+    i = i + 1;
+  }
+  return null;
+}
+function route(m) {
+  if (m.to == MYID) { busHandle(m); return true; }
+  var c = childFor(m.to);
+  if (c != null) {
+    if (c.state != "running" && c.state != "paused") { return false; }
+    push(c.inq, { k: "bus", m: m });
+    return true;
+  }
+  if (DEPTH <= 1) { return false; }
+  sys("bus", m);
+  return true;
+}
+function busHandle(m) {
+  if (m.k == "xfer_req") {
+    // 文件传出：读出所请求的文件，把副本发给目标系统
+    var files = []; var i = 0;
+    while (i < len(m.paths)) { xferCollect(fs_norm(m.paths[i]), "", files); i = i + 1; }
+    route({ to: m.dst, from: MYID, k: "xfer_data", pid: m.dpid, sess: m.sess, dir: m.dir, files: files });
+    return 0;
+  }
+  if (has(m, "svc") && m.svc == "wm") { if (WMPID > 0) { kmsg(WMPID, m); } return 0; }
+  if (has(m, "pid") && m.pid > 0) { kmsg(m.pid, m); return 0; }
+  return 0;
+}
+function xferCollect(path, rel, files) {
+  if (!has(DISK, path)) { return 0; }
+  var name = fs_base(path);
+  if (DISK[path].k == "f") { push(files, { name: rel + name, data: DISK[path].d }); return 0; }
+  push(files, { name: rel + name, dir: true });
+  var l = fs_list(path); var i = 0;
+  while (i < len(l)) { xferCollect(l[i].path, rel + name + "/", files); i = i + 1; }
+  return 0;
+}
+function sc_bus(p, a) {
+  // 承载进程（子系统内核）转来的消息
+  if (p.sys == null) { return false; }
+  return route(a[0]);
+}
+function sc_bus_send(p, a) {
+  var m = a[0];
+  if (type(m) != "map" || type(m.to) != "str") { return false; }
+  m.from = MYID; m.fpid = p.pid;
+  return route(m);
+}
+function sc_sysid(p, a) { return sys("sysid", a[0]); }
+function sc_sysid_used(p, a) { return sys("sysid_used", a[0]); }
+function sc_sysinfo(p, a) {
+  if (p.sys == null || !has(CHILDREN, p.sys)) { return false; }
+  var c = CHILDREN[p.sys];
+  c.info = a[0];
+  CSTOR = CSTOR - c.stor + a[0].stor; c.stor = a[0].stor;
+  TREE_DIRTY = true;
+  return true;
+}
+function treeNode() {
+  var kids = []; var ks = keys(CHILDREN); var i = 0;
+  while (i < len(ks)) {
+    var c = CHILDREN[ks[i]]; var sub = [];
+    if (c.info != null && (c.state == "running" || c.state == "paused")) { sub = c.info.kids; }
+    push(kids, { id: c.id, name: c.name, state: c.state, paused: c.paused, rate: c.rate, err: c.err, epoch: c.epoch, stor: c.stor, kids: sub });
+    i = i + 1;
+  }
+  return { id: MYID, name: MYNAME, stor: STOR + CSTOR, kids: kids };
+}
+function sc_tree(p, a) { return treeNode(); }
+
+// ---------- 直属子系统 ----------
+function mem_limit() {
+  var lim = CFG.mem;
+  if (TK != null && TK.mem < lim) { lim = TK.mem; }
+  return lim;
+}
+function imageFor() {
+  // 新子系统的初始磁盘：复制本系统的系统程序、应用、示例与说明
+  var img = {}; var ks = keys(DISK); var i = 0; var n = 0;
+  while (i < len(ks)) {
+    var p = ks[i];
+    var top = substr(p, 0, 6);
+    var take = false;
+    if (substr(p, 0, 8) == "/System/" || p == "/System") { take = substr(p, 0, 16) != "/System/kernels/" && p != "/System/kernels"; }
+    else if (substr(p, 0, 5) == "/Apps" || substr(p, 0, 9) == "/Programs" || substr(p, 0, 5) == "/Demo") { take = true; }
+    else if (p == "/Documents" || p == "/Documents/操作说明.md" || p == "/Flights") { take = true; }
+    if (take) {
+      var e = DISK[p];
+      if (e.k == "f") { img[p] = { k: "f", d: e.d, m: 0, h: e.h }; n = n + len(e.d); } else { img[p] = { k: "d", m: 0 }; }
+    }
+    i = i + 1;
+  }
+  charge(floor(n / 16));
+  return img;
+}
+function childNew(id, name) {
+  var gb = floor(min(CFG.budget, TK.budget) * CFG.childShare);
+  var c = { id: id, name: name, state: "booting", err: "", paused: false, rate: 1, pdt: 0, steps: 0, force: false, stepRun: false, boot: null,
+            pid: 0, ctx: null, kpath: "/System/kernels/" + id + ".nx", inq: [], info: null, stor: 0, epoch: 0, saved: null,
+            w: 640, h: 400, memUsed: 0,
+            grant: { budget: gb, mem: floor(mem_limit() * 0.4), storage: floor(stor_limit() * 0.4) } };
+  CHILDREN[id] = c;
+  TREE_DIRTY = true;
+  return c;
+}
+function childStart(c, boot) {
+  // boot: {disk, children} —— 新建时为初始镜像，重启时为保留下来的文件与系统树
+  c.state = "booting"; c.err = ""; c.info = null; c.pdt = 0; c.inq = []; c.steps = 0; c.force = false;
+  c.epoch = c.epoch + 1;
+  if (!fs_isfile(c.kpath)) { childError(c, "找不到内核源文件 " + c.kpath); return 0; }
+  var p = newProc("系统 " + c.id, c.kpath, null, 0, false);
+  p.sys = c.id; p.quota = c.grant.budget; p.app = "system";
+  c.pid = p.pid; c.boot = boot;
+  var cache = cachePath(c.kpath);
+  if (cacheValid(cache)) { childBoot(p); } else { compileFor(c.kpath, cache, p); }
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_state", id: c.id }); }
+  TREE_DIRTY = true;
+  return 0;
+}
+function childBoot(p) {
+  var c = CHILDREN[p.sys];
+  var x = vm_new(DISK[cachePath(c.kpath)].d);
+  if (type(x) == "map") { p.st = 5; p.err = x.error; childError(c, x.error); return 0; }
+  p.ctx = x; c.ctx = x; c.state = "running";
+  if (c.paused) { c.state = "paused"; }
+  vm_limit(x, floor(c.grant.mem * 1.25));
+  ready(p);
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_state", id: c.id }); }
+  TREE_DIRTY = true;
+  return 0;
+}
+function childMembers(c) {
+  var out = [c.id];
+  if (c.info != null) { collectIds(c.info.kids, out); }
+  return out;
+}
+function collectIds(kids, out) {
+  var i = 0;
+  while (i < len(kids)) { push(out, kids[i].id); collectIds(kids[i].kids, out); i = i + 1; }
+  return 0;
+}
+function gfxReset(ids) {
+  var i = 0;
+  while (i < len(ids)) { sys("gfx", ids[i], "reset", null, null, null); i = i + 1; }
+  return 0;
+}
+function childError(c, msg) {
+  // 内核错误：只停止这一棵子树，父系统和兄弟系统照常运行
+  if (c == null) { return 0; }
+  c.state = "error"; c.err = str(msg);
+  gfxReset(childMembers(c));
+  klog("子系统 " + c.id + " 内核错误：" + c.err);
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_state", id: c.id }); }
+  TREE_DIRTY = true;
+  return 0;
+}
+function childStopped(p) {
+  var c = CHILDREN[p.sys];
+  if (c != null && c.state != "stopped") { c.state = "stopped"; gfxReset(childMembers(c)); TREE_DIRTY = true; if (WMPID > 0) { kmsg(WMPID, { t: "sys_state", id: c.id }); } }
+  return 0;
+}
+// 取出一棵（可能已经出错的）子树里保留的文件与系统树结构
+function harvest(c) {
+  if (c.boot != null) { return c.boot; }
+  if (c.ctx == null) { return c.saved; }
+  var disk = vm_peek(c.ctx, "DISK");
+  var kids = vm_peek(c.ctx, "CHILDREN");
+  var out = [];
+  if (type(kids) == "map") {
+    var ks = keys(kids); var i = 0;
+    while (i < len(ks)) {
+      var k = kids[ks[i]];
+      push(out, { id: k.id, name: k.name, kpath: k.kpath, rate: k.rate, paused: k.paused, grant: k.grant, saved: harvest(k) });
+      i = i + 1;
+    }
+  }
+  if (type(disk) != "map") { disk = {}; }
+  return { disk: disk, children: out };
+}
+function childStop(c) {
+  if (c == null) { return false; }
+  var p = null;
+  if (has(PMAP, c.pid)) { p = PMAP[c.pid]; }
+  var hv = harvest(c);
+  if (hv != null) { c.saved = hv; }
+  c.boot = null;
+  if (c.ctx != null) { vm_kill(c.ctx); }
+  gfxReset(childMembers(c));
+  c.ctx = null; c.state = "stopped"; c.info = null; c.inq = []; c.pdt = 0;
+  CSTOR = CSTOR - c.stor; c.stor = 0;
+  if (p != null && p.st != 4 && p.st != 5) { p.st = 4; p.exit = -1; p.ctx = null; procRelease(p); }
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_state", id: c.id }); }
+  TREE_DIRTY = true;
+  return true;
+}
+function childRestart(c) {
+  // 结束子树内原有进程，重新载入内核源文件，保留已保存的文件与系统树结构
+  childStop(c);
+  var boot = c.saved; c.saved = null;
+  if (boot == null) { boot = { disk: imageFor(), children: [] }; }
+  childStart(c, boot);
+  return true;
+}
+function snapMeta(text) {
+  var i = indexOf(text, "\n", 0);
+  if (i < 0) { return null; }
+  var m = parse(substr(text, 0, i));
+  if (type(m) != "map" || m.nsnap != 1) { return null; }
+  m.at = i + 1;
+  return m;
+}
+function childSnapshot(c, path) {
+  if (c.ctx == null || (c.state != "running" && c.state != "paused")) { return err("该子系统没有在运行"); }
+  // 复制整棵子树在同一逻辑时点的状态；这是父系统的工作，按规模计费并占用父系统的存储配额
+  var blob = vm_save(c.ctx);
+  var p = PMAP[c.pid];
+  var meta = { nsnap: 1, id: c.id, name: c.name, rate: c.rate, paused: c.paused, members: childMembers(c), pst: p.st, prev: p.prev,
+               pdt: c.pdt, steps: 0, w: c.w, h: c.h, kernel: DISK[c.kpath].d, clock: CLOCK };
+  var r = fs_write(path, json(meta) + "\n" + blob);
+  if (iserr(r)) { return r; }
+  return { path: path, size: len(blob) };
+}
+function attachLoaded(c, p, x, meta) {
+  p.ctx = x; c.ctx = x; c.pid = p.pid; c.info = null;
+  c.rate = meta.rate; c.paused = meta.paused; c.pdt = meta.pdt; c.steps = 0; c.stepRun = false;
+  c.state = "running"; if (c.paused) { c.state = "paused"; }
+  c.err = ""; c.epoch = c.epoch + 1; c.saved = null;
+  vm_limit(x, floor(c.grant.mem * 1.25));
+  var s = vm_stat(x);
+  p.err = ""; p.exit = null; p.inbox = []; p.prev = 0;
+  if (s.state == 1) { p.st = 6; }
+  else if (c.paused) { p.st = 3; p.prev = 0; }
+  else { p.st = 3; ready(p); }
+  c.force = true;
+  return 0;
+}
+function childRestore(c, path) {
+  if (!fs_isfile(path)) { return err("找不到快照 " + path); }
+  var text = DISK[path].d; var meta = snapMeta(text);
+  if (meta == null) { return err("不是有效的快照文件"); }
+  var x = vm_load(substr(text, meta.at));
+  if (type(x) == "map") { return x; }
+  var old = childMembers(c);
+  var p = null;
+  if (has(PMAP, c.pid) && PMAP[c.pid].st != 4 && PMAP[c.pid].st != 5) { p = PMAP[c.pid]; if (p.ctx != null) { vm_kill(p.ctx); } }
+  else { p = newProc("系统 " + c.id, c.kpath, null, 0, false); p.sys = c.id; p.quota = c.grant.budget; p.app = "system"; }
+  gfxReset(old);
+  CSTOR = CSTOR - c.stor; c.stor = 0;
+  attachLoaded(c, p, x, meta);
+  // 恢复前暂存在范围外的输入与数据不带进恢复后的子树
+  // 快照里的后代标识若已被范围外的其他系统占用，则换用新的标识
+  var remap = null;
+  var used = sys("sysid_used", meta.members); var clash = meta.id != c.id; var ui = 0;
+  if (type(used) == "arr") { while (ui < len(used)) { if (indexOf(old, used[ui], 0) < 0) { clash = true; } ui = ui + 1; } }
+  if (clash) { remap = allocRemap(meta.members, c.id); }
+  c.inq = [{ k: "restored", remap: remap, scope: meta.members, path: concat(PATH, [MYID]), w: c.w, h: c.h }];
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_state", id: c.id }); }
+  TREE_DIRTY = true;
+  return true;
+}
+function allocRemap(members, firstId) {
+  var remap = {}; var i = 0; var n = len(members);
+  if (firstId != null) { remap[members[0]] = firstId; i = 1; }
+  if (n - i > 0) {
+    var ids = sys("sysid", n - i); var j = 0;
+    while (i < n) { remap[members[i]] = ids[j]; i = i + 1; j = j + 1; }
+  }
+  return remap;
+}
+function childFork(path, name) {
+  if (!fs_isfile(path)) { return err("找不到快照 " + path); }
+  var text = DISK[path].d; var meta = snapMeta(text);
+  if (meta == null) { return err("不是有效的快照文件"); }
+  var x = vm_load(substr(text, meta.at));
+  if (type(x) == "map") { return x; }
+  var remap = allocRemap(meta.members, null);
+  var id = remap[meta.id];
+  if (type(name) != "str" || name == "") { name = meta.name + " 分叉"; }
+  var c = childNew(id, name);
+  var r = fs_write(c.kpath, meta.kernel);
+  if (iserr(r)) { del(CHILDREN, id); vm_kill(x); return r; }
+  var p = newProc("系统 " + id, c.kpath, null, 0, false);
+  p.sys = id; p.quota = c.grant.budget; p.app = "system";
+  c.w = meta.w; c.h = meta.h;
+  attachLoaded(c, p, x, meta);
+  var scope = []; var i = 0;
+  while (i < len(meta.members)) { push(scope, remap[meta.members[i]]); i = i + 1; }
+  c.inq = [{ k: "restored", remap: remap, scope: scope, path: concat(PATH, [MYID]), w: c.w, h: c.h }];
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_new", id: id, name: name }); }
+  return { id: id };
+}
+function childCtl(c, act, arg) {
+  if (c == null) { return err("没有这个子系统"); }
+  var p = null;
+  if (has(PMAP, c.pid)) { p = PMAP[c.pid]; }
+  if (act == "pause") {
+    if (c.state != "running") { return false; }
+    c.paused = true; c.state = "paused";
+    if (p != null && p.st == 0) { p.st = 3; p.prev = 0; }
+  } else if (act == "resume") {
+    if (c.state != "paused") { return false; }
+    c.paused = false; c.state = "running"; c.steps = 0; c.stepRun = false;
+    if (p != null && p.st == 3) { ready(p); }
+  } else if (act == "step") {
+    // 单步：让暂停的子系统执行一个固定逻辑时间步（STEP_MS × 该子系统速率），覆盖其子树
+    if (c.state != "paused") { return false; }
+    c.steps = c.steps + 1;
+  } else if (act == "rate") {
+    if (type(arg) != "num" || arg <= 0 || arg > 64) { return false; }
+    c.rate = arg;
+  } else if (act == "restart") { return childRestart(c); }
+  else if (act == "stop") { return childStop(c); }
+  else if (act == "start") { if (c.state != "stopped" && c.state != "error") { return false; } return childRestart(c); }
+  else if (act == "remove") {
+    childStop(c);
+    if (WMPID > 0) { kmsg(WMPID, { t: "sys_gone", id: c.id }); }
+    if (has(PMAP, c.pid)) { var dp = PMAP[c.pid]; del(PMAP, c.pid); var di = indexOf(PROCS, dp, 0); if (di >= 0) { remove(PROCS, di); } }
+    del(CHILDREN, c.id);
+  } else if (act == "rename") { c.name = str(arg); }
+  else if (act == "grant") {
+    if (type(arg) != "map") { return false; }
+    if (type(arg.budget) == "num") { c.grant.budget = floor(max(0, arg.budget)); if (p != null) { p.quota = c.grant.budget; } }
+    if (type(arg.mem) == "num") { c.grant.mem = floor(max(0, arg.mem)); if (c.ctx != null) { vm_limit(c.ctx, floor(c.grant.mem * 1.25)); } }
+    if (type(arg.storage) == "num") { c.grant.storage = floor(max(0, arg.storage)); }
+  } else if (act == "snapshot") { return childSnapshot(c, fs_norm(str(arg))); }
+  else if (act == "restore") { return childRestore(c, fs_norm(str(arg))); }
+  else { return err("未知操作 " + str(act)); }
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_state", id: c.id }); }
+  TREE_DIRTY = true;
+  return true;
+}
+function sc_sys_create(p, a) {
+  var ids = sys("sysid", 1);
+  if (type(ids) != "arr") { return err("无法分配系统标识"); }
+  var id = ids[0];
+  var name = a[0]; if (type(name) != "str" || name == "") { name = "子系统 " + id; }
+  if (!fs_isfile("/System/kernel.nx")) { return err("缺少内核模板 /System/kernel.nx"); }
+  var c = childNew(id, name);
+  var r = fs_write(c.kpath, DISK["/System/kernel.nx"].d);
+  if (iserr(r)) { del(CHILDREN, id); return r; }
+  if (WMPID > 0) { kmsg(WMPID, { t: "sys_new", id: id, name: name }); }
+  childStart(c, { disk: imageFor(), children: [] });
+  return { id: id };
+}
+function sc_sys_ctl(p, a) {
+  if (a[1] == "fork") { return childFork(fs_norm(str(a[2])), a[3]); }
+  if (!has(CHILDREN, a[0])) { return err("没有这个子系统"); }
+  return childCtl(CHILDREN[a[0]], a[1], a[2]);
+}
+function sc_sys_list(p, a) {
+  var out = []; var ks = keys(CHILDREN); var i = 0;
+  while (i < len(ks)) {
+    var c = CHILDREN[ks[i]];
+    var o = { id: c.id, name: c.name, state: c.state, paused: c.paused, rate: c.rate, err: c.err, kpath: c.kpath, pid: c.pid,
+              grant: c.grant, stor: c.stor, mem: c.memUsed, used: 0, last: 0, own: 0, lag: c.pdt, w: c.w, h: c.h };
+    if (has(PMAP, c.pid)) { o.used = PMAP[c.pid].used; o.last = PMAP[c.pid].last; }
+    if (c.ctx != null) { o.own = vm_stat(c.ctx).own; }
+    push(out, o);
+    i = i + 1;
+  }
+  return out;
+}
+function sc_rebuild_compiler(p, a) {
+  var cp = newProc("compiler", COMPILER, { src: "/System/compiler.nx", out: "/System/compiler.next.nxb", self: true }, p.pid, false);
+  cp.onexit = -1; cp.app = "compile";
+  startProc(cp, DISK[COMPILER].d);
+  return cp.pid;
+}
+// 承载进程的两个专用调用
+function sc_boot(p, a) {
+  if (p.sys == null) { return err("无权调用"); }
+  var c = CHILDREN[p.sys];
+  var b = c.boot; c.boot = null;
+  if (b == null) { b = { disk: {}, children: [] }; }
+  return { id: c.id, name: c.name, depth: DEPTH + 1, path: concat(PATH, [MYID]), disk: b.disk, children: b.children,
+           w: c.w, h: c.h, budget: c.grant.budget, mem: c.grant.mem, storage: c.grant.storage, seed: floor(sc_rand(p, a) * 1000000) };
+}
+function sc_tick(p, a) {
+  if (p.sys == null) { return err("无权调用"); }
+  p.st = 6; p.forced = false;
+  return BLOCK;
+}
+function feedChildren() {
+  var ks = keys(CHILDREN); var i = 0;
+  while (i < len(ks)) {
+    var c = CHILDREN[ks[i]]; i = i + 1;
+    if (c.state != "running" && c.state != "paused") { continue; }
+    if (!has(PMAP, c.pid)) { continue; }
+    var p = PMAP[c.pid];
+    if (c.paused && p.st == 0 && !p.forced) { p.st = 3; p.prev = 0; }
+    if (!c.paused && !FROZEN) { c.pdt = c.pdt + TK.dt * c.rate; }
+    if (c.paused && c.steps > 0 && !FROZEN && p.st == 3) { c.steps = c.steps - 1; ready(p); continue; }
+    if (p.st != 6) { continue; }
+    var go = false; var dt = 0; var frozen = false;
+    if (!c.paused && !FROZEN) { go = true; dt = c.pdt; c.pdt = 0; }
+    else if (c.steps > 0 && !FROZEN) { c.steps = c.steps - 1; go = true; dt = STEP_MS * c.rate; }
+    else if (c.force) { go = true; frozen = true; }
+    if (go) {
+      c.force = false;
+      var ev = c.inq; c.inq = [];
+      var ml = mem_limit() - (SYSMEM - c.memUsed); if (ml > c.grant.mem) { ml = c.grant.mem; }
+      var sl = stor_limit() - (STOR + CSTOR - c.stor); if (sl > c.grant.storage) { sl = c.grant.storage; }
+      vm_ret(p.ctx, { dt: dt, budget: c.grant.budget, mem: ml, storage: sl, ev: ev, frozen: frozen, w: c.w, h: c.h });
+      p.forced = frozen;
+      ready(p);
+    }
+  }
+  return 0;
+}
+
+// ---------- 恢复 / 分叉后的重新对位 ----------
+function onRestored(ev) {
+  var remap = ev.remap;
+  if (remap != null && has(remap, MYID)) { MYID = remap[MYID]; }
+  PATH = ev.path; EPOCH = EPOCH + 1;
+  DW = ev.w; DH = ev.h;
+  if (remap != null) {
+    var ks = keys(CHILDREN); var i = 0; var nc = {};
+    while (i < len(ks)) {
+      var c = CHILDREN[ks[i]];
+      if (has(remap, c.id)) {
+        var nid = remap[c.id]; var np = "/System/kernels/" + nid + ".nx";
+        if (has(DISK, c.kpath)) { fs_rename(c.kpath, np); }
+        if (has(PMAP, c.pid)) { PMAP[c.pid].sys = nid; PMAP[c.pid].name = "系统 " + nid; PMAP[c.pid].path = np; }
+        c.id = nid; c.kpath = np;
+      }
+      nc[c.id] = c; i = i + 1;
+    }
+    CHILDREN = nc;
+  }
+  resync();
+  var ks2 = keys(CHILDREN); var j = 0;
+  while (j < len(ks2)) {
+    var k = CHILDREN[ks2[j]];
+    if (k.state == "running" || k.state == "paused") {
+      push(k.inq, { k: "restored", remap: remap, scope: ev.scope, path: concat(PATH, [MYID]), w: k.w, h: k.h });
+      k.force = true; k.epoch = k.epoch + 1;
+    }
+    j = j + 1;
+  }
+  j = 0;
+  while (j < len(PROCS)) {
+    var q = PROCS[j];
+    if (q.sys == null && q.st != 4 && q.st != 5) { deliver(q, { from: 0, body: { t: "sys_restored", remap: remap, scope: ev.scope, id: MYID, path: PATH, w: DW, h: DH } }); }
+    j = j + 1;
+  }
+  TREE_DIRTY = true;
+  return 0;
+}
+
+// ---------- 每个逻辑步 ----------
+function onTick() {
+  var i = 0;
+  FROZEN = TK.frozen == true;
+  if (!FROZEN) { CLOCK = CLOCK + TK.dt; STEPN = STEPN + 1; }
+  if (TK.w != DW || TK.h != DH) { DW = TK.w; DH = TK.h; if (WMPID > 0) { kmsg(WMPID, { t: "resize", w: DW, h: DH }); } }
+  // 父系统送来的事件：原始输入交给窗口管理程序，跨系统消息继续路由
+  var ev = TK.ev;
+  while (i < len(ev)) {
+    var e = ev[i]; i = i + 1;
+    if (e.k == "in") { if (WMPID > 0) { kmsg(WMPID, e.e); } }
+    else if (e.k == "bus") { route(e.m); }
+    else if (e.k == "restored") { onRestored(e); }
+  }
+  if (FROZEN) { feedChildren(); return 0; }
+  // 定时唤醒与接收超时
+  i = 0;
+  while (i < len(PROCS)) {
+    var p = PROCS[i]; i = i + 1;
+    p.last = p.stepUsed; p.stepUsed = 0;
+    if (p.st == 2 && p.wake <= CLOCK) { wake(p, CLOCK); }
+    else if (p.st == 1 && p.wake > 0 && p.wake <= CLOCK) { p.wake = 0; wake(p, null); }
+  }
+  feedChildren();
+  // 定期核对内存：超出配额时结束占用最多的普通进程
+  if (STEPN % 30 == 1) { memCheck(); }
+  if (STEPN % 60 == 2 && STOR + CSTOR != LAST_STOR) { TREE_DIRTY = true; }
+  return 0;
+}
+function memCheck() {
+  SYSMEM = vm_stat(null).mem;
+  var ks = keys(CHILDREN); var i = 0;
+  while (i < len(ks)) { var c = CHILDREN[ks[i]]; if (c.ctx != null) { c.memUsed = vm_stat(c.ctx).mem; } else { c.memUsed = 0; } i = i + 1; }
+  if (SYSMEM <= mem_limit()) { return 0; }
+  var big = null; var bm = 0; i = 0;
+  while (i < len(PROCS)) {
+    var p = PROCS[i]; i = i + 1;
+    if (p.ctx == null || p.st == 4 || p.st == 5 || p.pid == WMPID || p.sys != null) { continue; }
+    var m = vm_stat(p.ctx).mem;
+    if (m > bm) { bm = m; big = p; }
+  }
+  if (big != null) { procFault(big, "系统内存配额不足，占用最多的进程被结束"); SYSMEM = vm_stat(null).mem; }
+  return 0;
+}
+function reportTree() {
+  TREE_DIRTY = false; LAST_STOR = STOR + CSTOR;
+  var t = treeNode();
+  sys("sysinfo", { stor: t.stor, kids: t.kids, epoch: EPOCH });
+  if (WMPID > 0) { kmsg(WMPID, { t: "tree", tree: t }); }
+  return 0;
+}
+
+function installSyscalls() {
+  SC["time"] = sc_time; SC["sleep"] = sc_sleep; SC["pid"] = sc_pid; SC["args"] = sc_args;
+  SC["spawn"] = sc_spawn; SC["kill"] = sc_kill; SC["exit"] = sc_exit; SC["fail"] = sc_fail; SC["print"] = sc_print;
+  SC["send"] = sc_send; SC["recv"] = sc_recv; SC["poll"] = sc_poll;
+  SC["read"] = sc_read; SC["write"] = sc_write; SC["list"] = sc_list; SC["mkdir"] = sc_mkdir; SC["delete"] = sc_delete;
+  SC["rename"] = sc_rename; SC["copy"] = sc_copy; SC["stat"] = sc_stat; SC["rand"] = sc_rand;
+  SC["ps"] = sc_ps; SC["pstate"] = sc_pstate; SC["plog"] = sc_plog; SC["suspend"] = sc_suspend; SC["resume"] = sc_resume;
+  SC["setquota"] = sc_setquota; SC["kinfo"] = sc_kinfo; SC["kconf"] = sc_kconf; SC["dmesg"] = sc_dmesg; SC["app"] = sc_app;
+  SC["dev_write"] = sc_dev_write; SC["dev_read"] = sc_dev_read; SC["dev_take"] = sc_dev_take; SC["dev_free"] = sc_dev_free;
+  SC["surface"] = sc_surface; SC["draw"] = sc_draw; SC["surface_free"] = sc_surface_free;
+  SC["scene_open"] = sc_scene_open; SC["scene_layer"] = sc_scene_layer; SC["scene_present"] = sc_scene_present; SC["scene_close"] = sc_scene_close;
+  SC["gfx"] = sc_gfx; SC["wm"] = sc_wm; SC["wm_register"] = sc_wm_register; SC["child_input"] = sc_child_input; SC["child_size"] = sc_child_size;
+  SC["bus"] = sc_bus; SC["bus_send"] = sc_bus_send; SC["sysid"] = sc_sysid; SC["sysid_used"] = sc_sysid_used; SC["sysinfo"] = sc_sysinfo; SC["tree"] = sc_tree;
+  SC["sys_create"] = sc_sys_create; SC["sys_ctl"] = sc_sys_ctl; SC["sys_list"] = sc_sys_list; SC["rebuild_compiler"] = sc_rebuild_compiler;
+  SC["boot"] = sc_boot; SC["tick"] = sc_tick;
+  return 0;
+}
+
+function boot() {
+  var b = sys("boot");
+  MYID = b.id; MYNAME = b.name; DEPTH = b.depth; PATH = b.path;
+  DISK = b.disk; DW = b.w; DH = b.h; RNG = b.seed + 7;
+  CFG.budget = b.budget; CFG.mem = b.mem; CFG.storage = b.storage;
+  fs_recount();
+  installSyscalls();
+  fs_mkdirs("/System/kernels"); fs_mkdirs("/System/cache"); fs_mkdirs("/Documents"); fs_mkdirs("/Snapshots"); fs_mkdirs("/Flights");
+  TK = { dt: 0, budget: b.budget, mem: b.mem, storage: b.storage, ev: [], frozen: false, w: DW, h: DH };
+  EFF = b.budget;
+  // 重启时按保留的系统树结构重新启动后代系统
+  var i = 0;
+  while (i < len(b.children)) {
+    var k = b.children[i]; i = i + 1;
+    var c = childNew(k.id, k.name);
+    c.kpath = k.kpath; c.rate = k.rate; c.grant = k.grant;
+    var kb = k.saved; if (kb == null) { kb = { disk: imageFor(), children: [] }; }
+    childStart(c, kb);
+  }
+  if (fs_isfile(WM_PATH)) { var w = exec(WM_PATH, null, 0, false); if (!iserr(w)) { WMPID = w.pid; w.app = "wm"; } }
+  klog("系统 " + MYID + " 已启动，深度 " + DEPTH);
+  return 0;
+}
+
+boot();
+while (true) {
+  TK = sys("tick");
+  STEP_START = vm_total();
+  var own0 = vm_own();
+  EFF = TK.budget; if (CFG.budget < EFF) { EFF = CFG.budget; }
+  onTick();
+  // 给本步收尾（上报、下一次 tick）留出一点余量，使整步消耗不超过拨付
+  var lim = EFF - 200 - floor(EFF / 200);
+  if (lim < 200) { lim = EFF; }
+  if (FROZEN) { schedule(lim, true); } else { schedule(lim, false); }
+  if (TREE_DIRTY) { reportTree(); }
+  STEP_USED = vm_total() - STEP_START;
+  KOWN_LAST = vm_own() - own0; KOWN = KOWN + KOWN_LAST;
+}

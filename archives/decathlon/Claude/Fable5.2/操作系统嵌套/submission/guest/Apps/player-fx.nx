@@ -1,0 +1,81 @@
+// /Apps/player-fx.nx —— 播放器的“环境特效”进程：根据场景进程给出的飞行轨迹样本与事件，
+// 算出这一时刻的尘土、烟、火、火花的发射记录，以及下洗气流、火光与地面焦痕，提交给显示设备。
+// 这里不积累状态：同一位置、同一段历史得到同一组发射记录，所以跳转和逐帧后的画面只取决于播放位置。
+
+var TLPID = 0; var EM = [];
+function iseed(t, k) { return floor(t * 10 + 0.5) * 16 + k; }
+function emit(kind, x, y, z, vx, vy, vz, t0, dur, life, n, size, seed, spread) { push(EM, [kind, x, y, z, vx, vy, vz, t0, dur, life, n, size, seed, spread]); return 0; }
+
+function build(s, pos) {
+  EM = [];
+  var t = s.t; var hist = s.hist; var i = 0;
+  var fire = 0; var wreck = null;
+  while (i < len(hist)) {
+    var h = hist[i]; i = i + 1;
+    var age = t - h[0];
+    if (age < 0 || age > 3.2) { continue; }
+    // 下洗气流带起的尘土：离地越低、升力越大越多
+    var agl = h[4]; var thr = h[5];
+    if (thr > 0.3 && agl < 15 && h[11] == 0) {
+      var k = thr * (1 - agl / 15); k = k * k;
+      if (k > 0.03) { emit(0, h[1], h[2] + 0.25, h[3], 0, 0.5, 0, h[0], 0.1, 1.5 + 1.2 * k, floor(3 + 12 * k), 0.8 + 0.9 * k, iseed(h[0], 1), 5 + 13 * k); }
+    }
+    // 故障征兆：尾部冒烟（先于失控出现）
+    if (s.faultT >= 0 && h[0] >= s.faultT && h[11] == 0) {
+      var fa = h[0] - s.faultT;
+      emit(1, h[6], h[7], h[8], 0, 0.4, 0, h[0], 0.1, 1.6 + min(1.2, fa * 0.5), (fa < 1.5) ? 2 : 4, 0.45 + min(0.5, fa * 0.2), iseed(h[0], 2), 1.2);
+      if (h[12] < 0.5 && fa < 4) { emit(3, h[6], h[7], h[8], 0, 1.5, 0, h[0], 0.1, 0.5, 3, 0.16, iseed(h[0], 3), 6); }
+    }
+    // 坠毁后的火与烟：逐渐减弱直到落定
+    if (h[11] == 1 && h[10] > 0 && s.crashT >= 0) {
+      var ca = h[0] - s.crashT;
+      var f = h[10] * exp(-ca / 2.6);
+      if (f > 0.05) {
+        emit(2, h[1], h[9] + 0.5, h[3], 0, 1.2, 0, h[0], 0.1, 0.55 + 0.35 * f, floor(4 + 16 * f), 1.3 + 1.3 * f, iseed(h[0], 4), 2.6);
+        emit(1, h[1], h[9] + 1.4, h[3], 0, 1.8, 0, h[0], 0.1, 2.9, floor(2 + 5 * f), 1.3 + 1.2 * f, iseed(h[0], 5), 1.6);
+      } else if (ca < 9) { emit(1, h[1], h[9] + 0.8, h[3], 0, 0.9, 0, h[0], 0.1, 2.4, 1, 1.1, iseed(h[0], 6), 0.9); }
+    }
+  }
+  // 一次性事件：撞击、桨叶打地、碎片落地
+  var ev = s.ev; var marks = []; i = 0;
+  while (i < len(ev)) {
+    var e = ev[i]; i = i + 1;
+    var ea = t - e.t;
+    if (ea < 0) { continue; }
+    var p = e.p; var sd = iseed(e.t, 7) + i * 131;
+    if (e.kind == "crash") {
+      var pw = min(1.6, e.power / 9);
+      if (ea < 4) { emit(4, p[0], p[1] + 0.3, p[2], 0, 2.5, 0, e.t, 0.05, 2.8, floor(50 * pw) + 20, 1.6 + pw, sd, 14 + 10 * pw); }
+      if (ea < 1.6) { emit(3, p[0], p[1] + 0.4, p[2], 0, 6, 0, e.t, 0.08, 1.3, floor(40 * pw) + 14, 0.22, sd + 1, 16); }
+      if (ea < 1.2) { emit(2, p[0], p[1] + 0.8, p[2], 0, 2, 0, e.t, 0.25, 0.9, floor(40 * pw) + 10, 2.6 + pw, sd + 2, 7); }
+      push(marks, [p[0], p[2], 3.2 + 1.6 * pw, 0]);
+      wreck = p;
+    } else if (e.kind == "strike") {
+      if (ea < 1.2) { emit(3, p[0], p[1], p[2], 0, 4, 0, e.t, 0.06, 0.9, 26, 0.2, sd, 15); }
+      if (ea < 2.4) { emit(4, p[0], p[1] + 0.2, p[2], 0, 1.5, 0, e.t, 0.06, 2.0, 22, 1.2, sd + 1, 9); }
+    } else if (e.kind == "thud") {
+      if (ea < 1.6) { emit(4, p[0], p[1], p[2], 0, 0.8, 0, e.t, 0.04, 1.3, 7, 0.7, sd, 3.5); }
+    }
+  }
+  var out = { t: t, em: EM, wind: s.wind };
+  // 下洗气流（压倒草叶）：只取决于当前状态
+  if (s.thrust > 0.25 && s.agl < 18 && !s.crashed) { var kk = s.thrust * (1 - s.agl / 18); out.wash = [s.p[0], s.gy, s.p[2], 9 + 5 * kk, 1.15 * kk]; }
+  if (s.crashed && s.fire > 0 && s.crashT >= 0) {
+    var ff = s.fire * exp(-(t - s.crashT) / 2.6);
+    if (ff > 0.04) { out.glow = [[s.p[0], s.p[1] + 1.4, s.p[2], 60 * ff * (0.8 + 0.2 * sin(t * 37) * sin(t * 23)), 46]]; }
+  }
+  if (s.target != null) { push(marks, [s.target[0], s.target[1], 2.6, 1]); }
+  out.marks = marks;
+  return out;
+}
+
+var A = sys("args");
+TLPID = A.tl;
+while (true) {
+  var m = sys("recv");
+  var b = m.body;
+  if (b.t == "frame") {
+    sys("scene_layer", b.h, "fx", b.pos, build(b.sum, b.pos));
+    sys("send", m.from, { t: "done", seq: b.seq });
+  }
+}

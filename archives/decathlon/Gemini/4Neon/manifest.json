@@ -1,0 +1,2321 @@
+{
+  "schema": 1,
+  "model": "Gemini/4Neon",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 547,
+      "sha256": "1d7718d477d53a9df018f8f68f3659b4d1e235aab2664a09f6c6caa84ae3934c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 11104,
+      "sha256": "eec8f5e8588428ce11cdbe01f2b8f56d4f78941dec0b443af6c6dcf579c81a0a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6214,
+      "sha256": "86d330e8862ff8c1ab8f2c2b509660874281e0632b502a5f149fe2d806186baf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\assets\\fonts-data.js",
+      "path": "AE风味动效设计编辑器/submission/assets/fonts-data.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2853694,
+      "sha256": "3c361b4cb1005195746ddddacbfca1027017233f79f5cf7427a9f7221838f171"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\assets\\strokes-data.js",
+      "path": "AE风味动效设计编辑器/submission/assets/strokes-data.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 3453661,
+      "sha256": "588e942ddccd13bc9cf41c850774715c6b8cc67b620d20d2b04b9b7d61e00af8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 444,
+      "sha256": "d0d2b3719d33127ce61d057b57a9a78999234a42f66b9cda5d5fac51407c85bd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\package-lock.json",
+      "path": "AE风味动效设计编辑器/submission/package-lock.json",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 30468,
+      "sha256": "951923562442822a6561e0e7090fa37b23699d62bb722bd63cef16a22052c57b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\package.json",
+      "path": "AE风味动效设计编辑器/submission/package.json",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 776,
+      "sha256": "2abdc7dd3567875718845d91cdc010b68b06d9201a9ac99c3673150d502c9c67"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\scripts\\build_fonts.py",
+      "path": "AE风味动效设计编辑器/submission/scripts/build_fonts.py",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7572,
+      "sha256": "ad74f2b7a66568bde3f8a8ead28417612afdb00bafb1ec34847c74880d4a9a86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\audio\\audioEngine.ts",
+      "path": "AE风味动效设计编辑器/submission/src/audio/audioEngine.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 14000,
+      "sha256": "ae677aefcf4a6e0e0304e182404035f47342446278febc3d0924d4072700b51c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\core\\animation.ts",
+      "path": "AE风味动效设计编辑器/submission/src/core/animation.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 19201,
+      "sha256": "6851f9139672b3c446cebdc5b38aa1992ccae1807ed1cedeffb856936bdb753b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\core\\expressions.ts",
+      "path": "AE风味动效设计编辑器/submission/src/core/expressions.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 23871,
+      "sha256": "73f6f68702462b1cb47b9a8c30704034416f7e6a6b380ec3833c85f1e92fda29"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\core\\math.ts",
+      "path": "AE风味动效设计编辑器/submission/src/core/math.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22998,
+      "sha256": "1fad16265da4c0361cb07f3a49f00aae70729c27381d7090f4b4d25fc7f1027c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\core\\project.ts",
+      "path": "AE风味动效设计编辑器/submission/src/core/project.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 41670,
+      "sha256": "c9fca127565c573759e2b65e80b4a331e84c024512b1d87cad0d55b1c7724df8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\core\\types.ts",
+      "path": "AE风味动效设计编辑器/submission/src/core/types.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 19865,
+      "sha256": "1c638ec7f863437be01994caf2c57678be17e3383d02a9c4d908d37c3d62b34b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\demo\\forgeDemo.ts",
+      "path": "AE风味动效设计编辑器/submission/src/demo/forgeDemo.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 34588,
+      "sha256": "c711c0a8ebe6fa45e746a5be5eb63b143b2e978b17fc7d744a66c0fb23b0f4ab"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\geometry\\fields.ts",
+      "path": "AE风味动效设计编辑器/submission/src/geometry/fields.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6087,
+      "sha256": "e33947381e712ad7abfd2bd5ee48dc02c21d46a3395b64d7cb18cff2c7ebdfdf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\geometry\\fontEngine.ts",
+      "path": "AE风味动效设计编辑器/submission/src/geometry/fontEngine.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 30764,
+      "sha256": "b092428ada02ab4f57c39ab55b4f98cf83387e7fbbb6e62f9751d3be208c97ac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\geometry\\mesh3d.ts",
+      "path": "AE风味动效设计编辑器/submission/src/geometry/mesh3d.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 39925,
+      "sha256": "c7a7bb16f15bf65197c14ba206d3481573022f65d07886dbff4ebeacda18abde"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\geometry\\pathOps.ts",
+      "path": "AE风味动效设计编辑器/submission/src/geometry/pathOps.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 18956,
+      "sha256": "aeca0bc5986e99581e37657d559f4235985529ea71c83d15e65b2f8cac434614"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\main.ts",
+      "path": "AE风味动效设计编辑器/submission/src/main.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 17160,
+      "sha256": "1c9d084af53ea5550183e1badb59f53d48963364208dd9d27c48ea6f5a1d5611"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\nodes\\nodeEngine.ts",
+      "path": "AE风味动效设计编辑器/submission/src/nodes/nodeEngine.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22201,
+      "sha256": "b8fd7846e2e978bd40c0fe4e6c5468719934bc97beb99d1b36dd769a1fd5013f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\render\\glUtils.ts",
+      "path": "AE风味动效设计编辑器/submission/src/render/glUtils.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10728,
+      "sha256": "5859fc10b9e933cf0e3fa4a5d9e212708b2224f61b9c059f7acaaf8038a47761"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\render\\picking.ts",
+      "path": "AE风味动效设计编辑器/submission/src/render/picking.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8893,
+      "sha256": "8ee8eba3d0ccfe613fb4aa67ca17dc918b24789252630181bb282c0e9f03c0d0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\render\\renderer2d3d.ts",
+      "path": "AE风味动效设计编辑器/submission/src/render/renderer2d3d.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 87176,
+      "sha256": "00ad5bd8b43c8b939d948b3f6c3c6a72ceb955393fb169d4f8b11263420cf855"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\simulation\\particleEngine.ts",
+      "path": "AE风味动效设计编辑器/submission/src/simulation/particleEngine.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 30766,
+      "sha256": "e2bbfc7572517803e429a4efe6658690e960df19f7d8b055d4f4308f628638e4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\simulation\\sceneEval.ts",
+      "path": "AE风味动效设计编辑器/submission/src/simulation/sceneEval.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 16335,
+      "sha256": "917c9faa9de4bdbf2089a6d6c8dbc796b484a9121b26630167c245cf27e6f786"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\graphPanel.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/graphPanel.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 24601,
+      "sha256": "71e979e43798f4263b878f5ebd8483a8878c410ed285870b9891a9811a376237"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\inspectorPanel.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/inspectorPanel.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 77234,
+      "sha256": "6e6652c4eea5fc647a0f8f374d457a68610e3853a4c945a27ef6851674c6dc15"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\nodePanel.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/nodePanel.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 28347,
+      "sha256": "61cfd27170c8b475640a22de4b2da362506fab502b3146588bfe2ab487558d22"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\projectPanel.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/projectPanel.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6362,
+      "sha256": "62b768de44ae5ecc573c27d29cbb75d4d56fd2ccdd260e7c0283f430082c34e5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\shortcuts.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/shortcuts.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 4887,
+      "sha256": "a34aa76369017f2ee2793f7800fe97e2de92e7ddfa276993d5df8013cc6ec093"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\store.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/store.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 17775,
+      "sha256": "036c433b90a01e407f2fe1400621a3942aa58b46f8c6d018179b9903e1b4342b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\timelinePanel.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/timelinePanel.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 40096,
+      "sha256": "547051675f022e3aa3d5daa569dd2eb04b61eac1376f6ef051fd8fc42bd1cb48"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\src\\ui\\viewportOverlay.ts",
+      "path": "AE风味动效设计编辑器/submission/src/ui/viewportOverlay.ts",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 52128,
+      "sha256": "abb717d9d2a61462307eead5a48d1751a1aa65740c3f0d5e5bd38417f4a9021f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\style.css",
+      "path": "AE风味动效设计编辑器/submission/style.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 24205,
+      "sha256": "56cd5ea77c721d7a8a5f088e2d204f5e24ad8379e11417fc0bd839c9d6dc6eee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\tsconfig.json",
+      "path": "AE风味动效设计编辑器/submission/tsconfig.json",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 385,
+      "sha256": "ef97382e362b8b4009292509b4fb1bf7d6fb7bc5a4591c05cdb7baf3a5177786"
+    },
+    {
+      "source": "H:\\AI_OneShot_Video\\decathlon\\Gemini\\4Neon\\assets\\raytracing\\render.json",
+      "path": "光线追踪渲染加速/assets/render.json",
+      "role": "asset",
+      "task": "光线追踪渲染加速",
+      "bytes": 866,
+      "sha256": "cf26e6cb5694545a4c72ca154fa75e3a2a478a3b2b4f31a55f622887163a7120"
+    },
+    {
+      "source": "H:\\AI_OneShot_Video\\decathlon\\Gemini\\4Neon\\assets\\raytracing\\render.png",
+      "path": "光线追踪渲染加速/assets/render.png",
+      "role": "asset",
+      "task": "光线追踪渲染加速",
+      "bytes": 2439584,
+      "sha256": "4492e8ac0ce2dc057df5544324284fb2bb09f1c4219d10826ccd89b7001665f8"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 536,
+      "sha256": "d2558e33d49819cdc495189a7a64ba63191205b155c83fc27daec0d75a27c27a"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 2223,
+      "sha256": "d35d0115109fa4bd43876db1f976e526691a53870ce07463ecbb16cbc5ad045a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2176,
+      "sha256": "b5cc6877823eea78c881d2e379925dd0f50d768caa399fa797245aa4e5f7848e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 129895,
+      "sha256": "8159ac80f48bbee12f58aecb7e2e793f4f4e81a42a7dd21ce17ca616a2d0226c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 524,
+      "sha256": "7b00c3a079ab2171a97e322fbc1cf8e474ab2e067e3065b8adb5ddacb46708b3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 6866,
+      "sha256": "de6a41fe9e066c6178c779c85a4a2b472aa44a96543ca24bd9906a3a1ff6f3b5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4182,
+      "sha256": "339314d630d3d6740f910f9a181c7495866dca13f20b7cd9e95e67b1116cc923"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\css\\styles.css",
+      "path": "动态路由塔防/submission/css/styles.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 34983,
+      "sha256": "117e3fc69cb329e4c93dee7373eab4a356af3ad386ac42d0da4361f4c1d0ccc0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 10471,
+      "sha256": "c57d533d2c3654757299499667ac1d04893f4e68e901f24c65b79e8b519e7327"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\package-lock.json",
+      "path": "动态路由塔防/submission/package-lock.json",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 14301,
+      "sha256": "7a3eb17709065d4b0f716fc58b3faf21ed411ca9a050c9a3878007f8d24b79e8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\package.json",
+      "path": "动态路由塔防/submission/package.json",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 405,
+      "sha256": "9222398969a68997202026711c76d788491be2e2756c118cc82b8e920809ca25"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\scripts\\verify_maps.mjs",
+      "path": "动态路由塔防/submission/scripts/verify_maps.mjs",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4548,
+      "sha256": "2dd30137ebd4e16505ca51df655d91467a2ffca9b8c55fe497d62331ebd23282"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\audio\\audio.js",
+      "path": "动态路由塔防/submission/src/audio/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 19147,
+      "sha256": "d14af13bf4d463702f1ce959e1a7eb71cb384c4682299142bdd7e296b2643ce0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\core\\engine.js",
+      "path": "动态路由塔防/submission/src/core/engine.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 82612,
+      "sha256": "a12bd04cc6cd2de3f820964c390dcb3476831fee5254aacf47ad8cd913b06070"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\core\\pathfinding.js",
+      "path": "动态路由塔防/submission/src/core/pathfinding.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 9728,
+      "sha256": "6ba184acd4ac38889688c994c212c3e88f7c0fed239e49cf39c0cd16361c619e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\core\\rng.js",
+      "path": "动态路由塔防/submission/src/core/rng.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 631,
+      "sha256": "a89d25648e4324bf8ec9c9b75c53f05313493bacd56e383122eb96a914ca54cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\data\\demos.js",
+      "path": "动态路由塔防/submission/src/data/demos.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 30121,
+      "sha256": "c060f977862783c1f61f4cc7fe2ec93780c6cec44ffe2b20daad2ca337df0552"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\data\\maps.js",
+      "path": "动态路由塔防/submission/src/data/maps.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 22337,
+      "sha256": "7a4d891be8c85da9074acf4e16dfe7569b485bf7c777fa55c179d3363077aac4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\data\\specs.js",
+      "path": "动态路由塔防/submission/src/data/specs.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 22921,
+      "sha256": "76cf449ed1a601d5015ac208707e44c67a0b22867760e13aefac430f7ba4855b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\main.js",
+      "path": "动态路由塔防/submission/src/main.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 10100,
+      "sha256": "5941b0dc5c499d533d19af340ac6c91aa676a8e2aeafeb7674c3cfaf5084f2ef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\render\\environment.js",
+      "path": "动态路由塔防/submission/src/render/environment.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 35619,
+      "sha256": "cc1a0f44ecbc64bd462ec338a336106c2c6e9ef8e4148e5d973731f0285af891"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\render\\meshes.js",
+      "path": "动态路由塔防/submission/src/render/meshes.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 52218,
+      "sha256": "6d6e570c0578db09e39bedba2cde846d777374114def43fa4da6b2ef348d3411"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\render\\scene.js",
+      "path": "动态路由塔防/submission/src/render/scene.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 22386,
+      "sha256": "564f63f8b9d0b8aec9dd45b78ae9e12b7dce7ae8c84f9a4ca592bda338dd6ce5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\render\\textures.js",
+      "path": "动态路由塔防/submission/src/render/textures.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 12593,
+      "sha256": "500bb7d684fb9161fcd233f1aa5e3f3972b125628696d8475982b4d32c2bc0a7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\render\\vfx.js",
+      "path": "动态路由塔防/submission/src/render/vfx.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 37902,
+      "sha256": "5a3429b504f6cfb07681643026d63417dc32abb9a79b381e658bdce7598f8cb8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\ui\\icons.js",
+      "path": "动态路由塔防/submission/src/ui/icons.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 8462,
+      "sha256": "85aa9b861bd8ea7d165732c4b3fd96b28670e37b410dbd42f3b9fcd1ec1ccd31"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\src\\ui\\ui.js",
+      "path": "动态路由塔防/submission/src/ui/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 82682,
+      "sha256": "a5e4e2b11478e9734f00925ca1f317e15b7810867f27b72697d148cc1572bbf3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 536,
+      "sha256": "c4c09e7ec6a7db5a9811aa586802f2257a8075e26c6b0414051573f9f2318883"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6529,
+      "sha256": "abac7d20b7297c535737376635519cdb2063c69bf611eabc0b8c5b75945ee2e3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4191,
+      "sha256": "4b91f8fc6cbe673f773f32ca9aa30825a277f4c55b4536d2da41afcad9ca503a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 979,
+      "sha256": "8215113bf423d29b996316ce77b11497fb7ae84476c798d891ec077d4154911a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\boats.js",
+      "path": "太阳雨渔港3D渲染/submission/js/boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 61650,
+      "sha256": "d598810e31e77abfa31c79bde1591c3b9bb4b946049f493b244482763b9bfdc7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/js/buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 46033,
+      "sha256": "8aaad385cf49119487e762e6a70e8609466dfc9e4a0f5b21dc3fdd7330054987"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\config.js",
+      "path": "太阳雨渔港3D渲染/submission/js/config.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 11401,
+      "sha256": "ac86bc11aa75b41c18e0ddb08c5535e311fe7bb00222525b6e949cc638a5a319"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\dioramaBase.js",
+      "path": "太阳雨渔港3D渲染/submission/js/dioramaBase.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 61740,
+      "sha256": "e59672b4d1eae3dd84e070c7102ab75d22d32b5d07cb2b62b262e9fa6667e0fd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\main.js",
+      "path": "太阳雨渔港3D渲染/submission/js/main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8096,
+      "sha256": "a0f724f854ebbb918e06b558774d3bb2a90a90b8998424d1594f551a9c17a4c7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\materials.js",
+      "path": "太阳雨渔港3D渲染/submission/js/materials.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 18088,
+      "sha256": "f5e3d60a07056d6fb3de8ccddb9be22409e40ba646988f745501ba747b71fa43"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\postprocess.js",
+      "path": "太阳雨渔港3D渲染/submission/js/postprocess.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 15186,
+      "sha256": "aab9d5a6076ed681d6f0e3cef289c655ad59830770292028a39d29cbc73f4fd0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\props.js",
+      "path": "太阳雨渔港3D渲染/submission/js/props.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 58111,
+      "sha256": "e25ed044112110b4d11aee4e729986b6e71a9029e211b6d6a035d0956256ddda"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\textures.js",
+      "path": "太阳雨渔港3D渲染/submission/js/textures.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 46480,
+      "sha256": "6215d5277f8151a252a59aa8407f08ae0ef3f32543ba184332fe29f72714207d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\tour.js",
+      "path": "太阳雨渔港3D渲染/submission/js/tour.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6527,
+      "sha256": "9cbc8079e0f8fc41276dc4cb39c0fbca0dda10ff8651a9a3c62d16ca07a91e08"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\waterAndWeather.js",
+      "path": "太阳雨渔港3D渲染/submission/js/waterAndWeather.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 41993,
+      "sha256": "c3f3cd3ebab6b75c6a95d54533dc4e5f5c6422de11663095503ebf979dea6b8f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\js\\wildlife.js",
+      "path": "太阳雨渔港3D渲染/submission/js/wildlife.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 35109,
+      "sha256": "caf8021e949831c1c0a002bd3f9816cd8664692c39f9f597d17f4cf895804f58"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 525,
+      "sha256": "d5ea49453d26a02b777e14f5caa657398413b4035d270dc9af80003b021e6365"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 2930,
+      "sha256": "263bfdcd6ea45bea10d6334191c70085056bf75d55a4e37e895a2ba2905731f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1198,
+      "sha256": "59ebcf28e94f042fd0d9f7bfec79e51b6e7237517a7ef2da7e61e0822db09447"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 14040,
+      "sha256": "2a1a45393776a1e01d4093ddb1a889b59c409ad6a1b381086147531aece7ed41"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\Problem2.lean",
+      "path": "形式化证明题/submission/Problem2.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 58220,
+      "sha256": "2cedb11d2fd09125490f42f798bbef3bec254d54d7eb5f6514151aab9bb45eda"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\Problem3.lean",
+      "path": "形式化证明题/submission/Problem3.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 10233,
+      "sha256": "f0ff9b535c35e0ea3151c57e4e075e842ed9b48d58f045470b695e280f010d5a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\Problem4.lean",
+      "path": "形式化证明题/submission/Problem4.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 14250,
+      "sha256": "3881ddbcb2a9878e084f360c3113a16acd04be7b89ee6645ae336e69a5fb7889"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\Problem5.lean",
+      "path": "形式化证明题/submission/Problem5.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 22414,
+      "sha256": "e17d0bc17b8dc7c661e1c509e42937eac5ad70e608aca20c451268b8e41ca0b9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\Problem6.lean",
+      "path": "形式化证明题/submission/Problem6.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 44679,
+      "sha256": "97a9ba1a85eafa34201433f2c5c80c403980e24aad1ea95bf1b0527d564cf0a2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 497,
+      "sha256": "c023bf1b6f81bcd32fd32f1f7138d402df2e86789c00b2529eebde9c72996657"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 13508,
+      "sha256": "7cd4515a9c157e8f852e58f521f95747adf28d03a2bb8851c1f627dbb165e198"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10524,
+      "sha256": "25a6120616c9dac25dbc5cf35fddbac580333e010507b7f761667675ba81d473"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\README.md",
+      "path": "操作系统嵌套/submission/README.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2550,
+      "sha256": "e881a038db157319870b149519a72f0437d415845295519aa11943ca2405610f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\assets\\styles.css",
+      "path": "操作系统嵌套/submission/assets/styles.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 40451,
+      "sha256": "4cc3305ddcc05cd4e2c17d5c89124e8ae005c94e487deaed8d208bcf505cb6dc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\assets\\wallpapers\\outer-alpine.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/outer-alpine.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5771,
+      "sha256": "3c23dccc52b7652d6bd33b1398e09e1c72eaee55c2f937a10cef56529aa31f78"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\assets\\wallpapers\\outer-aurora.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/outer-aurora.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1921,
+      "sha256": "75b2f8e1cc8efb34423ae79282ccaeb8b0c3bc6af2debeca06da1f1bb77f4781"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\assets\\wallpapers\\outer-coast.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/outer-coast.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1292,
+      "sha256": "b4bad1fdeb71a64786626b854ece19c9b77f02aa4740c0df205462b324018d65"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\assets\\wallpapers\\outer-desert.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/outer-desert.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 745,
+      "sha256": "ea70bc722d935b75f1b2d737c41da0a4719039b83226e42b03b1fedc6d1acd77"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\automation.json",
+      "path": "操作系统嵌套/submission/automation.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 878,
+      "sha256": "167575c0f0ffd16de7822f94cfdd32e8d996eca69bf993b3de1a4ca19d7460b4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\index.html",
+      "path": "操作系统嵌套/submission/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 471,
+      "sha256": "16e1dd3d3c0ce732e64ac47021d69263ff745e23934dec0674c85d04d5b9d309"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\main.js",
+      "path": "操作系统嵌套/submission/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5276,
+      "sha256": "86ebb69442ed3ecf427677381aa25bb37cf7497118839ab7b02ffe9eae5cb1c6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6151,
+      "sha256": "631556c136eff159a9e10e2f2493af75398da9d383e44ef2308fe234b7d8ee29"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 282,
+      "sha256": "07070f4992ffedbf22b2412ddbf26fb797a43cd5c13b2b5f38e348518680489d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\preload.js",
+      "path": "操作系统嵌套/submission/preload.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2652,
+      "sha256": "58c5770d8f08e61f8a87c540fa40c26a654b409aca5754fee6b255dfe20ce53f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\app.js",
+      "path": "操作系统嵌套/submission/src/app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 886,
+      "sha256": "cc5c3df277a817fadeac166eec14e4b84b9dbfc617f54186fb77fe0c9deb517f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\display\\display_device.js",
+      "path": "操作系统嵌套/submission/src/display/display_device.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 72552,
+      "sha256": "8d1b338cb6bfdac7c729d271038a3fb52192fb4a4fabc0910798daeff9eef2f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\display\\icons.js",
+      "path": "操作系统嵌套/submission/src/display/icons.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5469,
+      "sha256": "af6489a918ca2e4ab5412f4dfe20cd9f40efbca61790bbaed010cd916d621179"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\display\\renderer3d.js",
+      "path": "操作系统嵌套/submission/src/display/renderer3d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 41593,
+      "sha256": "796a1ebda9b4e752ed00823cabf9936a8ad121efcd31f2560d22aef2f029b6c0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\fixtures\\default_files.js",
+      "path": "操作系统嵌套/submission/src/fixtures/default_files.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5432,
+      "sha256": "79589c4713ff356940a6a1cb047413b2d61d5f495cb5e2f94568a7487044bb86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\fixtures\\docs_content.js",
+      "path": "操作系统嵌套/submission/src/fixtures/docs_content.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11501,
+      "sha256": "e1504fe8bc6d356d26f714f8b5fa60f40a6004f37af3ad65cb48ee56a33b007b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\fixtures\\helicopter_scene.js",
+      "path": "操作系统嵌套/submission/src/fixtures/helicopter_scene.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 25259,
+      "sha256": "a159a4eb2bf5d570bc2985474125f58cbf6c5b904932e230d5f20f55df75d6db"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\chart_recv.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/chart_recv.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3075,
+      "sha256": "c0d0ee603a0d6103aae4833c608e657df6640bda60dd6fa22fcdfeb5880a473b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\chart_ui.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/chart_ui.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 12047,
+      "sha256": "9cd8340c18de4631b30113c0d59744e2667f7528be1227c4558e28fe96817ddf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\editor.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/editor.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4988,
+      "sha256": "22cf9076f5aa9cc7ae3332fa208b8042ea877f6d470841b061c282c8562100d2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\files.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/files.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7454,
+      "sha256": "f82b7d73c99c7e51a90f97a8de2e9fd218105bc1ea7bc506f9c167f4a35b58c5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\flight_ctrl.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/flight_ctrl.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4616,
+      "sha256": "7f012b6a2a5c13c33ecffae9e9bb407d545174891c0485acc9c966e42e8c02bb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\player_fx.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/player_fx.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11172,
+      "sha256": "1fa84afb06553c94e44a1638c30a05a51bd395bdd3ffb7ba705d36937c337e86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\player_scene.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/player_scene.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 36761,
+      "sha256": "d40d6817f219d6692be8b691e8c8b44e3f06d2725ffba7e7141dc1edb2c1d0b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\player_timer.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/player_timer.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10863,
+      "sha256": "3f997657824e7e20ff04d97f316c184561b7afad2e77790814ca3b2268cba29d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\apps\\tasks.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/apps/tasks.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4548,
+      "sha256": "d57519b7f3be9375fa88956fdc6a912c82bb75fd4db7ba254eb20fb9e2150743"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\compiler.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/compiler.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 23969,
+      "sha256": "e266e433393fe1693792ab1e780218fff530dd28b180f5c3c436d33781a2b6cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\demos\\busy.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/demos/busy.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 387,
+      "sha256": "d1286b9eeeed36c8c8a5d0441b3144b380563bd83b021d0a31d9e2d9a48e85de"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\demos\\receiver.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/demos/receiver.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 960,
+      "sha256": "eb2b56c0929264c92eebd08bd003cd7a862074830ea41457e52abef49893f3da"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\demos\\sender.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/demos/sender.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1654,
+      "sha256": "df35488a94eecb2063bf657ecb332bd17195ea04a199aa655c62129885d982ce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\demos\\sum.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/demos/sum.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 338,
+      "sha256": "6b60edbdad40187c65ac1d1d24ae63d88375f4bb2194034f4f8c181d766c3ed1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\kernel.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/kernel.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 72131,
+      "sha256": "d2345baa8854e1e1ec2db2cc4b8d8174965494baaa15327593996e5965e62e20"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\nos_programs\\wm.nos",
+      "path": "操作系统嵌套/submission/src/nos_programs/wm.nos",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30635,
+      "sha256": "18e89466d4c7ddfc173da01fbe89b2840b222391c7180064d4f0ed646704bf95"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\browser.js",
+      "path": "操作系统嵌套/submission/src/root/browser.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11264,
+      "sha256": "27356afa7e248211fe56752feef1cb5ca50155650f0d70a9a2581b805014bffb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\editor_app.js",
+      "path": "操作系统嵌套/submission/src/root/editor_app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6530,
+      "sha256": "2bee96dd02b1e2f3dcf4131538c617575d1a7a078f22c657e54d99d5052ed3b6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\files_app.js",
+      "path": "操作系统嵌套/submission/src/root/files_app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11479,
+      "sha256": "9927dd87bf5b7c2ccbd09776c5de17d3c25d70e70983885ba2fc701f52d780fb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\help_app.js",
+      "path": "操作系统嵌套/submission/src/root/help_app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1032,
+      "sha256": "2137f6e312d97e1a4dc6697baf752f957ca1d21d881666abb98d83b00ef1b66b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\root_os.js",
+      "path": "操作系统嵌套/submission/src/root/root_os.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 100937,
+      "sha256": "2e62fffbc0db4c69e74c7994a25763446de317d0d102cba4f5a6804f8a0ed131"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\settings_app.js",
+      "path": "操作系统嵌套/submission/src/root/settings_app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4638,
+      "sha256": "9f4acdd0bcf8e138a736396f85ffddf2008bd48d1a89b4324ab6036338fe2da2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\spreadsheet.js",
+      "path": "操作系统嵌套/submission/src/root/spreadsheet.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 26018,
+      "sha256": "6bbde2f4cbafab963e2610b802eea3a7d6f147380a01da171a776ae79ace1caa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\tasks_app.js",
+      "path": "操作系统嵌套/submission/src/root/tasks_app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 15265,
+      "sha256": "3cb9468dc032c6e74cf61e40d697406a663890a63ad85fc2ffcea42af8468a48"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\root\\widgets_app.js",
+      "path": "操作系统嵌套/submission/src/root/widgets_app.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10997,
+      "sha256": "4646cc47e3537421f846529b2b72184f9fb63f391efe508eebf252b3bb232ec3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\vm\\compiler_bootstrap.js",
+      "path": "操作系统嵌套/submission/src/vm/compiler_bootstrap.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 21552,
+      "sha256": "5fab3d03c658355eb062d4e437bde9721291a523260f24faa9a37e8b3047846f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\vm\\opcodes.js",
+      "path": "操作系统嵌套/submission/src/vm/opcodes.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1775,
+      "sha256": "16b02580df9be7676f262d16396c214e6d91f10d8ca1f4915fbaf7f33732776a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\src\\vm\\vm.js",
+      "path": "操作系统嵌套/submission/src/vm/vm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 33451,
+      "sha256": "084d899f0ce9d8c1f6d4d5e494a82c77e79e29b812096da1cf4270d02e92333f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 513,
+      "sha256": "300f4376a80cd68797f9d91726798e3b7729f59d2f335dfddfccd86c4e5f9043"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 4432,
+      "sha256": "4160c14c2e8e39542df2a6e1ac752718007b7e7c03a567426296b5408151f050"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1638,
+      "sha256": "4c0c20351ef44fb9f92b77baa60bbe2d59b244f9bdf7dc17d9171581942ab8a3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 68569,
+      "sha256": "cf6a33bc1732639eb5b90bb8f1d89a912499696cdaf39a4a5bd702ff91641661"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 542,
+      "sha256": "0856772deae88b1b6d9a67591029f18e2e1586b4593c72ff83d6de2564fecd07"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 3667,
+      "sha256": "dde596c07f739bdf4c5ffa175030787a5845aa4de6b6d5d446386bc61fdbbedd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 1995,
+      "sha256": "d2cd3c6e5093586960915ae2ebb895c51ca20343464e67113c9ec30088008759"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 99321,
+      "sha256": "7e24b5c0e97eb3c9d5dde8fe241feb6f415a6345fdbcfdcb1cf1454629d62f4a"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 535,
+      "sha256": "5f0f2f6adb69f40fce7730b1f109de7cd851090b2fa6ad515ed398250e47a60e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 6064,
+      "sha256": "04c75ad620d2ca927ac21d26e371595a2acc07daa143ce80c68b14bea84e31ac"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3395,
+      "sha256": "5b688436b22f4e1aa7d758f1e8130dab59200279a9fdf5c941e3dfd3355ecf52"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第01题.md",
+      "path": "数学竞赛原创试题/submission/答案/第01题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 11763,
+      "sha256": "327183ad5f09aaa133208c3e517e84413c2fb27d684f6a01461cce46eb44149a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第02题.md",
+      "path": "数学竞赛原创试题/submission/答案/第02题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 11557,
+      "sha256": "0a374b4fab7163bdaf12125e5da7494c7477353ce1f2b3699131a957690b1929"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第03题.md",
+      "path": "数学竞赛原创试题/submission/答案/第03题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 8118,
+      "sha256": "479c538223793b4fc4313600c51ce1dd9da3be1aa8ee523c96acc2d74e8d0be1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第04题.md",
+      "path": "数学竞赛原创试题/submission/答案/第04题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 8502,
+      "sha256": "8406e71c85c229d9fe1315813a2b54f8355770aeb0b0917bb81ac7d7af1e832c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 8839,
+      "sha256": "77376f7dde4facba44effe80ceb4ccdccf0763b941271b581ebcdff97c86e426"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第06题.md",
+      "path": "数学竞赛原创试题/submission/答案/第06题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5631,
+      "sha256": "11eb0f391bed8d78036ad84f6bddd790ffa0c6cdc56f472c6be05446d220eab9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第07题.md",
+      "path": "数学竞赛原创试题/submission/答案/第07题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 11331,
+      "sha256": "b56266bc566f064532f4aff6559265a251c79c5834294a62c029559b0ac56f5f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第08题.md",
+      "path": "数学竞赛原创试题/submission/答案/第08题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 9182,
+      "sha256": "4a703feaf3cd42f4a1fe2d89f135e11a8e739a80e4a0f6310a1e23ab71850c38"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第09题.md",
+      "path": "数学竞赛原创试题/submission/答案/第09题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 13255,
+      "sha256": "76e3e8c4692825a32f3e3e361f5c0b5df10f6f57abf91d9f1fda490ef616912f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第10题.md",
+      "path": "数学竞赛原创试题/submission/答案/第10题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5719,
+      "sha256": "261d98744215a1ab90fafda4f00a18f24c4d2a38403f8af017ff25d4612876ce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 9196,
+      "sha256": "166f4ba48915d0874e93151def9ceab1df4f6809cb853be7ff1c0470b7a3f05b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第12题.md",
+      "path": "数学竞赛原创试题/submission/答案/第12题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 9785,
+      "sha256": "649448ce07561ef5002d11b017b063460ebfd373646d4124dc3befa07a621663"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第13题.md",
+      "path": "数学竞赛原创试题/submission/答案/第13题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 9790,
+      "sha256": "07e4a06216c2bddff56d66e9305fe7bef6c8e6c087095ff2c7016ae085fdc20f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第17题.md",
+      "path": "数学竞赛原创试题/submission/答案/第17题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 8748,
+      "sha256": "f49f0b8454925e9fe00352dc205302e9dcb5ec7ef4d44428383e3a7dd759b386"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\答案\\第18题.md",
+      "path": "数学竞赛原创试题/submission/答案/第18题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 11125,
+      "sha256": "4841b948cc8cf0cf2787c9f3039f4bc7eb887be7d632fc8f799ee32269b7bfde"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 498,
+      "sha256": "781fdf71ec5c627ac9f6b04004e448ae8552d6dc0b398bd7c19556d97a546788"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 7494,
+      "sha256": "bf1a9a9cee0682ee12115f38c3d539b8afd2da67ec91766baded434a9efa691c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7340,
+      "sha256": "4bc557fbf4ed0c99510ca36a3acbffca4b814a41c4d6f66742ac67eb2e71600f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 981,
+      "sha256": "b0ebc051fadd00eba014b65b6fa20f679121fba7d9a57b0d50ceafc1eba01ef2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 3589,
+      "sha256": "05bde5d5f29a4d2a707e37ca57fb45a2d36a095b45cc199eb43f5b5d93b73dd3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\materials.js",
+      "path": "星际战舰编队/submission/js/materials.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4543,
+      "sha256": "fd1b9ad4a96b5dc43903cec3f353ff66c1063da96fb8082b67639dfd30487291"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\math.js",
+      "path": "星际战舰编队/submission/js/math.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9338,
+      "sha256": "e2635fc1da193525a20d71e258ad0f021e78f415697c343dec834250574d89ae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\models_asteroids.js",
+      "path": "星际战舰编队/submission/js/models_asteroids.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 13245,
+      "sha256": "7f4d02e814bb87d440fda03367b7a64cb95e7a5af94103ae6918b0b7a83752d0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\models_interiors.js",
+      "path": "星际战舰编队/submission/js/models_interiors.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 27732,
+      "sha256": "037eb68d76ac0fb29db6c562132bc7d4ecbf9b933659c9bea4d50464dacf3bbf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\models_ships.js",
+      "path": "星际战舰编队/submission/js/models_ships.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 39108,
+      "sha256": "a0ed4b8ab243a277af00124ca243959e6ae98288ce097e17db1cfb6a4187c0ee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\renderer.js",
+      "path": "星际战舰编队/submission/js/renderer.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 72614,
+      "sha256": "453d565a9b273236f3353a5a20afd93eb476987b4cadfe0055b02108d23b4521"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\scene.js",
+      "path": "星际战舰编队/submission/js/scene.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 54415,
+      "sha256": "8bbb8b679ee87db57d084c4439f7b773ef85ad8a9fc58930eb33ac9ea9bd4ea2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\shaders.js",
+      "path": "星际战舰编队/submission/js/shaders.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 36491,
+      "sha256": "f323dc6a97ef3f340e2b6547cddb21abbde996ecd1e85321c239aa2da4d11531"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\js\\voxel.js",
+      "path": "星际战舰编队/submission/js/voxel.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 21889,
+      "sha256": "34b29d99c722032aa78e6c6da01c557f41a11c2c6e1aec63c16e9f4576043574"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 2440,
+      "sha256": "4b4be5cd6bf56b18597ce288491246b7d1a61ecb1ace8c961599ca99e0113c7b"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 524,
+      "sha256": "419221e6345b8e3633652fe3876a458f4cc1b97493b2e77cc38877cb5fd1c7cd"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 16931,
+      "sha256": "be7703c6f9b9bd469bb0727021fc659ecb038c929b1eac787e458f4edfc16b91"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 3434,
+      "sha256": "c37af5f133a8ae282528128e6cd40fd2d7f2cd4e3b8bdf3bef659138ba789cdb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 9869,
+      "sha256": "ed795c3b2232f147b47843720f6cb118217b1c379fb04cfbfe01892de489c108"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 8033,
+      "sha256": "7ae991ca50fe5d1c0cdbba848b5a6f7dbadd61ed8a9fd99e059165c19762f60b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3323,
+      "sha256": "51bf318f92a84811496be2d88b65c91366034e7db2dd7ff4b890931b032d4e3b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4100,
+      "sha256": "766cef403b11fbe17f89f1a13e3c5bc223f896d2df672e17b6f2bd219fcba810"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4384,
+      "sha256": "b0a5d149fd239add1ae35f6af4d5d924136ade0795b793c50c7a572422faa794"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3939,
+      "sha256": "9a716c0d81e3c1a83edc171cdf68328f16586c5f61a145ae05832819759269da"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4144,
+      "sha256": "3cf40d0a176f12ac13a8c2e87bcdf276d26340dc3df358e75ea79b7fbf1da592"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4699,
+      "sha256": "269c05b704c7a44d96e832c9619b3ff81119203e2d17cdf2fe94121c98537c7e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4139,
+      "sha256": "65da7eaa691397f76fe5dea7d5467fda314775bc085e3ca03e4f6392f7374fa8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4839,
+      "sha256": "c0e9e05900734213ce30ef383fcd309038f71a2c9aeda1bb7430fde2c891582d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 6028,
+      "sha256": "eca4045dce5b6563893a3d5c95b8e3f1c08faeb2746d9e84a2ce6dae1d8e0bdd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4497,
+      "sha256": "cd9b6d0d3efdf69023e45c0eebd29f2d7f4cdcf4c1eb5b743fca801e7a85529e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4943,
+      "sha256": "1ca73c9becf0ddf09dc2adb9a423bd417e8213ef457c07cdf8d9d860d1b8e817"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4707,
+      "sha256": "412d3b9c609d9d716a4df4db7c8dac92ea578421cfdd52ea6491c17b6492bc7a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 5432,
+      "sha256": "83791ac9555751abfff4f26a586f496a9ca73470a763e1358ea31536fbb54ff0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 6291,
+      "sha256": "0a23f4c4fc94a4702bc0a713057f9ef5c8723d932e4a4d44d511a2fe360efbe8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 6251,
+      "sha256": "0b9a3a9dabefaf14f6b24b026bb9b2d2fcc1b159e045e8ad5991a5f774150d47"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 8418,
+      "sha256": "43679a3d2460d9126c890744a03e1fd920ffe5c3000be80d054bd27676a18d0f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 7579,
+      "sha256": "05e745b65fc2078df2856410146454df86528c002a4fd85771a217b8e5840ed6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 8747,
+      "sha256": "e12fd3028a4bb0c7201b0ffc154b2230826d0f91e6f9f35be3d9668256b34c7d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 9394,
+      "sha256": "c4bb32b53e0af8d475ca0a993a9e6b66090e3918430f476c2d8b92d777c63372"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 17971,
+      "sha256": "be92c7666d15794481942b497ae62118836c1b41909e9f7a894f3cb9d0a985a7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 18176,
+      "sha256": "b23949aafd6db9d123232819527bb057cf7380e442562dd1376c138691d66491"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 23387,
+      "sha256": "f5cd3d46cc59823ef1ded198681747d877772174872787e5100065e53a7786fc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 27550,
+      "sha256": "486b0c21088c677aa19ab5a9207c7d7fab854096a513dce4063bb6c618a96baa"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 542,
+      "sha256": "456cd28a16bf26c73907e4b6ef7b23f5ce276e3a0569f8c75558fbfcdd7e0fb7"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 7301,
+      "sha256": "51eb1b6488b5bc46aef13dd5503dc1424b7cc4f537abc082fafc0f9eaed80658"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4804,
+      "sha256": "2b4f6de0d39f16e2d5b0985423c95c500d8cfd729b5334e53866f97891451014"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\css\\style.css",
+      "path": "果冻冲击与造浪水槽/submission/css/style.css",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10668,
+      "sha256": "47a37830da5925104926c22ef57f419f9e59839873a69366f853d80863517d7b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 8844,
+      "sha256": "585f2945c8d61264547e3d4f420dcddd6bee7d16c6274c2502f73c0f652c97cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\audio.js",
+      "path": "果冻冲击与造浪水槽/submission/js/audio.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 11965,
+      "sha256": "7cc28b1af6d9497fec27ed3b6e13de15e6be7ee46046b7c534a3addbfbf4f450"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\demos.js",
+      "path": "果冻冲击与造浪水槽/submission/js/demos.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 16128,
+      "sha256": "b3907c4d34283f30d2eda40732e28246600b51f1460a5847eab507cf3fea7fd3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\gpu-core.js",
+      "path": "果冻冲击与造浪水槽/submission/js/gpu-core.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 15586,
+      "sha256": "30d62cec1e074b3e4127739e01528f7f249a926689c17ee925058c6254700a5b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\main.js",
+      "path": "果冻冲击与造浪水槽/submission/js/main.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4164,
+      "sha256": "d13bcc58c54b38a0a9421e7cd59994d75b388dd6d13232cde54af7f11c27a4e3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\math.js",
+      "path": "果冻冲击与造浪水槽/submission/js/math.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 16956,
+      "sha256": "65a307cf8d2ea25877e2094302a35893291f727248699b0d4ca4c486959bd75d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\scene1-mesh.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene1-mesh.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 22841,
+      "sha256": "5863db65445a4ac6c3041dd49a97d7f5081827aad5ce3a18f02c870346f6cd3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\scene1-physics.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene1-physics.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 51260,
+      "sha256": "06cca2f4f9a64b20ba50b93df8d0bc2fab5f25de48a5e105aacf6289308cf259"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\scene1-renderer.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene1-renderer.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 36633,
+      "sha256": "752398639caf473d1550390e4a332cc51a7f324a7c370a0d2137ba8dc0dc9fd0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\scene2-fluid-wgsl.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene2-fluid-wgsl.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 44258,
+      "sha256": "11b9b2c299214c3533ecbfc135a79c2fabc5e4f6457bd73f7ea6f9d37acd2f9e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\scene2-renderer.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene2-renderer.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 66533,
+      "sha256": "c0a4afed24cb419c10277f83fa8b601b538c2ff61f3c2b74b276dc12694e011c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\scene2-sim.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene2-sim.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 23847,
+      "sha256": "5b7b4ddc9316475dd901f90fc7df4e933b0b0bcb8058fac4b360864a04d1e8bb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\js\\ui.js",
+      "path": "果冻冲击与造浪水槽/submission/js/ui.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 11734,
+      "sha256": "b41a9f8a9703c8ca6427946ba21354162e7711e266b6793ce8e816f9a3a50f46"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 517,
+      "sha256": "c92155940b1006d71eabd69476e947283470f6e799ad4db6af53e74c7f0f011b"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 3395,
+      "sha256": "bd61e78f3df446f890093543e646f504aea034ad2fa4f70222159ee25c7e8f4b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 2058,
+      "sha256": "c310e2d4a9a131b56ce54b093b4d34a61c9d0bcb287e6c1d932947ff818f647c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第01题.json",
+      "path": "鲁班锁拆解/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 624,
+      "sha256": "f8c7f2f03589134ab0789bb98b6be1ed5573332fffa7fb6c66ba2a6a169e5c9b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第02题.json",
+      "path": "鲁班锁拆解/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 722,
+      "sha256": "5503c63980b61018756a3203850d6af6457915c5f468c94e8653bdc97286a648"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第03题.json",
+      "path": "鲁班锁拆解/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 922,
+      "sha256": "6be2f89a91f57918a93033bb0a58dad8cd887aaa56edcb39b64f49e3c64abc45"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第04题.json",
+      "path": "鲁班锁拆解/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 726,
+      "sha256": "5fa1e4df1c35d128319cec3d2e938c1c1ead224716bb72d76afca1880b8ebc8e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第05题.json",
+      "path": "鲁班锁拆解/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1109,
+      "sha256": "06acda2641d055479db450a84fb712f8263c2d6f96ea91e85b799999be717a08"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第06题.json",
+      "path": "鲁班锁拆解/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 971,
+      "sha256": "35bd7256dc0c05c31f42851ca56b44917fe619ff84da5fecbe645f7e51e849dd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第07题.json",
+      "path": "鲁班锁拆解/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 2386,
+      "sha256": "c34bb116eac6665650f72e63636c46e3fa9b5a12335464a7480e6c02ca490b19"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\答案\\第08题.json",
+      "path": "鲁班锁拆解/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1573,
+      "sha256": "64027d71138e88f5e8612ca6cbf544cea9292566c0671a8ba0b0caaa0c401a26"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\app.js",
+      "reason": "构建输出；生成入口 package.json"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\AE风味动效设计编辑器\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\grader.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\ncu_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\prof.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\prof.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\prof_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\ref_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\dist",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\形式化证明题\\形式化证明题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.bench_last_report.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_0_1.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_0_2.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_0_3.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_0_4.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_1_2.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_1_3.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_1_4.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_2_3.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_2_4.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\.rr_3_4.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\sparring",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\test_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\tools",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v1_vs_strong_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v2_vs_strong_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v3_test_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v3b_ns_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v3b_s_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v4_vs_strong_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v4_vs_v1_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v5_vs_strong_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v5_vs_v1_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v6_vs_strong_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v6_vs_v1_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v7_unseen_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v7_vs_strong_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v7_vs_v1_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\v8_vs_strong_logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\versions",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\analyze_circuits.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\check_rf_and_activity.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_bottleneck.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_bottleneck.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_icache.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_icache.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_mult.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_mult.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_mult2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_mult2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_zerobuf.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_zerobuf.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_zerobuf2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\diag_zerobuf2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\inspect_deep_details.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\inspect_mult_exact.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\inspect_mult_taps.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\inspect_regfile_exact.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\inspect_structure.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\inspect_tails.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\prof_bench.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\prof_bench.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\prof_mult.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\prof_mult.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\prof_p1.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\prof_p1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\test_simplify.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\verify_mult_wiring.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\机械结构重建.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\笔记",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\机械结构重建\\预览",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Gemini\\4Neon\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": []
+}

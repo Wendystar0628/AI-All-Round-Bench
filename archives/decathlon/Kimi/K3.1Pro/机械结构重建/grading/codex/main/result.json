@@ -1,0 +1,616 @@
+{
+  "task": "机械结构重建",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第01题",
+      "max": 3.5,
+      "score": 0.83,
+      "reason": "F综合 0.2358=0.8×F(0.2mm) 0.2160+0.2×F(2mm) 0.3153；窄容差P=0.3891、R=0.1495，宽容差P=0.4916、R=0.2320；平移对齐 (0.01, -0.00, 8.00)；各零件 F 值：1=0.261，2=0.470，3=0.474，4=0.233，5=0.233，6=0.317，7=0.203，8=0.002，9=0.000，10=0.000；得 0.83 分。"
+    },
+    {
+      "name": "第02题",
+      "max": 3.5,
+      "score": 1.28,
+      "reason": "F综合 0.3609=0.8×F(0.2mm) 0.3382+0.2×F(2mm) 0.4517；窄容差P=0.4403、R=0.2746，宽容差P=0.5157、R=0.4018；平移对齐 (0.00, -0.00, 10.00)；各零件 F 值：1=0.327，2=0.807，3=0.807，4=0.574，5=0.143，6=0.000，7=0.267，8=0.043；得 1.28 分。"
+    },
+    {
+      "name": "第03题",
+      "max": 3.5,
+      "score": 0.57,
+      "reason": "F综合 0.1614=0.8×F(0.2mm) 0.1370+0.2×F(2mm) 0.2591；窄容差P=0.3315、R=0.0863，宽容差P=0.4764、R=0.1780；得 0.57 分。"
+    },
+    {
+      "name": "第04题",
+      "max": 3.5,
+      "score": 0.9,
+      "reason": "F综合 0.2534=0.8×F(0.2mm) 0.1954+0.2×F(2mm) 0.4851；窄容差P=0.3358、R=0.1378，宽容差P=0.5159、R=0.4579；得 0.9 分。"
+    },
+    {
+      "name": "第05题",
+      "max": 3.5,
+      "score": 0.31,
+      "reason": "F综合 0.0888=0.8×F(0.2mm) 0.0688+0.2×F(2mm) 0.1686；窄容差P=0.2589、R=0.0397，宽容差P=0.3955、R=0.1071；平移对齐 (-0.12, -0.05, -0.00)；得 0.31 分。"
+    },
+    {
+      "name": "第06题",
+      "max": 3.5,
+      "score": 0.2,
+      "reason": "F综合 0.0564=0.8×F(0.2mm) 0.0415+0.2×F(2mm) 0.1162；窄容差P=0.2006、R=0.0231，宽容差P=0.3604、R=0.0692；得 0.2 分。"
+    },
+    {
+      "name": "第07题",
+      "max": 3.5,
+      "score": 0.31,
+      "reason": "F综合 0.0891=0.8×F(0.2mm) 0.0729+0.2×F(2mm) 0.1539；窄容差P=0.1426、R=0.0490，宽容差P=0.2574、R=0.1098；得 0.31 分。"
+    },
+    {
+      "name": "第08题",
+      "max": 3.5,
+      "score": 0.17,
+      "reason": "F综合 0.0486=0.8×F(0.2mm) 0.0360+0.2×F(2mm) 0.0987；窄容差P=0.2677、R=0.0193，宽容差P=0.4411、R=0.0556；得 0.17 分。"
+    },
+    {
+      "name": "第09题",
+      "max": 4,
+      "score": 0.16,
+      "reason": "F综合 0.0399=0.8×F(0.2mm) 0.0265+0.2×F(2mm) 0.0932；窄容差P=0.1471、R=0.0146，宽容差P=0.2847、R=0.0557；平移对齐 (-5.04, -2.29, -0.00)；得 0.16 分。"
+    },
+    {
+      "name": "第10题",
+      "max": 4,
+      "score": 0.3,
+      "reason": "F综合 0.0731=0.8×F(0.2mm) 0.0563+0.2×F(2mm) 0.1401；窄容差P=0.1460、R=0.0349，宽容差P=0.3053、R=0.0909；零件 1 第 13 个特征出错（运算后实体体积为零（被完全切除，或轮廓方向、深度有误）），按出错前一步的实体计；得 0.3 分。"
+    },
+    {
+      "name": "第11题",
+      "max": 4,
+      "score": 0.1,
+      "reason": "F综合 0.0238=0.8×F(0.2mm) 0.0147+0.2×F(2mm) 0.0600；窄容差P=0.2449、R=0.0076，宽容差P=0.4060、R=0.0324；得 0.1 分。"
+    },
+    {
+      "name": "第12题",
+      "max": 4,
+      "score": 0.39,
+      "reason": "F综合 0.0972=0.8×F(0.2mm) 0.0795+0.2×F(2mm) 0.1681；窄容差P=0.1863、R=0.0506，宽容差P=0.3361、R=0.1121；得 0.39 分。"
+    },
+    {
+      "name": "第13题",
+      "max": 4,
+      "score": 0.21,
+      "reason": "F综合 0.0522=0.8×F(0.2mm) 0.0432+0.2×F(2mm) 0.0881；窄容差P=0.1455、R=0.0254，宽容差P=0.1981、R=0.0566；平移对齐 (50.26, 35.95, 24.00)；得 0.21 分。"
+    },
+    {
+      "name": "第14题",
+      "max": 4,
+      "score": 0.25,
+      "reason": "F综合 0.0621=0.8×F(0.2mm) 0.0501+0.2×F(2mm) 0.1103；窄容差P=0.1602、R=0.0297，宽容差P=0.3242、R=0.0664；平移对齐 (45.25, 31.99, 25.05)；零件 1 第 4 个特征出错（棱修饰除料结果不是有效实体），按出错前一步的实体计；得 0.25 分。"
+    },
+    {
+      "name": "第15题",
+      "max": 4,
+      "score": 0.29,
+      "reason": "F综合 0.0709=0.8×F(0.2mm) 0.0565+0.2×F(2mm) 0.1286；窄容差P=0.1811、R=0.0335，宽容差P=0.3147、R=0.0808；零件 1 第 7 个特征出错（几何运算异常：Standard_ConstructionError Bnd_Box is void），按出错前一步的实体计；得 0.29 分。"
+    },
+    {
+      "name": "第16题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第17题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第18题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第19题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第20题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第21题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第22题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第23题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第24题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    },
+    {
+      "name": "第25题",
+      "max": 4.4,
+      "score": 0.0,
+      "reason": "未提交本题答案文件，记 0 分。"
+    }
+  ],
+  "metrics": {
+    "total_score": 6.27,
+    "submitted_answers": 15,
+    "missing_answers": 10,
+    "partial_feature_failures": 3,
+    "geometry_schema": 4,
+    "tolerance_mm": 0.2,
+    "wide_tolerance_mm": 2.0,
+    "strict_f_weight": 0.8,
+    "full_credit_f": 0.99,
+    "official_grade": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Kimi\\K3.1Pro\\机械结构重建\\codex\\main\\work\\official_grade.json",
+    "tool_audit": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Kimi\\K3.1Pro\\机械结构重建\\codex\\main\\work\\tool_audit.json",
+    "per_problem": [
+      {
+        "name": "第01题",
+        "fscore_strict": 0.216,
+        "fscore_wide": 0.3153,
+        "fscore": 0.2358,
+        "precision": 0.3891,
+        "recall": 0.1495,
+        "wide_precision": 0.4916,
+        "wide_recall": 0.232,
+        "translation": [
+          0.012,
+          -0.004,
+          8.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第02题",
+        "fscore_strict": 0.3382,
+        "fscore_wide": 0.4517,
+        "fscore": 0.3609,
+        "precision": 0.4403,
+        "recall": 0.2746,
+        "wide_precision": 0.5157,
+        "wide_recall": 0.4018,
+        "translation": [
+          0.003,
+          -0.001,
+          10.002
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第03题",
+        "fscore_strict": 0.137,
+        "fscore_wide": 0.2591,
+        "fscore": 0.1614,
+        "precision": 0.3315,
+        "recall": 0.0863,
+        "wide_precision": 0.4764,
+        "wide_recall": 0.178,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第04题",
+        "fscore_strict": 0.1954,
+        "fscore_wide": 0.4851,
+        "fscore": 0.2534,
+        "precision": 0.3358,
+        "recall": 0.1378,
+        "wide_precision": 0.5159,
+        "wide_recall": 0.4579,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第05题",
+        "fscore_strict": 0.0688,
+        "fscore_wide": 0.1686,
+        "fscore": 0.0888,
+        "precision": 0.2589,
+        "recall": 0.0397,
+        "wide_precision": 0.3955,
+        "wide_recall": 0.1071,
+        "translation": [
+          -0.124,
+          -0.046,
+          -0.002
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第06题",
+        "fscore_strict": 0.0415,
+        "fscore_wide": 0.1162,
+        "fscore": 0.0564,
+        "precision": 0.2006,
+        "recall": 0.0231,
+        "wide_precision": 0.3604,
+        "wide_recall": 0.0692,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第07题",
+        "fscore_strict": 0.0729,
+        "fscore_wide": 0.1539,
+        "fscore": 0.0891,
+        "precision": 0.1426,
+        "recall": 0.049,
+        "wide_precision": 0.2574,
+        "wide_recall": 0.1098,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第08题",
+        "fscore_strict": 0.036,
+        "fscore_wide": 0.0987,
+        "fscore": 0.0486,
+        "precision": 0.2677,
+        "recall": 0.0193,
+        "wide_precision": 0.4411,
+        "wide_recall": 0.0556,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第09题",
+        "fscore_strict": 0.0265,
+        "fscore_wide": 0.0932,
+        "fscore": 0.0399,
+        "precision": 0.1471,
+        "recall": 0.0146,
+        "wide_precision": 0.2847,
+        "wide_recall": 0.0557,
+        "translation": [
+          -5.04,
+          -2.291,
+          -0.003
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第10题",
+        "fscore_strict": 0.0563,
+        "fscore_wide": 0.1401,
+        "fscore": 0.0731,
+        "precision": 0.146,
+        "recall": 0.0349,
+        "wide_precision": 0.3053,
+        "wide_recall": 0.0909,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 13,
+            "message": "运算后实体体积为零（被完全切除，或轮廓方向、深度有误）"
+          }
+        ]
+      },
+      {
+        "name": "第11题",
+        "fscore_strict": 0.0147,
+        "fscore_wide": 0.06,
+        "fscore": 0.0238,
+        "precision": 0.2449,
+        "recall": 0.0076,
+        "wide_precision": 0.406,
+        "wide_recall": 0.0324,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第12题",
+        "fscore_strict": 0.0795,
+        "fscore_wide": 0.1681,
+        "fscore": 0.0972,
+        "precision": 0.1863,
+        "recall": 0.0506,
+        "wide_precision": 0.3361,
+        "wide_recall": 0.1121,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第13题",
+        "fscore_strict": 0.0432,
+        "fscore_wide": 0.0881,
+        "fscore": 0.0522,
+        "precision": 0.1455,
+        "recall": 0.0254,
+        "wide_precision": 0.1981,
+        "wide_recall": 0.0566,
+        "translation": [
+          50.264,
+          35.953,
+          24.002
+        ],
+        "status": "ok",
+        "errors": []
+      },
+      {
+        "name": "第14题",
+        "fscore_strict": 0.0501,
+        "fscore_wide": 0.1103,
+        "fscore": 0.0621,
+        "precision": 0.1602,
+        "recall": 0.0297,
+        "wide_precision": 0.3242,
+        "wide_recall": 0.0664,
+        "translation": [
+          45.251,
+          31.986,
+          25.052
+        ],
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 4,
+            "message": "棱修饰除料结果不是有效实体"
+          }
+        ]
+      },
+      {
+        "name": "第15题",
+        "fscore_strict": 0.0565,
+        "fscore_wide": 0.1286,
+        "fscore": 0.0709,
+        "precision": 0.1811,
+        "recall": 0.0335,
+        "wide_precision": 0.3147,
+        "wide_recall": 0.0808,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 7,
+            "message": "几何运算异常：Standard_ConstructionError Bnd_Box is void"
+          }
+        ]
+      },
+      {
+        "name": "第16题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第17题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第18题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第19题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第20题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第21题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第22题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第23题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第24题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      },
+      {
+        "name": "第25题",
+        "fscore_strict": 0.0,
+        "fscore_wide": 0.0,
+        "fscore": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "wide_precision": 0.0,
+        "wide_recall": 0.0,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "status": "missing",
+        "errors": []
+      }
+    ]
+  },
+  "notes": "评的是作答结束时的工作目录，已完整复制至 work\\submission 后评分，不看 git 提交。原装 grade.py 全25题正常结束；总分采用其未舍入分项求和结果6.27。已检查本次完整会话208次工具调用：日志 E:\\Project\\AI_OneShot_Bench\\orchestrator\\logs\\Kimi\\K3.1Pro\\机械结构重建\\run-8ba2154267af4a2581c6b4c39c719763\\session.log 第7662行为唯一目录整理脚本，仅按文件编号排序、读取并输出既有JSON字段，未计算新尺寸或几何；其余Bash均为原装preview.py（例如13964、56792–56799、59446–59450行）。未发现第五节违规、绕过评测或伪造输出；9个工具Python源码与原装一致。第16–25题未提交。未运行性能基准或采集性能数据。仅启动官方评分程序PID83464，现已退出；未启动浏览器、服务器或其他评测程序。"
+}

@@ -1,0 +1,336 @@
+// /Apps/files.nx —— 文件管理器：目录导航、文件列表，新建、重命名、复制、移动、删除和打开，
+// 以及与其他系统的文件管理器之间拖放文件。排序规则与操作规则都写在这里，改写后重启应用即生效。
+import "/System/lib/ui.nx";
+
+var DIR = "/"; var ENTRIES = []; var SEL = {}; var ANCHOR = -1; var SCROLL = 0;
+var CLIP = null;          // {paths, cut}
+var NAV = [["/", "根目录", "home"], ["/Documents", "文档", "text"], ["/Demo", "示例", "scene"], ["/Programs", "程序", "code"], ["/Apps", "应用", "window"],
+           ["/System", "系统", "kernel"], ["/Flights", "排演记录", "heli"], ["/Snapshots", "快照", "snapshot"]];
+var ROW_H = 26; var NAV_W = 112; var TOP = 76;
+var STATUS = ""; var PRESS = null; var DRAGGING = false; var DROP = null; var HOVER_DROP = "";
+var PEND = null;          // 等待确认覆盖的传入文件
+var SESS = 0;
+
+// 排序规则：目录在前，其后按名称升序。想换规则（例如按大小或修改时间）改这个函数即可。
+function entryLess(a, b) {
+  if (a.dir != b.dir) { return a.dir; }
+  return lower(a.name) < lower(b.name);
+}
+function sortEntries(list) {
+  var i = 1;
+  while (i < len(list)) {
+    var j = i; var x = list[i];
+    while (j > 0 && entryLess(x, list[j - 1])) { list[j] = list[j - 1]; j = j - 1; }
+    list[j] = x; i = i + 1;
+  }
+  return list;
+}
+function refresh() {
+  var l = sys("list", DIR);
+  if (iserr(l)) { STATUS = l.error; DIR = "/"; l = sys("list", "/"); }
+  ENTRIES = sortEntries(l);
+  var ns = {}; var i = 0;
+  while (i < len(ENTRIES)) { if (has(SEL, ENTRIES[i].path)) { ns[ENTRIES[i].path] = true; } i = i + 1; }
+  SEL = ns;
+  ui_set("files-path", DIR);
+  ui_dirty();
+  return 0;
+}
+function go(dir) {
+  var st = sys("stat", dir);
+  if (st == null || !st.dir) { STATUS = "找不到目录 " + dir; ui_set("files-path", DIR); return 0; }
+  DIR = dir; SEL = {}; ANCHOR = -1; SCROLL = 0; STATUS = "";
+  ui_title(((DIR == "/") ? "根目录" : baseName(DIR)) + " — 文件管理器");
+  refresh();
+  return 0;
+}
+function selected() { var out = []; var i = 0; while (i < len(ENTRIES)) { if (has(SEL, ENTRIES[i].path)) { push(out, ENTRIES[i].path); } i = i + 1; } return out; }
+function iconFor(e) {
+  if (e.dir) { return "folder"; }
+  var n = e.name;
+  if (endsWith(n, ".nx")) { return "code"; } if (endsWith(n, ".scene") || endsWith(n, ".flight")) { return "scene"; }
+  if (endsWith(n, ".snap")) { return "snapshot"; } if (endsWith(n, ".sheet")) { return "sheet"; } if (endsWith(n, ".nxb")) { return "kernel"; }
+  return "text";
+}
+function openEntry(e) {
+  if (e.dir) { go(e.path); } else { wm_send({ t: "launch", file: e.path }); }
+  return 0;
+}
+function uniqueName(dir, name) {
+  if (sys("stat", joinPath(dir, name)) == null) { return name; }
+  var dot = len(name) - 1; while (dot > 0 && substr(name, dot, 1) != ".") { dot = dot - 1; }
+  var stem = name; var ext = ""; if (dot > 0) { stem = substr(name, 0, dot); ext = substr(name, dot); }
+  var i = 2;
+  while (sys("stat", joinPath(dir, stem + " (" + i + ")" + ext)) != null) { i = i + 1; }
+  return stem + " (" + i + ")" + ext;
+}
+function listH(v) { return v.h - TOP - 24; }
+function draw(v) {
+  var W = v.w; var H = v.h;
+  rect(0, 0, W, H, TH.bg);
+  rect(0, 0, W, 40, TH.panel);
+  var x = 8;
+  var b = btn("files-up", x, 6, 30, 28, ""); b.ic = "up"; b.v = 2; b.tip = "上级目录"; b.dis = DIR == "/"; x = x + 34;
+  var p = input("files-path", x, 6, max(60, W - x - 8), 28, "路径"); p.mono = true; p.lb = "路径";
+  rect(0, 40, W, 36, TH.panel); rect(0, 75, W, 1, TH.line);
+  x = 8;
+  var nsel = len(keys(SEL));
+  b = btn("files-new-file", x, 45, 72, 26, "新建文件"); b.s = 12; x = x + 76;
+  b = btn("files-new-folder", x, 45, 84, 26, "新建文件夹"); b.s = 12; x = x + 88;
+  b = btn("files-open", x, 45, 48, 26, "打开"); b.s = 12; b.dis = nsel != 1; x = x + 52;
+  b = btn("files-copy", x, 45, 48, 26, "复制"); b.s = 12; b.dis = nsel == 0; x = x + 52;
+  b = btn("files-cut", x, 45, 48, 26, "剪切"); b.s = 12; b.dis = nsel == 0; x = x + 52;
+  b = btn("files-paste", x, 45, 48, 26, "粘贴"); b.s = 12; b.dis = CLIP == null; x = x + 52;
+  if (W > 620) { b = btn("files-rename", x, 45, 60, 26, "重命名"); b.s = 12; b.dis = nsel != 1; x = x + 64; }
+  if (W > 560) { b = btn("files-delete", x, 45, 48, 26, "删除"); b.s = 12; b.v = 3; b.dis = nsel == 0; x = x + 52; }
+  if (W > 760) { b = btn("files-export", x, 45, 84, 26, "保存到本机"); b.s = 12; b.dis = nsel != 1; x = x + 88; b = btn("files-import", x, 45, 84, 26, "从本机导入"); b.s = 12; x = x + 88; }
+  // 导航
+  rect(0, TOP, NAV_W, H - TOP, TH.panel);
+  var i = 0;
+  while (i < len(NAV)) {
+    var n = NAV[i];
+    b = btnd("files-nav", 4, TOP + 6 + i * 30, NAV_W - 8, 27, n[1], n[0]);
+    b.key = "nav" + i; b.v = 6; b.ic = n[2]; b.ics = 15; b.al = 0; b.s = 12; b.sel = DIR == n[0]; b.data = { "file-path": n[0] };
+    i = i + 1;
+  }
+  // 列表
+  var lx = NAV_W; var lw = W - NAV_W; var lh = listH(v);
+  var hd = text(lx + 34, TOP, lw - 220, 22, "名称"); hd.c = TH.dim; hd.s = 11.5;
+  hd = text(lx + lw - 180, TOP, 70, 22, "大小"); hd.c = TH.dim; hd.s = 11.5; hd.al = 2;
+  hd = text(lx + lw - 100, TOP, 92, 22, "修改时间"); hd.c = TH.dim; hd.s = 11.5; hd.al = 2;
+  var g = gbegin(lx, TOP + 22, lw, lh - 22);
+  g.id = "files-list"; g.lb = "文件列表"; g.data = { "file-path": DIR };
+  if (HOVER_DROP != "") { g.c = "rgba(46,196,182,0.08)"; }
+  var rows = floor((lh - 22) / ROW_H) + 1;
+  var maxScroll = max(0, len(ENTRIES) - rows + 1);
+  if (SCROLL > maxScroll) { SCROLL = maxScroll; }
+  i = SCROLL;
+  while (i < len(ENTRIES) && i < SCROLL + rows) {
+    var e = ENTRIES[i]; var y = (i - SCROLL) * ROW_H;
+    var r = btnd("files-item", 4, y, lw - 8, ROW_H - 1, e.name, i);
+    r.key = "f" + e.path; r.v = 9; r.ic = iconFor(e); r.ics = 15; r.al = 0; r.sel = has(SEL, e.path); r.lb = e.name;
+    r.data = { "file-path": e.path, "kind": e.dir ? "dir" : "file" };
+    if (HOVER_DROP == e.path) { r.on = true; }
+    var t = text(lw - 184, y, 74, ROW_H, e.dir ? "文件夹" : fmtSize(e.size)); t.c = TH.dim; t.s = 11.5; t.al = 2;
+    t = text(lw - 104, y, 92, ROW_H, fmt(e.m / 1000, 1) + " s"); t.c = TH.dim; t.s = 11.5; t.al = 2;
+    i = i + 1;
+  }
+  if (len(ENTRIES) == 0) { var em = text(0, 30, lw, 30, "这个文件夹是空的"); em.c = TH.dim; em.al = 1; }
+  gend();
+  hit("files-bg", lx, TOP + 22, lw, lh - 22, null);
+  // 把行的命中区放到背景之上
+  var hs = UI.hits; var bg = pop(hs); var k = len(hs) - 1; var moved = [];
+  while (k >= 0 && hs[k].id == "files-item") { push(moved, pop(hs)); k = k - 1; }
+  push(hs, bg);
+  while (len(moved) > 0) { push(hs, pop(moved)); }
+  rect(0, H - 24, W, 24, TH.panel);
+  var info = str(len(ENTRIES)) + " 个项目";
+  if (nsel > 0) { info = info + " · 已选 " + nsel + " 个"; }
+  if (CLIP != null) { info = info + " · 剪贴板 " + len(CLIP.paths) + " 项" + (CLIP.cut ? "（剪切）" : ""); }
+  var s = text(10, H - 24, W - 20, 24, (STATUS != "") ? STATUS : info); s.c = (STATUS != "") ? TH.warn : TH.dim; s.s = 11.5; s.id = "files-status";
+  if (DROP != null) {
+    rect(lx + 8, H - 62, lw - 16, 30, "rgba(20,26,38,0.95)").r = 8;
+    var dt = text(lx + 18, H - 62, lw - 36, 30, DROP); dt.c = TH.accent; dt.s = 12; dt.id = "files-drop-target";
+  }
+  return 0;
+}
+function doPaste() {
+  if (CLIP == null) { return 0; }
+  var i = 0; var n = 0;
+  while (i < len(CLIP.paths)) {
+    var src = CLIP.paths[i]; i = i + 1;
+    var name = baseName(src); var dst = joinPath(DIR, name);
+    if (CLIP.cut) {
+      if (dirName(src) == DIR) { continue; }
+      if (sys("stat", dst) != null) { dst = joinPath(DIR, uniqueName(DIR, name)); }
+      var r = sys("rename", src, dst);
+      if (iserr(r)) { STATUS = "移动失败：" + r.error; } else { n = n + 1; }
+    } else {
+      dst = joinPath(DIR, uniqueName(DIR, name));
+      var r2 = sys("copy", src, dst);
+      if (iserr(r2)) { STATUS = "复制失败：" + r2.error; ui_notify("复制失败", r2.error); } else { n = n + 1; }
+    }
+  }
+  if (CLIP.cut) { CLIP = null; }
+  if (n > 0) { ui_notify("文件操作", "已粘贴 " + n + " 项到 " + DIR); }
+  refresh();
+  return 0;
+}
+function doDelete() {
+  var s = selected(); var i = 0; var n = 0;
+  // 操作规则：删除的文件先移入 /Recycle，可以在那里找回；在回收站里删除才是彻底删除
+  while (i < len(s)) {
+    var p = s[i]; i = i + 1;
+    var r = null;
+    if (startsWith(p, "/Recycle")) { r = sys("delete", p); }
+    else { sys("mkdir", "/Recycle"); r = sys("rename", p, joinPath("/Recycle", uniqueName("/Recycle", baseName(p)))); }
+    if (iserr(r)) { STATUS = "删除失败：" + r.error; } else { n = n + 1; }
+  }
+  if (n > 0) { ui_notify("文件操作", "已删除 " + n + " 项（可在 /Recycle 找回）"); }
+  SEL = {}; refresh();
+  return 0;
+}
+function click(id, data, m, v) {
+  STATUS = "";
+  if (id == "files-up") { go(dirName(DIR)); }
+  else if (id == "files-nav") { if (data == "/Recycle" || sys("stat", data) != null) { go(data); } else { STATUS = "目录 " + data + " 不存在"; } }
+  else if (id == "files-new-file") { ui_dialog("prompt", "新建文件", "在 " + DIR + " 中新建文件，输入名称：", "新建文本.txt", "newfile", null); }
+  else if (id == "files-new-folder") { ui_dialog("prompt", "新建文件夹", "在 " + DIR + " 中新建文件夹，输入名称：", "新建文件夹", "newdir", null); }
+  else if (id == "files-open") { var s = selected(); if (len(s) == 1) { var st = sys("stat", s[0]); openEntry({ path: s[0], dir: st != null && st.dir }); } }
+  else if (id == "files-copy") { CLIP = { paths: selected(), cut: false }; }
+  else if (id == "files-cut") { CLIP = { paths: selected(), cut: true }; }
+  else if (id == "files-paste") { doPaste(); }
+  else if (id == "files-rename") { var s2 = selected(); if (len(s2) == 1) { ui_dialog("prompt", "重命名", "新的名称：", baseName(s2[0]), "rename", null); } }
+  else if (id == "files-delete") { doDelete(); }
+  else if (id == "files-export") { var s3 = selected(); if (len(s3) == 1) { var d = sys("read", s3[0]); if (iserr(d)) { STATUS = "只能导出文件"; } else { sys("bus_send", { to: "outer", svc: "host", k: "host_export", name: baseName(s3[0]), data: d }); STATUS = "已请求根系统保存到本机"; } } }
+  else if (id == "files-import") { sys("bus_send", { to: "outer", svc: "host", k: "host_import", dir: DIR }); STATUS = "请在根系统弹出的对话框里选择本机文件"; }
+  return 0;
+}
+function selectRow(i, m) {
+  var e = ENTRIES[i];
+  if (m.mod == 2) { if (has(SEL, e.path)) { del(SEL, e.path); } else { SEL[e.path] = true; } ANCHOR = i; }
+  else if (m.mod == 1 && ANCHOR >= 0) {
+    SEL = {}; var a = min(ANCHOR, i); var b = max(ANCHOR, i);
+    while (a <= b) { SEL[ENTRIES[a].path] = true; a = a + 1; }
+  } else { if (!(has(SEL, e.path) && m.b == 2)) { SEL = {}; SEL[e.path] = true; } ANCHOR = i; }
+  ui_dirty();
+  return 0;
+}
+function ptr(m, h, v) {
+  if (m.k == "wheel") { SCROLL = clamp(SCROLL + ((m.dy > 0) ? 3 : -3), 0, max(0, len(ENTRIES) - 3)); ui_dirty(); return 0; }
+  if (m.k == "down") {
+    PRESS = null; DRAGGING = false;
+    if (h != null && h.id == "files-item") {
+      selectRow(h.data, m);
+      if (m.b == 0 && m.n >= 2) { openEntry(ENTRIES[h.data]); return 0; }
+      if (m.b == 0) { PRESS = { x: m.x, y: m.y, i: h.data }; }
+      if (m.b == 2) { rowMenu(m); }
+    } else if (h != null && h.id == "files-bg") {
+      if (len(keys(SEL)) > 0) { SEL = {}; ui_dirty(); }
+      if (m.b == 2) { ui_menu(m.x, m.y, [{ id: "newfile", text: "新建文件", ic: "file" }, { id: "newdir", text: "新建文件夹", ic: "folder" }, { id: "paste", text: "粘贴", ic: "paste", dis: CLIP == null }, { id: "refresh", text: "刷新", ic: "refresh" }], "bg"); }
+    }
+  } else if (m.k == "move" && PRESS != null && !DRAGGING) {
+    if (abs(m.x - PRESS.x) + abs(m.y - PRESS.y) > 6) {
+      // 开始拖动：交给根系统协调，目标可以是任意层的文件管理器
+      DRAGGING = true;
+      var paths = selected(); var files = []; var i = 0;
+      while (i < len(paths)) { var st = sys("stat", paths[i]); push(files, { name: baseName(paths[i]), size: (st == null) ? 0 : st.size, dir: st != null && st.dir }); i = i + 1; }
+      sys("bus_send", { to: "outer", svc: "dnd", k: "drag_begin", paths: paths, files: files });
+    }
+  } else if (m.k == "up") { PRESS = null; DRAGGING = false; }
+  return 0;
+}
+function rowMenu(m) {
+  ui_menu(m.x, m.y, [{ id: "open", text: "打开", ic: "open" }, { id: "copy", text: "复制", ic: "copy" }, { id: "cut", text: "剪切", ic: "cut" }, { id: "rename", text: "重命名", ic: "rename", dis: len(keys(SEL)) != 1 },
+                     { id: "delete", text: "删除", ic: "trash" }], "row");
+  return 0;
+}
+function menu(id, tag, data) {
+  if (id == null) { return 0; }
+  if (id == "open") { click("files-open", null, null, null); }
+  else if (id == "copy") { click("files-copy", null, null, null); }
+  else if (id == "cut") { click("files-cut", null, null, null); }
+  else if (id == "rename") { click("files-rename", null, null, null); }
+  else if (id == "delete") { doDelete(); }
+  else if (id == "newfile") { click("files-new-file", null, null, null); }
+  else if (id == "newdir") { click("files-new-folder", null, null, null); }
+  else if (id == "paste") { doPaste(); }
+  else if (id == "refresh") { refresh(); }
+  return 0;
+}
+function validName(n) { return n != "" && indexOf(n, "/", 0) < 0 && n != "." && n != ".."; }
+function dialog(tag, b, value) {
+  if (tag == "overwrite") { finishIncoming(b); return 0; }
+  if (b != 0) { return 0; }
+  var name = trim(value);
+  if (!validName(name)) { STATUS = "名称无效"; return 0; }
+  var path = joinPath(DIR, name); var r = null;
+  if (tag == "newfile") { if (sys("stat", path) != null) { STATUS = "已存在同名项目"; return 0; } r = sys("write", path, ""); if (!iserr(r)) { ui_notify("文件操作", "已新建 " + path); } }
+  else if (tag == "newdir") { r = sys("mkdir", path); if (!iserr(r)) { ui_notify("文件操作", "已新建文件夹 " + path); } }
+  else if (tag == "rename") { var s = selected(); if (len(s) == 1) { r = sys("rename", s[0], path); if (!iserr(r)) { ui_notify("文件操作", "已重命名为 " + name); } } }
+  if (iserr(r)) { STATUS = r.error; ui_notify("文件操作失败", r.error); }
+  refresh();
+  if (!iserr(r)) { SEL = {}; SEL[path] = true; }
+  return 0;
+}
+function enter(id) { if (id == "files-path") { go(trim(ui_val("files-path"))); } return 0; }
+function key(m) {
+  if (m.key == "Delete") { doDelete(); }
+  else if (m.key == "F5") { refresh(); }
+  else if (m.mod == 2 && m.key == "c") { CLIP = { paths: selected(), cut: false }; ui_dirty(); }
+  else if (m.mod == 2 && m.key == "x") { CLIP = { paths: selected(), cut: true }; ui_dirty(); }
+  else if (m.mod == 2 && m.key == "v") { doPaste(); }
+  else if (m.mod == 2 && m.key == "a") { var i = 0; while (i < len(ENTRIES)) { SEL[ENTRIES[i].path] = true; i = i + 1; } ui_dirty(); }
+  else if (m.key == "Enter") { click("files-open", null, null, null); }
+  else if (m.key == "Backspace") { go(dirName(DIR)); }
+  return 0;
+}
+// ---------- 跨系统拖放（作为目标） ----------
+function dropDirAt(m, v) {
+  var h = ui_hit(v, m.x, m.y);
+  if (h != null && h.id == "files-item" && ENTRIES[h.data].dir) { return ENTRIES[h.data].path; }
+  if (h != null && h.id == "files-nav") { return h.data; }
+  return DIR;
+}
+function drag(m, v) {
+  if (m.k == "over") {
+    var d = dropDirAt(m, v);
+    var lbl = "复制到 " + UI.sysid + ":" + d;
+    if (lbl != DROP) { DROP = lbl; HOVER_DROP = (d == DIR) ? "*" : d; ui_dirty(); }
+    sys("bus_send", { to: "outer", svc: "dnd", k: "drag_status", sess: m.sess, text: lbl, ok: true });
+  } else if (m.k == "drop") {
+    var d2 = dropDirAt(m, v);
+    DROP = null; HOVER_DROP = ""; ui_dirty();
+    sys("bus_send", { to: "outer", svc: "dnd", k: "drop_accept", sess: m.sess, dir: d2 });
+  } else { if (DROP != null) { DROP = null; HOVER_DROP = ""; ui_dirty(); } }
+  return 0;
+}
+function writeIncoming(files, dir, overwrite) {
+  var i = 0; var n = 0; var fail = "";
+  while (i < len(files)) {
+    var f = files[i]; i = i + 1;
+    var path = joinPath(dir, f.name);
+    if (has(f, "dir") && f.dir) { sys("mkdir", path); continue; }
+    var r = sys("write", path, f.data);
+    if (iserr(r)) { fail = r.error; break; }
+    n = n + 1;
+  }
+  if (fail != "") { STATUS = "传入失败：" + fail; ui_notify("文件传入失败", fail + "（目标 " + UI.sysid + ":" + dir + "）"); }
+  else { ui_notify("文件传入", "已收到 " + n + " 个文件 → " + UI.sysid + ":" + dir); STATUS = ""; }
+  refresh();
+  return 0;
+}
+function finishIncoming(b) {
+  var p = PEND; PEND = null;
+  if (p == null) { return 0; }
+  if (b == 0) { writeIncoming(p.files, p.dir, true); } else { ui_notify("文件传入", "已取消：目标已有同名文件"); }
+  return 0;
+}
+function bus(m) {
+  if (m.k == "xfer_data") {
+    // 目标取得一份独立副本；重名时先确认是否覆盖
+    var clash = []; var i = 0;
+    while (i < len(m.files)) { var f = m.files[i]; if (!(has(f, "dir") && f.dir) && sys("stat", joinPath(m.dir, f.name)) != null) { push(clash, f.name); } i = i + 1; }
+    if (len(clash) > 0) {
+      PEND = { files: m.files, dir: m.dir };
+      ui_dialog("confirm", "覆盖同名文件？", m.dir + " 中已有：" + join(clash, "、") + "。覆盖它们，还是取消这次传入？", "", "overwrite", ["覆盖", "取消"]);
+    } else { writeIncoming(m.files, m.dir, false); }
+  } else if (m.k == "host_import_r") {
+    if (has(m, "error")) { STATUS = m.error; }
+    else { var r = sys("write", joinPath(m.dir, uniqueName(m.dir, m.name)), m.data); if (iserr(r)) { STATUS = "导入失败：" + r.error; ui_notify("导入失败", r.error); } else { ui_notify("文件操作", "已从本机导入 " + m.name); } }
+    refresh();
+  } else if (m.k == "drag_end") { DROP = null; HOVER_DROP = ""; ui_dirty(); }
+  return 0;
+}
+function tick(now) {
+  // 其他程序改动了文件时，列表随之更新
+  var l = sys("list", DIR);
+  if (!iserr(l) && len(l) != len(ENTRIES)) { refresh(); }
+  return 0;
+}
+
+ui_open("files", "文件管理器", 700, 440, { minw: 460, minh: 280 });
+var A0 = sys("args");
+if (type(A0) == "map" && type(A0.dir) == "str") { DIR = A0.dir; }
+go(DIR);
+ui_run({ draw: draw, click: click, ptr: ptr, key: key, enter: enter, menu: menu, dialog: dialog, drag: drag, bus: bus, tick: tick, tickMs: 700 });

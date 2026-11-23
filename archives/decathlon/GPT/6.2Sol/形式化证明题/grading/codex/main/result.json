@@ -1,0 +1,61 @@
+{
+  "task": "形式化证明题",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第 1 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem1.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem1 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 2 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem2.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem2 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 3 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem3.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem3 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 4 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem4.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem4 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 5 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem5.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem5 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 6 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem6.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem6 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 7 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem7.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem7 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    },
+    {
+      "name": "第 8 题",
+      "max": 12.5,
+      "score": 12.5,
+      "reason": "Problem8.lean 单独编译退出码为 0，无 sorry 警告；追加 #print axioms、#check @problem8 及题面原命题的类型赋值检查均通过，主定理仅依赖 propext、Classical.choice、Quot.sound。"
+    }
+  ],
+  "metrics": {
+    "总分": 100.0,
+    "单独编译通过题数": 8,
+    "完整核验通过题数": 8
+  },
+  "notes": "评的是作答结束时工作目录内容的副本（work/submission），不依据 git 提交。未修改原始提交；仅在 work/checks 的验证副本末尾追加公理、类型及题面命题赋值检查。日志回显曾遇到 GBK 编码错误，已修正为 UTF-8；Lean 编译退出码及原始日志均完整保存，不影响计分。全部本次 Lean 编译进程已退出。"
+}

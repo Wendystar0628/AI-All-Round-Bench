@@ -1,0 +1,22 @@
+{
+  "problem": "07",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层回油支承座",
+      "features": [
+        {"type": "extrude", "plane": "XY", "loops": [{"rect": [0, 0, 84, 52]}], "depth": 5},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 2.5]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[30, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 24, 0], "loops": [{"path": [[0, 5], [84, 5], [72, 30], [52, 38], [28, 24], [10, 30]]}], "depth": -4},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [10, 0, 0], "loops": [{"circle": [26, 46], "d": 62}], "depth": 18},
+        {"type": "extrude", "op": "add", "plane": "YZ", "origin": [52, 0, 0], "loops": [{"circle": [26, 54], "d": 70}], "depth": 20},
+        {"type": "hole", "plane": "YZ", "origin": [28, 0, 0], "at": [[26, 46]], "d": 32, "through": true, "cbore": {"d": 38, "depth": 4}},
+        {"type": "hole", "plane": "YZ", "origin": [72, 0, 0], "at": [[26, 54]], "d": 42, "through": true, "cbore": {"d": 50, "depth": 4}},
+        {"type": "hole", "plane": "XZ", "origin": [0, 0, 0], "at": [[40, 12]], "d": 10, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 89], "at": [[19, 26], [62, 26]], "d": 8, "through": true},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 5], "at": [[5, 5], [79, 5], [5, 47], [79, 47]], "d": 8, "through": true, "cbore": {"d": 13, "depth": 2}}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 32.4,
+      "reason": "官方 evaluate.py 完整正式评测：基线最小 511.0802 ms，提交最小 197.3424 ms，加速 2.589814 倍，q=32.4397647393；5 次计时画面与 12 个隐藏输入全部通过，c=h=1，最终 32.4 分。源码核对未发现实质性违规。"
+    }
+  ],
+  "metrics": {
+    "baseline_min_ms": 511.0802,
+    "submission_min_ms": 197.3424,
+    "speedup": 2.5898144544710107,
+    "q": 32.439764739332496,
+    "c": 1,
+    "h": 1,
+    "timing_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_status": [
+      "pass",
+      "pass",
+      "pass"
+    ],
+    "score_unrounded": 32.439764739332496,
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Qwen\\4Max\\光线追踪渲染加速\\codex\\performance\\work\\official_report\\results.json",
+    "cpus": "16-27",
+    "priority": "high"
+  },
+  "notes": "评分版本：评作答结束时工作目录的完整副本，不看 git 提交；副本位于 work/submission，solution.cu 与原件 SHA-256 一致。全部编译与性能测量通过指定 process_job.py --cpus 16-27 包装，官方入口保留 --cpus 16-27；仅运行一次完整 evaluate.py。官方报告 valid=true、formal=true，3 个公开边界均通过，未遇到环境错误。扫描的建树线程在返回前 join，未认定违规，亦未自然发现作弊。未启动浏览器或服务器；本次启动的评测进程均已退出。"
+}

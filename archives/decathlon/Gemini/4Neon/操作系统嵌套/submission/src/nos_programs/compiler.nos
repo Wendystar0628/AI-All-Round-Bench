@@ -1,0 +1,940 @@
+// /sys/compiler.nos — Nested OS 自举编译器 (NOS 源码 -> 字节码)
+// 修改本文件并在系统内重新编译后，新生成的 /sys/compiler.bc 将用于此后启动的全部程序。
+
+let OP = {
+  NOP: 0, CONST: 1, NULL: 2, TRUE: 3, FALSE: 4, POP: 5, DUP: 6,
+  LOAD_L: 7, STORE_L: 8, LOAD_G: 9, STORE_G: 10,
+  ADD: 11, SUB: 12, MUL: 13, DIV: 14, MOD: 15, NEG: 16, NOT: 17,
+  EQ: 18, NEQ: 19, LT: 20, LE: 21, GT: 22, GE: 23,
+  JMP: 24, JMP_FALSE: 25, JMP_FALSE_PEEK: 26, JMP_TRUE_PEEK: 27,
+  MAKE_ARR: 28, MAKE_OBJ: 29, GET_PROP: 30, SET_PROP: 31,
+  CALL: 32, RET: 33, LOAD_FN: 34, LOAD_BUILTIN: 35, SYSCALL: 36,
+  TRY_PUSH: 37, TRY_POP: 38, THROW: 39
+};
+
+let KEYWORDS = {
+  "let": true, "fn": true, "if": true, "else": true, "while": true, "for": true,
+  "break": true, "continue": true, "return": true, "true": true, "false": true,
+  "null": true, "try": true, "catch": true, "throw": true, "syscall": true
+};
+
+let BUILTINS = {
+  "len": true, "keys": true, "has": true, "del": true, "push": true, "pop": true,
+  "slice": true, "concat": true, "substr": true, "index_of": true, "split": true,
+  "join": true, "replace": true, "trim": true, "lower": true, "upper": true,
+  "char_code": true, "from_char_code": true, "str": true, "num": true, "int": true,
+  "type": true, "abs": true, "floor": true, "ceil": true, "round": true, "min": true,
+  "max": true, "sqrt": true, "pow": true, "sin": true, "cos": true, "tan": true,
+  "asin": true, "acos": true, "atan2": true, "clamp": true, "exp": true, "log": true,
+  "clone": true, "json_encode": true, "json_decode": true, "mem_size": true,
+  "vm_create": true, "vm_run": true, "vm_reply": true, "vm_throw": true,
+  "vm_info": true, "vm_burn": true, "sort_by": true, "rand_next": true, "hash_str": true
+};
+
+fn is_digit(cc) {
+  return cc >= 48 && cc <= 57;
+}
+
+fn is_id_start(cc) {
+  return (cc >= 65 && cc <= 90) || (cc >= 97 && cc <= 122) || cc == 95 || cc > 127;
+}
+
+fn is_id_part(cc) {
+  return is_id_start(cc) || is_digit(cc);
+}
+
+fn tokenize(src) {
+  let tokens = [];
+  let i = 0;
+  let line = 1;
+  let n = len(src);
+  let singleOps = "+-*/%<>=!(){}[],.;:?";
+
+  while (i < n) {
+    let ch = substr(src, i, 1);
+    let cc = char_code(src, i);
+
+    if (cc == 32 || cc == 9 || cc == 13) {
+      i += 1;
+      continue;
+    }
+    if (cc == 10) {
+      line += 1;
+      i += 1;
+      continue;
+    }
+    if (ch == "/" && i + 1 < n && substr(src, i + 1, 1) == "/") {
+      i += 2;
+      while (i < n && char_code(src, i) != 10) {
+        i += 1;
+      }
+      continue;
+    }
+    if (ch == "/" && i + 1 < n && substr(src, i + 1, 1) == "*") {
+      i += 2;
+      while (i < n && !(substr(src, i, 1) == "*" && i + 1 < n && substr(src, i + 1, 1) == "/")) {
+        if (char_code(src, i) == 10) line += 1;
+        i += 1;
+      }
+      i += 2;
+      continue;
+    }
+    if (ch == "\"" || ch == "'") {
+      let quote = ch;
+      i += 1;
+      let parts = [];
+      while (i < n && substr(src, i, 1) != quote) {
+        let c = substr(src, i, 1);
+        if (c == "\\" && i + 1 < n) {
+          let esc = substr(src, i + 1, 1);
+          if (esc == "n") push(parts, "\n");
+          else if (esc == "r") push(parts, "\r");
+          else if (esc == "t") push(parts, "\t");
+          else if (esc == "\\") push(parts, "\\");
+          else if (esc == "\"") push(parts, "\"");
+          else if (esc == "'") push(parts, "'");
+          else push(parts, esc);
+          i += 2;
+        } else {
+          if (char_code(src, i) == 10) line += 1;
+          push(parts, c);
+          i += 1;
+        }
+      }
+      if (i >= n) throw "第 " + str(line) + " 行：字符串未闭合";
+      i += 1;
+      push(tokens, { t: "STR", v: join(parts, ""), line: line });
+      continue;
+    }
+    if (is_digit(cc)) {
+      let start = i;
+      while (i < n && is_digit(char_code(src, i))) i += 1;
+      if (i + 1 < n && substr(src, i, 1) == "." && is_digit(char_code(src, i + 1))) {
+        i += 1;
+        while (i < n && is_digit(char_code(src, i))) i += 1;
+      }
+      push(tokens, { t: "NUM", v: num(substr(src, start, i - start)), line: line });
+      continue;
+    }
+    if (is_id_start(cc)) {
+      let start = i;
+      i += 1;
+      while (i < n && is_id_part(char_code(src, i))) i += 1;
+      let word = substr(src, start, i - start);
+      let kind = "ID";
+      if (has(KEYWORDS, word)) kind = word;
+      push(tokens, { t: kind, v: word, line: line });
+      continue;
+    }
+    if (i + 1 < n) {
+      let two = substr(src, i, 2);
+      if (two == "==" || two == "!=" || two == "<=" || two == ">=" ||
+          two == "&&" || two == "||" || two == "+=" || two == "-=" ||
+          two == "*=" || two == "/=") {
+        push(tokens, { t: two, v: two, line: line });
+        i += 2;
+        continue;
+      }
+    }
+    if (index_of(singleOps, ch) >= 0) {
+      push(tokens, { t: ch, v: ch, line: line });
+      i += 1;
+      continue;
+    }
+    throw "第 " + str(line) + " 行：无法识别的字符 '" + ch + "'";
+  }
+  push(tokens, { t: "EOF", v: "", line: line });
+  return tokens;
+}
+
+fn add_const(c, val) {
+  let key = type(val) + ":" + str(val);
+  if (has(c.constMap, key)) return c.constMap[key];
+  let idx = len(c.consts);
+  push(c.consts, val);
+  c.constMap[key] = idx;
+  return idx;
+}
+
+fn ensure_global(c, name) {
+  if (has(c.globalMap, name)) return c.globalMap[name];
+  let idx = len(c.globals);
+  push(c.globals, name);
+  c.globalMap[name] = idx;
+  return idx;
+}
+
+fn peek(c, off) {
+  let idx = c.pos + off;
+  let last = len(c.tokens) - 1;
+  if (idx > last) idx = last;
+  return c.tokens[idx];
+}
+
+fn next_tk(c) {
+  let tk = c.tokens[c.pos];
+  c.pos += 1;
+  return tk;
+}
+
+fn expect_tk(c, t) {
+  let tk = peek(c, 0);
+  if (tk.t != t) {
+    throw "第 " + str(tk.line) + " 行：期望 '" + t + "'，实际为 '" + str(tk.v) + "'";
+  }
+  return next_tk(c);
+}
+
+fn match_tk(c, t) {
+  if (peek(c, 0).t == t) {
+    next_tk(c);
+    return true;
+  }
+  return false;
+}
+
+fn emit0(c, op) {
+  let addr = len(c.curFn.code);
+  push(c.curFn.code, op);
+  return addr;
+}
+
+fn emit1(c, op, arg) {
+  let addr = len(c.curFn.code);
+  push(c.curFn.code, op);
+  push(c.curFn.code, arg);
+  return addr;
+}
+
+fn patch_jmp(c, addr, target) {
+  c.curFn.code[addr + 1] = target;
+}
+
+fn push_scope(c) {
+  push(c.scopes, {});
+}
+
+fn pop_scope(c) {
+  pop(c.scopes);
+}
+
+fn declare_local(c, name) {
+  let slot = c.curFn.locals;
+  c.curFn.locals = slot + 1;
+  let top = c.scopes[len(c.scopes) - 1];
+  top[name] = slot;
+  return slot;
+}
+
+fn resolve_local(c, name) {
+  let i = len(c.scopes) - 1;
+  while (i >= 0) {
+    let sc = c.scopes[i];
+    if (has(sc, name)) return sc[name];
+    i -= 1;
+  }
+  return -1;
+}
+
+fn parse_fn_decl(c) {
+  expect_tk(c, "fn");
+  let nameTk = expect_tk(c, "ID");
+  let fidx = c.fnNameMap[nameTk.v];
+  let fnObj = c.funcs[fidx];
+  expect_tk(c, "(");
+  let params = [];
+  if (peek(c, 0).t != ")") {
+    while (true) {
+      push(params, expect_tk(c, "ID").v);
+      if (!match_tk(c, ",")) break;
+    }
+  }
+  expect_tk(c, ")");
+
+  let prevFn = c.curFn;
+  let prevInFn = c.inFunc;
+  let prevScopes = c.scopes;
+  let prevLoops = c.loops;
+
+  c.curFn = fnObj;
+  c.inFunc = true;
+  c.scopes = [{}];
+  c.loops = [];
+  fnObj.params = len(params);
+  fnObj.locals = 0;
+  for (let i = 0; i < len(params); i += 1) {
+    declare_local(c, params[i]);
+  }
+
+  expect_tk(c, "{");
+  while (peek(c, 0).t != "}" && peek(c, 0).t != "EOF") {
+    parse_stmt(c);
+  }
+  expect_tk(c, "}");
+  emit0(c, OP.NULL);
+  emit0(c, OP.RET);
+
+  c.curFn = prevFn;
+  c.inFunc = prevInFn;
+  c.scopes = prevScopes;
+  c.loops = prevLoops;
+}
+
+fn parse_block(c) {
+  expect_tk(c, "{");
+  if (c.inFunc) push_scope(c);
+  while (peek(c, 0).t != "}" && peek(c, 0).t != "EOF") {
+    parse_stmt(c);
+  }
+  if (c.inFunc) pop_scope(c);
+  expect_tk(c, "}");
+}
+
+fn parse_let_stmt(c, needSemi) {
+  expect_tk(c, "let");
+  let name = expect_tk(c, "ID").v;
+  if (match_tk(c, "=")) {
+    parse_expr(c);
+  } else {
+    emit0(c, OP.NULL);
+  }
+  if (c.inFunc) {
+    let slot = declare_local(c, name);
+    emit1(c, OP.STORE_L, slot);
+    emit0(c, OP.POP);
+  } else {
+    let gidx = ensure_global(c, name);
+    emit1(c, OP.STORE_G, gidx);
+    emit0(c, OP.POP);
+  }
+  if (needSemi) expect_tk(c, ";");
+}
+
+fn parse_if_stmt(c) {
+  expect_tk(c, "if");
+  expect_tk(c, "(");
+  parse_expr(c);
+  expect_tk(c, ")");
+  let jmpFalse = emit1(c, OP.JMP_FALSE, 0);
+  parse_stmt(c);
+  if (match_tk(c, "else")) {
+    let jmpEnd = emit1(c, OP.JMP, 0);
+    patch_jmp(c, jmpFalse, len(c.curFn.code));
+    parse_stmt(c);
+    patch_jmp(c, jmpEnd, len(c.curFn.code));
+  } else {
+    patch_jmp(c, jmpFalse, len(c.curFn.code));
+  }
+}
+
+fn parse_while_stmt(c) {
+  expect_tk(c, "while");
+  let loopStart = len(c.curFn.code);
+  expect_tk(c, "(");
+  parse_expr(c);
+  expect_tk(c, ")");
+  let jmpExit = emit1(c, OP.JMP_FALSE, 0);
+  let loop = { breaks: [], continues: [] };
+  push(c.loops, loop);
+  parse_stmt(c);
+  pop(c.loops);
+  for (let i = 0; i < len(loop.continues); i += 1) {
+    patch_jmp(c, loop.continues[i], loopStart);
+  }
+  emit1(c, OP.JMP, loopStart);
+  let exitAddr = len(c.curFn.code);
+  patch_jmp(c, jmpExit, exitAddr);
+  for (let i = 0; i < len(loop.breaks); i += 1) {
+    patch_jmp(c, loop.breaks[i], exitAddr);
+  }
+}
+
+fn parse_for_stmt(c) {
+  expect_tk(c, "for");
+  expect_tk(c, "(");
+  if (c.inFunc) push_scope(c);
+  if (peek(c, 0).t == "let") {
+    parse_let_stmt(c, true);
+  } else if (peek(c, 0).t != ";") {
+    parse_expr(c);
+    emit0(c, OP.POP);
+    expect_tk(c, ";");
+  } else {
+    next_tk(c);
+  }
+  let condStart = len(c.curFn.code);
+  let jmpExit = -1;
+  if (peek(c, 0).t != ";") {
+    parse_expr(c);
+    jmpExit = emit1(c, OP.JMP_FALSE, 0);
+  }
+  expect_tk(c, ";");
+  let jmpBody = emit1(c, OP.JMP, 0);
+  let stepStart = len(c.curFn.code);
+  if (peek(c, 0).t != ")") {
+    parse_expr(c);
+    emit0(c, OP.POP);
+  }
+  expect_tk(c, ")");
+  emit1(c, OP.JMP, condStart);
+
+  patch_jmp(c, jmpBody, len(c.curFn.code));
+  let loop = { breaks: [], continues: [] };
+  push(c.loops, loop);
+  parse_stmt(c);
+  pop(c.loops);
+  for (let i = 0; i < len(loop.continues); i += 1) {
+    patch_jmp(c, loop.continues[i], stepStart);
+  }
+  emit1(c, OP.JMP, stepStart);
+  let exitAddr = len(c.curFn.code);
+  if (jmpExit >= 0) patch_jmp(c, jmpExit, exitAddr);
+  for (let i = 0; i < len(loop.breaks); i += 1) {
+    patch_jmp(c, loop.breaks[i], exitAddr);
+  }
+  if (c.inFunc) pop_scope(c);
+}
+
+fn parse_try_stmt(c) {
+  expect_tk(c, "try");
+  let tryPush = emit1(c, OP.TRY_PUSH, 0);
+  parse_block(c);
+  emit0(c, OP.TRY_POP);
+  let jmpEnd = emit1(c, OP.JMP, 0);
+  patch_jmp(c, tryPush, len(c.curFn.code));
+  expect_tk(c, "catch");
+  expect_tk(c, "(");
+  let errName = expect_tk(c, "ID").v;
+  expect_tk(c, ")");
+  if (c.inFunc) {
+    push_scope(c);
+    let slot = declare_local(c, errName);
+    emit1(c, OP.STORE_L, slot);
+    emit0(c, OP.POP);
+    expect_tk(c, "{");
+    while (peek(c, 0).t != "}" && peek(c, 0).t != "EOF") {
+      parse_stmt(c);
+    }
+    expect_tk(c, "}");
+    pop_scope(c);
+  } else {
+    let gidx = ensure_global(c, errName);
+    emit1(c, OP.STORE_G, gidx);
+    emit0(c, OP.POP);
+    parse_block(c);
+  }
+  patch_jmp(c, jmpEnd, len(c.curFn.code));
+}
+
+fn parse_stmt(c) {
+  let tk = peek(c, 0);
+  if (tk.t == ";") {
+    next_tk(c);
+    return;
+  }
+  if (tk.t == "{") {
+    parse_block(c);
+    return;
+  }
+  if (tk.t == "let") {
+    parse_let_stmt(c, true);
+    return;
+  }
+  if (tk.t == "if") {
+    parse_if_stmt(c);
+    return;
+  }
+  if (tk.t == "while") {
+    parse_while_stmt(c);
+    return;
+  }
+  if (tk.t == "for") {
+    parse_for_stmt(c);
+    return;
+  }
+  if (tk.t == "break") {
+    next_tk(c);
+    expect_tk(c, ";");
+    if (len(c.loops) == 0) throw "第 " + str(tk.line) + " 行：break 必须在循环内";
+    let j = emit1(c, OP.JMP, 0);
+    push(c.loops[len(c.loops) - 1].breaks, j);
+    return;
+  }
+  if (tk.t == "continue") {
+    next_tk(c);
+    expect_tk(c, ";");
+    if (len(c.loops) == 0) throw "第 " + str(tk.line) + " 行：continue 必须在循环内";
+    let j = emit1(c, OP.JMP, 0);
+    push(c.loops[len(c.loops) - 1].continues, j);
+    return;
+  }
+  if (tk.t == "return") {
+    next_tk(c);
+    if (peek(c, 0).t == ";") {
+      next_tk(c);
+      emit0(c, OP.NULL);
+    } else {
+      parse_expr(c);
+      expect_tk(c, ";");
+    }
+    emit0(c, OP.RET);
+    return;
+  }
+  if (tk.t == "try") {
+    parse_try_stmt(c);
+    return;
+  }
+  if (tk.t == "throw") {
+    next_tk(c);
+    parse_expr(c);
+    expect_tk(c, ";");
+    emit0(c, OP.THROW);
+    return;
+  }
+  parse_expr(c);
+  expect_tk(c, ";");
+  emit0(c, OP.POP);
+}
+
+fn parse_expr(c) {
+  parse_assign(c);
+}
+
+fn truncate_code(c, targetLen) {
+  while (len(c.curFn.code) > targetLen) {
+    pop(c.curFn.code);
+  }
+}
+
+fn emit_prop_obj_and_key(c, endTokenPos) {
+  parse_primary(c);
+  while (c.pos < endTokenPos) {
+    if (peek(c, 0).t == ".") {
+      let isLast = (c.pos + 2 == endTokenPos);
+      next_tk(c);
+      let prop = expect_tk(c, "ID").v;
+      emit1(c, OP.CONST, add_const(c, prop));
+      if (!isLast) emit0(c, OP.GET_PROP);
+    } else if (peek(c, 0).t == "[") {
+      next_tk(c);
+      parse_expr(c);
+      expect_tk(c, "]");
+      if (c.pos < endTokenPos) emit0(c, OP.GET_PROP);
+    } else if (peek(c, 0).t == "(") {
+      next_tk(c);
+      let argc = 0;
+      if (peek(c, 0).t != ")") {
+        while (true) {
+          parse_expr(c);
+          argc += 1;
+          if (!match_tk(c, ",")) break;
+        }
+      }
+      expect_tk(c, ")");
+      emit1(c, OP.CALL, argc);
+    } else {
+      break;
+    }
+  }
+}
+
+fn parse_assign(c) {
+  let startPos = c.pos;
+  let lhs = parse_or(c);
+  let tk = peek(c, 0);
+  if (tk.t == "=" || tk.t == "+=" || tk.t == "-=" || tk.t == "*=" || tk.t == "/=") {
+    if (lhs == null || !lhs.assignable) {
+      throw "第 " + str(tk.line) + " 行：无效的赋值目标";
+    }
+    let op = next_tk(c).t;
+    truncate_code(c, lhs.codeStart);
+    if (lhs.kind == "var") {
+      if (op != "=") {
+        if (lhs.isLocal) emit1(c, OP.LOAD_L, lhs.slot);
+        else emit1(c, OP.LOAD_G, lhs.slot);
+      }
+      parse_assign(c);
+      if (op == "+=") emit0(c, OP.ADD);
+      else if (op == "-=") emit0(c, OP.SUB);
+      else if (op == "*=") emit0(c, OP.MUL);
+      else if (op == "/=") emit0(c, OP.DIV);
+      if (lhs.isLocal) emit1(c, OP.STORE_L, lhs.slot);
+      else emit1(c, OP.STORE_G, lhs.slot);
+    } else if (lhs.kind == "prop") {
+      let endOfLhs = lhs.opPos;
+      let savedPos = c.pos;
+      if (op == "=") {
+        c.pos = startPos;
+        emit_prop_obj_and_key(c, endOfLhs);
+        c.pos = savedPos;
+        parse_assign(c);
+        emit0(c, OP.SET_PROP);
+      } else {
+        c.pos = startPos;
+        emit_prop_obj_and_key(c, endOfLhs);
+        c.pos = startPos;
+        emit_prop_obj_and_key(c, endOfLhs);
+        emit0(c, OP.GET_PROP);
+        c.pos = savedPos;
+        parse_assign(c);
+        if (op == "+=") emit0(c, OP.ADD);
+        else if (op == "-=") emit0(c, OP.SUB);
+        else if (op == "*=") emit0(c, OP.MUL);
+        else if (op == "/=") emit0(c, OP.DIV);
+        emit0(c, OP.SET_PROP);
+      }
+    }
+  }
+}
+
+fn parse_or(c) {
+  let codeStart = len(c.curFn.code);
+  let target = parse_and(c);
+  let combined = target;
+  while (match_tk(c, "||")) {
+    combined = null;
+    let jTrue = emit1(c, OP.JMP_TRUE_PEEK, 0);
+    emit0(c, OP.POP);
+    parse_and(c);
+    patch_jmp(c, jTrue, len(c.curFn.code));
+  }
+  if (match_tk(c, "?")) {
+    combined = null;
+    let jFalse = emit1(c, OP.JMP_FALSE, 0);
+    parse_assign(c);
+    let jEnd = emit1(c, OP.JMP, 0);
+    expect_tk(c, ":");
+    patch_jmp(c, jFalse, len(c.curFn.code));
+    parse_assign(c);
+    patch_jmp(c, jEnd, len(c.curFn.code));
+  }
+  if (combined != null) {
+    combined.codeStart = codeStart;
+    return combined;
+  }
+  return null;
+}
+
+fn parse_and(c) {
+  let target = parse_eq(c);
+  let combined = target;
+  while (match_tk(c, "&&")) {
+    combined = null;
+    let jFalse = emit1(c, OP.JMP_FALSE_PEEK, 0);
+    emit0(c, OP.POP);
+    parse_eq(c);
+    patch_jmp(c, jFalse, len(c.curFn.code));
+  }
+  return combined;
+}
+
+fn parse_eq(c) {
+  let target = parse_cmp(c);
+  let combined = target;
+  while (peek(c, 0).t == "==" || peek(c, 0).t == "!=") {
+    combined = null;
+    let op = next_tk(c).t;
+    parse_cmp(c);
+    if (op == "==") emit0(c, OP.EQ);
+    else emit0(c, OP.NEQ);
+  }
+  return combined;
+}
+
+fn parse_cmp(c) {
+  let target = parse_add(c);
+  let combined = target;
+  while (peek(c, 0).t == "<" || peek(c, 0).t == "<=" || peek(c, 0).t == ">" || peek(c, 0).t == ">=") {
+    combined = null;
+    let op = next_tk(c).t;
+    parse_add(c);
+    if (op == "<") emit0(c, OP.LT);
+    else if (op == "<=") emit0(c, OP.LE);
+    else if (op == ">") emit0(c, OP.GT);
+    else emit0(c, OP.GE);
+  }
+  return combined;
+}
+
+fn parse_add(c) {
+  let target = parse_mul(c);
+  let combined = target;
+  while (peek(c, 0).t == "+" || peek(c, 0).t == "-") {
+    combined = null;
+    let op = next_tk(c).t;
+    parse_mul(c);
+    if (op == "+") emit0(c, OP.ADD);
+    else emit0(c, OP.SUB);
+  }
+  return combined;
+}
+
+fn parse_mul(c) {
+  let target = parse_unary(c);
+  let combined = target;
+  while (peek(c, 0).t == "*" || peek(c, 0).t == "/" || peek(c, 0).t == "%") {
+    combined = null;
+    let op = next_tk(c).t;
+    parse_unary(c);
+    if (op == "*") emit0(c, OP.MUL);
+    else if (op == "/") emit0(c, OP.DIV);
+    else emit0(c, OP.MOD);
+  }
+  return combined;
+}
+
+fn parse_unary(c) {
+  if (match_tk(c, "!")) {
+    parse_unary(c);
+    emit0(c, OP.NOT);
+    return null;
+  }
+  if (match_tk(c, "-")) {
+    parse_unary(c);
+    emit0(c, OP.NEG);
+    return null;
+  }
+  return parse_postfix(c);
+}
+
+fn parse_postfix(c) {
+  let target = parse_primary(c);
+  while (true) {
+    if (match_tk(c, ".")) {
+      let prop = expect_tk(c, "ID").v;
+      emit1(c, OP.CONST, add_const(c, prop));
+      emit0(c, OP.GET_PROP);
+      target = { assignable: true, kind: "prop", opPos: c.pos };
+    } else if (match_tk(c, "[")) {
+      parse_expr(c);
+      expect_tk(c, "]");
+      emit0(c, OP.GET_PROP);
+      target = { assignable: true, kind: "prop", opPos: c.pos };
+    } else if (match_tk(c, "(")) {
+      let argc = 0;
+      if (peek(c, 0).t != ")") {
+        while (true) {
+          parse_expr(c);
+          argc += 1;
+          if (!match_tk(c, ",")) break;
+        }
+      }
+      expect_tk(c, ")");
+      emit1(c, OP.CALL, argc);
+      target = null;
+    } else {
+      break;
+    }
+  }
+  return target;
+}
+
+fn parse_primary(c) {
+  let tk = peek(c, 0);
+  if (tk.t == "NUM") {
+    next_tk(c);
+    emit1(c, OP.CONST, add_const(c, tk.v));
+    return null;
+  }
+  if (tk.t == "STR") {
+    next_tk(c);
+    emit1(c, OP.CONST, add_const(c, tk.v));
+    return null;
+  }
+  if (tk.t == "true") {
+    next_tk(c);
+    emit0(c, OP.TRUE);
+    return null;
+  }
+  if (tk.t == "false") {
+    next_tk(c);
+    emit0(c, OP.FALSE);
+    return null;
+  }
+  if (tk.t == "null") {
+    next_tk(c);
+    emit0(c, OP.NULL);
+    return null;
+  }
+  if (tk.t == "syscall") {
+    next_tk(c);
+    expect_tk(c, "(");
+    parse_expr(c);
+    let argc = 0;
+    while (match_tk(c, ",")) {
+      parse_expr(c);
+      argc += 1;
+    }
+    expect_tk(c, ")");
+    emit1(c, OP.SYSCALL, argc);
+    return null;
+  }
+  if (tk.t == "ID") {
+    next_tk(c);
+    let name = tk.v;
+    if (c.inFunc) {
+      let lslot = resolve_local(c, name);
+      if (lslot >= 0) {
+        emit1(c, OP.LOAD_L, lslot);
+        return { assignable: true, kind: "var", isLocal: true, slot: lslot };
+      }
+    }
+    if (has(c.fnNameMap, name)) {
+      emit1(c, OP.LOAD_FN, c.fnNameMap[name]);
+      return null;
+    }
+    if (has(c.globalMap, name)) {
+      let gidx = c.globalMap[name];
+      emit1(c, OP.LOAD_G, gidx);
+      return { assignable: true, kind: "var", isLocal: false, slot: gidx };
+    }
+    if (has(BUILTINS, name)) {
+      emit1(c, OP.LOAD_BUILTIN, add_const(c, name));
+      return null;
+    }
+    let gidx = ensure_global(c, name);
+    emit1(c, OP.LOAD_G, gidx);
+    return { assignable: true, kind: "var", isLocal: false, slot: gidx };
+  }
+  if (match_tk(c, "(")) {
+    parse_expr(c);
+    expect_tk(c, ")");
+    return null;
+  }
+  if (match_tk(c, "[")) {
+    let count = 0;
+    if (peek(c, 0).t != "]") {
+      while (true) {
+        if (peek(c, 0).t == "]") break;
+        parse_expr(c);
+        count += 1;
+        if (!match_tk(c, ",")) break;
+      }
+    }
+    expect_tk(c, "]");
+    emit1(c, OP.MAKE_ARR, count);
+    return null;
+  }
+  if (match_tk(c, "{")) {
+    let count = 0;
+    if (peek(c, 0).t != "}") {
+      while (true) {
+        if (peek(c, 0).t == "}") break;
+        let ktk = peek(c, 0);
+        let keyName = null;
+        if (ktk.t == "ID" || ktk.t == "STR" || has(KEYWORDS, ktk.t)) {
+          next_tk(c);
+          keyName = ktk.v;
+        } else {
+          throw "第 " + str(ktk.line) + " 行：对象键必须为标识符或字符串";
+        }
+        expect_tk(c, ":");
+        emit1(c, OP.CONST, add_const(c, keyName));
+        parse_expr(c);
+        count += 1;
+        if (!match_tk(c, ",")) break;
+      }
+    }
+    expect_tk(c, "}");
+    emit1(c, OP.MAKE_OBJ, count);
+    return null;
+  }
+  throw "第 " + str(tk.line) + " 行：意外的记号 '" + str(tk.v) + "'";
+}
+
+fn compile_source(src) {
+  let tokens = tokenize(src);
+  let mainFn = { name: "__main__", params: 0, locals: 0, code: [] };
+  let c = {
+    tokens: tokens,
+    pos: 0,
+    consts: [],
+    constMap: {},
+    globals: [],
+    globalMap: {},
+    fnNameMap: {},
+    funcs: [mainFn],
+    curFn: mainFn,
+    inFunc: false,
+    scopes: [],
+    loops: []
+  };
+
+  // 预扫描顶层函数声明，支持相互递归调用
+  let braceDepth = 0;
+  let k = 0;
+  let tn = len(tokens);
+  while (k < tn) {
+    let tk = tokens[k];
+    if (tk.t == "{") braceDepth += 1;
+    else if (tk.t == "}") braceDepth -= 1;
+    else if (braceDepth == 0 && tk.t == "fn" && k + 1 < tn && tokens[k + 1].t == "ID") {
+      let fname = tokens[k + 1].v;
+      if (!has(c.fnNameMap, fname)) {
+        let fidx = len(c.funcs);
+        c.fnNameMap[fname] = fidx;
+        push(c.funcs, { name: fname, params: 0, locals: 0, code: [] });
+      }
+    }
+    k += 1;
+  }
+
+  while (peek(c, 0).t != "EOF") {
+    if (peek(c, 0).t == "fn") {
+      parse_fn_decl(c);
+    } else {
+      parse_stmt(c);
+    }
+  }
+  emit0(c, OP.NULL);
+  emit0(c, OP.RET);
+
+  return {
+    version: 1,
+    compilerTag: "NOS-SelfHost-1.0",
+    consts: c.consts,
+    globals: c.globals,
+    funcs: c.funcs
+  };
+}
+
+// 入口：支持内核直接编译模式 (由 initGlobals 注入 COMPILE_SRC) 与作为系统程序自举编译模式
+if (COMPILE_SRC != null) {
+  try {
+    let bc = compile_source(COMPILE_SRC);
+    return { ok: true, bytecode: bc };
+  } catch (err) {
+    return { ok: false, error: str(err) };
+  }
+} else {
+  let inputPath = "/sys/compiler.nos";
+  let outputPath = "/sys/compiler.bc";
+  if (ARGS != null && type(ARGS) == "object") {
+    if (ARGS.inputPath != null) inputPath = ARGS.inputPath;
+    if (ARGS.outputPath != null) outputPath = ARGS.outputPath;
+  }
+  let srcRes = syscall("fs_read", inputPath);
+  if (!srcRes || !srcRes.ok) {
+    syscall("log", "编译失败：无法读取源文件 " + inputPath);
+    return { ok: false, error: "无法读取源文件 " + inputPath };
+  }
+  try {
+    let bc = compile_source(srcRes.content);
+    let jsonStr = json_encode(bc);
+    let wr = syscall("fs_write", outputPath, jsonStr);
+    if (!wr || !wr.ok) {
+      let werr = "";
+      if (wr != null && wr.error != null) werr = str(wr.error);
+      syscall("log", "编译失败：写入字节码失败 " + werr);
+      return { ok: false, error: "写入字节码失败" };
+    }
+    if (outputPath == "/sys/compiler.bc") {
+      syscall("reload_compiler", outputPath);
+    }
+    syscall("log", "自举编译成功：" + inputPath + " -> " + outputPath + " (" + str(len(bc.funcs)) + " 个函数, " + str(len(jsonStr)) + " 字节)");
+    return { ok: true, outputPath: outputPath, funcs: len(bc.funcs), bytes: len(jsonStr) };
+  } catch (err) {
+    syscall("log", "编译错误：" + str(err));
+    return { ok: false, error: str(err) };
+  }
+}

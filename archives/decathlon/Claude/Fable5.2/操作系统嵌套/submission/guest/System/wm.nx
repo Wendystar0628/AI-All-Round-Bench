@@ -1,0 +1,949 @@
+// /System/wm.nx —— 子系统的窗口管理程序与桌面外壳。
+// 窗口的次序、焦点、命中判断、输入分发、任务栏、开始菜单、对话框都在这里决定；
+// 它把桌面画成显示列表提交给显示接口，原始指针与键盘事件由内核以消息送来。
+// 改写这里的规则并重启子系统，桌面就按新规则叠放窗口、分配焦点和分发输入。
+import "/System/lib/ui.nx";
+
+var TITLE_H = 30; var BAR_H = 40; var TOOL_H = 30; var EDGE = 6;
+var INFO = null; var DW = 800; var DH = 500; var ACTIVE = true;
+var WINS = [];            // 由下到上的窗口次序
+var WSEQ = 0; var FOCUS = "";
+var APPS = [
+  { id: "files", name: "文件管理器", path: "/Apps/files.nx", icon: "folder", proj: false },
+  { id: "editor", name: "文本与程序编辑器", path: "/Apps/editor.nx", icon: "editor", proj: false },
+  { id: "tasks", name: "进程管理器", path: "/Apps/tasks.nx", icon: "tasks", proj: false },
+  { id: "player", name: "三维场景播放器", path: "/Apps/player.nx", icon: "player", proj: true },
+  { id: "charts", name: "图表工作台", path: "/Apps/charts.nx", icon: "charts", proj: true },
+  { id: "systems", name: "子系统管理", path: "/Apps/systems.nx", icon: "systems", proj: false }
+];
+var ICONS = [];
+var START = false; var SEARCH = ""; var SFOCUS = false; var SS = 0; var SE = 0;
+var MENU = null; var DLG = null; var DS = 0; var DE = 0;
+var NOTES = []; var NOTE_OPEN = false; var TOASTS = [];
+var DRAG = null; var CAP = null; var PRESS = null; var HOVER = "";
+var KIDS = {}; var TREE = null; var EPOCHS = {};
+var DIRTY = true; var HITS = [];
+var DND = null; var SELICON = -1;
+
+function wfind(wid) { var i = 0; while (i < len(WINS)) { if (WINS[i].wid == wid) { return WINS[i]; } i = i + 1; } return null; }
+function appById(id) { var i = 0; while (i < len(APPS)) { if (APPS[i].id == id) { return APPS[i]; } i = i + 1; } return null; }
+function note(title, body) {
+  var n = { title: title, text: body, at: sys("time") };
+  push(NOTES, n); if (len(NOTES) > 40) { remove(NOTES, 0); }
+  push(TOASTS, n); DIRTY = true;
+  return 0;
+}
+
+// ---------- 焦点与层叠规则 ----------
+function focusWin(w) {
+  // 规则：被点到或新打开的窗口移到最上面并取得焦点
+  if (w != null && FOCUS == w.wid && WINS[len(WINS) - 1] == w) { return 0; }
+  var old = wfind(FOCUS);
+  if (old != null && (w == null || old.wid != w.wid)) { tellFocus(old, false); }
+  if (w == null) { FOCUS = ""; DIRTY = true; return 0; }
+  var i = indexOf(WINS, w, 0);
+  if (i >= 0) { remove(WINS, i); push(WINS, w); }
+  FOCUS = w.wid; w.st = (w.st == 1) ? w.prev : w.st;
+  tellFocus(w, ACTIVE);
+  DIRTY = true;
+  return 0;
+}
+function tellFocus(w, on) {
+  if (w.kind == "app") { sys("send", w.pid, { t: "focus", wid: w.wid, on: on }); }
+  else if (w.kind == "sys") { sys("child_input", w.sysid, { t: "focus", on: on }); }
+  else if (w.kind == "proj") { sys("bus_send", { to: w.src.sys, pid: w.src.pid, k: "proj_input", win: w.src.win, e: { t: "focus", on: on } }); }
+  return 0;
+}
+function topVisible() {
+  var i = len(WINS) - 1;
+  while (i >= 0) { if (WINS[i].st != 1) { return WINS[i]; } i = i - 1; }
+  return null;
+}
+function contentRect(w) {
+  var top = TITLE_H; if (w.kind == "sys") { top = TITLE_H + TOOL_H; }
+  return { x: w.x + 1, y: w.y + top, w: w.w - 2, h: w.h - top - 1 };
+}
+function tellSize(w) {
+  var c = contentRect(w);
+  if (c.w < 1) { c.w = 1; } if (c.h < 1) { c.h = 1; }
+  if (w.kind == "app") { sys("send", w.pid, { t: "resize", wid: w.wid, w: c.w, h: c.h }); }
+  else if (w.kind == "sys") { sys("child_size", w.sysid, c.w, c.h); }
+  else if (w.kind == "proj") { sys("bus_send", { to: w.src.sys, pid: w.src.pid, k: "proj_size", win: w.src.win, w: c.w, h: c.h }); }
+  return 0;
+}
+function place(w, x, y, ww, hh) {
+  var changed = w.w != ww || w.h != hh;
+  w.x = x; w.y = y; w.w = ww; w.h = hh;
+  if (changed) { tellSize(w); }
+  DIRTY = true;
+  return 0;
+}
+function setMax(w, on) {
+  if (on && w.st != 2) { w.rx = w.x; w.ry = w.y; w.rw = w.w; w.rh = w.h; w.st = 2; w.snap = 0; place(w, 0, 0, DW, DH - BAR_H); }
+  else if (!on && (w.st == 2 || w.snap != 0)) { w.st = 0; w.snap = 0; place(w, w.rx, w.ry, w.rw, w.rh); }
+  return 0;
+}
+function setSnap(w, side) {
+  if (w.st != 2 && w.snap == 0) { w.rx = w.x; w.ry = w.y; w.rw = w.w; w.rh = w.h; }
+  w.st = 0; w.snap = side;
+  var half = floor(DW / 2);
+  if (side == 1) { place(w, 0, 0, half, DH - BAR_H); } else { place(w, half, 0, DW - half, DH - BAR_H); }
+  return 0;
+}
+function minimize(w) {
+  if (w.st == 1) { return 0; }
+  w.prev = w.st; w.st = 1;
+  if (FOCUS == w.wid) { tellFocus(w, false); FOCUS = ""; var t = topVisible(); if (t != null) { focusWin(t); } }
+  DIRTY = true;
+  return 0;
+}
+function removeWin(w) {
+  var i = indexOf(WINS, w, 0);
+  if (i >= 0) { remove(WINS, i); }
+  if (w.kind == "app" && w.projTo != "") { sys("bus_send", { to: w.projTo, svc: "wm", k: "proj_end", win: w.wid }); }
+  if (FOCUS == w.wid) { FOCUS = ""; var t = topVisible(); if (t != null) { focusWin(t); } }
+  if (CAP != null && CAP.wid == w.wid) { CAP = null; }
+  if (DRAG != null && DRAG.wid == w.wid) { DRAG = null; }
+  DIRTY = true;
+  return 0;
+}
+function closeWin(w) {
+  if (w.kind == "app") { sys("send", w.pid, { t: "closing", wid: w.wid }); }
+  else if (w.kind == "sys") {
+    DLG = { kind: "confirm", title: "关闭子系统", text: "关闭 " + w.sysid + " 会停止它和它的整个子树里的全部程序（已保存的文件与快照保留）。确定关闭吗？", value: "", btns: ["停止并关闭", "取消"], owner: { kind: "wm", act: "sysclose", id: w.sysid } };
+    DIRTY = true;
+  } else if (w.kind == "proj") {
+    // 关闭投送窗口只取消这个视图，源应用继续运行
+    sys("bus_send", { to: w.src.sys, pid: w.src.pid, k: "proj_closed", win: w.src.win });
+    removeWin(w);
+  }
+  return 0;
+}
+function newWin(kind, title, app, ww, hh) {
+  WSEQ = WSEQ + 1;
+  var n = len(WINS);
+  if (ww > DW - 20) { ww = DW - 20; } if (hh > DH - BAR_H - 10) { hh = DH - BAR_H - 10; }
+  if (ww < 220) { ww = 220; } if (hh < 140) { hh = 140; }
+  var x = 24 + (WSEQ * 28) % max(40, DW - ww - 30); var y = 14 + (WSEQ * 22) % max(30, DH - BAR_H - hh - 14);
+  if (x + ww > DW) { x = max(0, DW - ww); } if (y + hh > DH - BAR_H) { y = max(0, DH - BAR_H - hh); }
+  var w = { wid: "w" + WSEQ, kind: kind, title: title, app: app, pid: 0, sid: 0, x: x, y: y, w: ww, h: hh, st: 0, prev: 0, snap: 0,
+            rx: x, ry: y, rw: ww, rh: hh, sysid: "", src: null, projTo: "", canProj: false, icon: "window", minw: 220, minh: 140 };
+  push(WINS, w);
+  return w;
+}
+function launch(appId, args) {
+  var a = appById(appId);
+  if (a == null) { note("无法启动", "没有登记应用 " + appId); return 0; }
+  var r = sys("spawn", a.path, args, false);
+  if (iserr(r)) { note("无法启动 " + a.name, r.error); }
+  START = false; DIRTY = true;
+  return 0;
+}
+function openFile(path) {
+  if (endsWith(path, ".scene") || endsWith(path, ".flight")) { launch("player", { file: path }); }
+  else if (endsWith(path, ".snap")) { launch("systems", { file: path }); }
+  else { launch("editor", { file: path }); }
+  return 0;
+}
+function sysWinFor(id) { var i = 0; while (i < len(WINS)) { if (WINS[i].kind == "sys" && WINS[i].sysid == id) { return WINS[i]; } i = i + 1; } return null; }
+function refreshKids() {
+  var l = sys("sys_list"); var i = 0; var nk = {};
+  while (i < len(l)) { nk[l[i].id] = l[i]; i = i + 1; }
+  KIDS = nk;
+  // 运行中的子系统都有系统窗口；停止或移除后窗口消失
+  var ks = keys(KIDS); i = 0;
+  while (i < len(ks)) {
+    var k = KIDS[ks[i]]; var w = sysWinFor(k.id);
+    if (k.state == "stopped") { if (w != null) { removeWin(w); } }
+    else if (w == null) {
+      var ww = floor(DW * 0.66); var hh = floor((DH - BAR_H) * 0.78);
+      if (ww < 420) { ww = min(420, DW - 10); } if (hh < 300) { hh = min(300, DH - BAR_H - 6); }
+      w = newWin("sys", k.name, "system", ww, hh);
+      w.sysid = k.id; w.icon = "systems"; w.minw = 360; w.minh = 260;
+      w.x = max(4, DW - ww - 16 - (len(ks) - 1 - i) * 26); w.y = 10 + (i % 4) * 24;
+      tellSize(w); focusWin(w);
+    } else { w.title = k.name; }
+    i = i + 1;
+  }
+  i = 0;
+  while (i < len(WINS)) { var x = WINS[i]; if (x.kind == "sys" && !has(KIDS, x.sysid)) { removeWin(x); } else { i = i + 1; } }
+  DIRTY = true;
+  return 0;
+}
+function treeFind(node, id, acc) {
+  // 返回 {found, paused, down}：沿路径累计暂停与停止状态
+  var i = 0;
+  while (i < len(node.kids)) {
+    var k = node.kids[i]; i = i + 1;
+    var paused = acc.paused || k.state == "paused";
+    var down = acc.down || (k.state != "running" && k.state != "paused");
+    var ep = acc.ep + k.epoch;
+    if (k.id == id) { return { found: true, paused: paused, down: down, ep: ep }; }
+    var r = treeFind(k, id, { paused: paused, down: down, ep: ep });
+    if (r.found) { return r; }
+  }
+  return { found: false, paused: false, down: true, ep: 0 };
+}
+function checkProjections() {
+  if (TREE == null) { return 0; }
+  var i = 0;
+  while (i < len(WINS)) {
+    var w = WINS[i];
+    if (w.kind == "proj") {
+      var r = treeFind(TREE, w.src.sys, { paused: false, down: false, ep: 0 });
+      if (!r.found || r.down) { note("投送已结束", "来源 " + w.src.sys + " 已停止，投送窗口关闭"); removeWin(w); continue; }
+      if (w.spaused != r.paused) { w.spaused = r.paused; DIRTY = true; }
+      if (w.ep != r.ep) {
+        // 来源子树被恢复：请来源系统确认源窗口是否仍在
+        w.ep = r.ep;
+        sys("bus_send", { to: w.src.sys, svc: "wm", k: "proj_probe", win: w.src.win, target: INFO.id });
+      }
+    }
+    i = i + 1;
+  }
+  return 0;
+}
+
+// ---------- 绘制 ----------
+function P(p) { push(HL, p); return p; }
+var HL = [];
+function H(id, x, y, w, h, data) { push(HITS, { id: id, x: x, y: y, w: w, h: h, data: data }); return 0; }
+function hitAt(x, y) {
+  var i = len(HITS) - 1;
+  while (i >= 0) { var h = HITS[i]; if (x >= h.x && y >= h.y && x < h.x + h.w && y < h.y + h.h) { return h; } i = i - 1; }
+  return null;
+}
+function tbtn(items, id, x, w, ic, tip, on, dis) {
+  var b = { k: "btn", id: id, x: x, y: 0, w: w, h: TITLE_H, v: 4, ic: ic, ics: 14, tip: tip, lb: tip };
+  if (on) { b.on = true; } if (dis) { b.dis = true; }
+  push(items, b);
+  return b;
+}
+function drawWin(w, focused) {
+  var items = [];
+  var tc = TH.panel2; if (focused) { tc = TH.panel3; }
+  push(items, { k: "rect", x: 0, y: 0, w: w.w, h: w.h, c: TH.bg, r: (w.st == 2) ? 0 : 9 });
+  var tb = { k: "rect", id: "window-titlebar", x: 0, y: 0, w: w.w, h: TITLE_H, c: tc, lb: w.title };
+  push(items, tb);
+  if (focused) { push(items, { k: "rect", x: 0, y: 0, w: w.w, h: 2, c: TH.accent }); }
+  push(items, { k: "icon", x: 9, y: 7, w: 16, h: 16, n: w.icon, c: focused ? TH.accent : TH.dim });
+  var right = 3 * 36;
+  if (w.canProj) { right = 4 * 36; }
+  var tt = { k: "text", x: 32, y: 0, w: max(10, w.w - right - 40), h: TITLE_H, t: w.title, c: focused ? TH.text : TH.dim, s: 12.5, b: 600 };
+  push(items, tt);
+  var bx = w.w - 36;
+  var cb = tbtn(items, "window-close", bx, 36, "close", "关闭", false, false); cb.v = 41; bx = bx - 36;
+  tbtn(items, "window-maximize", bx, 36, (w.st == 2) ? "restore" : "maximize", (w.st == 2) ? "还原" : "最大化", false, false); bx = bx - 36;
+  tbtn(items, "window-minimize", bx, 36, "minimize", "最小化", false, false); bx = bx - 36;
+  if (w.canProj) { tbtn(items, "window-project", bx, 36, "project", "投送到祖先桌面", w.projTo != "", false); }
+  var c = contentRect(w);
+  var cy = c.y - w.y;
+  if (w.kind == "app") { push(items, { k: "sub", sid: w.sid, x: 1, y: cy, w: c.w, h: c.h }); }
+  else if (w.kind == "proj") {
+    push(items, { k: "sub", sys: w.src.sys, sid: w.src.sid, x: 1, y: cy, w: c.w, h: c.h });
+    push(items, { k: "text", x: w.w - right - 190, y: 0, w: 180, h: TITLE_H, t: "来自 " + w.src.sys + " · " + w.src.app, c: TH.accent, s: 11, al: 2 });
+    if (w.spaused) {
+      push(items, { k: "rect", x: 1, y: cy, w: c.w, h: c.h, c: "rgba(10,14,22,0.55)" });
+      push(items, { k: "rect", x: floor(c.w / 2) - 150, y: cy + 14, w: 300, h: 30, c: "rgba(20,26,38,0.95)", r: 15, bw: 1, bc: TH.warn });
+      push(items, { k: "text", id: "projection-paused", x: floor(c.w / 2) - 150, y: cy + 14, w: 300, h: 30, t: "来源子树已暂停：内容冻结，控件停用", c: TH.warn, s: 12, al: 1 });
+    }
+  } else if (w.kind == "sys") {
+    drawSysWin(w, items, c, cy);
+  }
+  push(items, { k: "rect", id: "window-resize", x: w.w - 14, y: w.h - 14, w: 14, h: 14, c: "transparent", cur: "nwse-resize", lb: "调整大小" });
+  var p = { k: "win", wid: w.wid, app: w.app, title: w.title, st: w.st, focus: focused, x: w.x, y: w.y, w: w.w, h: w.h, items: items, kind: w.kind,
+            bc: focused ? TH.accent2 : TH.line };
+  if (w.kind == "proj") { p.app = "projection"; p.src = { sys: w.src.sys, win: w.src.win, app: w.src.app }; }
+  P(p);
+  return 0;
+}
+function sbtn(items, id, x, y, w, t, sysid, dis, on) {
+  var b = { k: "btn", id: id, x: x, y: y, w: w, h: 22, t: t, v: 2, s: 11.5, data: { "target-system-id": sysid } };
+  if (dis) { b.dis = true; } if (on) { b.on = true; }
+  push(items, b);
+  return b;
+}
+function drawSysWin(w, items, c, cy) {
+  var k = null; if (has(KIDS, w.sysid)) { k = KIDS[w.sysid]; }
+  var state = "stopped"; var rate = 1; var er = "";
+  if (k != null) { state = k.state; rate = k.rate; er = k.err; }
+  var ty = TITLE_H;
+  push(items, { k: "rect", x: 1, y: ty, w: w.w - 2, h: TOOL_H, c: TH.panel });
+  var sc = TH.ok; var sl = "运行中";
+  if (state == "paused") { sc = TH.warn; sl = "已暂停"; } else if (state == "error") { sc = TH.danger; sl = "内核错误"; } else if (state == "booting") { sc = TH.accent; sl = "启动中"; }
+  push(items, { k: "rect", x: 10, y: ty + 11, w: 8, h: 8, c: sc, r: 4 });
+  push(items, { k: "text", id: "system-state", x: 24, y: ty, w: 62, h: TOOL_H, t: sl, c: sc, s: 11.5, data: { "target-system-id": w.sysid, "state": state } });
+  var x = 88; var y = ty + 4;
+  var run = state == "running"; var pau = state == "paused";
+  sbtn(items, "system-pause", x, y, 44, "暂停", w.sysid, !run, false); x = x + 46;
+  sbtn(items, "system-resume", x, y, 44, "继续", w.sysid, !pau, false); x = x + 46;
+  sbtn(items, "system-step", x, y, 44, "单步", w.sysid, !pau, false); x = x + 50;
+  sbtn(items, "system-rate-down", x, y, 22, "−", w.sysid, false, false); x = x + 23;
+  push(items, { k: "text", id: "system-rate", x: x, y: ty, w: 44, h: TOOL_H, t: str(rate) + "×", c: TH.text, s: 11.5, al: 1, data: { "target-system-id": w.sysid } }); x = x + 45;
+  sbtn(items, "system-rate-up", x, y, 22, "+", w.sysid, false, false); x = x + 28;
+  if (w.w > 470) { sbtn(items, "system-restart", x, y, 44, "重启", w.sysid, false, false); x = x + 46; }
+  if (w.w > 520) { sbtn(items, "system-snapshot", x, y, 44, "快照", w.sysid, !(run || pau), false); x = x + 46; }
+  if (w.w > 570) { sbtn(items, "kernel-open", x, y, 44, "内核", w.sysid, false, false); x = x + 46; }
+  push(items, { k: "text", x: max(x + 4, w.w - 190), y: ty, w: 180, h: TOOL_H, t: w.sysid + " · 第 " + (INFO.depth + 1) + " 层", c: TH.dim, s: 11, al: 2 });
+  push(items, { k: "sys", sysid: w.sysid, x: 1, y: cy, w: c.w, h: c.h });
+  if (pau) {
+    push(items, { k: "rect", x: 1, y: cy, w: c.w, h: 3, c: TH.warn });
+    push(items, { k: "rect", x: floor(c.w / 2) - 130, y: cy + 10, w: 260, h: 26, c: "rgba(20,26,38,0.92)", r: 13, bw: 1, bc: TH.warn });
+    push(items, { k: "text", x: floor(c.w / 2) - 130, y: cy + 10, w: 260, h: 26, t: "已暂停 · 整棵子树的时钟与程序停止", c: TH.warn, s: 11.5, al: 1 });
+  } else if (state == "error") {
+    push(items, { k: "rect", x: 1, y: cy, w: c.w, h: c.h, c: "#1a1116" });
+    push(items, { k: "icon", x: 24, y: cy + 22, w: 30, h: 30, n: "warn", c: TH.danger });
+    push(items, { k: "text", x: 64, y: cy + 20, w: c.w - 80, h: 34, t: "内核错误 — 这个子系统已停止", c: TH.danger, s: 16, b: 600 });
+    push(items, { k: "text", id: "kernel-error", x: 24, y: cy + 62, w: c.w - 48, h: max(40, c.h - 130), t: er, c: "#f3c6cb", s: 12.5, f: 1, wrap: true, data: { "target-system-id": w.sysid } });
+    push(items, { k: "text", x: 24, y: cy + c.h - 56, w: c.w - 48, h: 20, t: "父系统和兄弟系统不受影响。点上方“内核”打开源文件修正，再点“重启”。", c: TH.dim, s: 12 });
+  } else if (state == "booting") {
+    push(items, { k: "rect", x: 1, y: cy, w: c.w, h: c.h, c: TH.bg });
+    push(items, { k: "text", x: 1, y: cy + floor(c.h / 2) - 14, w: c.w, h: 28, t: "正在编译内核并启动 " + w.sysid + " …", c: TH.dim, s: 14, al: 1 });
+  }
+  return 0;
+}
+function drawTaskbar() {
+  var y = DH - BAR_H;
+  P({ k: "rect", x: 0, y: y, w: DW, h: BAR_H, c: "rgba(16,21,32,0.92)", blur: 12 });
+  P({ k: "rect", x: 0, y: y, w: DW, h: 1, c: TH.line });
+  P({ k: "btn", id: "start-toggle", x: 6, y: y + 4, w: 38, h: 32, v: 5, ic: "start", ics: 18, icc: TH.accent, on: START, lb: "开始", tip: "开始" }); H("start", 6, y + 4, 38, 32, null);
+  var x = 50; var i = 0;
+  while (i < len(APPS) && x < DW * 0.36) {
+    var a = APPS[i];
+    P({ k: "btn", id: "pin-" + a.id, x: x, y: y + 4, w: 34, h: 32, v: 5, ic: a.icon, ics: 17, tip: a.name, lb: a.name, data: { "app-id": a.id } }); H("pin", x, y + 4, 34, 32, a.id);
+    x = x + 36; i = i + 1;
+  }
+  P({ k: "rect", x: x + 2, y: y + 10, w: 1, h: 20, c: TH.line }); x = x + 8;
+  var right = DW - 250; if (right < x + 40) { right = x + 40; }
+  var n = len(WINS); var tw = 0;
+  if (n > 0) { tw = floor((right - x) / n); if (tw > 150) { tw = 150; } if (tw < 34) { tw = 34; } }
+  // 任务栏按窗口创建顺序排列
+  var order = []; i = 0;
+  while (i < n) { push(order, WINS[i]); i = i + 1; }
+  sortWins(order);
+  i = 0;
+  while (i < n) {
+    var w = order[i];
+    var b = { k: "btn", id: "taskbar-item", key: "tb" + w.wid, wref: w.wid, x: x, y: y + 4, w: tw - 3, h: 32, v: 5, ic: w.icon, ics: 15, t: (tw > 70) ? w.title : "", on: FOCUS == w.wid, sel: w.st != 1, lb: w.title, tip: w.title, al: 0, s: 12 };
+    P(b); H("task", x, y + 4, tw - 3, 32, w.wid);
+    x = x + tw; i = i + 1;
+  }
+  var tx = DW - 244;
+  if (tx < x) { tx = x; }
+  P({ k: "btn", id: "system-new", x: tx, y: y + 6, w: 86, h: 28, v: 1, ic: "plus", ics: 13, t: "子系统", s: 12, tip: "新建并启动一个直属子系统", lb: "新建子系统" }); H("sysnew", tx, y + 6, 86, 28, null);
+  P({ k: "btn", id: "notifications-toggle", x: tx + 92, y: y + 4, w: 34, h: 32, v: 5, ic: "bell", ics: 16, on: NOTE_OPEN, lb: "通知", tip: "通知", sub: (len(NOTES) > 0) ? str(len(NOTES)) : "" }); H("notes", tx + 92, y + 4, 34, 32, null);
+  var t = sys("time"); var sec = floor(t / 1000);
+  var hh = floor(sec / 3600) % 24; var mm = floor(sec / 60) % 60; var ss = sec % 60;
+  var ts = ((hh < 10) ? "0" : "") + hh + ":" + ((mm < 10) ? "0" : "") + mm + ":" + ((ss < 10) ? "0" : "") + ss;
+  P({ k: "text", id: "tray-clock", x: tx + 128, y: y + 4, w: 112, h: 17, t: ts, c: TH.text, s: 12, al: 2, f: 1, tip: "本系统的虚拟时钟" });
+  P({ k: "text", x: tx + 128, y: y + 20, w: 112, h: 16, t: INFO.id + " · 第 " + INFO.depth + " 层", c: TH.accent, s: 10.5, al: 2 });
+  return 0;
+}
+function sortWins(a) {
+  var i = 1;
+  while (i < len(a)) {
+    var j = i;
+    while (j > 0 && num(substr(a[j - 1].wid, 1)) > num(substr(a[j].wid, 1))) { var t = a[j]; a[j] = a[j - 1]; a[j - 1] = t; j = j - 1; }
+    i = i + 1;
+  }
+  return 0;
+}
+function startItems() {
+  var out = []; var i = 0; var q = lower(SEARCH);
+  while (i < len(APPS)) {
+    var a = APPS[i];
+    if (q == "" || indexOf(lower(a.name), q, 0) >= 0 || indexOf(a.id, q, 0) >= 0) { push(out, a); }
+    i = i + 1;
+  }
+  return out;
+}
+function drawStart() {
+  var w = 300; var items = startItems(); var h = 96 + len(items) * 38 + 44;
+  var x = 6; var y = DH - BAR_H - h - 6;
+  P({ k: "rect", id: "start-menu", x: x, y: y, w: w, h: h, c: "rgba(24,30,44,0.97)", r: 12, bw: 1, bc: TH.line, sh: 3, blur: 16 });
+  P({ k: "text", x: x + 16, y: y + 10, w: w - 32, h: 22, t: INFO.name, c: TH.text, s: 14, b: 600 });
+  P({ k: "text", x: x + 16, y: y + 30, w: w - 32, h: 16, t: INFO.id + " · 第 " + INFO.depth + " 层 · 父系统 " + INFO.path[len(INFO.path) - 1], c: TH.dim, s: 11 });
+  P({ k: "input", id: "start-search", x: x + 14, y: y + 54, w: w - 28, h: 30, v: SEARCH, ph: "查找应用…", focus: SFOCUS && ACTIVE, s2: SS, e2: SE }); H("ssearch", x + 14, y + 54, w - 28, 30, null);
+  var i = 0; var yy = y + 92;
+  while (i < len(items)) {
+    var a = items[i];
+    P({ k: "btn", id: "launch-" + a.id, x: x + 8, y: yy, w: w - 16, h: 34, v: 6, ic: a.icon, ics: 18, t: a.name, al: 0, data: { "app-id": a.id } }); H("launch", x + 8, yy, w - 16, 34, a.id);
+    yy = yy + 38; i = i + 1;
+  }
+  if (len(items) == 0) { P({ k: "text", x: x + 16, y: yy, w: w - 32, h: 30, t: "没有匹配的应用", c: TH.dim, s: 12 }); }
+  P({ k: "rect", x: x + 12, y: y + h - 44, w: w - 24, h: 1, c: TH.line });
+  P({ k: "btn", id: "start-help", x: x + 8, y: y + h - 38, w: 130, h: 30, v: 6, ic: "help", ics: 16, t: "操作说明", al: 0 }); H("help", x + 8, y + h - 38, 130, 30, null);
+  P({ k: "btn", id: "start-new-system", x: x + 144, y: y + h - 38, w: 146, h: 30, v: 6, ic: "plus", ics: 16, t: "新建子系统", al: 0 }); H("sysnew", x + 144, y + h - 38, 146, 30, null);
+  return 0;
+}
+function drawNotes() {
+  var w = 300; var n = len(NOTES); var show = n; if (show > 6) { show = 6; }
+  var h = 54 + max(1, show) * 52;
+  var x = DW - w - 8; var y = DH - BAR_H - h - 6;
+  P({ k: "rect", id: "notification-center", x: x, y: y, w: w, h: h, c: "rgba(24,30,44,0.97)", r: 12, bw: 1, bc: TH.line, sh: 3 });
+  P({ k: "text", x: x + 14, y: y + 10, w: 160, h: 24, t: "通知", c: TH.text, s: 14, b: 600 });
+  P({ k: "btn", id: "notifications-clear", x: x + w - 74, y: y + 10, w: 62, h: 24, v: 2, t: "清空", s: 12 }); H("notesclear", x + w - 74, y + 10, 62, 24, null);
+  if (n == 0) { P({ k: "text", x: x + 14, y: y + 50, w: w - 28, h: 30, t: "暂无通知", c: TH.dim, s: 12 }); }
+  var i = 0;
+  while (i < show) {
+    var e = NOTES[n - 1 - i]; var yy = y + 46 + i * 52;
+    P({ k: "rect", x: x + 8, y: yy, w: w - 16, h: 46, c: TH.panel2, r: 8 });
+    P({ k: "text", x: x + 18, y: yy + 4, w: w - 36, h: 20, t: e.title, c: TH.text, s: 12.5, b: 600 });
+    P({ k: "text", x: x + 18, y: yy + 23, w: w - 36, h: 18, t: e.text, c: TH.dim, s: 11.5 });
+    i = i + 1;
+  }
+  return 0;
+}
+function drawMenu() {
+  var m = MENU; var w = m.w; var h = len(m.items) * 30 + 10;
+  var x = m.x; var y = m.y;
+  if (x + w > DW - 4) { x = DW - w - 4; } if (y + h > DH - 4) { y = DH - h - 4; }
+  if (x < 2) { x = 2; } if (y < 2) { y = 2; }
+  P({ k: "rect", id: "context-menu", x: x, y: y, w: w, h: h, c: "rgba(26,33,48,0.98)", r: 9, bw: 1, bc: TH.line, sh: 3 });
+  var i = 0;
+  while (i < len(m.items)) {
+    var it = m.items[i];
+    var b = { k: "btn", id: has(it, "tid") ? it.tid : "menu-item", key: "mi" + i, x: x + 5, y: y + 5 + i * 30, w: w - 10, h: 28, v: 6, t: it.text, al: 0, s: 12.5 };
+    if (has(it, "ic")) { b.ic = it.ic; b.ics = 15; }
+    if (has(it, "dis") && it.dis) { b.dis = true; }
+    if (has(it, "data")) { b.data = it.data; }
+    P(b);
+    if (!(has(it, "dis") && it.dis)) { H("menu", x + 5, y + 5 + i * 30, w - 10, 28, i); }
+    i = i + 1;
+  }
+  return 0;
+}
+function drawDialog() {
+  var d = DLG; var w = min(420, DW - 20); var h = 150; if (d.kind == "prompt") { h = 186; }
+  if (len(d.text) > 60) { h = h + 36; }
+  var x = floor((DW - w) / 2); var y = floor((DH - h) / 2.4);
+  P({ k: "rect", x: 0, y: 0, w: DW, h: DH, c: "rgba(6,9,14,0.5)" });
+  P({ k: "rect", id: "dialog", x: x, y: y, w: w, h: h, c: TH.panel, r: 12, bw: 1, bc: TH.line, sh: 3 });
+  P({ k: "text", x: x + 20, y: y + 14, w: w - 40, h: 26, t: d.title, c: TH.text, s: 15, b: 600 });
+  P({ k: "text", id: "dialog-text", x: x + 20, y: y + 46, w: w - 40, h: h - 110 - ((d.kind == "prompt") ? 40 : 0), t: d.text, c: TH.dim, s: 12.5, wrap: true });
+  if (d.kind == "prompt") { P({ k: "input", id: "dialog-input", x: x + 20, y: y + h - 98, w: w - 40, h: 32, v: d.value, focus: ACTIVE, s2: DS, e2: DE }); }
+  var bx = x + w - 20; var i = len(d.btns) - 1;
+  while (i >= 0) {
+    var bw = 26 + len(d.btns[i]) * 14;
+    bx = bx - bw;
+    var ids = ["dialog-ok", "dialog-cancel", "dialog-alt"];
+    P({ k: "btn", id: ids[i], x: bx, y: y + h - 48, w: bw, h: 32, t: d.btns[i], v: (i == 0) ? 1 : 0 }); H("dlg", bx, y + h - 48, bw, 32, i);
+    bx = bx - 10; i = i - 1;
+  }
+  return 0;
+}
+function layoutIcons() {
+  ICONS = []; var i = 0;
+  while (i < len(APPS)) { push(ICONS, { app: APPS[i].id, file: "", name: APPS[i].name, icon: APPS[i].icon }); i = i + 1; }
+  push(ICONS, { app: "", file: "/Demo/helicopter-24.scene", name: "直升机 24 号场景", icon: "scene" });
+  push(ICONS, { app: "", file: "/Documents/操作说明.md", name: "操作说明", icon: "help" });
+  return 0;
+}
+function iconRect(i) {
+  var rows = floor((DH - BAR_H - 16) / 84); if (rows < 1) { rows = 1; }
+  var col = floor(i / rows); var row = i % rows;
+  return { x: 10 + col * 92, y: 10 + row * 84, w: 84, h: 78 };
+}
+function redraw() {
+  HL = []; HITS = [];
+  P({ k: "meta", d: { active: ACTIVE, focus: FOCUS, sys: INFO.id, accent: TH.accent } });
+  P({ k: "wall", id: "os-desktop", x: 0, y: 0, w: DW, h: DH, v: INFO.depth, label: str(INFO.depth), lb: INFO.name + " 桌面" });
+  var i = 0;
+  while (i < len(ICONS)) {
+    var ic = ICONS[i]; var r = iconRect(i);
+    var b = { k: "btn", id: "desktop-icon", key: "di" + i, x: r.x, y: r.y, w: r.w, h: r.h, v: 7, ic: ic.icon, ics: 30, t: ic.name, sel: SELICON == i, lb: ic.name, s: 11.5 };
+    if (ic.app != "") { b.data = { "app-id": ic.app }; } else { b.data = { "file-path": ic.file }; }
+    P(b); H("icon", r.x, r.y, r.w, r.h, i);
+    i = i + 1;
+  }
+  i = 0;
+  while (i < len(WINS)) { drawWin(WINS[i], WINS[i].wid == FOCUS); i = i + 1; }
+  drawTaskbar();
+  if (START) { drawStart(); }
+  if (NOTE_OPEN) { drawNotes(); }
+  var now = sys("time"); i = 0; var ty = DH - BAR_H - 62;
+  while (i < len(TOASTS)) {
+    var e = TOASTS[i];
+    if (now - e.at > 4500) { remove(TOASTS, i); continue; }
+    if (!NOTE_OPEN) {
+      P({ k: "rect", key: "toast" + i, x: DW - 292, y: ty, w: 282, h: 52, c: "rgba(26,33,48,0.97)", r: 10, bw: 1, bc: TH.accent2, sh: 2 });
+      P({ k: "text", x: DW - 280, y: ty + 6, w: 258, h: 20, t: e.title, c: TH.text, s: 12.5, b: 600 });
+      P({ k: "text", id: "toast-text", x: DW - 280, y: ty + 26, w: 258, h: 18, t: e.text, c: TH.dim, s: 11.5 });
+      ty = ty - 58;
+    }
+    i = i + 1;
+  }
+  if (DND != null) {
+    P({ k: "rect", x: DND.x + 12, y: DND.y + 14, w: 230, h: 26, c: "rgba(26,33,48,0.95)", r: 6, bw: 1, bc: TH.accent });
+    P({ k: "text", x: DND.x + 20, y: DND.y + 14, w: 216, h: 26, t: DND.label, c: TH.text, s: 11.5 });
+  }
+  if (MENU != null) { drawMenu(); }
+  if (DLG != null) { drawDialog(); }
+  sys("draw", 0, HL);
+  DIRTY = false;
+  return 0;
+}
+
+// ---------- 输入分发 ----------
+function winAt(x, y) {
+  // 命中规则：从最上面的窗口往下找第一个包含该点的可见窗口
+  var i = len(WINS) - 1;
+  while (i >= 0) {
+    var w = WINS[i];
+    if (w.st != 1 && x >= w.x - 3 && y >= w.y - 3 && x < w.x + w.w + 3 && y < w.y + w.h + 3) { return w; }
+    i = i - 1;
+  }
+  return null;
+}
+function toContent(w, m) {
+  // 把事件换算到窗口内容区的坐标后交给应用、子系统或投送来源
+  var c = contentRect(w);
+  var e = { t: m.t, k: m.k, x: m.x - c.x, y: m.y - c.y, b: m.b, n: m.n, mod: m.mod, dy: m.dy, bs: m.bs };
+  if (m.t == "drag") { e.sess = m.sess; e.files = m.files; e.from = m.from; }
+  sendTo(w, e);
+  return 0;
+}
+function sendTo(w, e) {
+  if (w.kind == "app") { e.wid = w.wid; sys("send", w.pid, e); }
+  else if (w.kind == "sys") { sys("child_input", w.sysid, e); }
+  else if (w.kind == "proj") { if (!w.spaused) { sys("bus_send", { to: w.src.sys, pid: w.src.pid, k: "proj_input", win: w.src.win, e: e }); } }
+  return 0;
+}
+function winRegion(w, x, y) {
+  var lx = x - w.x; var ly = y - w.y;
+  if (w.st != 2) {
+    var ed = "";
+    if (ly >= w.h - EDGE) { ed = ed + "s"; } else if (ly < 3) { ed = ed + "n"; }
+    if (lx >= w.w - EDGE) { ed = ed + "e"; } else if (lx < EDGE - 2) { ed = ed + "w"; }
+    if (lx >= w.w - 14 && ly >= w.h - 14) { ed = "se"; }
+    if (ed != "") { return "edge:" + ed; }
+  }
+  if (ly < TITLE_H) {
+    var bx = w.w - 36;
+    if (lx >= bx) { return "close"; } bx = bx - 36;
+    if (lx >= bx) { return "max"; } bx = bx - 36;
+    if (lx >= bx) { return "min"; } bx = bx - 36;
+    if (w.canProj && lx >= bx) { return "project"; }
+    return "title";
+  }
+  if (w.kind == "sys" && ly < TITLE_H + TOOL_H) { return "tool"; }
+  return "content";
+}
+function sysTool(w, lx) {
+  var x = 88;
+  if (lx >= x && lx < x + 44) { return "pause"; } x = x + 46;
+  if (lx >= x && lx < x + 44) { return "resume"; } x = x + 46;
+  if (lx >= x && lx < x + 44) { return "step"; } x = x + 50;
+  if (lx >= x && lx < x + 22) { return "slower"; } x = x + 68;
+  if (lx >= x && lx < x + 22) { return "faster"; } x = x + 28;
+  if (w.w > 470) { if (lx >= x && lx < x + 44) { return "restart"; } x = x + 46; }
+  if (w.w > 520) { if (lx >= x && lx < x + 44) { return "snapshot"; } x = x + 46; }
+  if (w.w > 570) { if (lx >= x && lx < x + 44) { return "kernel"; } x = x + 46; }
+  return "";
+}
+function doSysTool(w, act) {
+  var id = w.sysid; var k = null; if (has(KIDS, id)) { k = KIDS[id]; }
+  var r = true;
+  if (act == "pause") { r = sys("sys_ctl", id, "pause", null); }
+  else if (act == "resume") { r = sys("sys_ctl", id, "resume", null); }
+  else if (act == "step") { r = sys("sys_ctl", id, "step", null); }
+  else if (act == "slower" && k != null) { r = sys("sys_ctl", id, "rate", max(0.125, k.rate / 2)); }
+  else if (act == "faster" && k != null) { r = sys("sys_ctl", id, "rate", min(16, k.rate * 2)); }
+  else if (act == "restart") { r = sys("sys_ctl", id, "restart", null); note("重启子系统", id + " 正在按内核源文件重新启动"); }
+  else if (act == "snapshot") {
+    var name = "/Snapshots/" + id + "-" + floor(sys("time")) + ".snap";
+    r = sys("sys_ctl", id, "snapshot", name);
+    if (iserr(r)) { note("快照失败", r.error); } else { note("快照已保存", name + "（" + fmtSize(r.size) + "）"); }
+  }
+  else if (act == "kernel" && k != null) { launch("editor", { file: k.kpath }); }
+  refreshKids();
+  return 0;
+}
+function projTargets(w) {
+  var items = []; var i = len(INFO.path) - 1;
+  while (i >= 0) {
+    var id = INFO.path[i];
+    push(items, { text: "投送到 " + id + ((i == 0) ? "（根桌面）" : "（第 " + (i + 1) + " 层）"), tid: "project-target", data: { "target-system-id": id }, act: "project", target: id, ic: "project" });
+    i = i - 1;
+  }
+  return items;
+}
+function winAction(w, reg, m) {
+  if (reg == "close") { closeWin(w); }
+  else if (reg == "max") { setMax(w, w.st != 2); }
+  else if (reg == "min") { minimize(w); }
+  else if (reg == "project") { MENU = { x: m.x - 200, y: w.y + TITLE_H, w: 230, items: projTargets(w), owner: { kind: "wm", wid: w.wid } }; DIRTY = true; }
+  return 0;
+}
+function closeTransient() {
+  var had = START || NOTE_OPEN || MENU != null;
+  START = false; NOTE_OPEN = false; SFOCUS = false;
+  if (MENU != null) { menuDone(-1); }
+  if (had) { DIRTY = true; }
+  return had;
+}
+function menuDone(i) {
+  var m = MENU; MENU = null; DIRTY = true;
+  if (m == null) { return 0; }
+  var it = null; if (i >= 0) { it = m.items[i]; }
+  if (m.owner.kind == "app") {
+    var id = null; var data = null; if (it != null) { id = it.id; if (has(it, "data")) { data = it.data; } }
+    sys("send", m.owner.pid, { t: "menu_pick", wid: m.owner.wid, id: id, tag: m.owner.tag, data: data });
+  } else if (m.owner.kind == "proj") {
+    var pid2 = null; if (it != null) { pid2 = it.id; }
+    sys("bus_send", { to: m.owner.sys, pid: m.owner.pid, t: "menu_pick", id: pid2, tag: m.owner.tag });
+  } else if (it != null) {
+    var a = it.act;
+    if (a == "project") { var w = wfind(m.owner.wid); if (w != null) { w.projTo = it.target; sys("send", w.pid, { t: "project", wid: w.wid, target: it.target }); } }
+    else if (a == "launch") { launch(it.app, null); }
+    else if (a == "open") { openFile(it.file); }
+    else if (a == "sysnew") { createSystem(); }
+    else if (a == "refresh") { layoutIcons(); }
+    else if (a == "help") { openFile("/Documents/操作说明.md"); }
+  }
+  return 0;
+}
+function createSystem() {
+  var r = sys("sys_create", "");
+  if (iserr(r)) { note("无法新建子系统", r.error); } else { note("新建子系统", r.id + " 正在启动"); }
+  START = false;
+  refreshKids();
+  return 0;
+}
+function dialogDone(btn) {
+  var d = DLG; DLG = null; DIRTY = true;
+  if (d.owner.kind == "app") { sys("send", d.owner.pid, { t: "dialog_r", wid: d.owner.wid, tag: d.owner.tag, btn: btn, value: d.value }); }
+  else if (d.owner.kind == "wm") {
+    if (d.owner.act == "sysclose" && btn == 0) { sys("sys_ctl", d.owner.id, "stop", null); refreshKids(); }
+  }
+  return 0;
+}
+function onDown(m) {
+  var x = m.x; var y = m.y;
+  if (DLG != null) {
+    var h = hitAt(x, y);
+    if (h != null && h.id == "dlg") { PRESS = { kind: "dlg", i: h.data }; }
+    return 0;
+  }
+  if (MENU != null) {
+    var h2 = hitAt(x, y);
+    if (h2 != null && h2.id == "menu") { PRESS = { kind: "menu", i: h2.data }; return 0; }
+    menuDone(-1);
+    if (m.b != 2) { return 0; }
+  }
+  var hh = hitAt(x, y);
+  if (START && hh != null && (hh.id == "launch" || hh.id == "ssearch" || hh.id == "help" || hh.id == "sysnew")) {
+    if (hh.id == "ssearch") { SFOCUS = true; DIRTY = true; } else { PRESS = { kind: "hit", h: hh }; }
+    return 0;
+  }
+  if (NOTE_OPEN && hh != null && hh.id == "notesclear") { PRESS = { kind: "hit", h: hh }; return 0; }
+  if (y >= DH - BAR_H) {
+    if (hh != null) { PRESS = { kind: "hit", h: hh }; }
+    if (hh == null || (hh.id != "start" && hh.id != "notes")) { closeTransient(); }
+    return 0;
+  }
+  closeTransient();
+  var w = winAt(x, y);
+  if (w != null) {
+    focusWin(w);
+    var reg = winRegion(w, x, y);
+    if (m.b != 0 && reg != "content") { return 0; }
+    if (reg == "content") { CAP = { wid: w.wid }; toContent(w, m); }
+    else if (reg == "title") {
+      if (m.n >= 2) { setMax(w, w.st != 2); }
+      else { DRAG = { mode: "move", wid: w.wid, ox: x - w.x, oy: y - w.y, sx: x, sy: y, moved: false }; }
+    }
+    else if (substr(reg, 0, 5) == "edge:") { DRAG = { mode: "resize", wid: w.wid, ed: substr(reg, 5), sx: x, sy: y, x0: w.x, y0: w.y, w0: w.w, h0: w.h }; }
+    else if (reg == "tool") { PRESS = { kind: "tool", wid: w.wid, act: sysTool(w, x - w.x) }; }
+    else { PRESS = { kind: "win", wid: w.wid, reg: reg }; }
+    return 0;
+  }
+  // 桌面
+  focusWin(null);
+  if (hh != null && hh.id == "icon") {
+    SELICON = hh.data; DIRTY = true;
+    if (m.b == 0 && m.n >= 2) { var ic = ICONS[hh.data]; if (ic.app != "") { launch(ic.app, null); } else { openFile(ic.file); } }
+    else if (m.b == 2) {
+      var ic2 = ICONS[hh.data];
+      var it = { text: "打开", ic: "open", act: "launch", app: ic2.app };
+      if (ic2.app == "") { it = { text: "打开", ic: "open", act: "open", file: ic2.file }; }
+      MENU = { x: x, y: y, w: 170, items: [it], owner: { kind: "wm" } };
+    }
+    return 0;
+  }
+  if (SELICON >= 0) { SELICON = -1; DIRTY = true; }
+  if (m.b == 2) {
+    MENU = { x: x, y: y, w: 200, items: [
+      { text: "打开文件管理器", ic: "folder", act: "launch", app: "files" },
+      { text: "新建子系统", ic: "plus", act: "sysnew" },
+      { text: "进程管理器", ic: "tasks", act: "launch", app: "tasks" },
+      { text: "刷新桌面", ic: "refresh", act: "refresh" },
+      { text: "操作说明", ic: "help", act: "help" }
+    ], owner: { kind: "wm" } };
+    DIRTY = true;
+  }
+  return 0;
+}
+function onMove(m) {
+  var x = m.x; var y = m.y;
+  if (DRAG != null) {
+    var w = wfind(DRAG.wid);
+    if (w == null) { DRAG = null; return 0; }
+    if (DRAG.mode == "move") {
+      if (!DRAG.moved && abs(x - DRAG.sx) + abs(y - DRAG.sy) < 4) { return 0; }
+      if (!DRAG.moved && (w.st == 2 || w.snap != 0)) {
+        // 从最大化或贴靠状态拖出：恢复原尺寸，指针保持在标题栏内
+        var fx = (x - w.x) / w.w;
+        w.st = 0; w.snap = 0; place(w, floor(x - w.rw * fx), y - 12, w.rw, w.rh);
+        DRAG.ox = x - w.x; DRAG.oy = y - w.y;
+      }
+      DRAG.moved = true;
+      // 源窗口的拖动范围限于所属桌面
+      var nx = clamp(x - DRAG.ox, 40 - w.w, DW - 40); var ny = clamp(y - DRAG.oy, 0, DH - BAR_H - TITLE_H);
+      w.x = nx; w.y = ny; DIRTY = true;
+    } else {
+      var dx = x - DRAG.sx; var dy = y - DRAG.sy; var e = DRAG.ed;
+      var nx2 = DRAG.x0; var ny2 = DRAG.y0; var nw = DRAG.w0; var nh = DRAG.h0;
+      if (indexOf(e, "e", 0) >= 0) { nw = DRAG.w0 + dx; }
+      if (indexOf(e, "s", 0) >= 0) { nh = DRAG.h0 + dy; }
+      if (indexOf(e, "w", 0) >= 0) { nw = DRAG.w0 - dx; if (nw < w.minw) { nw = w.minw; } nx2 = DRAG.x0 + DRAG.w0 - nw; }
+      if (indexOf(e, "n", 0) >= 0) { nh = DRAG.h0 - dy; if (nh < w.minh) { nh = w.minh; } ny2 = DRAG.y0 + DRAG.h0 - nh; if (ny2 < 0) { nh = nh + ny2; ny2 = 0; } }
+      if (nw < w.minw) { nw = w.minw; } if (nh < w.minh) { nh = w.minh; }
+      if (nx2 + nw > DW + 200) { nw = DW + 200 - nx2; } if (ny2 + nh > DH - BAR_H) { nh = DH - BAR_H - ny2; }
+      w.snap = 0;
+      place(w, nx2, ny2, nw, nh);
+    }
+    return 0;
+  }
+  if (CAP != null) { var cw = wfind(CAP.wid); if (cw != null) { toContent(cw, m); } return 0; }
+  if (DLG != null || MENU != null) { return 0; }
+  // 悬停：交给指针下最上面窗口的内容区
+  var hw = winAt(x, y);
+  if (hw != null && y < DH - BAR_H && winRegion(hw, x, y) == "content") { toContent(hw, m); HOVER = hw.wid; }
+  else if (HOVER != "") { var ow = wfind(HOVER); HOVER = ""; if (ow != null) { toContent(ow, { t: "ptr", k: "leave", x: -1, y: -1, b: 0, n: 0, mod: 0, dy: 0, bs: 0 }); } }
+  return 0;
+}
+function onUp(m) {
+  var x = m.x; var y = m.y;
+  if (DRAG != null) {
+    var w = wfind(DRAG.wid);
+    if (w != null && DRAG.mode == "move" && DRAG.moved) {
+      // 贴靠：拖到左右边缘占半屏，拖到顶部最大化
+      if (x <= 6) { setSnap(w, 1); } else if (x >= DW - 7) { setSnap(w, 2); } else if (y <= 3) { setMax(w, true); }
+    }
+    DRAG = null; DIRTY = true;
+    return 0;
+  }
+  if (CAP != null) { var cw = wfind(CAP.wid); CAP = null; if (cw != null) { toContent(cw, m); } return 0; }
+  var p = PRESS; PRESS = null;
+  if (p == null) { return 0; }
+  if (p.kind == "dlg") { var h = hitAt(x, y); if (h != null && h.id == "dlg" && h.data == p.i) { dialogDone(p.i); } return 0; }
+  if (p.kind == "menu") { var h2 = hitAt(x, y); if (h2 != null && h2.id == "menu" && h2.data == p.i) { menuDone(p.i); } return 0; }
+  if (p.kind == "win") { var w2 = wfind(p.wid); if (w2 != null && winRegion(w2, x, y) == p.reg) { winAction(w2, p.reg, m); } return 0; }
+  if (p.kind == "tool") { var w3 = wfind(p.wid); if (w3 != null && p.act != "" && sysTool(w3, x - w3.x) == p.act && y - w3.y >= TITLE_H && y - w3.y < TITLE_H + TOOL_H) { doSysTool(w3, p.act); } return 0; }
+  if (p.kind == "hit") {
+    var h3 = hitAt(x, y);
+    if (h3 == null || h3.id != p.h.id || h3.data != p.h.data) { return 0; }
+    var id = h3.id;
+    if (id == "start") { START = !START; NOTE_OPEN = false; SEARCH = ""; SFOCUS = START; SS = 0; SE = 0; DIRTY = true; }
+    else if (id == "notes") { NOTE_OPEN = !NOTE_OPEN; START = false; DIRTY = true; }
+    else if (id == "notesclear") { NOTES = []; TOASTS = []; DIRTY = true; }
+    else if (id == "pin" || id == "launch") { launch(h3.data, null); }
+    else if (id == "help") { START = false; openFile("/Documents/操作说明.md"); }
+    else if (id == "sysnew") { createSystem(); }
+    else if (id == "task") {
+      // 任务栏：点当前窗口收起，点其他窗口切换或恢复
+      var tw = wfind(h3.data);
+      if (tw != null) { if (FOCUS == tw.wid && tw.st != 1) { minimize(tw); } else { focusWin(tw); } }
+    }
+  }
+  return 0;
+}
+function editField(v, m) {
+  var s = clamp(m.s, 0, len(v)); var e = clamp(m.e, s, len(v));
+  return substr(v, 0, s) + m.text + substr(v, e);
+}
+function onKeyLike(m) {
+  if (DLG != null) {
+    if (m.t == "text" && DLG.kind == "prompt") { DLG.value = editField(DLG.value, m); DS = clamp(m.s, 0, len(DLG.value)) + len(m.text); DE = DS; DIRTY = true; }
+    else if (m.t == "sel") { DS = m.s; DE = m.e; }
+    else if (m.t == "key") { if (m.key == "Enter") { dialogDone(0); } else if (m.key == "Escape") { dialogDone(len(DLG.btns) - 1); } }
+    return 0;
+  }
+  if (m.t == "key" && m.key == "Escape" && (MENU != null || START || NOTE_OPEN)) { closeTransient(); return 0; }
+  if (START && SFOCUS) {
+    if (m.t == "text") { SEARCH = editField(SEARCH, m); SS = clamp(m.s, 0, len(SEARCH)) + len(m.text); SE = SS; DIRTY = true; }
+    else if (m.t == "sel") { SS = m.s; SE = m.e; }
+    else if (m.t == "key" && m.key == "Enter") { var it = startItems(); if (len(it) > 0) { launch(it[0].id, null); } }
+    return 0;
+  }
+  // 只有当前获得焦点的窗口收到键盘输入
+  var w = wfind(FOCUS);
+  if (w == null || w.st == 1) { return 0; }
+  sendTo(w, m);
+  return 0;
+}
+function onDragEvent(m) {
+  // 跨系统文件拖放：按指针位置找到目标窗口，把事件交给它（子系统窗口则继续向下分发）
+  var w = winAt(m.x, m.y);
+  if (w != null && m.y < DH - BAR_H && winRegion(w, m.x, m.y) == "content") { if (m.k == "drop") { focusWin(w); } toContent(w, m); }
+  else if (m.k != "leave") { sys("bus_send", { to: "outer", svc: "dnd", k: "drag_status", sess: m.sess, text: "" }); }
+  return 0;
+}
+function onRaw(m) {
+  var t = m.t;
+  if (t == "ptr") {
+    if (m.k == "down") { onDown(m); }
+    else if (m.k == "move") { onMove(m); }
+    else if (m.k == "up") { onUp(m); }
+    else if (m.k == "wheel") { var w = winAt(m.x, m.y); if (w != null && DLG == null && winRegion(w, m.x, m.y) == "content") { toContent(w, m); } }
+    else if (m.k == "leave") { if (HOVER != "") { var ow = wfind(HOVER); HOVER = ""; if (ow != null) { toContent(ow, m); } } }
+  }
+  else if (t == "key" || t == "text" || t == "sel") { onKeyLike(m); }
+  else if (t == "drag") { onDragEvent(m); }
+  else if (t == "focus") { ACTIVE = m.on; var fw = wfind(FOCUS); if (fw != null) { tellFocus(fw, m.on); } if (!m.on) { closeTransient(); } DIRTY = true; }
+  else if (t == "resize") { onResize(m.w, m.h); }
+  return 0;
+}
+function onResize(w, h) {
+  DW = w; DH = h;
+  var i = 0;
+  while (i < len(WINS)) {
+    var x = WINS[i];
+    if (x.st == 2 || (x.st == 1 && x.prev == 2)) { place(x, 0, 0, DW, DH - BAR_H); }
+    else if (x.snap == 1) { place(x, 0, 0, floor(DW / 2), DH - BAR_H); }
+    else if (x.snap == 2) { place(x, floor(DW / 2), 0, DW - floor(DW / 2), DH - BAR_H); }
+    else {
+      var nw = x.w; var nh = x.h;
+      if (nw > DW) { nw = max(x.minw, DW); } if (nh > DH - BAR_H) { nh = max(x.minh, DH - BAR_H); }
+      var nx = x.x; var ny = x.y;
+      if (nx + 60 > DW) { nx = max(0, DW - nw); } if (ny + TITLE_H > DH - BAR_H) { ny = max(0, DH - BAR_H - nh); }
+      place(x, nx, ny, nw, nh);
+    }
+    i = i + 1;
+  }
+  DIRTY = true;
+  return 0;
+}
+function onKernel(m) {
+  var t = m.t;
+  if (t == "proc_exit") {
+    var i = 0;
+    while (i < len(WINS)) { if (WINS[i].kind == "app" && WINS[i].pid == m.pid) { removeWin(WINS[i]); } else { i = i + 1; } }
+    if (m.err != "" && m.err != "随所属应用结束" && substr(m.err, 0, 2) != "被进") { note("进程异常：" + m.name, m.err); }
+  }
+  else if (t == "sys_new" || t == "sys_state" || t == "sys_gone") { refreshKids(); }
+  else if (t == "tree") { TREE = m.tree; checkProjections(); refreshKids(); }
+  else if (t == "resize") { onResize(m.w, m.h); }
+  else if (t == "sys_restored") {
+    INFO.id = m.id; INFO.path = m.path;
+    if (m.w != DW || m.h != DH) { onResize(m.w, m.h); }
+    // 分叉：窗口里记录的系统标识换成分叉内的对应实例；指向范围外来源的投送窗口不带过来
+    var j = 0;
+    while (j < len(WINS)) {
+      var w = WINS[j];
+      if (m.remap != null) {
+        if (w.kind == "sys" && has(m.remap, w.sysid)) { w.sysid = m.remap[w.sysid]; }
+        if (w.kind == "proj" && has(m.remap, w.src.sys)) { w.src.sys = m.remap[w.src.sys]; }
+        if (w.kind == "app" && w.projTo != "") { if (has(m.remap, w.projTo)) { w.projTo = m.remap[w.projTo]; } else { w.projTo = ""; } }
+      } else if (w.kind == "app" && w.projTo != "" && indexOf(m.scope, w.projTo, 0) < 0) { w.projTo = ""; }
+      j = j + 1;
+    }
+    refreshKids(); DIRTY = true;
+  }
+  else if (has(m, "k") && !has(m, "t")) { onBus(m); }
+  else { onRaw(m); }
+  return 0;
+}
+function projWin(sysid, win) {
+  var i = 0;
+  while (i < len(WINS)) { var w = WINS[i]; if (w.kind == "proj" && w.src.sys == sysid && w.src.win == win) { return w; } i = i + 1; }
+  return null;
+}
+function onBus(m) {
+  var k = m.k;
+  if (k == "proj_open") {
+    // 后代系统的应用请求在本桌面显示投送窗口：外框归本系统，内容与交互结果归来源
+    var w = projWin(m.from, m.win);
+    if (w == null) {
+      w = newWin("proj", "投送 · " + m.title, "projection", max(360, m.w + 2), max(240, m.h + TITLE_H + 1));
+      w.src = { sys: m.from, win: m.win, app: m.app, pid: m.fpid, sid: m.sid }; w.icon = "project"; w.spaused = false; w.ep = -1;
+      note("收到投送", m.from + " 的 " + m.title);
+    } else { w.src.pid = m.fpid; w.src.sid = m.sid; w.title = "投送 · " + m.title; }
+    focusWin(w);
+    var c = contentRect(w);
+    sys("bus_send", { to: m.from, pid: m.fpid, k: "proj_ack", win: m.win, w: c.w, h: c.h });
+    checkProjections(); DIRTY = true;
+  }
+  else if (k == "proj_end") { var w2 = projWin(m.from, m.win); if (w2 != null) { note("投送已结束", m.from + " 的源窗口已关闭"); removeWin(w2); } }
+  else if (k == "proj_menu") {
+    var pw = projWin(m.from, m.win);
+    if (pw != null) { var pc = contentRect(pw); MENU = { x: pc.x + m.x, y: pc.y + m.y, w: 200, items: m.items, owner: { kind: "proj", sys: m.from, pid: m.fpid, tag: m.tag } }; DIRTY = true; }
+  }
+  else if (k == "proj_probe") {
+    // 祖先桌面在本子树恢复后来确认：源窗口还在就让应用继续对应那个投送外框
+    var sw = wfind(m.win);
+    if (sw != null && sw.kind == "app") { sw.projTo = m.target; sys("send", sw.pid, { t: "project", wid: sw.wid, target: m.target }); }
+    else { sys("bus_send", { to: m.target, svc: "wm", k: "proj_end", win: m.win }); }
+  }
+  return 0;
+}
+function onApp(m, from) {
+  var t = m.t;
+  if (t == "open") {
+    var a = appById(m.app);
+    var w = newWin("app", m.title, m.app, m.w + 2, m.h + TITLE_H + 1);
+    w.pid = from; w.sid = m.sid;
+    if (a != null) { w.icon = a.icon; w.canProj = a.proj; }
+    if (has(m, "icon")) { w.icon = m.icon; } if (has(m, "proj")) { w.canProj = m.proj; }
+    if (has(m, "minw")) { w.minw = m.minw; } if (has(m, "minh")) { w.minh = m.minh; }
+    var c = contentRect(w);
+    sys("send", from, { t: "opened", wid: w.wid, w: c.w, h: c.h });
+    focusWin(w);
+  }
+  else if (t == "close") { var w2 = wfind(m.wid); if (w2 != null && w2.pid == from) { removeWin(w2); } }
+  else if (t == "title") { var w3 = wfind(m.wid); if (w3 != null && w3.pid == from) { w3.title = m.title; DIRTY = true; } }
+  else if (t == "menu") {
+    var w4 = wfind(m.wid);
+    if (w4 != null) {
+      var c2 = contentRect(w4);
+      MENU = { x: c2.x + m.x, y: c2.y + m.y, w: has(m, "w") ? m.w : 200, items: m.items, owner: { kind: "app", pid: from, wid: m.wid, tag: m.tag } };
+      DIRTY = true;
+    }
+  }
+  else if (t == "dialog") {
+    var btns = m.btns; if (type(btns) != "arr") { btns = ["确定", "取消"]; if (m.kind == "info") { btns = ["知道了"]; } }
+    var v = m.value; if (type(v) != "str") { v = ""; }
+    DLG = { kind: m.kind, title: m.title, text: m.text, value: v, btns: btns, owner: { kind: "app", pid: from, wid: m.wid, tag: m.tag } };
+    DS = len(v); DE = DS; DIRTY = true;
+  }
+  else if (t == "notify") { note(m.title, m.text); }
+  else if (t == "launch") { if (has(m, "file")) { openFile(m.file); } else { launch(m.app, m.args); } }
+  else if (t == "proj_state") { var w5 = wfind(m.wid); if (w5 != null) { if (m.on) { w5.projTo = m.target; } else { w5.projTo = ""; } DIRTY = true; } }
+  return 0;
+}
+
+function main() {
+  INFO = sys("wm_register");
+  DW = INFO.w; DH = INFO.h;
+  ui_theme(INFO.depth);
+  var cfg = sys("read", "/System/apps.json");
+  if (type(cfg) == "str") { var parsed = parse(cfg); if (type(parsed) == "arr" && len(parsed) > 0) { APPS = parsed; } }
+  layoutIcons();
+  refreshKids();
+  var lastClock = -1;
+  while (true) {
+    var wait = 1000 - floor(sys("time")) % 1000 + 1;
+    if (len(TOASTS) > 0 && wait > 400) { wait = 400; }
+    var m = sys("recv", wait);
+    while (m != null) {
+      if (m.from == 0) { onKernel(m.body); } else if (type(m.body) == "map") { onApp(m.body, m.from); }
+      m = sys("poll");
+    }
+    var sec = floor(sys("time") / 1000);
+    if (sec != lastClock) { lastClock = sec; DIRTY = true; }
+    if (DIRTY) { redraw(); }
+  }
+  return 0;
+}
+main();

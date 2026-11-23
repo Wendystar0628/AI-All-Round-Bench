@@ -1,0 +1,170 @@
+{
+ "format": "nos-scene",
+ "version": 1,
+ "name": "最小场景",
+ "env": {
+  "sky": {
+   "top": "#1d2a4d",
+   "horizon": "#9db7e8",
+   "bottom": "#555",
+   "sun": [
+    0.4,
+    0.6,
+    0.5
+   ]
+  }
+ },
+ "lights": [
+  {
+   "type": "sun",
+   "dir": [
+    0.4,
+    0.8,
+    0.5
+   ],
+   "color": "#ffffff",
+   "intensity": 2.5
+  }
+ ],
+ "cameras": {
+  "default": {
+   "p": [
+    6,
+    4,
+    8
+   ],
+   "look": [
+    0,
+    1,
+    0
+   ],
+   "fov": 40
+  }
+ },
+ "materials": {
+  "paint": {
+   "color": "#f7c41f",
+   "rough": 0.4
+  },
+  "floor": {
+   "color": "#5b2a9d",
+   "rough": 0.8
+  }
+ },
+ "objects": [
+  {
+   "name": "地板",
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "size": [
+      12,
+      0.2,
+      12
+     ],
+     "pos": [
+      0,
+      -0.1,
+      0
+     ],
+     "material": "floor"
+    }
+   ]
+  }
+ ],
+ "vehicle": {
+  "name": "方块",
+  "parts": [
+   {
+    "name": "方块",
+    "pos": [
+     0,
+     1.2,
+     0
+    ],
+    "shapes": [
+     {
+      "type": "box",
+      "size": [
+       2,
+       2,
+       2
+      ],
+      "material": "paint"
+     }
+    ],
+    "col": {
+     "c": [
+      0,
+      0,
+      0
+     ],
+     "h": [
+      1,
+      1,
+      1
+     ]
+    }
+   }
+  ]
+ },
+ "timeline": {
+  "duration": 6,
+  "fps": 30,
+  "tracks": [
+   {
+    "part": "方块",
+    "prop": "rot",
+    "keys": [
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      180,
+      30
+     ],
+     [
+      6,
+      0,
+      360,
+      0
+     ]
+    ]
+   },
+   {
+    "part": "方块",
+    "prop": "pos",
+    "keys": [
+     [
+      0,
+      0,
+      1.2,
+      0
+     ],
+     [
+      3,
+      0,
+      2.4,
+      0
+     ],
+     [
+      6,
+      0,
+      1.2,
+      0
+     ]
+    ]
+   }
+  ]
+ }
+}

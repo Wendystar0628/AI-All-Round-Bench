@@ -1,0 +1,1410 @@
+{
+  "task": "机械结构重建",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第01题",
+      "max": 3.5,
+      "score": 0.34,
+      "reason": "官方形状评测F窄=0.0839、F宽=0.1479、F综合=0.0967，按0.8/0.2合成及F满分线0.99得0.34分。"
+    },
+    {
+      "name": "第02题",
+      "max": 3.5,
+      "score": 1.09,
+      "reason": "官方形状评测F窄=0.2798、F宽=0.4257、F综合=0.3090，按0.8/0.2合成及F满分线0.99得1.09分。"
+    },
+    {
+      "name": "第03题",
+      "max": 3.5,
+      "score": 0.07,
+      "reason": "官方形状评测F窄=0.0164、F宽=0.0351、F综合=0.0201，按0.8/0.2合成及F满分线0.99得0.07分。"
+    },
+    {
+      "name": "第04题",
+      "max": 3.5,
+      "score": 0.94,
+      "reason": "官方形状评测F窄=0.2005、F宽=0.5281、F综合=0.2660，按0.8/0.2合成及F满分线0.99得0.94分。"
+    },
+    {
+      "name": "第05题",
+      "max": 3.5,
+      "score": 0.09,
+      "reason": "官方形状评测F窄=0.0119、F宽=0.0769、F综合=0.0249，按0.8/0.2合成及F满分线0.99得0.09分。"
+    },
+    {
+      "name": "第06题",
+      "max": 3.5,
+      "score": 0.07,
+      "reason": "官方形状评测F窄=0.0143、F宽=0.0372、F综合=0.0189，按0.8/0.2合成及F满分线0.99得0.07分。"
+    },
+    {
+      "name": "第07题",
+      "max": 3.5,
+      "score": 0.36,
+      "reason": "官方形状评测F窄=0.0781、F宽=0.1976、F综合=0.1020，按0.8/0.2合成及F满分线0.99得0.36分。"
+    },
+    {
+      "name": "第08题",
+      "max": 3.5,
+      "score": 0.21,
+      "reason": "官方形状评测F窄=0.0536、F宽=0.0813、F综合=0.0591，按0.8/0.2合成及F满分线0.99得0.21分。"
+    },
+    {
+      "name": "第09题",
+      "max": 4,
+      "score": 0.08,
+      "reason": "官方形状评测F窄=0.0083、F宽=0.0690、F综合=0.0205，按0.8/0.2合成及F满分线0.99得0.08分。"
+    },
+    {
+      "name": "第10题",
+      "max": 4,
+      "score": 0.18,
+      "reason": "官方形状评测F窄=0.0323、F宽=0.0981、F综合=0.0455，按0.8/0.2合成及F满分线0.99得0.18分。"
+    },
+    {
+      "name": "第11题",
+      "max": 4,
+      "score": 0.03,
+      "reason": "官方形状评测F窄=0.0026、F宽=0.0252、F综合=0.0071，按0.8/0.2合成及F满分线0.99得0.03分。"
+    },
+    {
+      "name": "第12题",
+      "max": 4,
+      "score": 0.32,
+      "reason": "官方形状评测F窄=0.0678、F宽=0.1212、F综合=0.0785，按0.8/0.2合成及F满分线0.99得0.32分。"
+    },
+    {
+      "name": "第13题",
+      "max": 4,
+      "score": 0.2,
+      "reason": "官方形状评测F窄=0.0360、F宽=0.1018、F综合=0.0491，按0.8/0.2合成及F满分线0.99得0.20分。"
+    },
+    {
+      "name": "第14题",
+      "max": 4,
+      "score": 0.26,
+      "reason": "官方形状评测F窄=0.0444、F宽=0.1428、F综合=0.0641，按0.8/0.2合成及F满分线0.99得0.26分。零件1第6步：几何运算异常：Standard_ProgramError TopOpeBRepDS_DataStructure::Point；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第15题",
+      "max": 4,
+      "score": 0.24,
+      "reason": "官方形状评测F窄=0.0504、F宽=0.1005、F综合=0.0604，按0.8/0.2合成及F满分线0.99得0.24分。"
+    },
+    {
+      "name": "第16题",
+      "max": 4.4,
+      "score": 0.26,
+      "reason": "官方形状评测F窄=0.0442、F宽=0.1137、F综合=0.0581，按0.8/0.2合成及F满分线0.99得0.26分。零件1第22步：edges[0] 命中0条棱；见证点须在棱中部，避开端点；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第17题",
+      "max": 4.4,
+      "score": 0.07,
+      "reason": "官方形状评测F窄=0.0110、F宽=0.0389、F综合=0.0166，按0.8/0.2合成及F满分线0.99得0.07分。零件1第4步：edges[0] 命中0条棱；见证点须在棱中部，避开端点；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第18题",
+      "max": 4.4,
+      "score": 0.13,
+      "reason": "官方形状评测F窄=0.0209、F宽=0.0623、F综合=0.0292，按0.8/0.2合成及F满分线0.99得0.13分。零件1第4步：倒圆/倒角失败：请检查半径、距离和相邻结构；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第19题",
+      "max": 4.4,
+      "score": 0.1,
+      "reason": "官方形状评测F窄=0.0110、F宽=0.0701、F综合=0.0228，按0.8/0.2合成及F满分线0.99得0.10分。零件1第4步：edges[0] 命中0条棱；见证点须在棱中部，避开端点；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第20题",
+      "max": 4.4,
+      "score": 0.17,
+      "reason": "官方形状评测F窄=0.0307、F宽=0.0690、F综合=0.0384，按0.8/0.2合成及F满分线0.99得0.17分。零件1第17步：edges[0] 命中2条棱；见证点须在棱中部，避开端点；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第21题",
+      "max": 4.4,
+      "score": 0.06,
+      "reason": "官方形状评测F窄=0.0082、F宽=0.0298、F综合=0.0125，按0.8/0.2合成及F满分线0.99得0.06分。零件1第4步：edges[0] 命中0条棱；见证点须在棱中部，避开端点；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第22题",
+      "max": 4.4,
+      "score": 0.23,
+      "reason": "官方形状评测F窄=0.0335、F宽=0.1218、F综合=0.0512，按0.8/0.2合成及F满分线0.99得0.23分。零件1第4步：edges[0] 命中0条棱；见证点须在棱中部，避开端点；失败零件按失败前实体计，其余零件照常。"
+    },
+    {
+      "name": "第23题",
+      "max": 4.4,
+      "score": 0,
+      "reason": "gen_asm.py程序计算法向、端点、装配角并生成本题答案；本次限定处罚范围内本题记0分。"
+    },
+    {
+      "name": "第24题",
+      "max": 4.4,
+      "score": 0,
+      "reason": "gen_asm.py程序计算法向、端点、装配角并生成本题答案；本次限定处罚范围内本题记0分。"
+    },
+    {
+      "name": "第25题",
+      "max": 4.4,
+      "score": 0,
+      "reason": "gen_asm.py程序计算法向、端点、装配角并生成本题答案；本次限定处罚范围内本题记0分。"
+    }
+  ],
+  "metrics": {
+    "total": 5.5,
+    "full_score": 100,
+    "done": 25,
+    "total_items": 25,
+    "submitted_questions": 25,
+    "compliant_submitted_questions": 22,
+    "shape_graded_questions": 22,
+    "shape_scorable_questions": 22,
+    "questions_with_failed_features": 8,
+    "missing_parts": {},
+    "penalized_questions": [
+      "23",
+      "24",
+      "25"
+    ],
+    "compliant_max_without_rescaling": 86.8,
+    "rounded_item_sum": 5.5,
+    "tolerance_mm": 0.2,
+    "wide_tolerance_mm": 2,
+    "strict_f_weight": 0.8,
+    "full_credit_f": 0.99,
+    "official_shape_result": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Qwen\\4Max\\机械结构重建\\codex\\main\\work\\official-shape-01-22.json",
+    "shape_details": [
+      {
+        "name": "第01题",
+        "id": "01",
+        "tier": "简单档",
+        "title": "偏心滑阀驱动总成",
+        "kind": "assembly",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0967,
+        "precision": 0.181,
+        "recall": 0.0546,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.4533,
+            "recall": 0.2051,
+            "fscore": 0.2942,
+            "fscore_strict": 0.2824,
+            "fscore_wide": 0.3413,
+            "wide_precision": 0.6283,
+            "wide_recall": 0.2343,
+            "reference_faces": 23
+          },
+          {
+            "name": "2",
+            "precision": 0.1688,
+            "recall": 0.0681,
+            "fscore": 0.1224,
+            "fscore_strict": 0.097,
+            "fscore_wide": 0.2241,
+            "wide_precision": 0.3852,
+            "wide_recall": 0.158,
+            "reference_faces": 11
+          },
+          {
+            "name": "3",
+            "precision": 0.1646,
+            "recall": 0.0747,
+            "fscore": 0.1277,
+            "fscore_strict": 0.1028,
+            "fscore_wide": 0.2274,
+            "wide_precision": 0.3646,
+            "wide_recall": 0.1652,
+            "reference_faces": 11
+          },
+          {
+            "name": "4",
+            "precision": 0.0606,
+            "recall": 0.0611,
+            "fscore": 0.0873,
+            "fscore_strict": 0.0608,
+            "fscore_wide": 0.1931,
+            "wide_precision": 0.1924,
+            "wide_recall": 0.1939,
+            "reference_faces": 7
+          },
+          {
+            "name": "5",
+            "precision": 0.0658,
+            "recall": 0.0536,
+            "fscore": 0.0861,
+            "fscore_strict": 0.0591,
+            "fscore_wide": 0.1941,
+            "wide_precision": 0.2052,
+            "wide_recall": 0.1842,
+            "reference_faces": 7
+          },
+          {
+            "name": "6",
+            "precision": 0.0038,
+            "recall": 0.0038,
+            "fscore": 0.0092,
+            "fscore_strict": 0.0038,
+            "fscore_wide": 0.0308,
+            "wide_precision": 0.0325,
+            "wide_recall": 0.0293,
+            "reference_faces": 17
+          },
+          {
+            "name": "7",
+            "precision": 0.0093,
+            "recall": 0.0034,
+            "fscore": 0.0181,
+            "fscore_strict": 0.005,
+            "fscore_wide": 0.0704,
+            "wide_precision": 0.1297,
+            "wide_recall": 0.0483,
+            "reference_faces": 16
+          },
+          {
+            "name": "8",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 23
+          },
+          {
+            "name": "9",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 5
+          },
+          {
+            "name": "10",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 12
+          }
+        ],
+        "fscore_strict": 0.0839,
+        "fscore_wide": 0.1479,
+        "wide_precision": 0.3065,
+        "wide_recall": 0.0974,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.34,
+        "missing_parts": []
+      },
+      {
+        "name": "第02题",
+        "id": "02",
+        "tier": "简单档",
+        "title": "双导柱楔紧夹具",
+        "kind": "assembly",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.309,
+        "precision": 0.3664,
+        "recall": 0.2263,
+        "translation": [
+          -0.007,
+          0.004,
+          5.998
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.3872,
+            "recall": 0.2139,
+            "fscore": 0.3107,
+            "fscore_strict": 0.2756,
+            "fscore_wide": 0.4513,
+            "wide_precision": 0.4579,
+            "wide_recall": 0.4449,
+            "reference_faces": 31
+          },
+          {
+            "name": "2",
+            "precision": 0.9666,
+            "recall": 0.6584,
+            "fscore": 0.8067,
+            "fscore_strict": 0.7833,
+            "fscore_wide": 0.9005,
+            "wide_precision": 0.9994,
+            "wide_recall": 0.8194,
+            "reference_faces": 9
+          },
+          {
+            "name": "3",
+            "precision": 0.9636,
+            "recall": 0.6596,
+            "fscore": 0.8065,
+            "fscore_strict": 0.7831,
+            "fscore_wide": 0.9,
+            "wide_precision": 0.9992,
+            "wide_recall": 0.8186,
+            "reference_faces": 9
+          },
+          {
+            "name": "4",
+            "precision": 0.1772,
+            "recall": 0.0331,
+            "fscore": 0.1009,
+            "fscore_strict": 0.0558,
+            "fscore_wide": 0.2813,
+            "wide_precision": 0.3943,
+            "wide_recall": 0.2187,
+            "reference_faces": 13
+          },
+          {
+            "name": "5",
+            "precision": 0.2301,
+            "recall": 0.1708,
+            "fscore": 0.232,
+            "fscore_strict": 0.1961,
+            "fscore_wide": 0.3757,
+            "wide_precision": 0.3742,
+            "wide_recall": 0.3771,
+            "reference_faces": 21
+          },
+          {
+            "name": "6",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 8
+          },
+          {
+            "name": "7",
+            "precision": 0.3962,
+            "recall": 0.2146,
+            "fscore": 0.299,
+            "fscore_strict": 0.2784,
+            "fscore_wide": 0.3815,
+            "wide_precision": 0.5048,
+            "wide_recall": 0.3066,
+            "reference_faces": 9
+          },
+          {
+            "name": "8",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 8
+          }
+        ],
+        "fscore_strict": 0.2798,
+        "fscore_wide": 0.4257,
+        "wide_precision": 0.4695,
+        "wide_recall": 0.3894,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 1.09,
+        "missing_parts": []
+      },
+      {
+        "name": "第03题",
+        "id": "03",
+        "tier": "简单档",
+        "title": "双腔斜顶分流阀壳",
+        "kind": "part",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0201,
+        "precision": 0.1776,
+        "recall": 0.0086,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1776,
+            "recall": 0.0086,
+            "fscore": 0.0201,
+            "fscore_strict": 0.0164,
+            "fscore_wide": 0.0351,
+            "wide_precision": 0.3482,
+            "wide_recall": 0.0185,
+            "reference_faces": 46
+          }
+        ],
+        "fscore_strict": 0.0164,
+        "fscore_wide": 0.0351,
+        "wide_precision": 0.3482,
+        "wide_recall": 0.0185,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.07,
+        "missing_parts": []
+      },
+      {
+        "name": "第04题",
+        "id": "04",
+        "tier": "简单档",
+        "title": "偏心双级迷宫泵盖",
+        "kind": "part",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.266,
+        "precision": 0.3428,
+        "recall": 0.1417,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.3428,
+            "recall": 0.1417,
+            "fscore": 0.266,
+            "fscore_strict": 0.2005,
+            "fscore_wide": 0.5281,
+            "wide_precision": 0.647,
+            "wide_recall": 0.4462,
+            "reference_faces": 43
+          }
+        ],
+        "fscore_strict": 0.2005,
+        "fscore_wide": 0.5281,
+        "wide_precision": 0.647,
+        "wide_recall": 0.4462,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.94,
+        "missing_parts": []
+      },
+      {
+        "name": "第05题",
+        "id": "05",
+        "tier": "简单档",
+        "title": "双层交汇混流阀箱",
+        "kind": "part",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0249,
+        "precision": 0.1896,
+        "recall": 0.0062,
+        "translation": [
+          -12.06,
+          -9.848,
+          -0.014
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1896,
+            "recall": 0.0062,
+            "fscore": 0.0249,
+            "fscore_strict": 0.0119,
+            "fscore_wide": 0.0769,
+            "wide_precision": 0.378,
+            "wide_recall": 0.0428,
+            "reference_faces": 67
+          }
+        ],
+        "fscore_strict": 0.0119,
+        "fscore_wide": 0.0769,
+        "wide_precision": 0.378,
+        "wide_recall": 0.0428,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.09,
+        "missing_parts": []
+      },
+      {
+        "name": "第06题",
+        "id": "06",
+        "tier": "简单档",
+        "title": "双斜接口差压控制块",
+        "kind": "part",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0189,
+        "precision": 0.1582,
+        "recall": 0.0075,
+        "translation": [
+          0.054,
+          2.634,
+          -0.052
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1582,
+            "recall": 0.0075,
+            "fscore": 0.0189,
+            "fscore_strict": 0.0143,
+            "fscore_wide": 0.0372,
+            "wide_precision": 0.3516,
+            "wide_recall": 0.0196,
+            "reference_faces": 54
+          }
+        ],
+        "fscore_strict": 0.0143,
+        "fscore_wide": 0.0372,
+        "wide_precision": 0.3516,
+        "wide_recall": 0.0196,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.07,
+        "missing_parts": []
+      },
+      {
+        "name": "第07题",
+        "id": "07",
+        "tier": "简单档",
+        "title": "双轴错层回油支承座",
+        "kind": "part",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.102,
+        "precision": 0.1548,
+        "recall": 0.0522,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1548,
+            "recall": 0.0522,
+            "fscore": 0.102,
+            "fscore_strict": 0.0781,
+            "fscore_wide": 0.1976,
+            "wide_precision": 0.3225,
+            "wide_recall": 0.1424,
+            "reference_faces": 63
+          }
+        ],
+        "fscore_strict": 0.0781,
+        "fscore_wide": 0.1976,
+        "wide_precision": 0.3225,
+        "wide_recall": 0.1424,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.36,
+        "missing_parts": []
+      },
+      {
+        "name": "第08题",
+        "id": "08",
+        "tier": "简单档",
+        "title": "交错隔板双层润滑箱",
+        "kind": "part",
+        "max": 3.5,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0591,
+        "precision": 0.2506,
+        "recall": 0.03,
+        "translation": [
+          -11.973,
+          -12.131,
+          -0.003
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.2506,
+            "recall": 0.03,
+            "fscore": 0.0591,
+            "fscore_strict": 0.0536,
+            "fscore_wide": 0.0813,
+            "wide_precision": 0.5418,
+            "wide_recall": 0.044,
+            "reference_faces": 64
+          }
+        ],
+        "fscore_strict": 0.0536,
+        "fscore_wide": 0.0813,
+        "wide_precision": 0.5418,
+        "wide_recall": 0.044,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.21,
+        "missing_parts": []
+      },
+      {
+        "name": "第09题",
+        "id": "09",
+        "tier": "中档",
+        "title": "跨腔三向斜流道歧管",
+        "kind": "part",
+        "max": 4,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0205,
+        "precision": 0.0202,
+        "recall": 0.0052,
+        "translation": [
+          66.632,
+          43.926,
+          22.389
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.0202,
+            "recall": 0.0052,
+            "fscore": 0.0205,
+            "fscore_strict": 0.0083,
+            "fscore_wide": 0.069,
+            "wide_precision": 0.1934,
+            "wide_recall": 0.042,
+            "reference_faces": 67
+          }
+        ],
+        "fscore_strict": 0.0083,
+        "fscore_wide": 0.069,
+        "wide_precision": 0.1934,
+        "wide_recall": 0.042,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.08,
+        "missing_parts": []
+      },
+      {
+        "name": "第10题",
+        "id": "10",
+        "tier": "中档",
+        "title": "双斜座多腔阀体铸件",
+        "kind": "part",
+        "max": 4,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0455,
+        "precision": 0.1732,
+        "recall": 0.0178,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1732,
+            "recall": 0.0178,
+            "fscore": 0.0455,
+            "fscore_strict": 0.0323,
+            "fscore_wide": 0.0981,
+            "wide_precision": 0.3341,
+            "wide_recall": 0.0575,
+            "reference_faces": 75
+          }
+        ],
+        "fscore_strict": 0.0323,
+        "fscore_wide": 0.0981,
+        "wide_precision": 0.3341,
+        "wide_recall": 0.0575,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.18,
+        "missing_parts": []
+      },
+      {
+        "name": "第11题",
+        "id": "11",
+        "tier": "中档",
+        "title": "三腔分层伺服分配箱",
+        "kind": "part",
+        "max": 4,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0071,
+        "precision": 0.1504,
+        "recall": 0.0013,
+        "translation": [
+          -8.219,
+          -10.101,
+          -0.012
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1504,
+            "recall": 0.0013,
+            "fscore": 0.0071,
+            "fscore_strict": 0.0026,
+            "fscore_wide": 0.0252,
+            "wide_precision": 0.4002,
+            "wide_recall": 0.013,
+            "reference_faces": 92
+          }
+        ],
+        "fscore_strict": 0.0026,
+        "fscore_wide": 0.0252,
+        "wide_precision": 0.4002,
+        "wide_recall": 0.013,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.03,
+        "missing_parts": []
+      },
+      {
+        "name": "第12题",
+        "id": "12",
+        "tier": "中档",
+        "title": "偏轴阶梯双腔泵座",
+        "kind": "part",
+        "max": 4,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0785,
+        "precision": 0.23,
+        "recall": 0.0398,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.23,
+            "recall": 0.0398,
+            "fscore": 0.0785,
+            "fscore_strict": 0.0678,
+            "fscore_wide": 0.1212,
+            "wide_precision": 0.3803,
+            "wide_recall": 0.0721,
+            "reference_faces": 78
+          }
+        ],
+        "fscore_strict": 0.0678,
+        "fscore_wide": 0.1212,
+        "wide_precision": 0.3803,
+        "wide_recall": 0.0721,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.32,
+        "missing_parts": []
+      },
+      {
+        "name": "第13题",
+        "id": "13",
+        "tier": "中档",
+        "title": "斜耳叉架减速箱体",
+        "kind": "part",
+        "max": 4,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0491,
+        "precision": 0.2435,
+        "recall": 0.0194,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.2435,
+            "recall": 0.0194,
+            "fscore": 0.0491,
+            "fscore_strict": 0.036,
+            "fscore_wide": 0.1018,
+            "wide_precision": 0.3923,
+            "wide_recall": 0.0585,
+            "reference_faces": 85
+          }
+        ],
+        "fscore_strict": 0.036,
+        "fscore_wide": 0.1018,
+        "wide_precision": 0.3923,
+        "wide_recall": 0.0585,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.2,
+        "missing_parts": []
+      },
+      {
+        "name": "第14题",
+        "id": "14",
+        "tier": "中档",
+        "title": "偏置双出口泵体铸件",
+        "kind": "part",
+        "max": 4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 6,
+            "message": "几何运算异常：Standard_ProgramError TopOpeBRepDS_DataStructure::Point"
+          }
+        ],
+        "fscore": 0.0641,
+        "precision": 0.2203,
+        "recall": 0.0247,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.2203,
+            "recall": 0.0247,
+            "fscore": 0.0641,
+            "fscore_strict": 0.0444,
+            "fscore_wide": 0.1428,
+            "wide_precision": 0.3696,
+            "wide_recall": 0.0885,
+            "reference_faces": 73
+          }
+        ],
+        "fscore_strict": 0.0444,
+        "fscore_wide": 0.1428,
+        "wide_precision": 0.3696,
+        "wide_recall": 0.0885,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.26,
+        "missing_parts": []
+      },
+      {
+        "name": "第15题",
+        "id": "15",
+        "tier": "中档",
+        "title": "双轴错层传动箱体",
+        "kind": "part",
+        "max": 4,
+        "status": "ok",
+        "errors": [],
+        "fscore": 0.0604,
+        "precision": 0.2236,
+        "recall": 0.0284,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.2236,
+            "recall": 0.0284,
+            "fscore": 0.0604,
+            "fscore_strict": 0.0504,
+            "fscore_wide": 0.1005,
+            "wide_precision": 0.413,
+            "wide_recall": 0.0572,
+            "reference_faces": 108
+          }
+        ],
+        "fscore_strict": 0.0504,
+        "fscore_wide": 0.1005,
+        "wide_precision": 0.413,
+        "wide_recall": 0.0572,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.24,
+        "missing_parts": []
+      },
+      {
+        "name": "第16题",
+        "id": "16",
+        "tier": "困难档",
+        "title": "双蜗室异面三通泵壳",
+        "kind": "part",
+        "max": 4.4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 22,
+            "message": "edges[0] 命中0条棱；见证点须在棱中部，避开端点"
+          }
+        ],
+        "fscore": 0.0581,
+        "precision": 0.1463,
+        "recall": 0.026,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1463,
+            "recall": 0.026,
+            "fscore": 0.0581,
+            "fscore_strict": 0.0442,
+            "fscore_wide": 0.1137,
+            "wide_precision": 0.2608,
+            "wide_recall": 0.0727,
+            "reference_faces": 177
+          }
+        ],
+        "fscore_strict": 0.0442,
+        "fscore_wide": 0.1137,
+        "wide_precision": 0.2608,
+        "wide_recall": 0.0727,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.26,
+        "missing_parts": []
+      },
+      {
+        "name": "第17题",
+        "id": "17",
+        "tier": "困难档",
+        "title": "五斜座交汇比例阀体",
+        "kind": "part",
+        "max": 4.4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 4,
+            "message": "edges[0] 命中0条棱；见证点须在棱中部，避开端点"
+          }
+        ],
+        "fscore": 0.0166,
+        "precision": 0.244,
+        "recall": 0.0057,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.244,
+            "recall": 0.0057,
+            "fscore": 0.0166,
+            "fscore_strict": 0.011,
+            "fscore_wide": 0.0389,
+            "wide_precision": 0.3833,
+            "wide_recall": 0.0205,
+            "reference_faces": 249
+          }
+        ],
+        "fscore_strict": 0.011,
+        "fscore_wide": 0.0389,
+        "wide_precision": 0.3833,
+        "wide_recall": 0.0205,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.07,
+        "missing_parts": []
+      },
+      {
+        "name": "第18题",
+        "id": "18",
+        "tier": "困难档",
+        "title": "复合环腔涡轮轴承箱",
+        "kind": "part",
+        "max": 4.4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 4,
+            "message": "倒圆/倒角失败：请检查半径、距离和相邻结构"
+          }
+        ],
+        "fscore": 0.0292,
+        "precision": 0.2249,
+        "recall": 0.011,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.2249,
+            "recall": 0.011,
+            "fscore": 0.0292,
+            "fscore_strict": 0.0209,
+            "fscore_wide": 0.0623,
+            "wide_precision": 0.3142,
+            "wide_recall": 0.0346,
+            "reference_faces": 141
+          }
+        ],
+        "fscore_strict": 0.0209,
+        "fscore_wide": 0.0623,
+        "wide_precision": 0.3142,
+        "wide_recall": 0.0346,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.13,
+        "missing_parts": []
+      },
+      {
+        "name": "第19题",
+        "id": "19",
+        "tier": "困难档",
+        "title": "斜交三轴变速箱壳",
+        "kind": "part",
+        "max": 4.4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 4,
+            "message": "edges[0] 命中0条棱；见证点须在棱中部，避开端点"
+          }
+        ],
+        "fscore": 0.0228,
+        "precision": 0.0309,
+        "recall": 0.0067,
+        "translation": [
+          107.374,
+          66.072,
+          66.288
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.0309,
+            "recall": 0.0067,
+            "fscore": 0.0228,
+            "fscore_strict": 0.011,
+            "fscore_wide": 0.0701,
+            "wide_precision": 0.1817,
+            "wide_recall": 0.0435,
+            "reference_faces": 280
+          }
+        ],
+        "fscore_strict": 0.011,
+        "fscore_wide": 0.0701,
+        "wide_precision": 0.1817,
+        "wide_recall": 0.0435,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.1,
+        "missing_parts": []
+      },
+      {
+        "name": "第20题",
+        "id": "20",
+        "tier": "困难档",
+        "title": "双级迷宫旋流分离壳",
+        "kind": "part",
+        "max": 4.4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 17,
+            "message": "edges[0] 命中2条棱；见证点须在棱中部，避开端点"
+          }
+        ],
+        "fscore": 0.0384,
+        "precision": 0.1672,
+        "recall": 0.0169,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.1672,
+            "recall": 0.0169,
+            "fscore": 0.0384,
+            "fscore_strict": 0.0307,
+            "fscore_wide": 0.069,
+            "wide_precision": 0.2026,
+            "wide_recall": 0.0416,
+            "reference_faces": 157
+          }
+        ],
+        "fscore_strict": 0.0307,
+        "fscore_wide": 0.069,
+        "wide_precision": 0.2026,
+        "wide_recall": 0.0416,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.17,
+        "missing_parts": []
+      },
+      {
+        "name": "第21题",
+        "id": "21",
+        "tier": "困难档",
+        "title": "双回路桥接伺服总壳",
+        "kind": "part",
+        "max": 4.4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 4,
+            "message": "edges[0] 命中0条棱；见证点须在棱中部，避开端点"
+          }
+        ],
+        "fscore": 0.0125,
+        "precision": 0.2414,
+        "recall": 0.0042,
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.2414,
+            "recall": 0.0042,
+            "fscore": 0.0125,
+            "fscore_strict": 0.0082,
+            "fscore_wide": 0.0298,
+            "wide_precision": 0.3854,
+            "wide_recall": 0.0155,
+            "reference_faces": 360
+          }
+        ],
+        "fscore_strict": 0.0082,
+        "fscore_wide": 0.0298,
+        "wide_precision": 0.3854,
+        "wide_recall": 0.0155,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.06,
+        "missing_parts": []
+      },
+      {
+        "name": "第22题",
+        "id": "22",
+        "tier": "困难档",
+        "title": "三斜轴液压分配器总装",
+        "kind": "assembly",
+        "max": 4.4,
+        "status": "partial",
+        "errors": [
+          {
+            "part": "1",
+            "step": 4,
+            "message": "edges[0] 命中0条棱；见证点须在棱中部，避开端点"
+          }
+        ],
+        "fscore": 0.0512,
+        "precision": 0.068,
+        "recall": 0.0222,
+        "translation": [
+          103.408,
+          48.437,
+          48.511
+        ],
+        "parts": [
+          {
+            "name": "1",
+            "precision": 0.0204,
+            "recall": 0.0008,
+            "fscore": 0.0086,
+            "fscore_strict": 0.0016,
+            "fscore_wide": 0.0366,
+            "wide_precision": 0.2249,
+            "wide_recall": 0.0199,
+            "reference_faces": 200
+          },
+          {
+            "name": "2",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 16
+          },
+          {
+            "name": "3",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 18
+          },
+          {
+            "name": "4",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 12
+          },
+          {
+            "name": "5",
+            "precision": 0.2408,
+            "recall": 0.1979,
+            "fscore": 0.3231,
+            "fscore_strict": 0.2173,
+            "fscore_wide": 0.7463,
+            "wide_precision": 0.6426,
+            "wide_recall": 0.8899,
+            "reference_faces": 16
+          },
+          {
+            "name": "6",
+            "precision": 0.1116,
+            "recall": 0.1417,
+            "fscore": 0.1763,
+            "fscore_strict": 0.1248,
+            "fscore_wide": 0.382,
+            "wide_precision": 0.3494,
+            "wide_recall": 0.4212,
+            "reference_faces": 18
+          },
+          {
+            "name": "7",
+            "precision": 0.5544,
+            "recall": 0.197,
+            "fscore": 0.3834,
+            "fscore_strict": 0.2907,
+            "fscore_wide": 0.7541,
+            "wide_precision": 0.887,
+            "wide_recall": 0.6558,
+            "reference_faces": 12
+          },
+          {
+            "name": "8",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 16
+          },
+          {
+            "name": "9",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 18
+          },
+          {
+            "name": "10",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 12
+          },
+          {
+            "name": "11",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 11
+          },
+          {
+            "name": "12",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 8
+          },
+          {
+            "name": "13",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 7
+          },
+          {
+            "name": "14",
+            "precision": 0.0,
+            "recall": 0.0,
+            "fscore": 0.0,
+            "fscore_strict": 0.0,
+            "fscore_wide": 0.0,
+            "wide_precision": 0.0,
+            "wide_recall": 0.0,
+            "reference_faces": 7
+          }
+        ],
+        "fscore_strict": 0.0335,
+        "fscore_wide": 0.1218,
+        "wide_precision": 0.1852,
+        "wide_recall": 0.0908,
+        "tolerance_mm": 0.2,
+        "wide_tolerance_mm": 2.0,
+        "score": 0.23,
+        "missing_parts": []
+      }
+    ]
+  },
+  "notes": "评的是作答结束时工作目录副本，不看git提交。原始提交只读，未运行受测gen_asm.py，未补写或修改答案。本次用户明确覆盖处罚范围为“仅违规题记0，其余正常计分”，因此第23–25题记0，前22题独立按官方公式正常评分；不修改共同题面或评分指南。保留25题原权重和总满分100，前22题满分86.8不放大。总分使用官方未舍入分项之和后保留两位小数；items和表格分项保留两位小数。会话session.log第28109行写笔记/gen_asm.py、第28128行执行、第28131行成功输出23/24/25各18/22/26件；脚本用math.radians/sin/cos计算法向、E=A+62*u与w=E+32*x计算端点/棱见证点、180-t及a+180计算装配旋转，CFG和输出循环仅包含23–25。第27743行已直接写第22题，之后无改写。第4007/4026行的dump_catalog.py仅展示已有尺寸字段，合法；全会话其他执行为官方preview或辅助读图，无其他影响前22题的违规程序证据。 官方命令：C:/Users/AIAgent/AppData/Local/Programs/Python/Python312/python.exe Grading/几何建模/机械结构重建/grade.py <本work目录> --only 01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22 --output official-shape-01-22.json；保持官方采样质量，未测性能。",
+  "anomaly": "第23–25题用程序计算几何并生成答案，违规不计分。"
+}

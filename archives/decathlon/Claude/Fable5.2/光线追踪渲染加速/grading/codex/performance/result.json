@@ -1,0 +1,68 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 81.6,
+      "reason": "官方完整 evaluate.py 有效正式评测：R=524.6434 ms，C=71.8525 ms，加速比 7.301672176，速度分 q=81.602553385；5 次计时画面及 12 个隐藏输入均通过，c=h=1，qch 按一位小数计为 81.6。人工通读源码并核对规则扫描，未发现实质性违规。"
+    }
+  ],
+  "metrics": {
+    "R_ms": 524.6434,
+    "C_ms": 71.8525,
+    "speedup": 7.301672175637591,
+    "q": 81.60255338476644,
+    "c": 1,
+    "h": 1,
+    "score_unrounded": 81.60255338476644,
+    "baseline_runs_ms": [
+      541.3929,
+      548.5929,
+      534.5892,
+      543.6546,
+      524.6434
+    ],
+    "submission_runs_ms": [
+      76.4835,
+      77.4284,
+      76.5183,
+      71.8525,
+      76.4789
+    ],
+    "timing_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "boundary_passed": 3,
+    "performance_exception_pixels": 809,
+    "performance_exception_limit": 3232,
+    "performance_bias": [
+      -1.7913378894589108e-07,
+      -2.772278434167114e-07,
+      -9.72290936916679e-08
+    ],
+    "performance_rmse": 3.917153064879953e-05,
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Claude\\Fable5.2\\光线追踪渲染加速\\codex\\performance\\work\\official_report\\results.json"
+  },
+  "notes": "评分版本：评的是作答结束时工作目录内容的副本 work\\submission，不看 git 提交。原始提交只读，唯一写入原目录的文件是本评分员评分表。官方 evaluate.py 仅运行一次，整套编译、运行均经 process_job.py --cpus 16-27 包装，保留官方 --cpus 16-27、高优先级及各 5 次取最小值设置。每次运行前官方监测均未发现其他 CUDA 计算进程，GPU 利用率在阈值内。源码规则核对：GPU 执行全部采样、求交、阴影、AO、反射及像素归约；CPU 仅预处理与建树。静态存储复用容量，每次 render 重新构造并覆盖场景数据，主机线程全部 join；mirror==1 仅省略零权重局部着色，仍继续反射。无读答案、预存图像、跨调用场景复用或干扰计时证据。未另行进行 Nsight 追踪。已按本次启动和报告记录的 PID 确认全部评测程序退出，未启动浏览器或网页服务器。"
+}

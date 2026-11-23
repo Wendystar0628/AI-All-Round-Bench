@@ -1,0 +1,147 @@
+// /Apps/editor.nx —— 文本与程序编辑器：新建、编辑、保存文件，启动 .nx 程序并查看它的输出。
+import "/System/lib/ui.nx";
+
+var FILE = ""; var SAVED = ""; var DIRTY = false;
+var RUNPID = 0; var OUT = []; var STATUS = "就绪"; var STCOL = "";
+var PENDING = "";   // 关闭/打开前等待确认的动作
+
+function loadFile(path) {
+  var r = sys("read", path);
+  if (iserr(r)) { STATUS = r.error; STCOL = TH.danger; return false; }
+  FILE = path; SAVED = r; DIRTY = false;
+  ui_set("editor-text", r); ui_set("editor-filename", path);
+  UI.s2 = 0; UI.e2 = 0;
+  ui_title(baseName(path) + " — 编辑器");
+  STATUS = "已打开 " + path + "（" + len(r) + " 字符）"; STCOL = "";
+  return true;
+}
+function saveFile() {
+  var path = trim(ui_val("editor-filename"));
+  if (path == "" || substr(path, 0, 1) != "/") { STATUS = "请先在文件名栏填写以 / 开头的完整路径"; STCOL = TH.warn; ui_dirty(); return false; }
+  var text = ui_val("editor-text");
+  var r = sys("write", path, text);
+  if (iserr(r)) { STATUS = "保存失败：" + r.error; STCOL = TH.danger; ui_notify("保存失败", r.error); ui_dirty(); return false; }
+  FILE = path; SAVED = text; DIRTY = false;
+  ui_title(baseName(path) + " — 编辑器");
+  STATUS = "已保存 " + path; STCOL = TH.ok; ui_dirty();
+  return true;
+}
+function runFile() {
+  if (!saveFile()) { return 0; }
+  OUT = [];
+  if (FILE == "/System/compiler.nx") {
+    // 编译器编译自身：成功后替换系统编译器，之后启动的程序都由新编译器编译
+    RUNPID = sys("rebuild_compiler");
+    STATUS = "正在用当前编译器编译 compiler.nx …"; STCOL = TH.accent;
+    return 0;
+  }
+  if (!endsWith(FILE, ".nx")) { STATUS = "只有 .nx 程序可以运行"; STCOL = TH.warn; return 0; }
+  var r = sys("spawn", FILE, null, false);
+  if (iserr(r)) { STATUS = r.error; STCOL = TH.danger; RUNPID = 0; return 0; }
+  RUNPID = r; STATUS = "已启动进程 " + r; STCOL = TH.accent;
+  return 0;
+}
+function pollRun() {
+  if (RUNPID == 0) { return 0; }
+  var lines = []; var ps = sys("ps"); var i = 0; var main = null;
+  // 主进程与它启动的协作进程的输出
+  while (i < len(ps)) {
+    var p = ps[i]; i = i + 1;
+    if (p.pid == RUNPID) { main = p; }
+    if (p.pid == RUNPID || p.owner == RUNPID) {
+      var lg = sys("plog", p.pid);
+      if (lg != null) {
+        var j = 0;
+        while (j < len(lg.out)) { push(lines, "[" + p.pid + " " + p.name + "] " + lg.out[j]); j = j + 1; }
+        if (lg.err != "" && p.st == 5) { push(lines, "[" + p.pid + " " + p.name + "] 错误：" + lg.err); }
+      }
+    }
+  }
+  var names = ["运行中", "等待消息", "定时等待", "已挂起", "已结束", "异常", "等待", "编译中"];
+  if (main == null) { STATUS = "进程 " + RUNPID + " 已结束"; STCOL = ""; RUNPID = 0; }
+  else {
+    STATUS = "进程 " + RUNPID + "：" + names[main.st] + " · 累计 " + fmtNum(main.used) + " 指令";
+    STCOL = TH.accent;
+    if (main.st == 4) { STCOL = TH.ok; if (FILE == "/System/compiler.nx") { STATUS = "编译器已更新：此后启动的程序使用新编译器"; } }
+    if (main.st == 5) { STCOL = TH.danger; STATUS = "进程 " + RUNPID + " 异常：" + main.err; }
+  }
+  if (json(lines) != json(OUT)) { OUT = lines; ui_dirty(); }
+  ui_dirty();
+  return 0;
+}
+function draw(v) {
+  var W = v.w; var H = v.h;
+  rect(0, 0, W, H, TH.bg);
+  rect(0, 0, W, 40, TH.panel);
+  var b = btn("editor-new", 8, 6, 52, 28, "新建"); b.v = 2;
+  b = btn("editor-open", 62, 6, 52, 28, "打开"); b.v = 2;
+  var f = input("editor-filename", 120, 6, max(80, W - 420), 28, "文件路径，例如 /Programs/hello.nx"); f.mono = true; f.lb = "文件名";
+  var x = W - 292;
+  b = btn("editor-save", x, 6, 64, 28, DIRTY ? "保存 ●" : "保存"); b.v = 1; b.tip = "保存到本系统文件"; x = x + 70;
+  b = btn("editor-run", x, 6, 64, 28, (FILE == "/System/compiler.nx") ? "编译自身" : "运行"); b.ic = "run"; b.tip = "保存并启动这个程序"; x = x + 70;
+  b = btn("editor-stop", x, 6, 56, 28, "结束"); b.dis = RUNPID == 0; x = x + 62;
+  b = btn("editor-saveas", x, 6, 78, 28, "另存到本机"); b.v = 2; b.s = 11.5;
+  var outH = 0;
+  if (len(OUT) > 0 || RUNPID != 0) { outH = min(170, floor(H * 0.34)); }
+  var t = input("editor-text", 0, 40, W, H - 40 - 24 - outH, "在这里输入文本或程序…");
+  t.multi = true; t.mono = true; t.bare = true; t.lb = "编辑区"; t.s = 12.5;
+  if (outH > 0) {
+    var oy = H - 24 - outH;
+    rect(0, oy, W, outH, "#0e131c"); rect(0, oy, W, 1, TH.line);
+    label(10, oy + 2, 200, 20, "程序输出");
+    var n = len(OUT); var rows = floor((outH - 24) / 17); var s = 0; if (n > rows) { s = n - rows; }
+    var o = { k: "text", id: "editor-output", x: 10, y: oy + 22, w: W - 20, h: outH - 24, t: join(slice(OUT, s, n), "\n"), c: "#cfe3d6", s: 12, f: 1, wrap: true, lh: 1.42 };
+    push(UI.L, o);
+  }
+  rect(0, H - 24, W, 24, TH.panel);
+  var st = text(10, H - 24, W - 20, 24, STATUS); st.s = 11.5; st.id = "editor-status";
+  if (STCOL != "") { st.c = STCOL; } else { st.c = TH.dim; }
+  return 0;
+}
+function click(id, data, m, v) {
+  if (id == "editor-save") { saveFile(); }
+  else if (id == "editor-run") { runFile(); }
+  else if (id == "editor-stop") { if (RUNPID != 0) { sys("kill", RUNPID); STATUS = "已结束进程 " + RUNPID; STCOL = ""; } }
+  else if (id == "editor-new") { if (DIRTY) { PENDING = "new"; askSave(); } else { newFile(); } }
+  else if (id == "editor-open") { if (DIRTY) { PENDING = "open"; askSave(); } else { ui_dialog("prompt", "打开文件", "输入本系统中的文件路径：", "/Programs/", "open", null); } }
+  else if (id == "editor-saveas") { sys("bus_send", { to: "outer", svc: "host", k: "host_export", name: baseName((FILE == "") ? "untitled.txt" : FILE), data: ui_val("editor-text") }); STATUS = "已请求根系统把内容保存到本机"; STCOL = ""; }
+  return 0;
+}
+function newFile() {
+  FILE = ""; SAVED = ""; DIRTY = false; OUT = []; RUNPID = 0;
+  ui_set("editor-text", ""); ui_set("editor-filename", "/Programs/untitled.nx");
+  ui_title("未命名 — 编辑器"); STATUS = "新文件：填写路径后保存"; STCOL = "";
+  ui_focus("editor-text");
+  return 0;
+}
+function askSave() { ui_dialog("confirm", "文件未保存", "“" + ((FILE == "") ? "未命名" : baseName(FILE)) + "” 有未保存的修改。", "", "unsaved", ["保存", "不保存", "取消"]); return 0; }
+function dialog(tag, btnIdx, value) {
+  if (tag == "open") { if (btnIdx == 0 && value != "") { loadFile(trim(value)); } }
+  else if (tag == "unsaved") {
+    if (btnIdx == 2) { PENDING = ""; return 0; }
+    if (btnIdx == 0) { if (!saveFile()) { PENDING = ""; return 0; } }
+    DIRTY = false;
+    var p = PENDING; PENDING = "";
+    if (p == "close") { ui_quit(); }
+    else if (p == "new") { newFile(); }
+    else if (p == "open") { ui_dialog("prompt", "打开文件", "输入本系统中的文件路径：", "/Programs/", "open", null); }
+  }
+  return 0;
+}
+function oninput(id, v) {
+  if (id == "editor-text") { var d = v != SAVED; if (d != DIRTY) { DIRTY = d; } }
+  return 0;
+}
+function key(m) {
+  if (m.key == "s" && m.mod == 2) { saveFile(); }
+  else if (m.key == "F5") { runFile(); }
+  return 0;
+}
+function closing() { if (DIRTY) { PENDING = "close"; askSave(); } else { ui_quit(); } return 0; }
+function tick(now) { pollRun(); return 0; }
+
+ui_open("editor", "编辑器", 660, 440, { minw: 420, minh: 260 });
+var ARGS = sys("args");
+if (type(ARGS) == "map" && type(ARGS.file) == "str") { loadFile(ARGS.file); } else { newFile(); }
+ui_focus("editor-text"); UI.s2 = 0; UI.e2 = 0;
+ui_run({ draw: draw, click: click, input: oninput, key: key, dialog: dialog, close: closing, tick: tick, tickMs: 300 });

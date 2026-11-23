@@ -1,0 +1,8 @@
+display({"surface":"editor","sections":["toolbar","edittext","status"]})
+@loop
+receive event
+if event.action != "command" goto input
+invoke(event)
+goto loop
+@input
+goto loop

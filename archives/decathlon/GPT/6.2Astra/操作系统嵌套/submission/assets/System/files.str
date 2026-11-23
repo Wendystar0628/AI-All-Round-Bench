@@ -1,0 +1,34 @@
+display({"surface":"files","sections":["toolbar","toolbar","sidegrid","status"]})
+@loop
+receive event
+if event.action != "command" goto input
+invoke(event)
+goto loop
+@input
+if event.action == "render" goto navigate
+if event.action == "create" goto create
+if event.action == "open" goto open
+if event.action == "move" goto move
+goto loop
+@navigate
+setApp("path",event.path)
+goto list
+@open
+openDocument(event.file,"auto")
+goto loop
+@create
+if event.folder goto folder
+write(event.file,"")
+goto created
+@folder
+mkdir(event.file)
+@created
+notice("已创建 "+event.file)
+goto list
+@move
+move(event.file,event.to)
+notice("文件已移动至 "+event.to)
+@list
+entries = sort(list(app("path")),"ascending")
+display(entries)
+goto loop

@@ -1,0 +1,22 @@
+{
+  "problem": "03",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双腔斜顶分流阀壳",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 34, 36]}], "depth": 6, "name": "底板34x36x6"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 3]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[17, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 6], "loops": [{"rect": [4, 4, 30, 32]}], "depth": 26, "name": "主体"},
+        {"type": "extrude", "op": "cut", "plane": "XZ", "loops": [{"path": [[22, 32], [30, 32], [30, 24]]}], "through": true, "name": "斜顶切角8x8"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [10, 15], "d": 22, "through": true, "cbore": {"d": 34, "depth": 2}, "name": "腔1Φ22通 沉Φ34深2"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 4, 0], "at": [16, 15], "d": 18, "depth": 20, "name": "腔2Φ18深20"},
+        {"type": "hole", "plane": "YZ", "origin": [30, 0, 0], "at": [18, 15], "d": 18, "depth": 12, "name": "侧孔Φ18深12"},
+        {"type": "hole", "plane": {"origin": [26, 18, 28], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 12, "depth": 42, "name": "斜孔Φ12深42 倾45方位0"},
+        {"type": "hole", "plane": {"origin": [26, 18, 28], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [[-8, 0], [8, 0]], "d": 5, "depth": 10, "name": "斜面2xΦ5"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 6], "at": [[4, 4], [30, 4], [4, 32], [30, 32]], "d": 7, "through": true, "name": "4xΦ7安装孔"}
+      ]
+    }
+  ]
+}

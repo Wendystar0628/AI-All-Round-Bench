@@ -1,0 +1,3221 @@
+{
+  "schema": 1,
+  "model": "Claude/Fable5.2",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 499,
+      "sha256": "d37b2d752ab93964b255698480b93b40320f62ff0cc4ce4d7fe4f62f49320cee"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9068,
+      "sha256": "cfc493fbe7f8942f81b1b43ff7881e21ea16e598608f632f9f378481a7f20719"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6210,
+      "sha256": "9e7ade7937ceab2b3f7960187c97fadc557509ce3fed80babfef1df7734e19c8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\css\\app.css",
+      "path": "AE风味动效设计编辑器/submission/css/app.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 20730,
+      "sha256": "f3217e5d35e32ee85691512653ffac8bc127c63d261fe15cb29be87bfc5fdf48"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_hei_0.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_hei_0.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2607381,
+      "sha256": "3973ea56cf3a7c8cb0c889393e5a7b7e97c2413883a08469098b3ea81c3d5731"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_hei_1.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_hei_1.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2605988,
+      "sha256": "9d8725e7030f6f3172c367c6eb1dde601a467087cb45985af44788cec85f3076"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_hei_2.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_hei_2.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 379477,
+      "sha256": "a9c5432a23c30e32bd52981242fc09d91c2b076df3fd822be7dfda9a09a351c4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_hei_meta.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_hei_meta.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 163,
+      "sha256": "7bfae00dacc1a48f7153fa65a9181604974035cd1f92eae9d4a6e86cb37e2af3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_0.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_0.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2604177,
+      "sha256": "6e674da017e8db667c59c33fef99f40867367662a0aaa7c3c31843eefc90a09e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_1.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_1.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2602623,
+      "sha256": "4afe74f6ce75f5fb4276fef06536bc456477b6e43db88b05d9cff86f5f79a5b7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_2.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_2.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2603293,
+      "sha256": "785dc3ccfd7cf464a5dfa48b191fe177202c9c237a2f18505e28204103b10df1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_3.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_3.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2603200,
+      "sha256": "aee6f30082495c4c3f584d8af5685ad6c30a9d01e597f6bce85298cdcff7373d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_4.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_4.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2602521,
+      "sha256": "49b69477b973d188673520aac4d167e17e20f8cfa92bc5a34cc50163b364f057"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_5.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_5.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 1625735,
+      "sha256": "04549c21d023aaf6836de91b193c2bbbf83ab42ae142e79608b0ff80f1961d79"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_aux.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_aux.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 69822,
+      "sha256": "5bcb41a4f83c6271ca33810ace6d3c1199e69dfe744e1810332f8902ddb02d3a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\data\\font_kai_meta.js",
+      "path": "AE风味动效设计编辑器/submission/data/font_kai_meta.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 255,
+      "sha256": "3efdaa1098ffe1bd32563b1bf4c9b541d04101b5b40ab052208be082f80e2a94"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2346,
+      "sha256": "2839d61fff5c96e844efddf8cb35b3f380c098aa036dc330f43e40fbd34c50c9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\audio\\audio.js",
+      "path": "AE风味动效设计编辑器/submission/js/audio/audio.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 15246,
+      "sha256": "ea3d9fd87a40a679118060fc7f7fa3ff344e326b98bea4494f661b97cdc47a00"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\core\\anim.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/anim.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7838,
+      "sha256": "3b0514723a1b7fa7cf0f258831144d8329875b84b6cc6fceb9a1deb685b42949"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\core\\expr.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/expr.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21430,
+      "sha256": "7463e05b1541f236c14fbef23315312e2615998b97a4b2e72483ceb379319de0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\core\\fonts.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/fonts.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7608,
+      "sha256": "4b9f2f1465f0d29b70647ffa18332bcc3ba194dcf088bc0347b61f66492edcff"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\core\\model.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/model.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22515,
+      "sha256": "d16cb7dd7d43bc8408139bb91f5dd505638b1587e513c2c83a5b4813d3eaa4d5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\core\\nodes.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/nodes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 58312,
+      "sha256": "dbcd8f2c5e319160cb15c1915a909fff5ed2902aab2426385d8f53e98695a40d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\core\\scene.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/scene.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 17606,
+      "sha256": "f8e95f701ae41ff68117037dac5f12d9c56df1a5b8386704129593ae61c9ebc0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\core\\util.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/util.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12360,
+      "sha256": "3b76455df96cd8024d8f15e05f418c33101927c44d55b4f304bb69883f291506"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\demo.js",
+      "path": "AE风味动效设计编辑器/submission/js/demo.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 2578,
+      "sha256": "d8aff60a0e0491182d618d9f2f54045ae9791425f6350fe3cdcd9da73d2c3b9f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\export.js",
+      "path": "AE风味动效设计编辑器/submission/js/export.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13,
+      "sha256": "0eab7f32da49bc1b931f8af972bc38ccf1c1144dc7ccea1d5770fda6b7f0248c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\geom\\boolean.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/boolean.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10502,
+      "sha256": "1a55324017cf8efdeb03887febfb14af6608874082b1ee42486be435842796d1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\geom\\path.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/path.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21851,
+      "sha256": "8044d17001a185ca3b05c8fb52f11bfa1f7a40bed7473ac30075a6d53e2218f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\geom\\solid.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/solid.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 23805,
+      "sha256": "72803426268b9ab250fde67b2ddac0756f7b8a02fe1bacadcc438f38c56ba26d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\geom\\tri.js",
+      "path": "AE风味动效设计编辑器/submission/js/geom/tri.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13891,
+      "sha256": "2722217c8e325c2856954cef50750725be6f638d82c592ae5c7fd577cb3d986e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\main.js",
+      "path": "AE风味动效设计编辑器/submission/js/main.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 662,
+      "sha256": "3b8670a74585e5a6772ad9acdb183d00b4b448f216911cec81fb819932fd8c9e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\render\\gl.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/gl.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 7677,
+      "sha256": "e516fc61b246c0a32ac13afa12e1b6b0d673cc2018caed0b3c68d24dc28f2a49"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\render\\r2d.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/r2d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21175,
+      "sha256": "9a85a48898ff2c82a80c0b9016c24f37292ac91a5ac4fd4778cbf42db213ad16"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\render\\r3d.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/r3d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 29643,
+      "sha256": "9d526362632c5cd353abdf6dacad3555886dcad35db5a81eded82d1affeba4c8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\render\\renderer.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/renderer.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 15265,
+      "sha256": "62c3279156523d28a58a4a104dad525757daf107098d77e2beed43a40d29e331"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\sim\\particles.js",
+      "path": "AE风味动效设计编辑器/submission/js/sim/particles.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 23648,
+      "sha256": "182c99a15a358cb118275f6051f100c78601a99ff044b8d00a0529ce493a0032"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\app.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/app.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10353,
+      "sha256": "9b200ab75225c106b436477e767d79171de9f25ddbdffd2915edd8f64b96593f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\commands.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/commands.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 29220,
+      "sha256": "14222b76351a685fece620ae451a7e291cf0011ccbafc3d88debd9c70e837664"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\graph.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/graph.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 18083,
+      "sha256": "f28991d201a9dc22a2b0a37efd4881881d73111321dfe40430d0c81eebcbcecd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\keys.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/keys.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8682,
+      "sha256": "f1c3db346316f355d0ddb2eca4081bd69b587e88729e620deda59d165e313c3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\nodeview.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/nodeview.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 27482,
+      "sha256": "6d42f2cffc5ccd0fc6433e9561341e552b613a7d118f542d35b504c5078e802c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\project.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/project.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13,
+      "sha256": "0eab7f32da49bc1b931f8af972bc38ccf1c1144dc7ccea1d5770fda6b7f0248c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\props.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/props.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 44525,
+      "sha256": "f02d2c6abe8c430257d8a690e68f3cbfff166d6939de70ba15636954438a2dc0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\shell.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/shell.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 23408,
+      "sha256": "5f1319a3fa05cd551604bcb279c3bd5fafdcce0dcdd811357d53dc518acb3f58"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\timeline.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/timeline.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 35414,
+      "sha256": "9aa67d04d56c65a88d13832f941fc840fe3beca3c5f5c77ed0da8a4996b0a1b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\tools.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/tools.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 36177,
+      "sha256": "0c79475c8dcc4ce7b867a4694400b950ee9ccf31be978e55cbb2636d017d1ab0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\viewport.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/viewport.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 32820,
+      "sha256": "c2582e50682f0ea7ecbda337696f59090854a66bfea856fa9e79e55f2944464e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\js\\ui\\widgets.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/widgets.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12747,
+      "sha256": "d9921f7273df0611daa99bd811d5874c5db2646a326031bf034696c5100016aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\tools\\build-fonts.js",
+      "path": "AE风味动效设计编辑器/submission/tools/build-fonts.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 5411,
+      "sha256": "173ae74b67b8380a69362411fd2d93238b65819e44435242b82d639c8b6af55e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\tools\\test-geom.js",
+      "path": "AE风味动效设计编辑器/submission/tools/test-geom.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 4849,
+      "sha256": "263efb7b1615607a42b520831cbcd0f64929f190f9127a7ab27562b2334bbb39"
+    },
+    {
+      "source": "H:\\AI_OneShot_Video\\decathlon\\Claude\\Fable5.2\\assets\\raytracing\\render.json",
+      "path": "光线追踪渲染加速/assets/render.json",
+      "role": "asset",
+      "task": "光线追踪渲染加速",
+      "bytes": 875,
+      "sha256": "59e9a7402dbfdd46777dfbc48444e3e9bf3a6569b049312c77a0d169681fd103"
+    },
+    {
+      "source": "H:\\AI_OneShot_Video\\decathlon\\Claude\\Fable5.2\\assets\\raytracing\\render.png",
+      "path": "光线追踪渲染加速/assets/render.png",
+      "role": "asset",
+      "task": "光线追踪渲染加速",
+      "bytes": 2439628,
+      "sha256": "6344b4feff54c359ee24a19df5730d0005460db2ecf88ac5082ac046d25d8588"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 489,
+      "sha256": "e81b1da42c9cbeaed09849e9a143b17a79941202bc1eb1d75d2bf73e90133728"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 2614,
+      "sha256": "d58d883bfe7445d06c435db5bebc7db3aad882ae8dc739d057c1e7efd122d2cb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2193,
+      "sha256": "0e4462c537b8517a11019e1fcb3195e6d620e4304640bfe3bccffc891c7d442d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 36398,
+      "sha256": "8877a23af5c278f58575c521ca4e4471f2f1173a1f2a18e889c8569c088141b8"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 481,
+      "sha256": "208e34f0739d9e137c06280138d6381a75c551a133b5b1e0ab68c3aa0b660b1e"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 5933,
+      "sha256": "b3f348a04173f7053f9b0de9adb41827119742c86b9f6ff251864df70a4fc93a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4167,
+      "sha256": "7395c92b7923efe4987a1452b2906e9d91018cfc374d37d8a8a4d91ae91336e8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\README.md",
+      "path": "动态路由塔防/submission/README.md",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3263,
+      "sha256": "8e5f373e1c6ca81d6871a306b0266ed4d1cd44aff32f27a1d506282be328c6b5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\apply_detail.py",
+      "path": "动态路由塔防/submission/_build/apply_detail.py",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3185,
+      "sha256": "fd8c91fd9f20cb4ca94bf22a5fcba4ea123803e491f2e9b6cf52f80fe8b1bbae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\apply_fx.py",
+      "path": "动态路由塔防/submission/_build/apply_fx.py",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1943,
+      "sha256": "a8fbfb4f0c3d21a929d67f4146d84b75aaf66b8ccbd82b31b17188a089f41b8c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\apply_r4.py",
+      "path": "动态路由塔防/submission/_build/apply_r4.py",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1296,
+      "sha256": "fd61109baa08dc8435f09d5ef28b827a3922879496710fe0a8f228ab678edee5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\detail_units.js",
+      "path": "动态路由塔防/submission/_build/detail_units.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 9270,
+      "sha256": "3b821e14a7ad081fce7fdc2829cb38f91c43f6d638ac47e03991835bd55b0e31"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\entry.js",
+      "path": "动态路由塔防/submission/_build/entry.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 987,
+      "sha256": "0ca48257b8cb1c84cf6718987e41fff86af459cbb6e88eb96ee00ec44cee8bb3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\package.json",
+      "path": "动态路由塔防/submission/_build/package.json",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 317,
+      "sha256": "a8d7cf3b1da29ff13bc4d295384cc99c495031c9f0f5f5f10b4f5f06cd936894"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\boss.js",
+      "path": "动态路由塔防/submission/_build/test/boss.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1089,
+      "sha256": "b4ff675bd57e7027a62694de05fa5c5a7967b4463e82c44ba6f84beb802f11ba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\bot.js",
+      "path": "动态路由塔防/submission/_build/test/bot.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 5530,
+      "sha256": "ad3fd1f7370864957835bd6c6a9fe0c1af6d2fb3be8818a0c236d719af3bce11"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\dbg.js",
+      "path": "动态路由塔防/submission/_build/test/dbg.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 951,
+      "sha256": "b0d471187f67d031769fd504e741c006f82a33d577907ab7e4c02af2b598b01b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\dbg2.js",
+      "path": "动态路由塔防/submission/_build/test/dbg2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3486,
+      "sha256": "86f51f2e54b3c46747dc7e75996ae8d7a4b23377ad6ea4a66c10eceddf5b10b1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\demostat.js",
+      "path": "动态路由塔防/submission/_build/test/demostat.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1165,
+      "sha256": "e0ee7816d8f749c14b053a541ed5eb2f092840a992e128118cfd970298d02548"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\maps.test.js",
+      "path": "动态路由塔防/submission/_build/test/maps.test.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1737,
+      "sha256": "3a3368559d1a098a1dea14f59e8b0874a0e6464b44233abec90a93b9b40bd740"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\plan.js",
+      "path": "动态路由塔防/submission/_build/test/plan.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4729,
+      "sha256": "324881cebc532ebe04f624951c283f04b979fe5958f078eef66e9ba6cdc916d3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\plan2.js",
+      "path": "动态路由塔防/submission/_build/test/plan2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1560,
+      "sha256": "0e54addaa572bda8dabdda91ca1eeea3aa90da72a331bdc7172025a6f0bcb11f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\seal.js",
+      "path": "动态路由塔防/submission/_build/test/seal.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1668,
+      "sha256": "9ef312c65b845c98d8852bfe89b701b3c3e590fce0de6ddbb87dc7fdbfe9ea86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\_build\\test\\view.html",
+      "path": "动态路由塔防/submission/_build/test/view.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1677,
+      "sha256": "18e4b8f78559e1eeda00778ee4547e2265275a63a96ea6f6e07d5d789784174c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\css\\style.css",
+      "path": "动态路由塔防/submission/css/style.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 30900,
+      "sha256": "b4201533aba53446d877eb33717631317a500a83d016716f80abd78d29e35aa5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1049,
+      "sha256": "c0c05e271be1b9e63fe2f018b606780a46d44ba1138464890a3e68a857dc7655"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\audio.js",
+      "path": "动态路由塔防/submission/js/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 26585,
+      "sha256": "ecc1dd3025eefce9abdd4d19c533d72972af000409aef8a020f698894e802f4a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\core.js",
+      "path": "动态路由塔防/submission/js/core.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2318,
+      "sha256": "0a4d1fe95a5e516e0ef5864cea5c03fd017d986afb4166f63069b881f7571e77"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\data.js",
+      "path": "动态路由塔防/submission/js/data.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 22921,
+      "sha256": "cf75e5940df0b62215df6ca451f0323ff6d23bed280bb209b7c0826e69a49292"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\demo.js",
+      "path": "动态路由塔防/submission/js/demo.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 23787,
+      "sha256": "513ebf7d76e9656be10ba0907d7053e11a2535213cb51b36ca1586d042040126"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\gfx_core.js",
+      "path": "动态路由塔防/submission/js/gfx_core.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 22949,
+      "sha256": "a17b2cd9cc6cf9bd426944460a4d9ca41076db65e07cc61ed370655600419e2b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\gfx_fx.js",
+      "path": "动态路由塔防/submission/js/gfx_fx.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 28829,
+      "sha256": "389db49c58ea1de0f59d82e4f1f0aaf880673feeffd95db3b060dddd450ff73c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\gfx_map.js",
+      "path": "动态路由塔防/submission/js/gfx_map.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 43826,
+      "sha256": "d7223d52106db76235fc381e8317b91cf9710a8106138a4088bfb867295fa002"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\gfx_units.js",
+      "path": "动态路由塔防/submission/js/gfx_units.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 49201,
+      "sha256": "bfd26a2df4abf65a589a48975fdec944ab039aa800ae3985f9ead833a5fcdcdb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\gfx_view.js",
+      "path": "动态路由塔防/submission/js/gfx_view.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 51477,
+      "sha256": "f3a0ecc137eabd01ef7c482c07df4c5cb67e0f199709ed5b220a1800b835a1b7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\icons.js",
+      "path": "动态路由塔防/submission/js/icons.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 7261,
+      "sha256": "46215708b2de223406a978adfe9cafb2b949e81743dae880497971f24a02c4b6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\input.js",
+      "path": "动态路由塔防/submission/js/input.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 19245,
+      "sha256": "50966ebf5e3fd330614947351e82852ed5425159e5d4b43ab042e95316c7d4ab"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\main.js",
+      "path": "动态路由塔防/submission/js/main.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 7250,
+      "sha256": "ddf8fb74a566ce7b23c27dbca6e6497d32f38665f572b0b17199560a8ef75e5c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\maps.js",
+      "path": "动态路由塔防/submission/js/maps.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 16336,
+      "sha256": "8e139bf8bc3f9ba159403ba8a3e5b96e402ae0173a60f2e03de578f128a501c7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\path.js",
+      "path": "动态路由塔防/submission/js/path.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 3982,
+      "sha256": "3abc08658d569ca3cb5012fe74609a09d3e112e5bf396e67f46b7757d7211594"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\sim.js",
+      "path": "动态路由塔防/submission/js/sim.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 30901,
+      "sha256": "8dfc53ea41ea1b4250c4283ed8bdc94a74a4b5f0f8538346dbf4c173eb8f9dce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\sim2.js",
+      "path": "动态路由塔防/submission/js/sim2.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 24094,
+      "sha256": "ec643353e9916b1f0328548efabb68ec526046dd396c619c6bbdcfcfc3deaf65"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\js\\ui.js",
+      "path": "动态路由塔防/submission/js/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 64709,
+      "sha256": "d252195ef2eb3f9315297e7bc4565e874dc9c306b7ae641fcb376c42f75004ee"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\lib\\three.bundle.js",
+      "path": "动态路由塔防/submission/lib/three.bundle.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 783036,
+      "sha256": "f4698417fff2e833c0d5c4517725b5b8dea7f45817459bee25bb12577e2a6c9f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 494,
+      "sha256": "919976681d0fbb5c823c644e53b00d0c25cdbdd48044f7a360350908622218da"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 5609,
+      "sha256": "d7af80207e99ac0329c79179f366d8977b56a291574b4ffa206be44a17380b74"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4145,
+      "sha256": "56906f4de0193fefddab26eb190d57c07c53cdf81c7cc31550d73b33f6b385fd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 1284,
+      "sha256": "f8499dcaa00a17ddcb1e4460f5b1baa1e2126c00c1d8c90616b85f7ffe416a42"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\00-core.js",
+      "path": "太阳雨渔港3D渲染/submission/js/00-core.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8870,
+      "sha256": "fbf7e6dd03043beb4c0682d9d9032631afae16c720b5fef5cdab448e15db9fd3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\01-geo.js",
+      "path": "太阳雨渔港3D渲染/submission/js/01-geo.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 15821,
+      "sha256": "4ce29e8815523503af5bbbbd6b6d99fba1ed41eba4479e20a498a329befd7849"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\02-materials.js",
+      "path": "太阳雨渔港3D渲染/submission/js/02-materials.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 24567,
+      "sha256": "58eb4db43da36303a0e789371cd5b503c644ffcbfb6a19e87b13b03fc6b58be4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\03-render.js",
+      "path": "太阳雨渔港3D渲染/submission/js/03-render.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 13465,
+      "sha256": "1e6e35fd81b09a14f08c50a1e774b8d729acdac59ea321ce72a89000ab4014fa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\04-controls.js",
+      "path": "太阳雨渔港3D渲染/submission/js/04-controls.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 3896,
+      "sha256": "d15d51bd97d82d669cea38b047c2b6c2c4bf25f3d1497910dd18dadcd04f3da7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\10-base.js",
+      "path": "太阳雨渔港3D渲染/submission/js/10-base.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 16880,
+      "sha256": "240c8442f1e2cbe51c44c27baafbf0a3556bcf2b68a3cfb11e91816715b6f908"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\11-water.js",
+      "path": "太阳雨渔港3D渲染/submission/js/11-water.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 13495,
+      "sha256": "7b83bf2a090df2248520661175783d9b354c59beb1a94bda59f3bbfc9aa2f413"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\12-quay.js",
+      "path": "太阳雨渔港3D渲染/submission/js/12-quay.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 21648,
+      "sha256": "6a04f984a178c83b74ceb7b77f98c99e6aa3b4d4aefd4cc134308a14fa838b9e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\13-boats.js",
+      "path": "太阳雨渔港3D渲染/submission/js/13-boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 62390,
+      "sha256": "f2d6f142eb29e5102389332a188ad7ef9dd2cb46ba72c408aa37bac7708c588c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\14-buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/js/14-buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 52001,
+      "sha256": "1187e19061a0dc5545fdb96143660c7cef33682c125e6727cab8f8a238de1b63"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\15-props.js",
+      "path": "太阳雨渔港3D渲染/submission/js/15-props.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 29627,
+      "sha256": "d8d274a312c9f00c12e9f6c570069f21bdc0986676740cdbd38b46129c5c42ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\16-landscape.js",
+      "path": "太阳雨渔港3D渲染/submission/js/16-landscape.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 24026,
+      "sha256": "2324ebaded1686b6ee8f62a2fc29e364be3121fdd90110ef21907e208f8d7dcd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\17-extras.js",
+      "path": "太阳雨渔港3D渲染/submission/js/17-extras.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 11084,
+      "sha256": "7ccd15f2f125777913529a2cdc2a8e222f136651397ca2224f6b9bf3b7a084bd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\20-weather.js",
+      "path": "太阳雨渔港3D渲染/submission/js/20-weather.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 28835,
+      "sha256": "32b68261f53615704bcdabfd2d46c6668caef14b52dfc6e29e51e1a8149269aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\21-creatures.js",
+      "path": "太阳雨渔港3D渲染/submission/js/21-creatures.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 26034,
+      "sha256": "fefb656f51a1af27e178c318a16f797f326b82315b67761a9134913a7bd6145e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\22-events.js",
+      "path": "太阳雨渔港3D渲染/submission/js/22-events.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 33194,
+      "sha256": "62651245897c496c7628687e8ebd1f46cb92e5bfc50a1ef47dbc09b9597ccf00"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\30-tour.js",
+      "path": "太阳雨渔港3D渲染/submission/js/30-tour.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8675,
+      "sha256": "03c40b70a57bad0286bf9231a96b66602746475da0c6e0d2bbfaf56022351515"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\js\\99-main.js",
+      "path": "太阳雨渔港3D渲染/submission/js/99-main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 2139,
+      "sha256": "778fa71081df024fb6acc0c861f8d2f30bd2e80848712a31c85c6b46d3ead0c5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\lib\\three.min.js",
+      "path": "太阳雨渔港3D渲染/submission/lib/three.min.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 664250,
+      "sha256": "84a16954eb040d61fb95c719fbbf7ee8a383e6fb8cd409b6219508300b3aec71"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 480,
+      "sha256": "c12b9a5e692cf60e7a8c348b63b3d5a2bdd2892739a7a8da6b519957438dc542"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 2629,
+      "sha256": "0e0a64fae5ac25ca5cb88621e9696b251a977be289932f3fbeefbf8c6026a15d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1196,
+      "sha256": "fcc1544b11b99cb01e1e09a7cff455a93d4485aa885842f3deaf01e9f7589197"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 13511,
+      "sha256": "7600f8e762a44c38129874e2dfc42b24c6a985838a2f2de7ba46410d401f10c5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\Problem2.lean",
+      "path": "形式化证明题/submission/Problem2.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 9031,
+      "sha256": "ac41d2d1b89760474c336d476a26051e5d217b6220fda59d4b96735a8c61db1a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\Problem3.lean",
+      "path": "形式化证明题/submission/Problem3.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 6808,
+      "sha256": "09d2eb590c9a3a130038b6296e35d443129bc1b320b78325d3efa364476a9520"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\Problem4.lean",
+      "path": "形式化证明题/submission/Problem4.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 29274,
+      "sha256": "bb7a0666e235527ad4a9e642efc32db126362d7de3a17471a91d103140c61fb8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\Problem5.lean",
+      "path": "形式化证明题/submission/Problem5.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 13442,
+      "sha256": "5aeeffe465a06cccd75fd2562921f5da9c83f96eb1d4459c44f3ffe051b5c3aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\Problem7.lean",
+      "path": "形式化证明题/submission/Problem7.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 30226,
+      "sha256": "44e18d9078687da612c746c47e123e929904ad80944005c04ecd36b0ddb17d6b"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 481,
+      "sha256": "4a1f1512e8e70e80b974736a643c865ee240d2c54954f4d0303a1882349064e7"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 11157,
+      "sha256": "62993263ef4caaf6cf7c9fb5ec8d791551ad34cd4c0f2949d5d2198c1c887883"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10620,
+      "sha256": "9e74424c3bc54db6f11cd5f144b9bc70b6f2d915101f762589f3ed012c84731c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\.devtmp",
+      "path": "操作系统嵌套/submission/.devtmp",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 44,
+      "sha256": "60f554bd95ee3c192d27a6a9d7a4079188911fa95d836f2cc2eaa4f7904bd339"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\assets\\wallpapers\\amber-dunes.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/amber-dunes.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5398,
+      "sha256": "9901cf4f3729adab04f997f93d35dfec9c4a3a9ae6a48448bfb4f103b1b70906"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\assets\\wallpapers\\dawn-valley.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/dawn-valley.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 63954,
+      "sha256": "d65003b808b55205aa2834a55354b9c3cff89f2b6bcaad8d5dab3928dede4c33"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\assets\\wallpapers\\night-lake.svg",
+      "path": "操作系统嵌套/submission/assets/wallpapers/night-lake.svg",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 43623,
+      "sha256": "ac6f376c8102a0d9297507c0fd0d0e7be94e02ec0e80913786fd522a25663596"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\editor.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/editor.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 7714,
+      "sha256": "e9af255a3b515fcd0f56b9828add82e7514e76719fa7c2b64b9c23ea01f20494"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\files.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/files.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18457,
+      "sha256": "3fc569a68b5a4d15b4789e1a419baed63a87fec8195a9604a862609fad63a425"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\player-fx.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/player-fx.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4268,
+      "sha256": "f0690f92019872d8ede632977676cbdae9848c2bc6bf39b2d6b6ec71b6eecd0a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\player-scene.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/player-scene.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 20671,
+      "sha256": "28c96d242356bec5cd3a86c335af50e11b289c5dc229f5c9e97407f74324c16a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\player-timeline.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/player-timeline.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5371,
+      "sha256": "9b74df4abde0fe3816206a5879e83bab1f0c06b074caeb6e4f600fa9a72f168d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\player.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/player.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 19885,
+      "sha256": "19d096f0845b9934b9bd1ab68c4864cd887fdcbedf5dadf7819d33750740fd78"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\systems.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/systems.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8032,
+      "sha256": "2c10ae3383fc41609e242dd1c275c10da57d73eb7ea78369012f04f246c0d23e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Apps\\tasks.nx",
+      "path": "操作系统嵌套/submission/guest/Apps/tasks.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 12163,
+      "sha256": "a7a85d60110127afd0db2d25aedbb14c39a56b0b411f57494337832c52399aed"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Demo\\helicopter-24.scene",
+      "path": "操作系统嵌套/submission/guest/Demo/helicopter-24.scene",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 129556,
+      "sha256": "d3b6bc380cb2a759babedfa386d858e36797e5e3d9d97ae09aaa72663a39b80e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Demo\\minimal.scene",
+      "path": "操作系统嵌套/submission/guest/Demo/minimal.scene",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1758,
+      "sha256": "5973a1b1a74d99c783100147fae62d936150860589bc5da486f61a319f686cc0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Documents\\操作说明.md",
+      "path": "操作系统嵌套/submission/guest/Documents/操作说明.md",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 47,
+      "sha256": "ebd8ef12bdc6c96f38f5253d863f91df8453b8f70eeec1f3fdeda621dd4d652f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Programs\\busy.nx",
+      "path": "操作系统嵌套/submission/guest/Programs/busy.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 419,
+      "sha256": "640ad4faaf786bef956f1005e3285a7b9aa0daf255ec1dd0df6d469f6f9db4ce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Programs\\flightctl.nx",
+      "path": "操作系统嵌套/submission/guest/Programs/flightctl.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4116,
+      "sha256": "ec9859f833eb655630c1a2db7a4e593f42215b69701c0f5f8cb3334be9caeff3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Programs\\recv.nx",
+      "path": "操作系统嵌套/submission/guest/Programs/recv.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 412,
+      "sha256": "5c193b1b3983517e9b40133d7e5904b62da630bcfcdb91ca75bb7aef952f1303"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Programs\\send.nx",
+      "path": "操作系统嵌套/submission/guest/Programs/send.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 615,
+      "sha256": "00c6aeeb7f66c5ac6a01874bf04d95728c22e9b3a5da221db263a8616bc4c3cc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\Programs\\sum.nx",
+      "path": "操作系统嵌套/submission/guest/Programs/sum.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 241,
+      "sha256": "0eacfb510cd343e1811a3c3e9c4b716ea634d43c58af8b22f0ff189371eeb3ce"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\System\\compiler.nx",
+      "path": "操作系统嵌套/submission/guest/System/compiler.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 22394,
+      "sha256": "5ef6c0a166c46322d6ba2d6dae4227e895127f5b2efc5a10bee2c67130e6d976"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\System\\kernel.nx",
+      "path": "操作系统嵌套/submission/guest/System/kernel.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 48761,
+      "sha256": "937f914972bd2718df64599cfc4c0943f4e597362d1178fe02adc8882b9614d0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\System\\lib\\flight.nx",
+      "path": "操作系统嵌套/submission/guest/System/lib/flight.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 20991,
+      "sha256": "48bf3b371e2da1a759dbd69bac970283b93b1d20b7e35a79f5564c796c609dc2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\System\\lib\\ui.nx",
+      "path": "操作系统嵌套/submission/guest/System/lib/ui.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13030,
+      "sha256": "426db8dc8eac05a9a59134374153424fc8d9b2b681822af77dfe951caaf84c2e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\guest\\System\\wm.nx",
+      "path": "操作系统嵌套/submission/guest/System/wm.nx",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 48892,
+      "sha256": "f4eaa1d4a01619f407810d664d545065d92917922c20727c64edbd48b7259786"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\main.js",
+      "path": "操作系统嵌套/submission/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6868,
+      "sha256": "039c85fd58909014c0b44afcd8c9f97f7b36b7787405cf29090945f89dbdbd44"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 5845,
+      "sha256": "a0baa14f93fe5da05fc99eb6d389c35e869c28a5f2126a2938ec3424d5b8a4cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 367,
+      "sha256": "0fbc3f82990c88c408deafdc9c252cf6a0f91d3569efcb72765e35ab2ddfca3c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\preload.js",
+      "path": "操作系统嵌套/submission/preload.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 969,
+      "sha256": "cfb35f12213977ea2f0da0563f8f5a8fd9ab489b36c3f6713ea5ac591932d2f1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\browser.js",
+      "path": "操作系统嵌套/submission/src/host/apps/browser.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\editor.js",
+      "path": "操作系统嵌套/submission/src/host/apps/editor.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\files.js",
+      "path": "操作系统嵌套/submission/src/host/apps/files.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\help.js",
+      "path": "操作系统嵌套/submission/src/host/apps/help.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\settings.js",
+      "path": "操作系统嵌套/submission/src/host/apps/settings.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\spreadsheet.js",
+      "path": "操作系统嵌套/submission/src/host/apps/spreadsheet.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\systems.js",
+      "path": "操作系统嵌套/submission/src/host/apps/systems.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 18236,
+      "sha256": "501f3df04d0fb63bea5a0d70268b4ce374e0972aca9735f4d95aa9259ce37357"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\tasks.js",
+      "path": "操作系统嵌套/submission/src/host/apps/tasks.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\apps\\widgets.js",
+      "path": "操作系统嵌套/submission/src/host/apps/widgets.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\bench.js",
+      "path": "操作系统嵌套/submission/src/host/bench.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14,
+      "sha256": "e65f3cca9a4637c34593c5b4dc5698d6368b91ce43f6d26273a70c430a66b71f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\boot.js",
+      "path": "操作系统嵌套/submission/src/host/boot.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9154,
+      "sha256": "ffeff77f56cb9cf34ec410167505f5e8b7917cf47d7ac1150abd0afff6cae125"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\device2d.js",
+      "path": "操作系统嵌套/submission/src/host/device2d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 24163,
+      "sha256": "8d850264dcc26cabaccaa6ad39bce67b9c1933a5dbbcab63a20faac3cb6046fb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\device3d.js",
+      "path": "操作系统嵌套/submission/src/host/device3d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 35660,
+      "sha256": "045b6903ddb8e482e3db3320d0b143db127dce61c006a058366aeee624f351ec"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\icons.js",
+      "path": "操作系统嵌套/submission/src/host/icons.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8289,
+      "sha256": "15d56c673531f35d42889651d3246b549ef6adb03765b3d8129d1527641a0542"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\index.html",
+      "path": "操作系统嵌套/submission/src/host/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3178,
+      "sha256": "ac4e31b2bdf06d87ad6198e71fc7b944ddb96b2b3846539771989db2baadcc66"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\rootkernel.js",
+      "path": "操作系统嵌套/submission/src/host/rootkernel.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 40659,
+      "sha256": "5a31e718b5d6b3de8b89f43aec5d6ed7edc153aa2a33a9cd17a9ec1213a3bc6c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\rootwm.js",
+      "path": "操作系统嵌套/submission/src/host/rootwm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30642,
+      "sha256": "5a823d4eb420f7c73197c434ec4450bb6fdf387dbf5207973c8e410951396dea"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\start.js",
+      "path": "操作系统嵌套/submission/src/host/start.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2664,
+      "sha256": "8f7692c711901c504cc58ac0c61d8af7c0f16442c77a3d4a07c1cd8ab7bfb94b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\styles\\apps.css",
+      "path": "操作系统嵌套/submission/src/host/styles/apps.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 812,
+      "sha256": "fa0b2c6b7cd14134195e4bd6a370f20b77e8a59a21c84386b3755aed035a3877"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\styles\\main.css",
+      "path": "操作系统嵌套/submission/src/host/styles/main.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 22227,
+      "sha256": "49c827b11d22c36e4400f14766ec071216b33475e6f74bc312b24951252bab3e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\host\\vm.js",
+      "path": "操作系统嵌套/submission/src/host/vm.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 38664,
+      "sha256": "9acdfceceaa9cba6e9fc061f0a6a73fe0241c46c43400448219455b679ebb075"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\build.js",
+      "path": "操作系统嵌套/submission/tools/build.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2578,
+      "sha256": "df66d2d22773977e41b443c9847bd8bc9299acfc790cad83096782eff7d6f0e7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\cdp.js",
+      "path": "操作系统嵌套/submission/tools/cdp.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4721,
+      "sha256": "bfd10b6594c97ae99c2f61f18fbf7224f1e16762fa93ba3e64f649f5bf3a036f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\dbg.js",
+      "path": "操作系统嵌套/submission/tools/dbg.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1072,
+      "sha256": "7f8a6d2a8e9ba6a68c921428a2669afb3438bda93cb115810e22bab685c4419e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\dbg2.js",
+      "path": "操作系统嵌套/submission/tools/dbg2.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 389,
+      "sha256": "cb8b8e3f5ea81637f15ba4458694c6e7f5a5821831b54004171416cd373682aa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\ev.sh",
+      "path": "操作系统嵌套/submission/tools/ev.sh",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 174,
+      "sha256": "dc9245dc622367830eb8b9eda30754c690ed166fd1b867db84825bfe1e1026f6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\flightlab.js",
+      "path": "操作系统嵌套/submission/tools/flightlab.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6844,
+      "sha256": "ab9abc0a5e81981d578fbf63484baa10816d282a3fa55433b17870692131bcfb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\gen-flight.js",
+      "path": "操作系统嵌套/submission/tools/gen-flight.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4136,
+      "sha256": "5c2129e7070a335cf2cbec89de1738b61c309e0f410b3b0364eba25d3db2d554"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\gen-scene.js",
+      "path": "操作系统嵌套/submission/tools/gen-scene.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 23502,
+      "sha256": "8b49adcf4ce876015d055b657c5109804658109209f6310090161034adfb7e1b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\gen-wallpapers.js",
+      "path": "操作系统嵌套/submission/tools/gen-wallpapers.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 10356,
+      "sha256": "bedcbe19f6173aa18a54deaf1671d772955287b906c853915fc4a8763e8f0e7d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\minihost.js",
+      "path": "操作系统嵌套/submission/tools/minihost.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1483,
+      "sha256": "a04a27ff7f1e0bc98c1924d0795ec4a9d07f5ff85cfacdddcfc8f289fa34389d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\p1.json",
+      "path": "操作系统嵌套/submission/tools/p1.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3068,
+      "sha256": "1a84014796c40f3511f8393f82b376dc679a886e83ee62d1f1b189051eb46a58"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\patch.js",
+      "path": "操作系统嵌套/submission/tools/patch.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 529,
+      "sha256": "bf17f1c9218a1ae6eb8e1f3864560760303141940913c5cac3b5297d32a43fbe"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\prof.js",
+      "path": "操作系统嵌套/submission/tools/prof.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1157,
+      "sha256": "6a34c8a8c577718767818ab90e5a8b5d494088a959a3716f2154a758dc86165f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\restart.sh",
+      "path": "操作系统嵌套/submission/tools/restart.sh",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 891,
+      "sha256": "c721634041da31dfb1b24feb4e5f60c94f225a858883b643abd021ace0bc9018"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\selftest.js",
+      "path": "操作系统嵌套/submission/tools/selftest.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2373,
+      "sha256": "6f9d3e89dd15d0aedeff499c3d8b11b1274acd94b6a57ccf39316f4ed2adb8ba"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\stage0.js",
+      "path": "操作系统嵌套/submission/tools/stage0.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1038,
+      "sha256": "25d6837361453da51401cecaee216231f39cb9362289502a62a2a4cf2f4e7d53"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\test.js",
+      "path": "操作系统嵌套/submission/tools/test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 3604,
+      "sha256": "47e1b5182a582fb9c465c9ca502d50c5eb700e75d98951b7856d50dfb415869a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\tune.js",
+      "path": "操作系统嵌套/submission/tools/tune.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1282,
+      "sha256": "70209188f5bedb9e7df075b3948941d9fb81071e06065f5301a7017419fedc29"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 468,
+      "sha256": "a422582d504cc910cab75e468af0f4665bee9f0f1f5ec69005a6843e39d779ab"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 3895,
+      "sha256": "e5e33ab1aea6e865cda5d3577d9e6bb5ddc8ecc419964a5bdf5202e1d5a290c3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1666,
+      "sha256": "65a1a9a0ac7b8d5bb25ad569c86415cb97465b836ff7e3b24175f36f52fb2d7f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 31988,
+      "sha256": "1431eca9b2be2265113b535364364893176f1cfdcbcfa0fb41636be037a7f3e4"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 496,
+      "sha256": "8c6880664b93f55dcefdb7f7cdd625c5dbc72537ce56a6303e31c6aa131c7651"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 6551,
+      "sha256": "b268a55e8358f18569cee7e69e55fa953dbaa4bb737a4801f68dd8ddffb2433d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 1950,
+      "sha256": "9f663fa783335ac64d72c17d30cd7d2bc7397fcc94a522458fc6842f5f15ecf1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 51648,
+      "sha256": "04e05235f5cae8ab02daafceec0c24b7ef3ee00fc8d2ee1fcb1c10182d0a008f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 490,
+      "sha256": "e57878258ddd81f215d67d3d0a0923261cd2c738956b0f37ad3defd86af5b43f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 5929,
+      "sha256": "812937011829714fab21ea79f2add6fcb72f5767a9ac18b27af9a39daf9af9b6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3356,
+      "sha256": "6cfca9f52c04dc55c0cf20ded9b9de9607fe5e42fa5e7c08926b9523dfc589b8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第01题.md",
+      "path": "数学竞赛原创试题/submission/答案/第01题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 6772,
+      "sha256": "f516eb4471cedcb5b8a0c66b24b9c8ef8f660af94fae46b4c63d76f9b3334087"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第02题.md",
+      "path": "数学竞赛原创试题/submission/答案/第02题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 6793,
+      "sha256": "894949eb4c913e1c5a1dc4d0d0f92f537ccbd2fa8d749202500e58055550ea8c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第03题.md",
+      "path": "数学竞赛原创试题/submission/答案/第03题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4676,
+      "sha256": "bdcc0aa9e107d2a4ed47dad6e945539eb2b39b0c9961964c91a55bcc3d1c9759"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第04题.md",
+      "path": "数学竞赛原创试题/submission/答案/第04题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4432,
+      "sha256": "f715044a15954d8609376e4a8f88f0ac4829f508615d828416da8a4eadc4fa50"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3876,
+      "sha256": "b4ee09a97aa5c57727a13d762a01be86f7824110d41dda238f40b04cd3458d21"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第06题.md",
+      "path": "数学竞赛原创试题/submission/答案/第06题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3579,
+      "sha256": "bf33264b8c380bdcf8d95594a9494fea46d29778880b1c8fce3fd9d4b4507ca3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4346,
+      "sha256": "f2989b4dab3f416560f649e7ce31a43f629dc928c7d3abe0d22d07e08396ea8a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第18题.md",
+      "path": "数学竞赛原创试题/submission/答案/第18题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4436,
+      "sha256": "c530ca44ddb2684ebff1191eca4de842582c4504182517db0a3b840a5313beb0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\答案\\第19题.md",
+      "path": "数学竞赛原创试题/submission/答案/第19题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5087,
+      "sha256": "1e02d6dd47098c9f7597675754e65df36a1e3704b9e4ea735a3a6af940011bea"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 480,
+      "sha256": "dcdca3c24f4f8627af3f4fd133fa60146103bdded728b66d86140876d9e2a81c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 7531,
+      "sha256": "83dc56cdbe055979833038a8410308a7100b9105b0fdbdd9e4a73543ef302e5a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7330,
+      "sha256": "03bafc7e583db5ea0e8d4103f01868833fddac66c1a868105e5f1be2b6f27180"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 1571,
+      "sha256": "8515d590a4a76c7d128229c779d87f9e8959015181ea17b2507a3bb6d7e96796"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\asteroids.js",
+      "path": "星际战舰编队/submission/js/asteroids.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9099,
+      "sha256": "448ab63cfd6e85b7e2ebdc47f5629bf3f780c8890839b8f8fa0eeb28e7d074cc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\camera.js",
+      "path": "星际战舰编队/submission/js/camera.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 6733,
+      "sha256": "89baaea027a5ab000055e3355ad309a8e1cf0073daa9c7e3728066d553807eae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\core.js",
+      "path": "星际战舰编队/submission/js/core.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 13503,
+      "sha256": "f6af647ffc8d989c2ec956f97dc6345f656f9874b7e5f48c388f853f8eb171ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\flagship.js",
+      "path": "星际战舰编队/submission/js/flagship.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 15902,
+      "sha256": "0f8e5b15ee93be444c5b0c6b938b6b38f103560a88465f7494e254561ce4e328"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\fleet.js",
+      "path": "星际战舰编队/submission/js/fleet.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 25396,
+      "sha256": "8fef9edde3795d9b968ed0f5d77180dcc7e8303d6291dc28b2111814c674f6f6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\fx.js",
+      "path": "星际战舰编队/submission/js/fx.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 31616,
+      "sha256": "61af13fe9b41821b7f58e014b9dc5891f07a47507bbd112091a132c6423cf85a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\interiors.js",
+      "path": "星际战舰编队/submission/js/interiors.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 26475,
+      "sha256": "94d0071fcd8b811adffa5313e1b4ae68dccd59ae0681b25ec7300db71fb77acb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9266,
+      "sha256": "5216a530529343bb3b4babbc5fb1ee22e438acc455f45406cb8978a34a628ccc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\materials.js",
+      "path": "星际战舰编队/submission/js/materials.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 6485,
+      "sha256": "fc9fa49f908851074b589dc7254ac80cf7ef1812e718d86e576529ff7e899adf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\render.js",
+      "path": "星际战舰编队/submission/js/render.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 26615,
+      "sha256": "c6269d861b4d5f248e48cb9c8cf5f4906630bc37ff4a3dbbe9d9c573fba7b13e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\shaders.js",
+      "path": "星际战舰编队/submission/js/shaders.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 30250,
+      "sha256": "1e7723a9b9753d3c8929534223c9b8613f6c1bd63d239ddd9b8d70af882f3a2b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\ships.js",
+      "path": "星际战舰编队/submission/js/ships.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 11705,
+      "sha256": "fe9fc6391611ec4028d5d48a18411ceba86d78605190e4a45bd89d5ed305b731"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\js\\voxel.js",
+      "path": "星际战舰编队/submission/js/voxel.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 21491,
+      "sha256": "02840978fef731609e9d783d11931040f3c5d66d9494ee4cde60d4f4dded4f58"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\设计说明.md",
+      "path": "星际战舰编队/submission/设计说明.md",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 3435,
+      "sha256": "550c95c7a0df958c9487e746dba177fc918bd0e70e91858b57624d4cfdee61f2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 481,
+      "sha256": "7ac4f54c5f5cd400d993e05d1c59099c32a92fafbad5b7211cd159c844457737"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 58851,
+      "sha256": "79cafec89704c0443cf9e2052c7360f065a8a67b96ccd5d88fe7a96be7e3494e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 3600,
+      "sha256": "5e8b2fcf986ef72bf3a926cccee43f5ad12c307c8071b8e4efde7cd2c5cfb174"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 986,
+      "sha256": "c987bac9991ddad7139259c353b1e3e089fb8986ab72a1d5edf3e7e2683c1219"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1614,
+      "sha256": "2f2a9cb82c3f2094cebc20b972d11940ae432d37dcc2cc1ba381aba65d314005"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2024,
+      "sha256": "d8cadd32f8835eca12477282dede161eca06e4e47715d998deaa1bc858bedd5d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2662,
+      "sha256": "a8f2469afaea0825689e622072b496c95dc29c3542a9d2eb9a9d710d26b3be88"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2962,
+      "sha256": "1500e67e563da097e9c6e05be890fd7d224b438d76bd9261759b2d5d74d3b0c2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2509,
+      "sha256": "e7c07f9e07eebd75dbcec569a301615c7871a12247d6dafd54679793ac7b36fb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2338,
+      "sha256": "6f59df6174bab2171d5fc47f8f8c7dd85f1c5a5ef1b091e01530dbedc4c5ae1e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3063,
+      "sha256": "cebef0198cd9a61fe3b4e0ef2cdea1927a7a794930113e703cd13d4fbcbb6c61"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2917,
+      "sha256": "388381dcf8bdfd245e26f07a30c490595854c214bf5a016c87ea19aae1221630"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2977,
+      "sha256": "fba051ee0d2f07345341ccf1d12213ba280aa8bbaed33f5f7df1d499d48b7aab"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 3341,
+      "sha256": "3d2ec439ff7fe584f22158380d8ff69e549e0e06d3f882ec08c58e7277e4c732"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 845,
+      "sha256": "792f350afa61da838ce042fb716b68babffddd3ff2b3d1656b1c4c67829f6525"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 904,
+      "sha256": "deb266939855562e8007ddd6ee6fcb01af2da89894c00f9a6c6965b4e6977382"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1256,
+      "sha256": "d8f8b06f212d78263b5ad2c39e4005e7815c658c8f925b79e43eae086fb46bbd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1047,
+      "sha256": "b75d01d9a4d41fb2edfd638abe991691d84ebabbe25cb07c528310e09c15024d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1052,
+      "sha256": "ffba755c94c024a73f6e98bd75c0132a463cf80e342c13a683d74972de849fa8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 747,
+      "sha256": "3e1196df06fbd8dc363717b260df961eae6dad96d1cf17cd5cc7a4e663ddd5e4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 840,
+      "sha256": "40507f4c4fe265ff3e4e3c8ec98f84ea46a1b574d00ae24bb855597b6488b9f8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 732,
+      "sha256": "3a1e0ec5a15f932d288b56d32528410e117c6e078aaab53d9b99ebc4063a417a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 673,
+      "sha256": "11a4b40c052fd6333153e9d34f357cb1d6a1f0d845a5d3685855e40a9dbbb77a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 587,
+      "sha256": "22abb8e71aa25f203fcd02b8607656b18bc2737a3db18b13e81327f94a845cdf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 582,
+      "sha256": "b4fd3a20e2e99d888e77a780cd2f9d084fab64fcb2ab85aa0bf350abeb04027b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 577,
+      "sha256": "d71d785c3a5f89b0955ff1778b808335e712fffe138de4414b9efc32c705b48b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 585,
+      "sha256": "b8be910d53ab759a4041ce1af18c08bffa1f22dde32b4df679902b536c9f1250"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 582,
+      "sha256": "d1f0f20034451a0405549885ed488aa982a1ff5444da116f7e0577f6b2d0f182"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 498,
+      "sha256": "0793fad402ce478d02841f2a5b4d3e26976db56fd06f65a599f044849f3a1470"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6274,
+      "sha256": "a8f2f66b8f3b3343c34bcceeaaa347c27650498589a606389b1c169c22acb7a6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4898,
+      "sha256": "0f93eebb9b9a59557d1663b985eb4c732003b8b2dffbe8b2ee36758a27a603bc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\_test.html",
+      "path": "果冻冲击与造浪水槽/submission/_test.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 432,
+      "sha256": "566e7e60b8a24d1c229f823fb64187c4f092585ec0af7d54270ca8e52dd4c0fd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10858,
+      "sha256": "c5952a7d118abd804327335e9aa4f9195397579efdbfdcfa036f27cf425c5120"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\app.js",
+      "path": "果冻冲击与造浪水槽/submission/js/app.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 29688,
+      "sha256": "80916978c112ef71feb587a025cf05157a1c8d5cbc233dba6530d7a684a55cf3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\audio.js",
+      "path": "果冻冲击与造浪水槽/submission/js/audio.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6981,
+      "sha256": "bbd8098fc93243c07cb6e697c1ad21d62ddd9df4fd731f1812d6ac254756f223"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\core.js",
+      "path": "果冻冲击与造浪水槽/submission/js/core.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10794,
+      "sha256": "6a9d9b926c632bd39a4d0e481dee8241f47d232c42be889910831a424522e942"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\demos.js",
+      "path": "果冻冲击与造浪水槽/submission/js/demos.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6864,
+      "sha256": "2320ca989d5526a09770b6e230647f56f3baeaa3d860d40e00475acb90d2562a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/js/jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 24862,
+      "sha256": "b2cc4076bdd6196087b751c23ff52cd585ae9c5d0cadfa2ba9f28b0708538e22"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\render.js",
+      "path": "果冻冲击与造浪水槽/submission/js/render.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 27225,
+      "sha256": "18e0551b06066492413404f75bbd9e9ad5d2110aa7202f0cfa2e445e0c3c100b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\render_shaders.js",
+      "path": "果冻冲击与造浪水槽/submission/js/render_shaders.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 35291,
+      "sha256": "8b12385760c76e329d619d0a48be28ae7a255312494fd879abc744466d9281c5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\water.js",
+      "path": "果冻冲击与造浪水槽/submission/js/water.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 32375,
+      "sha256": "5dad48f66a13cca58348ccdb8c6a068e2845d154da853717d6c1e0ef7ea4e562"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\js\\wgsl_common.js",
+      "path": "果冻冲击与造浪水槽/submission/js/wgsl_common.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2714,
+      "sha256": "c1cdd186d2a190a3b8b43c681b1b71fdd6dd268c6b52724fed74666a7a08605c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 472,
+      "sha256": "f29785fb8d7e8b5ebaecf079b29d3de6e6cc90b197dee12dc58fd00e8a493848"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 3218,
+      "sha256": "646c6aea87dcd00e8514ef8ca5943645a40c303cf7b736217cf53bf4ebc8c022"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 2162,
+      "sha256": "bb613d35fe429825c325e90b922ad3721f6d51edcdba3aecbeef74804bccbfaf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\答案\\第01题.json",
+      "path": "鲁班锁拆解/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 624,
+      "sha256": "f8c7f2f03589134ab0789bb98b6be1ed5573332fffa7fb6c66ba2a6a169e5c9b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\答案\\第02题.json",
+      "path": "鲁班锁拆解/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 722,
+      "sha256": "0f5f83146de47019949c087356e790e4041d3653099c59fcf55dfb424ae292da"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\答案\\第03题.json",
+      "path": "鲁班锁拆解/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 937,
+      "sha256": "238cec46577d9303cbebe4f3fa9a38140f19642205801657bc2246c7614c9789"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\答案\\第04题.json",
+      "path": "鲁班锁拆解/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 723,
+      "sha256": "1ad71dc814b642da95896b8b27dc8e044248361d2db18ad1914b92f2a5315b54"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\答案\\第05题.json",
+      "path": "鲁班锁拆解/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1090,
+      "sha256": "707042d8c606e4784a54ac99843108c9ba819b35866688213d3dacc35019f711"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\答案\\第06题.json",
+      "path": "鲁班锁拆解/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 1034,
+      "sha256": "c30cd995a319393800936521a2c82955ba0bcba538ca49bd01fe5c9a5a75df17"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\b0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\b1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\b2.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\b3.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\b4.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bA.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bB.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bC.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bC3.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bC4.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bG.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bR.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\d.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\dev.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\dev.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\dev.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devA.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devA.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devB.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devB.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devC.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devC.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devC3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devC3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devC4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devC4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devD.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devD.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE5.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devE5.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devF.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devF.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devG0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devG0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devG1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devG1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devL0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devL0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devL1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devL1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devLS.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devLS.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devLS0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devLS0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM100000.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM100000.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM160.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM160.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM24.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM24.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM8.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devM8.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devN4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devP4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR5.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR5.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR6.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devR6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devS.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devS.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devW0.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devW0.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devW1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devW1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devWN.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devWN.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX5.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX5.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX6.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devX6.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY1.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY1.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY2.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY3.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY4.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devY4.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\devbuild.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\e0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\e1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\e2.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\e3.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\e4.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\e5.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\f.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\g0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\g1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\grader.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\l0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\l1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\ls.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\ls0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\m100000.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\m160.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\m24.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\m8.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\p0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\p1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\p2.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\p3.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\p4.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch10.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch11.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch3.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch4.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch5.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch6.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch7.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\patch8.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\r1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\r4.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\r5.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\r6.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\s.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v1.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v2.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v3.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v4.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v5.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v6.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v7.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\solution_v8.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\stats.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\stats2.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\w0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\w1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\wn.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\x1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\x2.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\x3.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\x4.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\x5.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\x6.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\y1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\y2.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\y3.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\y4.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\z0.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\z1.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\z2.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\z3.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\动态路由塔防\\动态路由塔防.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\太阳雨渔港3D渲染\\太阳雨渔港3D渲染.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\scratch",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\形式化证明题\\形式化证明题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\dist",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\src\\vendor",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\tools\\out",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\logs",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\tools",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\versions",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数字电路仿真器加速\\tmp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\星际战舰编队\\星际战舰编队.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\机械结构重建.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\笔记",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\机械结构重建\\预览",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\果冻冲击与造浪水槽\\果冻冲击与造浪水槽.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Claude\\Fable5.2\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": []
+}

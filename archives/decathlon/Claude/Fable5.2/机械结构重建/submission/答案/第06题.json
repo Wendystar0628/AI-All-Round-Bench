@@ -1,0 +1,24 @@
+{
+  "problem": "06",
+  "parts": [
+    {"name": "1", "title": "双斜接口差压控制块", "features": [
+      {"type": "extrude", "name": "底板", "plane": "XY", "loops": [{"rect": [-10, -10, 166, 114]}], "depth": 12},
+      {"type": "extrude", "name": "双斜肩块体", "plane": "XZ", "loops": [{"path": [[0, 12], [156, 12], [156, 42], [118, 80], [32, 80], [0, 48]]}], "depth": [-104, 0]},
+      {"type": "extrude", "name": "后侧仪表台", "plane": "XY", "origin": [0, 0, 44], "loops": [{"rect": [52, 104, 100, 112]}], "depth": 32},
+      {"type": "hole", "name": "Y向贯通孔Φ18+前沉孔Φ30", "plane": "XZ", "origin": [0, 0, 0], "at": [76, 60], "d": 18, "depth": 112, "cbore": {"d": 30, "depth": 8}},
+      {"type": "hole", "name": "后沉孔Φ26", "plane": "ZX", "origin": [0, 112, 0], "at": [60, 76], "d": 26, "depth": 4},
+      {"type": "hole", "name": "X向主孔Φ28+左沉孔Φ40", "plane": "ZY", "origin": [0, 0, 0], "at": [30, 52], "d": 28, "depth": 156, "cbore": {"d": 40, "depth": 22}},
+      {"type": "hole", "name": "右沉孔Φ36", "plane": "YZ", "origin": [156, 0, 0], "at": [52, 30], "d": 36, "depth": 26},
+      {"type": "hole", "name": "顶部立孔Φ12", "plane": "XY", "origin": [0, 0, 80], "at": [76, 52], "d": 12, "depth": 50},
+      {"type": "hole", "name": "前侧孔Φ8", "plane": "XZ", "origin": [0, 0, 0], "at": [40, 30], "d": 8, "depth": 52},
+      {"type": "hole", "name": "后侧孔Φ10", "plane": "ZX", "origin": [0, 104, 0], "at": [30, 112], "d": 10, "depth": 52},
+      {"type": "hole", "name": "顶面盲孔2-Φ6", "plane": "XY", "origin": [0, 0, 80], "at": [[48, 22], [104, 82]], "d": 6, "depth": 16},
+      {"type": "extrude", "op": "cut", "name": "底面凹槽", "plane": "XY", "loops": [{"rect": [58, 32, 98, 72]}], "depth": 5},
+      {"type": "hole", "name": "底板孔4-Φ7", "plane": "XY", "origin": [0, 0, 12], "at": [[-5, -5], [161, -5], [-5, 109], [161, 109]], "d": 7, "through": true},
+      {"type": "hole", "name": "左斜孔Φ14", "plane": {"origin": [16, 52, 64], "normal": [-0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 14, "depth": 48},
+      {"type": "hole", "name": "右斜孔Φ16", "plane": {"origin": [137, 52, 61], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 16, "depth": 50},
+      {"type": "fillet", "radius": 2, "edges": [[-10, -10, 6]], "name": "底板左前外竖棱R2"},
+      {"type": "chamfer", "distance": 1, "edges": [[78, -10, 0]], "name": "前下直棱C1"}
+    ]}
+  ]
+}

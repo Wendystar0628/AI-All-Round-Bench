@@ -1,0 +1,14 @@
+// /Programs/sum.nos — 累加计算示例程序
+// 修改 n 的数值并重新运行，可核对逻辑计算结果与指令消耗。
+
+let n = 2000;
+let total = 0;
+let i = 1;
+while (i <= n) {
+  total += i;
+  i += 1;
+}
+let msg = "累加 1.." + str(n) + " = " + str(total);
+syscall("log", msg);
+syscall("set_result", total);
+return total;

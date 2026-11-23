@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#07141c">
+  <title>网络安全攻防战 · 汐域守护进程</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-shield" viewBox="0 0 32 32"><path d="M16 3 27 7v8c0 7-4.4 11.4-11 14-6.6-2.6-11-7-11-14V7Z"/><path d="m10 16 4 4 8-9"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 32 32"><rect x="8" y="8" width="16" height="16" rx="3"/><path d="M12 2v4m8-4v4M12 26v4m8-4v4M2 12h4m-4 8h4m20-8h4m-4 8h4"/><rect x="13" y="13" width="6" height="6"/></symbol>
+    <symbol id="i-intel" viewBox="0 0 32 32"><path d="M16 3 28 16 16 29 4 16Z"/><path d="m16 9 6 7-6 7-6-7Z"/></symbol>
+    <symbol id="i-core" viewBox="0 0 32 32"><path d="M16 3 27 9v14l-11 6L5 23V9Z"/><path d="m5 9 11 6 11-6M16 15v14"/><path d="m11 7 11 6"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 32 32"><path d="M3 17h5l3-9 5 17 4-13 3 5h6"/></symbol>
+    <symbol id="i-firewall" viewBox="0 0 40 40"><path d="M7 32V9h8v23m10 0V9h8v23M4 32h32M15 15h10m-10 7h10"/><path d="M20 5v7"/></symbol>
+    <symbol id="i-honey" viewBox="0 0 40 40"><path d="m20 4 11 7v13l-11 12L9 24V11Z"/><path d="m20 11 5 4v7l-5 6-5-6v-7Z"/><path d="M4 20h5m22 0h5M20 1v3"/></symbol>
+    <symbol id="i-gate" viewBox="0 0 40 40"><path d="M5 34V7h30v27M5 12h30M11 34V18h18v16"/><path d="M20 18v16m-4-8h8"/></symbol>
+    <symbol id="i-interceptor" viewBox="0 0 40 40"><path d="M9 34h22M13 30l3-10h8l3 10M18 20V11h13v6H18"/><path d="m31 8 5 5-5 5M12 12l-5 5m9-9-7 2"/></symbol>
+    <symbol id="i-sandbox" viewBox="0 0 40 40"><path d="M7 33h26M11 29l4-8h10l4 8"/><path d="M20 5a10 10 0 0 1 10 10H10A10 10 0 0 1 20 5Z"/><path d="M20 5v10M4 12h4m24 0h4"/></symbol>
+    <symbol id="i-repair" viewBox="0 0 40 40"><path d="M20 4a12 12 0 1 1-9 20M20 9a7 7 0 1 1-5 12"/><path d="M20 11v12m-6-6h12M5 5l5 1-1 5"/></symbol>
+    <symbol id="i-isolate" viewBox="0 0 40 40"><path d="M8 5v30M32 5v30M8 11h24M8 29h24"/><path d="M14 17h12v8H14Z"/><path d="m17 14 6 14m0-14L17 28"/></symbol>
+    <symbol id="i-downgrade" viewBox="0 0 40 40"><path d="M5 12h30M5 28h30M10 7v10m10-10v10m10-10v10M10 23v10m10-10v10m10-10v10"/><path d="m15 18 5 5 5-5"/></symbol>
+    <symbol id="i-backup" viewBox="0 0 40 40"><path d="M10 12a13 13 0 1 1-2 13M10 5v8H2"/><path d="M20 10v12m-6-6h12"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 32 32"><path d="M10 7v18M22 7v18"/></symbol>
+    <symbol id="i-play" viewBox="0 0 32 32"><path d="m10 6 16 10-16 10Z"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 32 32"><path d="M5 10h6l2-4h6l2 4h6v16H5Z"/><circle cx="16" cy="18" r="5"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 32 32"><path d="M4 12h6l7-6v20l-7-6H4Z"/><path d="M22 11a7 7 0 0 1 0 10m3-14a12 12 0 0 1 0 18"/></symbol>
+    <symbol id="i-close" viewBox="0 0 32 32"><path d="m8 8 16 16M24 8 8 24"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 32 32"><path d="M5 16h22m-8-8 8 8-8 8"/></symbol>
+    <symbol id="i-worm" viewBox="0 0 40 40"><circle cx="10" cy="25" r="5"/><circle cx="18" cy="18" r="6"/><circle cx="27" cy="12" r="6"/><path d="m29 5 1-4m-6 5-2-4"/></symbol>
+    <symbol id="i-flood" viewBox="0 0 40 40"><path d="M5 9h30v22H5Z"/><path d="M10 15h5v5h-5m10-5h5v5h-5M10 25h20M12 4v5m16-5v5"/></symbol>
+    <symbol id="i-trojan" viewBox="0 0 40 40"><path d="M5 31h30M9 30V15l8-7h13l4 7v15M17 8v11h17M13 21h5"/><circle cx="14" cy="32" r="3"/><circle cx="29" cy="32" r="3"/></symbol>
+    <symbol id="i-ransom" viewBox="0 0 40 40"><path d="m20 5 11 7v14l-11 9-11-9V12Z"/><path d="M15 16h10v10H15ZM20 9v7m-8 8-5 5m21-5 5 5"/></symbol>
+    <symbol id="i-hotspot" viewBox="0 0 40 40"><path d="M12 17h16l4 8H8ZM20 17V9"/><path d="M13 9a10 10 0 0 1 14 0M16 12a6 6 0 0 1 8 0M5 27l-3 5m33-5 3 5"/></symbol>
+    <symbol id="i-packer" viewBox="0 0 40 40"><path d="m20 4 14 8v16l-14 8-14-8V12Z"/><path d="m6 12 14 8 14-8M20 20v16"/><path d="m13 8 14 8v9"/></symbol>
+    <symbol id="i-boss" viewBox="0 0 40 40"><path d="m20 3 15 8v18l-15 8-15-8V11Z"/><path d="M10 15h20M10 25h20M15 10v20m10-20v20"/><circle cx="20" cy="20" r="4"/></symbol>
+  </svg>
+
+  <div id="scene"></div>
+  <div class="world-overlay"><div class="scanlines"></div><div class="vignette"></div></div>
+  <div id="boot"><div class="boot-mark"><svg><use href="#i-shield"/></svg></div><div class="boot-title">汐域守护进程</div><div class="boot-line"><i></i></div><span>正在建立安全会话…</span></div>
+
+  <header id="globalHeader" class="global-header">
+    <div class="brand"><div class="brand-symbol"><svg><use href="#i-shield"/></svg></div><div><b>汐域<span> / XIDOMAIN</span></b><small>自治域网络防御操作系统</small></div></div>
+    <div class="header-center"><span class="live-dot"></span> 守护进程在线 <i></i> <span id="clock">SESSION 00:00:00</span></div>
+    <div class="header-actions">
+      <button class="text-button" id="manualBtn">设备与威胁手册</button>
+      <div class="volume-wrap"><button class="icon-button" id="muteBtn" title="静音"><svg><use href="#i-volume"/></svg></button><input id="volume" aria-label="音量" type="range" min="0" max="1" step="0.05" value="0.45"></div>
+      <button class="icon-button" id="fullscreenBtn" title="全屏">⛶</button>
+    </div>
+  </header>
+
+  <main id="menuScreen" class="menu-screen screen">
+    <div class="menu-rail"><span>01</span><i></i><small>NETWORK<br>DEFENSE</small><b>汐域<br>安全运营中心</b></div>
+    <section class="hero">
+      <div class="eyebrow"><span></span> GUARDIAN PROCESS / 07</div>
+      <h1>网络安全<br><em>攻防战</em></h1>
+      <p>在流量之中识别威胁，在链路之间重塑防线。<br>你是汐域最后的守护进程。</p>
+      <div class="hero-actions"><button class="primary-button" id="enterMaps">进入防御网络 <svg><use href="#i-arrow"/></svg></button><button class="ghost-button" id="openDemos">观看实战演示 <span>03</span></button></div>
+      <div class="hero-metrics"><div><b>03</b><span>自治域战场</span></div><i></i><div><b>06</b><span>防御设备</span></div><i></i><div><b>45</b><span>递进攻击波次</span></div></div>
+    </section>
+    <aside class="menu-telemetry glass-panel">
+      <div class="panel-kicker">实时网络态势 <span>LIVE</span></div>
+      <div class="telemetry-title"><b id="menuMapName">分段内网</b><small id="menuMapCode">SECTOR / 01</small></div>
+      <div class="signal"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <dl><div><dt>网络负载</dt><dd id="menuLoad">38.4<small>%</small></dd></div><div><dt>活跃链路</dt><dd>24<small>条</small></dd></div><div><dt>威胁等级</dt><dd class="amber">严密</dd></div></dl>
+      <div class="telemetry-log"><span>最新系统日志</span><p><i></i> 业务流量完整性校验通过</p><p><i></i> 路由收敛协议运行正常</p><p class="warn"><i></i> 检测到蛰影组织探测行为</p></div>
+    </aside>
+    <section class="map-dock">
+      <div class="dock-heading"><span>选择防御区域</span><small>SELECT OPERATION SECTOR</small></div>
+      <div class="map-cards">
+        <article class="map-card active" data-map="0"><div class="map-art enterprise"><svg viewBox="0 0 240 78"><g class="topology"><path d="M18 14v48h60V14h70v48h74M18 38h200M78 38h40V14m0 24v24"/><circle cx="18" cy="14" r="5"/><circle cx="18" cy="38" r="5"/><circle cx="78" cy="38" r="5"/><circle cx="118" cy="38" r="5"/><circle cx="148" cy="14" r="5"/><circle cx="218" cy="38" r="5"/></g></svg><span>企业网</span><b>14 波</b></div><div class="map-card-copy"><small>SECTOR 01</small><h3>分段内网</h3><p>DMZ 互联 · 灾备环 · 核心数据库</p></div><button class="map-launch" aria-label="进入分段内网"><svg><use href="#i-arrow"/></svg></button></article>
+        <article class="map-card" data-map="1"><div class="map-art backbone"><svg viewBox="0 0 240 78"><g class="topology"><path d="M18 12v20h70v34h48V32h86M18 54h70m48 0h86M53 12v42m136-42v42M18 32h200"/><circle cx="18" cy="12" r="5"/><circle cx="88" cy="32" r="5"/><circle cx="136" cy="32" r="5"/><circle cx="88" cy="66" r="5"/><circle cx="136" cy="66" r="5"/><circle cx="204" cy="12" r="5"/></g></svg><span>跨网骨干</span><b>15 波</b></div><div class="map-card-copy"><small>SECTOR 02</small><h3>骨干流域</h3><p>专线隧道 · 双活中心 · 公网流</p></div><button class="map-launch" aria-label="进入骨干流域"><svg><use href="#i-arrow"/></svg></button></article>
+        <article class="map-card" data-map="2"><div class="map-art airgap"><svg viewBox="0 0 240 78"><g class="topology"><path d="M18 10v56h82V32h80V10M38 10v36h42m60 0h62V10M100 32v34h40M18 48h62"/><circle cx="18" cy="10" r="5"/><circle cx="38" cy="46" r="5"/><circle cx="100" cy="32" r="5"/><circle cx="180" cy="32" r="5"/><circle cx="100" cy="66" r="5"/><circle cx="180" cy="10" r="5"/></g></svg><span>工控网</span><b>16 波</b></div><div class="map-card-copy"><small>SECTOR 03</small><h3>气隙深层</h3><p>运维环 · 老工控总线 · 双核心</p></div><button class="map-launch" aria-label="进入气隙深层"><svg><use href="#i-arrow"/></svg></button></article>
+      </div>
+    </section>
+    <footer class="menu-footer"><span>中键环绕 · Shift + 中键平移 · 滚轮缩放</span><span>BUILD 7.14.0 // 本地安全会话</span></footer>
+  </main>
+
+  <section id="mapScreen" class="map-screen screen hidden">
+    <div class="subscreen-heading"><button class="back-button" data-back="menu">← 返回运营中心</button><div><small>OPERATION SECTORS</small><h2>选择防御区域</h2></div><p>每一处隔离，都是一次有代价的选择。</p></div>
+    <div id="sectorList" class="sector-list"></div>
+    <div class="demo-section"><div class="section-title"><span>实战演示</span><small>实时游戏逻辑 · 三段总计 58 秒</small></div><div class="demo-cards"><button data-demo="demo-1"><i>01</i><div><b>分段取舍</b><span>隔离西边界节点，让 A 折向 DMZ 互联</span></div><em>18″</em><svg><use href="#i-play"/></svg></button><button data-demo="demo-2"><i>02</i><div><b>旁路直通</b><span>洪峰冲垮网闸，协议降级重构交战分布</span></div><em>20″</em><svg><use href="#i-play"/></svg></button><button data-demo="demo-3"><i>03</i><div><b>蛰影现身</b><span>运维环锁死，冗余切换维持关键防线</span></div><em>20″</em><svg><use href="#i-play"/></svg></button></div></div>
+  </section>
+
+  <section id="gameHUD" class="game-hud hidden">
+    <div class="battle-topbar">
+      <button class="mission-back" id="gameMenuBtn"><span>‹</span><div><small id="sectorCode">SECTOR 01</small><b id="sectorName">分段内网</b></div></button>
+      <div class="resource cpu"><svg><use href="#i-cpu"/></svg><div><small>算力</small><b id="cpuValue">360</b></div><span id="cpuRate">+2.4 /s</span></div>
+      <div class="resource intel"><svg><use href="#i-intel"/></svg><div><small>情报</small><b id="intelValue">8</b></div><span>路由分析</span></div>
+      <div class="resource integrity"><svg><use href="#i-core"/></svg><div><small>中枢完整度</small><b id="coreValue">100%</b></div><div class="mini-bar"><i id="coreBar"></i></div></div>
+      <div class="wave-indicator"><small>当前防御进程</small><div><b id="waveValue">00</b><span>/ <i id="waveTotal">14</i></span><em id="waveState">布防阶段</em></div></div>
+      <div class="battle-controls"><button id="battleManual" class="icon-button" title="设备与威胁手册 / H" style="font-size:15px;color:var(--cyan)">?</button><button id="pauseBtn" class="icon-button" title="暂停 / 空格"><svg><use href="#i-pause"/></svg></button><button id="speedBtn" class="speed-button" title="切换速度">1×</button><button id="cameraBtn" class="icon-button" title="重置视角 / R"><svg><use href="#i-camera"/></svg></button></div>
+    </div>
+
+    <aside class="forecast-panel glass-panel">
+      <div class="panel-heading"><span>流量预报</span><small>INGRESS</small></div>
+      <div id="forecastList"></div>
+      <div class="route-legend"><span><i class="line-a"></i>入口 A</span><span><i class="line-b"></i>入口 B</span><span><i class="line-c"></i>入口 C</span></div>
+      <div class="network-log"><div><span>系统日志</span><button id="clearLog">清空</button></div><div id="eventLog"></div></div>
+    </aside>
+
+    <aside class="build-panel glass-panel">
+      <div class="panel-heading"><span>防御设备</span><small>拖放部署</small></div>
+      <div id="towerCards" class="tower-cards"></div>
+      <div class="item-heading"><span>应急协议</span><small>ITEMS</small></div>
+      <div id="itemCards" class="item-cards"></div>
+    </aside>
+
+    <div id="objectiveStrip" class="objective-strip"><span class="objective-icon"><svg><use href="#i-shield"/></svg></span><div><small>当前任务</small><b id="objectiveText">部署设备，维持各入口到中枢的业务连通</b></div><button id="startWaveBtn" class="primary-button">启动第 1 波 <svg><use href="#i-play"/></svg></button></div>
+    <div id="selectionPanel" class="selection-panel glass-panel hidden"></div>
+    <div id="routeConfirm" class="route-confirm glass-panel hidden"></div>
+    <div id="placementHint" class="placement-hint hidden"></div>
+    <div id="bossBar" class="boss-bar hidden"><div><span id="bossPhase">核心威胁</span><b id="bossName">万傀</b><em id="bossSkill">洪峰准备中</em></div><div class="boss-health"><i id="bossHealth"></i></div></div>
+    <div class="camera-help"><span>中键 环绕</span><span>⇧ 中键 平移</span><span>滚轮 缩放</span></div>
+    <div id="demoOverlay" class="demo-overlay hidden"><div class="demo-status"><span class="live-dot"></span><b id="demoTitle">实战演示</b><i></i><span id="demoTime">00:00 / 00:18</span><button id="exitDemo">退出演示</button></div><div class="subtitle" id="demoSubtitle"></div><div class="demo-progress"><i id="demoProgress"></i></div></div>
+    <div id="demoCursor" class="demo-cursor hidden"><svg viewBox="0 0 30 38"><path d="M3 2 26 23 15 24 10 35Z"/></svg><span></span></div>
+  </section>
+
+  <div id="toastStack" class="toast-stack"></div>
+  <div id="tooltip" class="tooltip hidden"></div>
+
+  <div id="manualModal" class="modal hidden"><div class="manual-window">
+    <header><div><small>GUARDIAN KNOWLEDGE BASE</small><h2>守护进程手册</h2></div><nav id="manualTabs"><button class="active" data-tab="towers">设备手册</button><button data-tab="enemies">威胁档案</button><button data-tab="items">应急协议</button><button data-tab="systems">地形与状态</button></nav><button class="icon-button close-modal"><svg><use href="#i-close"/></svg></button></header>
+    <div id="manualContent" class="manual-content"></div>
+  </div></div>
+
+  <div id="pauseModal" class="modal hidden"><div class="pause-window glass-panel"><small>GUARDIAN PROCESS SUSPENDED</small><h2>防御进程已暂停</h2><p>所有战斗、冷却与路由计时均已冻结。</p><button class="primary-button" id="resumeBtn">继续防御</button><button class="ghost-button" id="restartBtn">重新部署本图</button><button class="ghost-button" id="pauseMenuBtn">返回关卡选择</button><div class="audio-setting"><span>主音量</span><input id="pauseVolume" type="range" min="0" max="1" step="0.05" value="0.45"></div></div></div>
+
+  <div id="reportModal" class="modal hidden"><div class="report-window"><div id="reportSeal" class="report-seal"><svg><use href="#i-shield"/></svg></div><small>SECURITY INCIDENT REPORT</small><h2 id="reportTitle">事件报告 · 威胁已遏制</h2><p id="reportDesc"></p><div id="reportStats" class="report-stats"></div><div class="report-grade"><span>防御评级</span><b id="reportGrade">A</b><i></i><em id="reportScore">008600</em></div><div class="report-actions"><button class="primary-button" id="reportRestart">重新部署</button><button class="ghost-button" id="reportMenu">返回关卡选择</button></div></div></div>
+
+  <script src="three.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+pid = find("消息接收.str")
+result = send(pid,"来自高地站的消息")
+print(result)
+halt

@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "launch": {
+    "command": "npm",
+    "args": [
+      "start",
+      "--",
+      "--data-dir",
+      "{dataDir}",
+      "--width",
+      "{width}",
+      "--height",
+      "{height}",
+      "--remote-debugging-port={port}"
+    ],
+    "cwd": "."
+  },
+  "mainWindow": {
+    "title": "Strata OS · 层栈",
+    "context": "Electron CDP index.html；外部站点位于 webview 客体"
+  },
+  "fixtures": {
+    "outer": {
+      "documents": "/Documents",
+      "workbook": "/Demo/sample.sheet",
+      "chartRange": "A1:D4",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "kernel": "/System/kernel.str",
+      "instanceKernel": "/System/{systemId}.str",
+      "compiler": "/System/compiler.str",
+      "flightController": "/Programs/flight.str"
+    },
+    "inner": {
+      "documents": "/Documents",
+      "helicopter": "/Demo/helicopter-24.scene",
+      "kernel": "/System/kernel.str",
+      "instanceKernel": "/System/{systemId}.str",
+      "compiler": "/System/compiler.str",
+      "flightController": "/Programs/flight.str",
+      "windowManager": "/System/window.str",
+      "chart": "/System/chart.str",
+      "files": "/System/files.str"
+    }
+  }
+}

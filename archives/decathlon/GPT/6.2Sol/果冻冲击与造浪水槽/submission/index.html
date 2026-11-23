@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>动量实验室 · Momentum Lab</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="three.min.js"></script><script defer src="stage.js"></script><script defer src="jelly.js"></script><script defer src="water.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<header class="top interface">
+  <div class="brand"><span class="mark"><svg viewBox="0 0 32 32"><path d="m16 4 12 7v11l-12 7-12-7V11z M4 11l12 7 12-7 M16 18v11 M10 7l12 7"/></svg></span><div><strong>动量实验室</strong><small>MOMENTUM LAB</small></div></div>
+  <nav aria-label="实验场景"><button id="jtab" class="selected"><span>01</span> 果冻冲击</button><button id="wtab"><span>02</span> 造浪水槽</button></nav>
+  <button id="sound" class="quiet" title="开关音效"></button>
+</header>
+<main>
+  <section class="intro interface"><div><div id="eyebrow" class="eyebrow">01 / SOFT BODY</div><h1 id="title">重球冲击果冻</h1><p id="description">观察重球如何压缩、弹开或撕裂不同硬度的果冻。</p></div><div class="status"><i></i><span id="status">待触发</span></div></section>
+  <div class="work">
+    <section id="viewport" aria-label="三维实验台">
+      <div id="stage"></div>
+      <div class="stageTop interface">
+        <span id="liveTag"><i></i> 实验视图</span>
+        <button id="homeView" class="iconBtn" title="复位镜头" aria-label="复位镜头"></button>
+      </div>
+      <div class="stageBottom interface"><div id="specimens"></div><span class="orbitHint">拖动旋转 <b>·</b> 滚轮缩放</span></div>
+    </section>
+    <aside class="controls interface">
+      <div class="panelTitle"><span id="slidersIcon"></span><h2>实验控制</h2></div>
+      <div id="controlsBody"></div>
+      <div class="readout"><div><span id="measureLabel"></span><output id="measureValue"></output></div><div class="auxReading"><span id="auxLabel"></span><output id="auxValue"></output></div><canvas id="trace" width="260" height="44" aria-hidden="true"></canvas></div><div class="transport"><button id="pause" class="quiet" title="暂停或继续（空格）"></button><button id="slow" class="quiet" title="切换慢放">1×</button><button id="reset" class="quiet" title="重置实验"></button></div>
+    </aside>
+  </div>
+  <section class="demos interface" aria-label="预设演示"><div class="demoHeading"><h2>预设演示</h2><span id="demoProgress"></span></div><div id="demoCards"></div></section>
+</main>
+</body>
+</html>
+

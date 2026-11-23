@@ -1,0 +1,25 @@
+{
+  "name": "forge-motion-studio",
+  "version": "1.0.0",
+  "description": "AE-flavored WebGL2 Motion Design & 3D Procedural Animation Studio",
+  "private": true,
+  "scripts": {
+    "build:assets": "python scripts/build_fonts.py",
+    "build:js": "esbuild src/main.ts --bundle --format=iife --target=chrome120 --outfile=app.js",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && npm run build:js"
+  },
+  "dependencies": {
+    "@fontsource/ma-shan-zheng": "^5.3.1",
+    "@fontsource/noto-sans-sc": "^5.3.1",
+    "@fontsource/noto-serif-sc": "^5.3.1",
+    "earcut": "^3.2.4",
+    "hanzi-writer-data": "^2.0.1",
+    "opentype.js": "^2.0.0",
+    "polygon-clipping": "^0.15.7"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "typescript": "^5.8.0"
+  }
+}

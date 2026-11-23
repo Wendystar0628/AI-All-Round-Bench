@@ -1,0 +1,9 @@
+n = 0
+sum = 0
+@loop
+n = n + 1
+sum = sum + n
+if n < 100 goto loop
+print(sum)
+write("/Documents/累加结果.txt",sum)
+halt

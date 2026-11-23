@@ -1,0 +1,1901 @@
+{
+  "schema": 1,
+  "model": "Qwen/4Max",
+  "files": [
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "AE风味动效设计编辑器/cost.json",
+      "role": "cost",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 559,
+      "sha256": "3cfb0ae429d93a9b7535603739ae004d58bd537812bb625f449d76c53f8c9768"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\codex\\main\\result.json",
+      "path": "AE风味动效设计编辑器/grading/codex/main/result.json",
+      "role": "result",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 11290,
+      "sha256": "12d84b0e31ab8504d8339a04dffc67b7bb1147a52a25decc12bdc9f0af40aa2a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\评分表_6.1Sol.md",
+      "path": "AE风味动效设计编辑器/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6187,
+      "sha256": "4313a769f60d3b504d0af8b4d090a7eb0a9e8bf650a1ef8b30c8daca2d65cafc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\css\\ui.css",
+      "path": "AE风味动效设计编辑器/submission/css/ui.css",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21251,
+      "sha256": "b5643c404f7200f9887e0a59ec8135b467952c1ddcda0874b61b5f6a45061feb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\index.html",
+      "path": "AE风味动效设计编辑器/submission/index.html",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8009,
+      "sha256": "425ce76b882143fdd7c6f15b10ce5ffd49c30e99c6bbf9896b762e7b4651bbe9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\audio.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/audio.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 8877,
+      "sha256": "68ec4fab0df9bbfe552cc1437a94fde1e967aaffa074a0020b49ab8a13c023fc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\eval.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/eval.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 16585,
+      "sha256": "93f79aeeabd1151508fb02469f9c0c5bd0db4cf4e138e4e1869f641048d5b108"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\geometry.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/geometry.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 26572,
+      "sha256": "63c64e60dc3c4a880dd6e71e30b6fc6b94493953ce8786da61c9daa570cf13e0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\glyphs.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/glyphs.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 17852,
+      "sha256": "b59c60f4513b05f87aa98f261c587cc6204103e2744641ee7e042db0ec4f3b7a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\model.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/model.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 9425,
+      "sha256": "bcd88804e3f5af23e2272c2dc822b63e928f8b2343c7c0270d54efefbad8dbfe"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\nodes.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/nodes.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 15467,
+      "sha256": "15905ed231e029ebb9899ab1eb5277096fa9917c311f111a664d9a5b2a8acb19"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\particles.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/particles.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 15505,
+      "sha256": "2510594aa12c0b2319752e75820115bff916290dfa6d18a00e0fa132e22542cd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\core\\util.js",
+      "path": "AE风味动效设计编辑器/submission/js/core/util.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 22929,
+      "sha256": "ba240e4defe0cb94abc176d994361be3bc267136ff0521958b8cc43948f3357a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\render\\compositor.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/compositor.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 11141,
+      "sha256": "c48cba5b2112aeec68d81b1d72e8b9d01da5ad6ef22992e4d26cf51d55a714bb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\render\\gl.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/gl.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 6429,
+      "sha256": "7c27bb4178e9b09d57c699ad163f16f915f2e3a2d00989c186d8c1fa31bf99a3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\render\\render2d.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/render2d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 13061,
+      "sha256": "d6cec1ba5f5b33ca02c7cb9eff8bbc02915031072eac4791f3f9b88e6a68ffc9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\render\\render3d.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/render3d.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 14798,
+      "sha256": "a2060398c0ff1c45f8f069d4d2e75515b423cc9af628b9fd36595de36246a8ef"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\render\\shaders.js",
+      "path": "AE风味动效设计编辑器/submission/js/render/shaders.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 10965,
+      "sha256": "7f0d09d0b62502211c1f754c597915f42578a1f5ef4d95528648d75e668b8d64"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\ui\\app.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/app.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 31125,
+      "sha256": "a3ff4318afeb353ef05280375811f390d40636a91a7a55afc51dafd65fbdaaa4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\ui\\canvasview.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/canvasview.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 34845,
+      "sha256": "43418b17c52d2cd2cbd9c934ddf8700661ec49a65b7c34ac3261fb602c3c2ead"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\ui\\curves.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/curves.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 12416,
+      "sha256": "2a14a880786017ec367602c9a845fc154b856be8574c7090d7effcf7e15f339d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\ui\\inspector.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/inspector.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 44493,
+      "sha256": "5382291bbeb1dcd2e4a16c2993ed33eeda4feb7a5a889ec76d58da20312cb0af"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\ui\\nodeeditor.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/nodeeditor.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 21009,
+      "sha256": "388683d2019fa86f9eefadd5f9c3f357f0286ec2f734a567b8addbba5f028a3d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\js\\ui\\timeline.js",
+      "path": "AE风味动效设计编辑器/submission/js/ui/timeline.js",
+      "role": "submission",
+      "task": "AE风味动效设计编辑器",
+      "bytes": 24312,
+      "sha256": "dc559607cb05e1ece299a51a5b7699207b466a174fed0887e3b602933fa9ba33"
+    },
+    {
+      "source": "H:\\AI_OneShot_Video\\decathlon\\Qwen\\4Max\\assets\\raytracing\\render.json",
+      "path": "光线追踪渲染加速/assets/render.json",
+      "role": "asset",
+      "task": "光线追踪渲染加速",
+      "bytes": 857,
+      "sha256": "9f1396ce1dcbd2e26b4adc6970790564ef624e698b3cd8e32eff5af0929b55eb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Video\\decathlon\\Qwen\\4Max\\assets\\raytracing\\render.png",
+      "path": "光线追踪渲染加速/assets/render.png",
+      "role": "asset",
+      "task": "光线追踪渲染加速",
+      "bytes": 2439618,
+      "sha256": "dbd47b284e25ea4ab3de7fcf296cf23fa5debfba21492d5d7adef498845ebb88"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "光线追踪渲染加速/cost.json",
+      "role": "cost",
+      "task": "光线追踪渲染加速",
+      "bytes": 549,
+      "sha256": "fd04eb94cf82287c32af4d785b9d6a81b7677e15fd53c4ce9d6ffe46a19b8c3a"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\codex\\performance\\result.json",
+      "path": "光线追踪渲染加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "光线追踪渲染加速",
+      "bytes": 1798,
+      "sha256": "ba8f8ff4f6dba81c357b410ca92ef0c823db7c3cc408f7726bf4c42bd1261033"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\评分表_6.1Sol.md",
+      "path": "光线追踪渲染加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "光线追踪渲染加速",
+      "bytes": 2126,
+      "sha256": "83270168958ae0e70e96e9d8b9b05ce6d3c7299f9ecef0a646b2fd0e1693f401"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\solution.cu",
+      "path": "光线追踪渲染加速/submission/solution.cu",
+      "role": "submission",
+      "task": "光线追踪渲染加速",
+      "bytes": 12832,
+      "sha256": "40202d17bd7179843e4acaf77f62eff2c733edb4c8f8b89f73f0e986d9e01be1"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "动态路由塔防/cost.json",
+      "role": "cost",
+      "task": "动态路由塔防",
+      "bytes": 537,
+      "sha256": "4c9fb082d73f270f9fb63e8187334a3170f87c6f55943fa1034c20521f424c5c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\动态路由塔防\\codex\\main\\result.json",
+      "path": "动态路由塔防/grading/codex/main/result.json",
+      "role": "result",
+      "task": "动态路由塔防",
+      "bytes": 6836,
+      "sha256": "dc6faf7219dac20eef439b773fd3aed5ea99f178279b447ec569f09b6842903e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\评分表_6.1Sol.md",
+      "path": "动态路由塔防/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "动态路由塔防",
+      "bytes": 4166,
+      "sha256": "341242a228a7b37de13373676a5528049e0b569ed38f0ed21da32fe2609991e2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\css\\style.css",
+      "path": "动态路由塔防/submission/css/style.css",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 17607,
+      "sha256": "2d41110222067a0bae03ab0f7260bc8b0af0c51a74d5bb57059bb88985ec0098"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\index.html",
+      "path": "动态路由塔防/submission/index.html",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4428,
+      "sha256": "5926b9b212ba31ef1ba14d20ff3c3543171443832098d4fc06cb03daed279516"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\audio.js",
+      "path": "动态路由塔防/submission/js/audio.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 7985,
+      "sha256": "f3dc01a5d5257f3217ffd7ad94763ea34e5e75ec9e4da20e27f8c752e62c93b2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\data.js",
+      "path": "动态路由塔防/submission/js/data.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 20099,
+      "sha256": "b01475c7c21b2eda04f3dc303a9ba59ba21960e338e8334b1d4c6c626e3f5210"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\demo.js",
+      "path": "动态路由塔防/submission/js/demo.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 13927,
+      "sha256": "a876142ceff9b9ade25a810cd67bd273f0a2515d43e1d01830512402e3530b39"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\export.js",
+      "path": "动态路由塔防/submission/js/export.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2171,
+      "sha256": "a124f1a2ad8b41a816bad5e94eab2d88aad2e48f62618b17d6feb60fe544e1c1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\main.js",
+      "path": "动态路由塔防/submission/js/main.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 13603,
+      "sha256": "9e8b7da0916c003843fe79f24ab15637648a2069c388463260fd9265117675d1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\models.js",
+      "path": "动态路由塔防/submission/js/models.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 25280,
+      "sha256": "f60801829a5bb1daceacdb04f158b329282b6ea1d409737f69b3bc1c34e7a4c0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\render.js",
+      "path": "动态路由塔防/submission/js/render.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 39500,
+      "sha256": "505132d2c2415df5a137c97b175267b2b18fd69144b85c8e62cf05a9f3e008e1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\routing.js",
+      "path": "动态路由塔防/submission/js/routing.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 5897,
+      "sha256": "532082ad324686d8d53a59d824466a3854bdf414618f9956d1d331e42377167b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\sim.js",
+      "path": "动态路由塔防/submission/js/sim.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 41559,
+      "sha256": "de6a7fc63c8a974e5526ee0e59f6bb3cd2d730d80314c582f224c264ff6d2669"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\js\\ui.js",
+      "path": "动态路由塔防/submission/js/ui.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 37033,
+      "sha256": "4cbacc92e2ccad27a37b585950024436bdc06f78a701fd4d03946321d35f2f83"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\lib\\THREE-LICENSE.txt",
+      "path": "动态路由塔防/submission/lib/THREE-LICENSE.txt",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1081,
+      "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\lib\\three.min.js",
+      "path": "动态路由塔防/submission/lib/three.min.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 668024,
+      "sha256": "7b1c5d75b28d9de15042e2b374f83566d8c7146697af8fdeb4558b0fb528a585"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\tools\\balance.js",
+      "path": "动态路由塔防/submission/tools/balance.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 1939,
+      "sha256": "f2528940fd79f28324b7875df62a5baea3f7e9b9c8a947e14a1985a9ae99c050"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\tools\\mechanics.js",
+      "path": "动态路由塔防/submission/tools/mechanics.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 4129,
+      "sha256": "eda77d8aedfd5b8d7473fa737e6e82f1d92d5a4c3dfef3371a60f3f768abb5b7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\tools\\smoke.js",
+      "path": "动态路由塔防/submission/tools/smoke.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2496,
+      "sha256": "965260bc91af9f6c3d6fdea177c2bc02acbdf5a5aefedc28d32b4f3f3bb025c7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\动态路由塔防\\tools\\validate.js",
+      "path": "动态路由塔防/submission/tools/validate.js",
+      "role": "submission",
+      "task": "动态路由塔防",
+      "bytes": 2406,
+      "sha256": "db2dd882175b3896af8fb0b35f5f4fe0ba2c97cdce8aa6ebf28f804928fe9995"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "太阳雨渔港3D渲染/cost.json",
+      "role": "cost",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 549,
+      "sha256": "d67cb04c985ac0888504b4a7be388475490e03d03114f51c1aa30bd07a4c76a7"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\codex\\main\\result.json",
+      "path": "太阳雨渔港3D渲染/grading/codex/main/result.json",
+      "role": "result",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 6378,
+      "sha256": "a399085017ccb1f757ad1f305f955ed4806010abfb4154d2ccbc550764634ac7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\评分表_6.1Sol.md",
+      "path": "太阳雨渔港3D渲染/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 4159,
+      "sha256": "010d8466d7845af81dbe61d395b2026ee78dfbd6f5f8a9c235cdbfa1780d8a87"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\index.html",
+      "path": "太阳雨渔港3D渲染/submission/index.html",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 742,
+      "sha256": "98d71122943c932a0e4e5e04655bfa50790e2b92a25a52f615a790570d49354e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\boats.js",
+      "path": "太阳雨渔港3D渲染/submission/js/boats.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 27219,
+      "sha256": "f0a110ad65f4410f4f0a82c5935b220cc70a185adacccdcd1a00e0583de9d80f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\buildings.js",
+      "path": "太阳雨渔港3D渲染/submission/js/buildings.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 19987,
+      "sha256": "a68a08c7e3b51434f0a855af2c8969ab8196d2c5d537fb28513d663736682df6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\core.js",
+      "path": "太阳雨渔港3D渲染/submission/js/core.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 13111,
+      "sha256": "5c145d6f1b134f3e3a4fdbe704a0efb46cbad29a41d47ea5d05403f99d1dc44e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\fx.js",
+      "path": "太阳雨渔港3D渲染/submission/js/fx.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 37490,
+      "sha256": "ed22632fadb490ba244f13abeeff30b047a44cae54b76d69b74d304e25aba5f3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\life.js",
+      "path": "太阳雨渔港3D渲染/submission/js/life.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 8808,
+      "sha256": "4578dd3eede503d3df4a56dc5f417160d51c29f0b1cbf12f58b1d54ec447dc58"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\main.js",
+      "path": "太阳雨渔港3D渲染/submission/js/main.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 10855,
+      "sha256": "893ef9c37d99b2d32f71ea4b22a54bbf46d7535595a69823e66ffbd00c2335ad"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\props.js",
+      "path": "太阳雨渔港3D渲染/submission/js/props.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 22248,
+      "sha256": "06d3a6eafeffcc8173baa3171b84ef580e1b0b73545e5f45d8f04df25454f54b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\sim.js",
+      "path": "太阳雨渔港3D渲染/submission/js/sim.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 15454,
+      "sha256": "26a884bc6db4b514aa16f72b04f9d645a525e1ffd1221c7d864c858eb4fbe040"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\terrain.js",
+      "path": "太阳雨渔港3D渲染/submission/js/terrain.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 22812,
+      "sha256": "8da32772a79faab2df1c00c29919750a4b4f651a1195d86066d4f7cc3053be4b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\js\\tour.js",
+      "path": "太阳雨渔港3D渲染/submission/js/tour.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 3419,
+      "sha256": "05629b1eebba1be551a603fca303136addecc08bc6e1fb7c396ffb5a3cbf6754"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\太阳雨渔港3D渲染\\three.min.js",
+      "path": "太阳雨渔港3D渲染/submission/three.min.js",
+      "role": "submission",
+      "task": "太阳雨渔港3D渲染",
+      "bytes": 603445,
+      "sha256": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "形式化证明题/cost.json",
+      "role": "cost",
+      "task": "形式化证明题",
+      "bytes": 537,
+      "sha256": "a7ee44a82914bd9fcaa76c26502c7e744c981e7647acede38c75ced02de41775"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\形式化证明题\\codex\\main\\result.json",
+      "path": "形式化证明题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "形式化证明题",
+      "bytes": 2694,
+      "sha256": "05b697affba7ddc34f2a723da26c2805aaa0d66ed38ee1e02a1398fa4dac5e41"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\形式化证明题\\评分表_6.1Sol.md",
+      "path": "形式化证明题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "形式化证明题",
+      "bytes": 1176,
+      "sha256": "ba2d565475c957d5531c01013135fb8767f8c5e51a2c1d772d7b7eb3061dfaa6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\形式化证明题\\Problem1.lean",
+      "path": "形式化证明题/submission/Problem1.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 19291,
+      "sha256": "76dddc0083ea6ea597eef85fb67d590482f6b7836a54fc71dc1d5e520424e5f4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\形式化证明题\\Problem3.lean",
+      "path": "形式化证明题/submission/Problem3.lean",
+      "role": "submission",
+      "task": "形式化证明题",
+      "bytes": 8629,
+      "sha256": "cdd0726d5744ca3ee2c4fe89366ce12d1a4c06f5f642e41c2ae8b03f0629595c"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "操作系统嵌套/cost.json",
+      "role": "cost",
+      "task": "操作系统嵌套",
+      "bytes": 537,
+      "sha256": "9d78a387a0a3493bf9884e4e4085a83714a9e6153dac811b2e21b225af687e4f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\操作系统嵌套\\codex\\main\\result.json",
+      "path": "操作系统嵌套/grading/codex/main/result.json",
+      "role": "result",
+      "task": "操作系统嵌套",
+      "bytes": 13352,
+      "sha256": "27ea774e7310ac811e1e246107da39fcc0fa2427126c839f3d8189c90d1e87dd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\评分表_6.1Sol.md",
+      "path": "操作系统嵌套/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "操作系统嵌套",
+      "bytes": 10541,
+      "sha256": "6823d26ba0dda77274c248441f82f2711ff3410232ba3be7847ff8055e9efc5c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\assets\\helicopter-24.scene.json",
+      "path": "操作系统嵌套/submission/assets/helicopter-24.scene.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 30450,
+      "sha256": "c44cf3c55311163c2bda6a330c39cade294d0bfe68dba5f3707071e57d150de7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\assets\\minimal.scene.json",
+      "path": "操作系统嵌套/submission/assets/minimal.scene.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1027,
+      "sha256": "825090c96b045d839c0e0c7123c2a73278c2e663ee60b9542724e3e48e77060a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\index.html",
+      "path": "操作系统嵌套/submission/index.html",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 536,
+      "sha256": "3b6c0945b93b2a52181891c60fc33372cf71fe9de17afa34a24a6e1424eb7014"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\main.js",
+      "path": "操作系统嵌套/submission/main.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4463,
+      "sha256": "af0b55023f2802ea358fac0e05dc85cc890b59d6f23ad821b18691b5c1b97ef9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\package-lock.json",
+      "path": "操作系统嵌套/submission/package-lock.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6094,
+      "sha256": "7e838469e162c7fcb5d23e485bf74fec667131248e6709046e2571ed4a674ceb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\package.json",
+      "path": "操作系统嵌套/submission/package.json",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 273,
+      "sha256": "bd0246994fd150f8ce16ca928a39d4d53e2c32068c6efebb563250916e08dfc4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\scripts\\gen-scene.js",
+      "path": "操作系统嵌套/submission/scripts/gen-scene.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17252,
+      "sha256": "7a230c2a78557858147dfc2ab28f0923410861f564cc9a72ca69361c3dd8c867"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\apps\\spreadsheet.js",
+      "path": "操作系统嵌套/submission/src/host/apps/spreadsheet.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 27852,
+      "sha256": "aba5cfba14cdf695babcb904fac226e16115ca5dcf83112a50bf27a95328a7c9"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\desktop.js",
+      "path": "操作系统嵌套/submission/src/host/desktop.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 28355,
+      "sha256": "36d59ab67b00207317a107cb992721103a9796bbdb9dce4834164783ac59ea57"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\device.js",
+      "path": "操作系统嵌套/submission/src/host/device.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4751,
+      "sha256": "85eaf0ce62cf7ff2352174e57373a930d5ad1162f47611299679d56fef48c0d0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\device2d.js",
+      "path": "操作系统嵌套/submission/src/host/device2d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17251,
+      "sha256": "bfbb01d75b8acec5d5681de7925ef4cf713fc289aeb96c8110ab039582df1881"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\device3d.js",
+      "path": "操作系统嵌套/submission/src/host/device3d.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 23448,
+      "sha256": "cc376e0e47509c293ddc2466bb1fa0c10d84916cd0cb4baa953f3f286e8e8da7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\instance.js",
+      "path": "操作系统嵌套/submission/src/host/instance.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14096,
+      "sha256": "de12aa01290b288af4aa89d794f3e261597bb90fff03358fe8755b64e395aa53"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\os.js",
+      "path": "操作系统嵌套/submission/src/host/os.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 31653,
+      "sha256": "3830bb2d11e60a712036028b1d1e79168ab7b4c2e3019f459e8cb235942b6406"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\rootkernel.js",
+      "path": "操作系统嵌套/submission/src/host/rootkernel.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 17555,
+      "sha256": "99e9a04def92b8b604771bf2099b34d154d78428e6c4a102d6bd3379587477e6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\host\\subview.js",
+      "path": "操作系统嵌套/submission/src/host/subview.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 12616,
+      "sha256": "9d0cb2d664ce11ed2f71c584c26ded5971671aaa2ffa8f481080b52edf78789a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\lang\\lang.js",
+      "path": "操作系统嵌套/submission/src/lang/lang.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 33212,
+      "sha256": "20cac4f8a22e1ba9ef143f4420daf3e27a8efbc6c6e8d8c3a03f2a3bad1e06cf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\apps\\charts.os",
+      "path": "操作系统嵌套/submission/src/programs/apps/charts.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 14444,
+      "sha256": "51595afc7e7046ee9a6337ff31fb2c5d2a7d88aa328c59995a36fa2100088e1d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\apps\\editor.os",
+      "path": "操作系统嵌套/submission/src/programs/apps/editor.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 9893,
+      "sha256": "a39e0302e0c78ab3a3421ee069dc8ff397a7221e8e985146b13d1c4b06104a83"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\apps\\files.os",
+      "path": "操作系统嵌套/submission/src/programs/apps/files.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 15066,
+      "sha256": "2ebff4921c96e7a8f45b4aa78d3a674cc26eb7c7ea3be2ae91decc2dbb07fc80"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\apps\\player.os",
+      "path": "操作系统嵌套/submission/src/programs/apps/player.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 21733,
+      "sha256": "76654249d7b97070292aa274c6c26f304ffa99395c674161e8f39f0abe8d360e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\apps\\tasks.os",
+      "path": "操作系统嵌套/submission/src/programs/apps/tasks.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 11497,
+      "sha256": "3972ee69551cf5e34e959a4271213700543a64f1782bf333f1286ade02f62f76"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\compiler.os",
+      "path": "操作系统嵌套/submission/src/programs/compiler.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 16639,
+      "sha256": "6146d91d93d7abf63fcf644ddd9930e6806d3d7a47b4672d6954ea45b38857a6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\flight\\chart_receiver.os",
+      "path": "操作系统嵌套/submission/src/programs/flight/chart_receiver.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 1186,
+      "sha256": "045f81149f1a853f5fb5babad3d4749a7ca9eeabb45c968b76e8bb7f3c44ad57"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\flight\\controller.os",
+      "path": "操作系统嵌套/submission/src/programs/flight/controller.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2178,
+      "sha256": "932dbf352435cf2d1bd6c5045994391b6121797e4a97d73d7f153faf4fadf427"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\flight\\effects.os",
+      "path": "操作系统嵌套/submission/src/programs/flight/effects.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 8186,
+      "sha256": "31b85223033a3a71dd6a23e8d7062f6e8e858f09d9b36d740212ac96749d5818"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\flight\\flight.os",
+      "path": "操作系统嵌套/submission/src/programs/flight/flight.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 13156,
+      "sha256": "f398d2e8e363820800f4f4d707e2e72284a8460e368157d6e6252cef31187027"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\flight\\timeline.os",
+      "path": "操作系统嵌套/submission/src/programs/flight/timeline.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 2051,
+      "sha256": "58824dcceda36779eaf49b4c9f075b2b2db568e65d7e07cd8e7a632cfaa8947f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\kernel.os",
+      "path": "操作系统嵌套/submission/src/programs/kernel.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 28890,
+      "sha256": "46c06f8520c77d8ac64166fae03c9ffacd8e39772fa7e34af35d732396b48967"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\samples\\accumulate.os",
+      "path": "操作系统嵌套/submission/src/programs/samples/accumulate.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 447,
+      "sha256": "f778b8bd9de57002eda21a156858b66e50326338b16db20f107892cbe9cb04f7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\samples\\receiver.os",
+      "path": "操作系统嵌套/submission/src/programs/samples/receiver.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 643,
+      "sha256": "c11f963167428f2a4114b0f42fd1718c9721f86266a4d25c670e1366b042f201"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\samples\\sender.os",
+      "path": "操作系统嵌套/submission/src/programs/samples/sender.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 694,
+      "sha256": "2c4f4cc9088b4b1e3d16108d07d97179709bda6b5e0266cf18da0534a70d2fb5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\samples\\spin.os",
+      "path": "操作系统嵌套/submission/src/programs/samples/spin.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 351,
+      "sha256": "f48e470fddcfd066e429cc06e0dec9275d073f00f8b859dc52266d2ae09aa9be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\src\\programs\\wm.os",
+      "path": "操作系统嵌套/submission/src/programs/wm.os",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 38744,
+      "sha256": "011843225665da3d0de27cf8152eb35da9a65cdb6058994ce41d155272f5edd3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\styles.css",
+      "path": "操作系统嵌套/submission/styles.css",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 21505,
+      "sha256": "bc23ccb172d4e4c48d76fb5939ef6272cbf4f2d66e7b1a6ec6a4042464b531d5"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\tests\\compiler.test.js",
+      "path": "操作系统嵌套/submission/tests/compiler.test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 4616,
+      "sha256": "a58a049726038a2968dfb23c2a314859244265dfa797e1b55ffa48b5920d9ee2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\tests\\lang.test.js",
+      "path": "操作系统嵌套/submission/tests/lang.test.js",
+      "role": "submission",
+      "task": "操作系统嵌套",
+      "bytes": 6189,
+      "sha256": "c1ac76c1e56b9e90fe1b421a706fd9b12f247011723d68642bfdee49e48147b3"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "攻城略地/cost.json",
+      "role": "cost",
+      "task": "攻城略地",
+      "bytes": 526,
+      "sha256": "b9bcc82530c0d6599fb8dff6a8705c910c10357cec8b373fe2e543970660c7dd"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\攻城略地\\codex\\performance\\result.json",
+      "path": "攻城略地/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "攻城略地",
+      "bytes": 3950,
+      "sha256": "ea2068e76e3a07c4da614970db983edd16535fc46d124610e7f2c56172ff5639"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\评分表_6.1Sol.md",
+      "path": "攻城略地/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "攻城略地",
+      "bytes": 1597,
+      "sha256": "eb297c98b4a48ef40d9c382b4e5ce5d80d0361d0dbedd544aad835b48bd7b188"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\bot.cpp",
+      "path": "攻城略地/submission/bot.cpp",
+      "role": "submission",
+      "task": "攻城略地",
+      "bytes": 16893,
+      "sha256": "3cea87ace9744dcb5c08ddc8d23410eb2869e0f4b3851769028cfe9aed259644"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数字电路仿真器加速/cost.json",
+      "role": "cost",
+      "task": "数字电路仿真器加速",
+      "bytes": 555,
+      "sha256": "6f37434a4f37f6910a8214e4cfc1af707e67517f1e5367dd0687c0ae57c27629"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\codex\\performance\\result.json",
+      "path": "数字电路仿真器加速/grading/codex/performance/result.json",
+      "role": "result",
+      "task": "数字电路仿真器加速",
+      "bytes": 6841,
+      "sha256": "cd6d2f92375a6b7e344b740fbc053156f562cb8a051e4e862d357aee4ec204d2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\评分表_6.1Sol.md",
+      "path": "数字电路仿真器加速/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数字电路仿真器加速",
+      "bytes": 1943,
+      "sha256": "de0e24e6d8d9a2557e8f94bad179f629395517ee86f472b5d056bc9408ffd11b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\solution.cpp",
+      "path": "数字电路仿真器加速/submission/solution.cpp",
+      "role": "submission",
+      "task": "数字电路仿真器加速",
+      "bytes": 9427,
+      "sha256": "a8e30b249a2593d8d3f0f3e9348507622586d9917125608d2a863c67079210e2"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "数学竞赛原创试题/cost.json",
+      "role": "cost",
+      "task": "数学竞赛原创试题",
+      "bytes": 549,
+      "sha256": "8062b556548931835d7e66e5624b333f7cf4d6301b33a2c756e37ad1a4c0af22"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\codex\\main\\result.json",
+      "path": "数学竞赛原创试题/grading/codex/main/result.json",
+      "role": "result",
+      "task": "数学竞赛原创试题",
+      "bytes": 6551,
+      "sha256": "18ef4385740e0573ba70aca2c9bbd590f127fbc761153c0fc73f9317c6af3baa"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\评分表_6.1Sol.md",
+      "path": "数学竞赛原创试题/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "数学竞赛原创试题",
+      "bytes": 3362,
+      "sha256": "2ca4de9557e867a1a8ced91205d4b5cd848faaf70d1ac774a3f92dbd9eabecd1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第01题.md",
+      "path": "数学竞赛原创试题/submission/答案/第01题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2241,
+      "sha256": "feb6dd71ce9bd56832645a201a485023530cac29f1f089e0b376fc87dddf6539"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第03题.md",
+      "path": "数学竞赛原创试题/submission/答案/第03题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1250,
+      "sha256": "15efc44aab8e0315bccde14713b8bacf99116111a19e56dd8640a4338d884146"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第04题.md",
+      "path": "数学竞赛原创试题/submission/答案/第04题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5269,
+      "sha256": "1051e7cdd17cde51704f7c329291200c836355cc63a9977b72fc94016e0feb83"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第05题.md",
+      "path": "数学竞赛原创试题/submission/答案/第05题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 5569,
+      "sha256": "30bafacea2dce4d1c38c9b7802d116d82dc996185545eb92c6ec83f4b43452d6"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第08题.md",
+      "path": "数学竞赛原创试题/submission/答案/第08题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1384,
+      "sha256": "30ca76885c1b9f36f05088a182dde024540e9d44c57c46021c8e4e29c968c596"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第11题.md",
+      "path": "数学竞赛原创试题/submission/答案/第11题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 4259,
+      "sha256": "ede1777581c5be482bd45b751d621671d63d1e0acbc0e4f4527da361d62e8528"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第13题.md",
+      "path": "数学竞赛原创试题/submission/答案/第13题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 3302,
+      "sha256": "e840cf779e849f7e6574b20945c1c95662c1ceac6755fc8503356e73fbe90cfd"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第16题.md",
+      "path": "数学竞赛原创试题/submission/答案/第16题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1368,
+      "sha256": "47f06d87bce46549b2542af822b7630ef4f776a83d0fc74e54d4cddf4171beb8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第18题.md",
+      "path": "数学竞赛原创试题/submission/答案/第18题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1507,
+      "sha256": "867276d413a3383b416f029c0d91e2d4394b9059ffa3455799c5af404eeb3dfc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第19题.md",
+      "path": "数学竞赛原创试题/submission/答案/第19题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 1539,
+      "sha256": "fe0da356fe19e8bd49e0d87f1b22da7d29ccbec6f13fa59fe66bfa6cb5674de3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\答案\\第20题.md",
+      "path": "数学竞赛原创试题/submission/答案/第20题.md",
+      "role": "submission",
+      "task": "数学竞赛原创试题",
+      "bytes": 2855,
+      "sha256": "d618657be95cc0f358cef5ce7206c6b46fa8c71d79816b07a25b3924f769c91f"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "星际战舰编队/cost.json",
+      "role": "cost",
+      "task": "星际战舰编队",
+      "bytes": 537,
+      "sha256": "42584ff1d6f712a8c9fb6fe4a97dab7983aaeee00f796efee0a7252861053141"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\星际战舰编队\\codex\\main\\result.json",
+      "path": "星际战舰编队/grading/codex/main/result.json",
+      "role": "result",
+      "task": "星际战舰编队",
+      "bytes": 8183,
+      "sha256": "45ba79d29fc7c11b7eb60470feeaf008c3375cf5bb4c4650f4292a810309d263"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\评分表_6.1Sol.md",
+      "path": "星际战舰编队/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "星际战舰编队",
+      "bytes": 7265,
+      "sha256": "0adad05bfdeba621518dcd726c82f6a6078ea4c697c5deefe0e8908326b15d74"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\index.html",
+      "path": "星际战舰编队/submission/index.html",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 1039,
+      "sha256": "7b96e325b83c33b8177d1d9dd4ae98a4aa601ffd5b1928b0b433caa80f94417a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\camera.js",
+      "path": "星际战舰编队/submission/js/camera.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 4107,
+      "sha256": "0d921b0d0c2f215d25fde3f8f082c6e8b2203377f1d131baa3c60d4cf06f3f4d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\core.js",
+      "path": "星际战舰编队/submission/js/core.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 7504,
+      "sha256": "bac686668b572b061c5290d47fdba922f376105a746de8714a1c74d4d42a9a83"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\effects.js",
+      "path": "星际战舰编队/submission/js/effects.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9861,
+      "sha256": "14f5ccf24a415de6ee714bb06666e4e16d4a523d6a5e88da008e424f796438f8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\interiors.js",
+      "path": "星际战舰编队/submission/js/interiors.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 11568,
+      "sha256": "cd9672063fadb75ebb4fa31783795fdf5abc170ff58875df8b647bb5c7db5af7"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\main.js",
+      "path": "星际战舰编队/submission/js/main.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 29665,
+      "sha256": "2a54003e983f462c88ab8a33ddd14d0c1bdc8c45a769ac3a30b644aa382c4b62"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\render.js",
+      "path": "星际战舰编队/submission/js/render.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 9509,
+      "sha256": "7ee31e7bf8f1d407183f0f7adda35571424b575b5059b62502d61f11678d982e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\shaders.js",
+      "path": "星际战舰编队/submission/js/shaders.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 15186,
+      "sha256": "511608e6d0f8422f0d6579a267d10d0d635d03ed15ca24903076bd55738a0c27"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\ships.js",
+      "path": "星际战舰编队/submission/js/ships.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 21806,
+      "sha256": "26e6dcd576228d93d038773e488cb43bbefc0c5d726eacc2e736bed5c713bdcb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\voxel.js",
+      "path": "星际战舰编队/submission/js/voxel.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 5695,
+      "sha256": "7fda8a3dc31f8b9ab9a91f0ef7b947d08d9fa00c38e30550475cf8e4caeacc1c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\星际战舰编队\\js\\world.js",
+      "path": "星际战舰编队/submission/js/world.js",
+      "role": "submission",
+      "task": "星际战舰编队",
+      "bytes": 6961,
+      "sha256": "25f917fa54135fbaf2cb36bb80ad85b64430789bcc2cfb468a3129859bd3a069"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "机械结构重建/cost.json",
+      "role": "cost",
+      "task": "机械结构重建",
+      "bytes": 537,
+      "sha256": "c044fd6c0946b21282d3965df9c05d4ff2ba18e51dea0c2d93740ffc0ab02321"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\机械结构重建\\codex\\main\\result.json",
+      "path": "机械结构重建/grading/codex/main/result.json",
+      "role": "result",
+      "task": "机械结构重建",
+      "bytes": 42087,
+      "sha256": "e33c95272a3d4faf0812014410640e3edad50a382692e2528ac132231c9a769b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\评分表_6.1Sol.md",
+      "path": "机械结构重建/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "机械结构重建",
+      "bytes": 4371,
+      "sha256": "18360b879ac55b1d65ddec7eacb7b351cc7621029fa6998dcabe61881b19f863"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第01题.json",
+      "path": "机械结构重建/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 5739,
+      "sha256": "c1edefd3a5bfefb280f1ca24af19d2cb4a9ebed909a17ac5a820951fb569896b"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第02题.json",
+      "path": "机械结构重建/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 4195,
+      "sha256": "6e01a2806b7a73b9dec18a7ca5e34a8c42b962145f7719f2c2a56723698ff495"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第03题.json",
+      "path": "机械结构重建/submission/答案/第03题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1729,
+      "sha256": "9f996b8761a22d3326d6bf2d5ace14aedabfbc80125ae3d0c4423d5787305347"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第04题.json",
+      "path": "机械结构重建/submission/答案/第04题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2138,
+      "sha256": "26436c42525bbd109a187492f5496a2856b5f9b32e0c3c98291b7eddea875630"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第05题.json",
+      "path": "机械结构重建/submission/答案/第05题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2130,
+      "sha256": "1e5da1bef6e7162cc7067a2043829bd5b72ff58829a17a7610a80610975ef86c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第06题.json",
+      "path": "机械结构重建/submission/答案/第06题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2835,
+      "sha256": "63e1c844305be1389ccddeb948b8f4d9b31786389ddcd44b199cb8e5978cafb0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第07题.json",
+      "path": "机械结构重建/submission/答案/第07题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 1636,
+      "sha256": "681bafc21322ff29b6783867d14c616fedc203bf8358a708886ca230f6eade1d"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第08题.json",
+      "path": "机械结构重建/submission/答案/第08题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2256,
+      "sha256": "92db60f033a5193c71f70ac187eaffcd6220ca616be8f1d03910d4ee1866950e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第09题.json",
+      "path": "机械结构重建/submission/答案/第09题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2481,
+      "sha256": "3bdb3b87fbf58a1b8e191c704cda61aa116037d748d32621ee163af12ad282d3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第10题.json",
+      "path": "机械结构重建/submission/答案/第10题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2558,
+      "sha256": "c50f2282d4c2d2d1bae4e59f38231fb7006b45ad1e058360e9973c3a8ade9ecf"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第11题.json",
+      "path": "机械结构重建/submission/答案/第11题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2457,
+      "sha256": "76dea88904a4a759ed5e8462578ff7356decf66a64d827cf6d8e11cad30c4be1"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第12题.json",
+      "path": "机械结构重建/submission/答案/第12题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2089,
+      "sha256": "e626d2ba92fdb54d0765b4e27f5a923046e1b60d21a7bdb05755f1fa1fddfb93"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第13题.json",
+      "path": "机械结构重建/submission/答案/第13题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2745,
+      "sha256": "140f31d3c5cd6542bb0ee73ea018e31e7cbde80dfa6f57c12cc14e7d9e923ae8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第14题.json",
+      "path": "机械结构重建/submission/答案/第14题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2899,
+      "sha256": "f619373fe261165bedd14fd6973cb4ae029f36fa487cd5f35b052197ab72ea89"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第15题.json",
+      "path": "机械结构重建/submission/答案/第15题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 2562,
+      "sha256": "a10733571b7701f6a05d58c04116a8cb3fb84e6acd14477aeea53ea746591b86"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第16题.json",
+      "path": "机械结构重建/submission/答案/第16题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 6103,
+      "sha256": "b039e4ebf3eef96402614068f83c2d7ab7f43079841c20d7cb06a7d2ddb4dacc"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第17题.json",
+      "path": "机械结构重建/submission/答案/第17题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 7714,
+      "sha256": "0a893f579d377980f2aff52136db69d11ef92cf10180b917044e79da056239e2"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第18题.json",
+      "path": "机械结构重建/submission/答案/第18题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 5837,
+      "sha256": "758661c1a60d32d661796076e0dedec52e34f375bba63122a6ff5ff5d4dda401"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第19题.json",
+      "path": "机械结构重建/submission/答案/第19题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 8261,
+      "sha256": "30d43a04a7f5c31c37eb8ef3fb5e65a0eb3125ccd19b41e344fa5f51a131fcbb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第20题.json",
+      "path": "机械结构重建/submission/答案/第20题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 5626,
+      "sha256": "67e7fe2c4e6b8d9988eab8f1fe106c19decdcceeef23f616b171cf2be83f1e53"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第21题.json",
+      "path": "机械结构重建/submission/答案/第21题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 10014,
+      "sha256": "5267326948a14023b235003b1e3ebc3f2586006be38c3a09dc145a75114999eb"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第22题.json",
+      "path": "机械结构重建/submission/答案/第22题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 15178,
+      "sha256": "0f19632af0ecd131ce8fab89e14399cb308eff829f79fad33c62dfe6fd6a2589"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第23题.json",
+      "path": "机械结构重建/submission/答案/第23题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 40232,
+      "sha256": "5a42412d420c355555ddddae775d759c9f379a1e5a6001cafea043c409ae20c8"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第24题.json",
+      "path": "机械结构重建/submission/答案/第24题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 51435,
+      "sha256": "a79525f60485421a54288e0b668530283960d318a163885009457fadaa8a0d8f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\答案\\第25题.json",
+      "path": "机械结构重建/submission/答案/第25题.json",
+      "role": "submission",
+      "task": "机械结构重建",
+      "bytes": 56569,
+      "sha256": "c032c09af1a04ec9fb03853471a37844fe2b9b917ec2070002f342696ec6bdac"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "果冻冲击与造浪水槽/cost.json",
+      "role": "cost",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 555,
+      "sha256": "c606a2198ad4372f78f08ddb4d9738ed7be4c6e7e96bb0575740d5954c2aa075"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\codex\\main\\result.json",
+      "path": "果冻冲击与造浪水槽/grading/codex/main/result.json",
+      "role": "result",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5844,
+      "sha256": "fcc6c1637a708626291fdc78ca9ac02a354118d894b4b09e298cbc467fe16436"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\评分表_6.1Sol.md",
+      "path": "果冻冲击与造浪水槽/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 4857,
+      "sha256": "d30f86e6a512973e0530af2c89e6ec03ec7485a42c60d8d7166e503d580cfef3"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\css\\style.css",
+      "path": "果冻冲击与造浪水槽/submission/css/style.css",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10270,
+      "sha256": "79ce408b2a10521b10840f6e87ee2bb22e38a6f3060b70698ef29a91d183b63e"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\index.html",
+      "path": "果冻冲击与造浪水槽/submission/index.html",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 7507,
+      "sha256": "c3a8da701baaef230436b7d50352c783443b4dddc7844ec7f6db9a5d8e30e082"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\audio.js",
+      "path": "果冻冲击与造浪水槽/submission/js/audio.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5135,
+      "sha256": "d0751762a11e84712e905f918a93682c0162c71960a3c5867b12c800ceb415be"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\demos.js",
+      "path": "果冻冲击与造浪水槽/submission/js/demos.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 8155,
+      "sha256": "c8725540c78b4c86dc4c8d652f2d28dffb88164fc83e8722525879efb307ac1f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\export.js",
+      "path": "果冻冲击与造浪水槽/submission/js/export.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 953,
+      "sha256": "5dee672cbb963d4cbebd11350536c16e2057da9873064ce4c26f6b3411aefd66"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\fluid.js",
+      "path": "果冻冲击与造浪水槽/submission/js/fluid.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 8409,
+      "sha256": "e07c44ee92a62d344a22abd8a7c67105d07c22733ee6c2444cce7f880cbc870c"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\gpu.js",
+      "path": "果冻冲击与造浪水槽/submission/js/gpu.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 2565,
+      "sha256": "2dee565cc3758ef8b69e0ddebb3b18d9531c791718ba481935c09e84822e12ae"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\jelly.js",
+      "path": "果冻冲击与造浪水槽/submission/js/jelly.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 20467,
+      "sha256": "3c0d47da75e240042961106831d9285d7b48f5561f9fbb097cf758eb2d2a267a"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\main.js",
+      "path": "果冻冲击与造浪水槽/submission/js/main.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 7059,
+      "sha256": "e39ffe55cddcc02443fef0529db36be2146b0932f556f7b1cdf1d3ad76e92c02"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\math.js",
+      "path": "果冻冲击与造浪水槽/submission/js/math.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 6042,
+      "sha256": "79aedc3223f0c350bce9cbc651855ab8d32d73f24ecce15f34b6fd258b02d81f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\renderer.js",
+      "path": "果冻冲击与造浪水槽/submission/js/renderer.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 26697,
+      "sha256": "2a14d4e6daa14350e98190f4834d6e24f45307f1156d5a4959eb161affc87288"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\scene1.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene1.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 9715,
+      "sha256": "3a6c8d81864f3df81110c06b14c0517e6b0591f229122cc813c5f6660ef08854"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\scene2.js",
+      "path": "果冻冲击与造浪水槽/submission/js/scene2.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 10993,
+      "sha256": "dcbebb3b2b1ce93e7be73321bf00a7c24f233f34a6fff9637bd5cf7bfcb7f696"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\shaders_fluid.js",
+      "path": "果冻冲击与造浪水槽/submission/js/shaders_fluid.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 27564,
+      "sha256": "b87c82028ce43ebcb8dd9343d7c3c19fce564e99646edd32aa94959c858a882f"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\shaders_render.js",
+      "path": "果冻冲击与造浪水槽/submission/js/shaders_render.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 17485,
+      "sha256": "3f3c18fccbb7b49d27b559e579173146ec8fdc0cf7c7a87d9243662996ecf309"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\果冻冲击与造浪水槽\\js\\ui.js",
+      "path": "果冻冲击与造浪水槽/submission/js/ui.js",
+      "role": "submission",
+      "task": "果冻冲击与造浪水槽",
+      "bytes": 5762,
+      "sha256": "a6615b52e0b05cca11c119c2586a40959a7c09006da6619b74c54f3d819b0e87"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\state\\decathlon\\usage.json",
+      "path": "鲁班锁拆解/cost.json",
+      "role": "cost",
+      "task": "鲁班锁拆解",
+      "bytes": 531,
+      "sha256": "23f779615867d40b407f85899500be207a89e45864b42e6aa38946dcffe519e5"
+    },
+    {
+      "source": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\codex\\main\\result.json",
+      "path": "鲁班锁拆解/grading/codex/main/result.json",
+      "role": "result",
+      "task": "鲁班锁拆解",
+      "bytes": 3666,
+      "sha256": "6bca9724e02c78b7d27477ec0ebb64f3c64172aadb0535ba49babfdc5a45fbe0"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\评分表_6.1Sol.md",
+      "path": "鲁班锁拆解/scores/评分表_6.1Sol.md",
+      "role": "score_sheet",
+      "task": "鲁班锁拆解",
+      "bytes": 1904,
+      "sha256": "c8f894b077704951f5d9be662e669632bf5377f9fd719ab9f49f682aab2c9276"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\答案\\第01题.json",
+      "path": "鲁班锁拆解/submission/答案/第01题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 649,
+      "sha256": "671121f75db519fa4947476df936e63bea396b2f23bbd0fd6bbbb803d4a4c1e4"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\答案\\第02题.json",
+      "path": "鲁班锁拆解/submission/答案/第02题.json",
+      "role": "submission",
+      "task": "鲁班锁拆解",
+      "bytes": 509,
+      "sha256": "50eb329d01ef0d7c7f82d4c270672a7efef6ab94b0d06dd54768b7edfcb33d70"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\AE风味动效设计编辑器\\AE风味动效设计编辑器.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\baseline_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\build.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\bvh.hpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\dev_build_time.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\dev_build_time.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\dev_sol.obj",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\devcc.cmd",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\devcc_obj.cmd",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\grader.build.log",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\grader.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\ncu_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\opt_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\ptxas_info.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\reference.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\render_math.cuh",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\rt.h",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\run_one.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\sample_out.bin",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\solution_v26_backup.cu",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\光线追踪渲染加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\光线追踪渲染加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\node_modules",
+      "reason": "依赖、缓存、编译产物或题目数据"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\操作系统嵌套\\操作系统嵌套.md",
+      "reason": "题面"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\analyze.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\bot_conc_backup.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\compare.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\dump_both.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\harness.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\harness.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_conc_strong",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_strong",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_strong16",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_v1",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_v2",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_v3",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_v3b",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\logs_v7s",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\sample_bot.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\test_sim.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\test_sim.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\攻城略地.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\攻城略地\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\analyze.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\bench.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\bench3.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\bench3.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\bench3x.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\dbg01.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\err01.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\grader.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\grader_dbg.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\ord.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\ord.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\ord2.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\ord2.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\order_analysis.py",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\out01.txt",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\ref.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\test.cpp",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\test.exe",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\数字电路仿真器加速.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数字电路仿真器加速\\数据",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\数学竞赛原创试题.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\数学竞赛原创试题\\题目",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\机械结构重建",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\笔记",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\裁剪",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\机械结构重建\\预览",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\笔记.md",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\记录02.json",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\鲁班锁拆解",
+      "reason": "只收清单指定的交付文件"
+    },
+    {
+      "source": "H:\\AI_OneShot_Model\\decathlon\\Qwen\\4Max\\鲁班锁拆解\\鲁班锁拆解.md",
+      "reason": "只收清单指定的交付文件"
+    }
+  ],
+  "missing_answers": []
+}

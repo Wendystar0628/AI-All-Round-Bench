@@ -1,0 +1,40 @@
+{
+  "problem": "15",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层传动箱体",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 0],
+         "loops": [{"rect": [0, 0, 140, 100]}], "depth": 10},
+
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 10],
+         "loops": [{"rect": [10, 10, 130, 90]}], "depth": 45},
+
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 55],
+         "loops": [{"rect": [20, 20, 65, 80]}], "depth": -35},
+
+        {"type": "extrude", "op": "cut", "plane": "XY", "origin": [0, 0, 55],
+         "loops": [{"rect": [75, 20, 120, 80]}], "depth": -45},
+
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 10],
+         "loops": [{"rect": [0, 30, 10, 70]}, {"rect": [130, 30, 140, 70]}], "depth": 30},
+
+        {"type": "hole", "plane": "XZ", "origin": [5, 50, 30], "at": [[0, 0]], "d": 16, "depth": 40},
+
+        {"type": "hole", "plane": "XZ", "origin": [135, 50, 30], "at": [[0, 0]], "d": 10, "depth": 40},
+
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [42, 10, 30],
+         "loops": [{"circle": [0, 0], "d": 30}], "depth": -10},
+
+        {"type": "hole", "plane": "XZ", "origin": [42, 0, 30], "at": [[0, 0]], "d": 16, "depth": 30},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 10], "at": [[8, 8], [132, 8], [8, 92], [132, 92]], "d": 10, "through": true},
+
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 55], "at": [[95, 35]], "d": 16, "depth": 20},
+
+        {"type": "chamfer", "distance": 1, "edges": [[70, 0, 0]]}
+      ]
+    }
+  ]
+}

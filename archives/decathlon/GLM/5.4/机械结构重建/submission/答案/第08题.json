@@ -1,0 +1,205 @@
+{
+ "problem": "08",
+ "parts": [
+  {
+   "name": "1",
+   "title": "交错隔板双层润滑箱",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        170,
+        110
+       ]
+      }
+     ],
+     "depth": 8
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        170,
+        110
+       ]
+      },
+      {
+       "rect": [
+        8,
+        8,
+        162,
+        102
+       ]
+      }
+     ],
+     "depth": 62
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "loops": [
+      {
+       "rect": [
+        55,
+        8,
+        63,
+        102
+       ]
+      },
+      {
+       "rect": [
+        107,
+        8,
+        115,
+        102
+       ]
+      }
+     ],
+     "depth": 62
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      39
+     ],
+     "loops": [
+      {
+       "rect": [
+        63,
+        8,
+        107,
+        102
+       ]
+      },
+      {
+       "rect": [
+        8,
+        8,
+        162,
+        102
+       ]
+      }
+     ],
+     "depth": 8
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      8
+     ],
+     "at": [
+      [
+       12,
+       12
+      ],
+      [
+       158,
+       12
+      ],
+      [
+       12,
+       98
+      ],
+      [
+       158,
+       98
+      ]
+     ],
+     "d": 9,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      85,
+      110,
+      25
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 24,
+     "depth": 20,
+     "reverse": true
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      40,
+      110,
+      50
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 16,
+     "depth": 20,
+     "reverse": true
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      70
+     ],
+     "at": [
+      [
+       30,
+       55
+      ],
+      [
+       140,
+       55
+      ]
+     ],
+     "d": 20,
+     "through": true
+    }
+   ]
+  }
+ ]
+}

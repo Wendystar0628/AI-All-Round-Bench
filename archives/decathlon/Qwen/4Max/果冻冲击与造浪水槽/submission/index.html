@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>果冻冲击 × 造浪水槽 · WebGPU 物理模拟</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<header id="topbar">
+  <div class="brand">
+    <span class="logo">◉</span>
+    <span class="brand-text">果冻冲击 <em>×</em> 造浪水槽</span>
+    <span class="sub">WebGPU 软体 · FLIP 流体</span>
+  </div>
+  <nav class="tabs">
+    <button id="tab0" class="tab active">场景一 · 果冻冲击</button>
+    <button id="tab1" class="tab">场景二 · 造浪水槽</button>
+  </nav>
+  <div class="top-actions">
+    <button id="soundBtn" class="icon-btn" title="音效开关">🔊 音效开</button>
+  </div>
+</header>
+
+<aside id="panel">
+  <div class="panel-scroll">
+    <section id="panel1" class="ctrl">
+      <h3><span class="dot dot-jelly"></span>果冻与重球</h3>
+      <div class="field">
+        <label>目标果冻</label>
+        <select id="selTarget">
+          <option value="0">草莓方冻（中软）</option>
+          <option value="1">青柠圆冻（偏软）</option>
+          <option value="2">蓝莓布丁（偏硬）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>果冻软硬 <span class="val" id="vSoft">0.55</span></label>
+        <input type="range" id="rngSoft" min="0.05" max="1" step="0.01" value="0.55">
+        <div class="ends"><span>硬</span><span>软</span></div>
+      </div>
+      <div class="field">
+        <label>结实程度 <span class="val" id="vTough">0.50</span></label>
+        <input type="range" id="rngTough" min="0" max="1" step="0.01" value="0.5">
+        <div class="ends"><span>易裂</span><span>结实</span></div>
+      </div>
+      <div class="field">
+        <label>重球质量 <span class="val" id="vMass">6.0 kg</span></label>
+        <input type="range" id="rngMass" min="1" max="14" step="0.5" value="6">
+      </div>
+      <div class="field">
+        <label>下落高度 <span class="val" id="vHeight">1.30 m</span></label>
+        <input type="range" id="rngHeight" min="0.3" max="2.5" step="0.05" value="1.3">
+      </div>
+      <div class="field">
+        <label>球材质</label>
+        <select id="selMaterial">
+          <option value="metal">金属球（小而重）</option>
+          <option value="stone">石球（大而糙）</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button id="btnCenter" class="act act-jelly">正中冲击</button>
+        <button id="btnOffset" class="act act-jelly">偏心冲击</button>
+        <button id="btnMulti" class="act act-jelly">连续冲击</button>
+      </div>
+    </section>
+
+    <section id="panel2" class="ctrl" hidden>
+      <h3><span class="dot dot-tank"></span>密度分组与造浪</h3>
+      <div class="field dens">
+        <label><span class="dot" style="background:#ff4d6d"></span>轻浮组密度 <span class="val" id="vD0">0.32</span></label>
+        <input type="range" id="rngD0" min="0.15" max="3" step="0.05" value="0.32">
+      </div>
+      <div class="field dens">
+        <label><span class="dot" style="background:#ffb020"></span>次浮组密度 <span class="val" id="vD1">0.60</span></label>
+        <input type="range" id="rngD1" min="0.15" max="3" step="0.05" value="0.60">
+      </div>
+      <div class="field dens">
+        <label><span class="dot" style="background:#3ddc84"></span>中性组密度 <span class="val" id="vD2">1.00</span></label>
+        <input type="range" id="rngD2" min="0.15" max="3" step="0.05" value="1.00">
+      </div>
+      <div class="field dens">
+        <label><span class="dot" style="background:#4f8dff"></span>重底组密度 <span class="val" id="vD3">2.30</span></label>
+        <input type="range" id="rngD3" min="0.15" max="3" step="0.05" value="2.30">
+      </div>
+      <div class="ends"><span>密度单位 g/cm³ · 水 = 1.00</span><span>改值即时生效</span></div>
+      <div class="field">
+        <label>造浪幅度 <span class="val" id="vAmp">0.065 m</span></label>
+        <input type="range" id="rngAmp" min="0.01" max="0.11" step="0.005" value="0.065">
+        <div class="ends"><span>平缓长波</span><span>破碎浪</span></div>
+      </div>
+      <div class="field">
+        <label>造浪频率 <span class="val" id="vFreq">0.75 Hz</span></label>
+        <input type="range" id="rngFreq" min="0.35" max="1.4" step="0.01" value="0.75">
+      </div>
+      <div class="btn-row">
+        <button id="btnDrop" class="act act-tank">释放小球</button>
+        <button id="btnWaveOn" class="act act-tank">开始造浪</button>
+        <button id="btnWaveOff" class="act act-tank ghost">停止造浪</button>
+      </div>
+    </section>
+
+    <section class="ctrl">
+      <h3><span class="dot dot-run"></span>运行控制</h3>
+      <div class="btn-row">
+        <button id="btnPause" class="act">⏸ 暂停</button>
+        <button id="btnSlow" class="act">🐢 慢放</button>
+      </div>
+      <div class="btn-row">
+        <button id="btnReset" class="act ghost">↺ 重置</button>
+        <button id="btnRerun" class="act ghost">▶ 重新运行</button>
+      </div>
+    </section>
+
+    <section class="ctrl">
+      <h3><span class="dot dot-demo"></span>预置演示</h3>
+      <button class="demo-btn" data-run="jelly-center"><span class="play">▶</span><span class="dt"><b>正中单击</b><i>包球 · 鼓胀 · 回弹 · 7.5s</i></span></button>
+      <button class="demo-btn" data-run="jelly-multi"><span class="play">▶</span><span class="dt"><b>连击碎裂</b><i>振荡叠加 · 砸裂 · 9.6s</i></span></button>
+      <button class="demo-btn" data-run="jelly-offset"><span class="play">▶</span><span class="dt"><b>偏心偏击</b><i>倾斜 · 滑移 · 滚落 · 7.6s</i></span></button>
+      <button class="demo-btn" data-run="tank-full"><span class="play">▶</span><span class="dt"><b>风浪全程</b><i>入水 · 分层 · 破碎 · 20s</i></span></button>
+    </section>
+    <div class="hint">鼠标拖拽旋转视角 · 滚轮缩放 · 演示按预设镜头播放</div>
+  </div>
+</aside>
+
+<div id="statusbar">
+  <span class="chip" id="stFps">-- FPS</span>
+  <span class="chip" id="stSim">模拟 0.0s</span>
+  <span class="chip" id="stInfo">就绪</span>
+  <span class="chip" id="stMode">实时</span>
+</div>
+
+<div id="demoChip" hidden>
+  <div class="demo-meta"><b id="demoTitle">演示</b><span id="demoTime">0.0 / 0.0 s</span></div>
+  <div class="demo-track"><div id="demoFill"></div></div>
+  <button id="demoExit">退出演示 ✕</button>
+</div>
+<div id="demoBars" hidden><div class="bar top"></div><div class="bar bottom"></div></div>
+<div id="toast"></div>
+
+<div id="loading">
+  <div class="load-box">
+    <h1>果冻冲击 <em>×</em> 造浪水槽</h1>
+    <p>正在初始化 WebGPU 设备、软体与 FLIP 流体求解器…</p>
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<script src="js/math.js"></script>
+<script src="js/gpu.js"></script>
+<script src="js/shaders_render.js"></script>
+<script src="js/shaders_fluid.js"></script>
+<script src="js/fluid.js"></script>
+<script src="js/jelly.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/scene1.js"></script>
+<script src="js/scene2.js"></script>
+<script src="js/demos.js"></script>
+<script src="js/export.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

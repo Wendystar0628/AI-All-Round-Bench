@@ -1,0 +1,63 @@
+{
+  "task": "鲁班锁拆解",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "第01题",
+      "max": 8,
+      "score": 0.0,
+      "reason": "官方 grade.py 使用出题端原始结构检查：第二条指令 plan.moves[1] 中 A 沿 -y 移出发生碰撞，首次分离未完成，k=0。"
+    },
+    {
+      "name": "第02题",
+      "max": 8,
+      "score": 0.0,
+      "reason": "作答结束时工作目录缺少答案/第02题.json，k=0。"
+    },
+    {
+      "name": "第03题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时工作目录缺少答案/第03题.json，k=0。"
+    },
+    {
+      "name": "第04题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时工作目录缺少答案/第04题.json，k=0。"
+    },
+    {
+      "name": "第05题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时工作目录缺少答案/第05题.json，k=0。"
+    },
+    {
+      "name": "第06题",
+      "max": 12,
+      "score": 0.0,
+      "reason": "作答结束时工作目录缺少答案/第06题.json，k=0。"
+    },
+    {
+      "name": "第07题",
+      "max": 18,
+      "score": 0.0,
+      "reason": "作答结束时工作目录缺少答案/第07题.json，k=0。"
+    },
+    {
+      "name": "第08题",
+      "max": 18,
+      "score": 0.0,
+      "reason": "作答结束时工作目录缺少答案/第08题.json，k=0。"
+    }
+  ],
+  "metrics": {
+    "total_score": 0.0,
+    "submitted_answers": 1,
+    "complete_puzzles": 0,
+    "legal_separations": 0
+  },
+  "notes": "评分版本：作答结束时工作目录的副本 work/submission，不看 git 提交。使用出题端 grade.py/check.py 与出题端原始结构逐题判定，未进行性能基准或计时采集。工具核查采用归档会话 E:/Project/AI_OneShot_Bench/orchestrator/logs/GLM/5.5/鲁班锁拆解/run-9de497ea276f444da1d419e54dced88e/session.log：全部 21 次工具调用已核对，未见自编结构计算、搜索、碰撞模拟、求解器或工具修改；第01题只调用自带 check.py 一次及 positions.py 对四个零件逐个查看初态坐标，第02—08题仅有读取材料，无违规证据。副本中 check.py、positions.py 与题面原版逐字节一致。日志第346736行已有第01题 plan.moves[1] 的碰撞报错，此后未再写入答案，最终只保留该无效路线；第02—08题答案均缺失。所启动的评分及日志解析进程均已自行退出，无后台程序需关闭。",
+  "anomaly": "仅提交第01题，检查报碰撞后未修正，其余七题未交。"
+}

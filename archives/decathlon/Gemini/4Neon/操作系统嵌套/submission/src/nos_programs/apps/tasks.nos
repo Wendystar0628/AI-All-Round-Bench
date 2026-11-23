@@ -1,0 +1,102 @@
+// /apps/tasks.nos — 子系统进程、资源配额与直属子系统管理器
+// 显示本系统内核自身消耗、用户进程消耗、剩余工作、内存与存储占用，支持挂起/继续/结束/调额度及管理子系统树。
+
+let winId = ARGS.windowId;
+let selectedPid = null;
+let statusMsg = "实时监控中";
+let lastRefresh = -1;
+let dirty = true;
+let snap = null;
+
+fn handle_action(act, ev) {
+  let pl = ev.payload != null ? ev.payload : {};
+  if (act == "proc_suspend") {
+    syscall("suspend", num(pl.pid));
+    statusMsg = "已挂起 PID " + str(pl.pid);
+  } else if (act == "proc_resume") {
+    syscall("resume", num(pl.pid));
+    statusMsg = "已继续 PID " + str(pl.pid);
+  } else if (act == "proc_kill") {
+    syscall("kill", num(pl.pid), "用户手动结束");
+    statusMsg = "已结束 PID " + str(pl.pid);
+  } else if (act == "proc_quota") {
+    syscall("set_quota", num(pl.pid), num(ev.value));
+    statusMsg = "已更新 PID " + str(pl.pid) + " 单步额度";
+  } else if (act == "set_budget") {
+    syscall("sys_set_config", { budgetConfig: num(ev.value) });
+    statusMsg = "已调整本系统总预算为 " + str(ev.value);
+  } else if (act == "set_memory") {
+    syscall("sys_set_config", { memQuota: floor(num(ev.value) * 1048576) });
+    statusMsg = "已调整内存配额为 " + str(ev.value) + " MB";
+  } else if (act == "set_storage") {
+    syscall("sys_set_config", { storageQuota: floor(num(ev.value) * 1048576) });
+    statusMsg = "已调整存储配额为 " + str(ev.value) + " MB";
+  } else if (act == "set_rate") {
+    syscall("sys_set_config", { timeRate: num(ev.value) });
+    statusMsg = "已调整本系统时间速率为 " + str(ev.value) + "x";
+  } else if (act == "system_new") {
+    let r = syscall("sys_new", null);
+    if (r != null && r.ok) statusMsg = "已创建直属子系统 " + str(r.childId);
+    else statusMsg = "创建失败: " + (r != null ? str(r.error) : "");
+  } else if (act == "child_pause") {
+    syscall("sys_cmd", pl.childId, { action: "pause" });
+    statusMsg = "已暂停 " + str(pl.childId);
+  } else if (act == "child_resume") {
+    syscall("sys_cmd", pl.childId, { action: "resume" });
+    statusMsg = "已继续 " + str(pl.childId);
+  } else if (act == "child_step") {
+    syscall("sys_cmd", pl.childId, { action: "step" });
+    statusMsg = "单步推进 " + str(pl.childId) + " (+33.3ms)";
+  } else if (act == "child_rate") {
+    syscall("sys_cmd", pl.childId, { action: "set_rate", rate: num(ev.value) });
+    statusMsg = "已设置 " + str(pl.childId) + " 速率为 " + str(ev.value) + "x";
+  } else if (act == "child_grant") {
+    syscall("sys_cmd", pl.childId, { action: "set_grant", grant: num(ev.value) });
+    statusMsg = "已设置 " + str(pl.childId) + " 拨付上限为 " + str(ev.value);
+  } else if (act == "child_restart") {
+    let r = syscall("sys_cmd", pl.childId, { action: "restart" });
+    if (r != null && r.ok) statusMsg = "已重启 " + str(pl.childId);
+    else statusMsg = "重启失败: " + (r != null ? str(r.error) : "");
+  } else if (act == "child_open_kernel") {
+    syscall("sys_cmd", pl.childId, { action: "open_kernel" });
+    statusMsg = "已打开内核源文件 /Systems/" + str(pl.childId) + "/kernel.nos";
+  } else if (act == "child_snapshot") {
+    let r = syscall("sys_snapshot", pl.childId, null);
+    if (r != null && r.ok) statusMsg = "快照已保存: " + str(r.path);
+    else statusMsg = "快照失败: " + (r != null ? str(r.error) : "");
+  } else if (act == "child_close") {
+    syscall("sys_cmd", pl.childId, { action: "close" });
+    statusMsg = "已停止子系统 " + str(pl.childId);
+  } else if (act == "run_demo") {
+    let sp = syscall("spawn", pl.path, {}, { kind: "user" });
+    if (sp != null && sp.ok) statusMsg = "已启动 " + str(pl.path) + " (PID " + str(sp.pid) + ")";
+    else statusMsg = "启动失败: " + (sp != null ? str(sp.error) : "");
+  }
+  dirty = true;
+}
+
+while (true) {
+  let msg = syscall("recv", 0.12);
+  if (msg != null && msg.data != null) {
+    let d = msg.data;
+    if (d.type == "ui_event" && d.event != null) {
+      let ev = d.event;
+      if (ev.type == "control_action" || ev.type == "input_change") {
+        handle_action(ev.action, ev);
+      }
+    }
+  }
+  let now = syscall("time");
+  if (dirty || now - lastRefresh >= 0.15) {
+    snap = syscall("ps");
+    if (snap != null) {
+      syscall("app_present", winId, {
+        kind: "tasks_app",
+        statusMsg: statusMsg,
+        metrics: snap
+      }, null, null);
+    }
+    lastRefresh = now;
+    dirty = false;
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "problem": "04",
+  "parts": [
+    {
+      "name": "1",
+      "title": "偏心双级迷宫泵盖",
+      "features": [
+        {"type": "revolve", "op": "add", "plane": "XZ", "axis": "y", "loops": [{"path": [[0, 0], [72, 0], [72, 12], [45, 12], [45, 26], [34, 26], [34, 33], [0, 33]]}], "name": "法兰Φ144x12+台Φ90x14+顶Φ68x7"},
+        {"type": "chamfer", "distance": 1, "edges": [[0, 72, 0]], "name": "大法兰下外圆棱C1"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 0], "at": [0, 0], "d": 74, "depth": 8, "reverse": true, "name": "迷宫腔1Φ74深8"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 8], "at": [0, 0], "d": 66, "depth": 6, "reverse": true, "name": "迷宫腔2Φ66深6"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 14], "at": [0, 0], "d": 58, "depth": 8, "reverse": true, "name": "迷宫腔3Φ58深8"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 22], "at": [0, 0], "d": 50, "depth": 5, "reverse": true, "name": "迷宫腔4Φ50深5"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 33], "at": [0, 0], "d": 30, "through": true, "name": "中心孔Φ30"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 33], "at": [18, 0], "d": 30, "depth": 13, "name": "偏心二级腔Φ30深13"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [[40, 40], [-40, 40], [-40, -40], [40, -40]], "d": 9, "through": true, "name": "4xΦ9螺栓孔"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [16, 0], "d": 8, "through": true, "name": "Φ8孔"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 12], "at": [-16, 0], "d": 12, "through": true, "name": "Φ12孔"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 33], "at": [24, 8], "d": 6, "depth": 10, "name": "Φ6深10"},
+        {"type": "hole", "plane": "YZ", "origin": [45, 0, 0], "at": [0, 20], "d": 6, "depth": 12, "name": "侧Φ6深12"},
+        {"type": "hole", "plane": {"origin": [33, 0, 33], "normal": [0.5, 0, 0.8660254], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 6, "depth": 28, "name": "斜孔Φ6深28 倾30方位0"}
+      ]
+    }
+  ]
+}

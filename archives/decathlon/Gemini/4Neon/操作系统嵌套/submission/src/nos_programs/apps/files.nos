@@ -1,0 +1,268 @@
+// /apps/files.nos — 子系统文件管理器程序
+// 可修改下方排序与打开策略，重启或重新打开文件管理器即按新规则运行。
+
+// ==================== 可修改策略区 ====================
+
+// 排序规则：默认文件夹在前、按名称升序（可改写为按大小/逆序等）
+fn sort_file_entries(entries, sortBy, sortDir) {
+  let dirs = [];
+  let files = [];
+  for (let i = 0; i < len(entries); i += 1) {
+    if (entries[i].kind == "dir") push(dirs, entries[i]);
+    else push(files, entries[i]);
+  }
+  dirs = sort_by(dirs, sortBy, sortDir);
+  files = sort_by(files, sortBy, sortDir);
+  return concat(dirs, files);
+}
+
+// ==================== 应用逻辑 ====================
+
+let winId = ARGS.windowId;
+let curDir = "/Documents";
+if (ARGS.launch != null && ARGS.launch.openDir != null) {
+  curDir = ARGS.launch.openDir;
+}
+let selectedPath = null;
+let selectedPaths = [];
+let clipboardPath = null;
+let sortBy = "name";
+let sortDir = 1;
+let statusMsg = "就绪（支持跨层拖放文件）";
+let newNameInput = "";
+let renameMode = false;
+let entries = [];
+let dirty = true;
+
+fn ends_with(s, suffix) {
+  let ls = len(s);
+  let lx = len(suffix);
+  if (ls < lx) return false;
+  return substr(s, ls - lx, lx) == suffix;
+}
+
+fn load_dir() {
+  let res = syscall("fs_list", curDir);
+  if (res != null && res.ok) {
+    entries = sort_file_entries(res.entries, sortBy, sortDir);
+  } else {
+    entries = [];
+    statusMsg = res != null ? str(res.error) : "目录读取失败";
+  }
+  dirty = true;
+}
+
+fn open_entry(path) {
+  if (path == null) return;
+  let st = syscall("fs_stat", path);
+  if (st == null || !st.ok) return;
+  if (st.kind == "dir") {
+    curDir = path;
+    selectedPath = null;
+    load_dir();
+    return;
+  }
+  if (ends_with(path, ".scene") || ends_with(path, ".replay")) {
+    syscall("wm_open_app", "player", { openPath: path });
+    statusMsg = "已在三维播放器打开: " + path;
+  } else if (ends_with(path, ".snap")) {
+    let fr = syscall("sys_fork", path, null);
+    if (fr != null && fr.ok) statusMsg = "已从快照分叉子系统: " + str(fr.childId);
+    else statusMsg = "分叉失败: " + (fr != null ? str(fr.error) : "");
+  } else {
+    syscall("wm_open_app", "editor", { openPath: path });
+    statusMsg = "已在编辑器打开: " + path;
+  }
+  dirty = true;
+}
+
+fn handle_action(act, ev) {
+  let pl = ev.payload != null ? ev.payload : {};
+  if (act == "nav") {
+    curDir = pl.path;
+    selectedPath = null;
+    renameMode = false;
+    load_dir();
+    return;
+  }
+  if (act == "up") {
+    if (curDir != "/") {
+      let parts = split(curDir, "/");
+      pop(parts);
+      curDir = len(parts) <= 1 ? "/" : join(parts, "/");
+      selectedPath = null;
+      load_dir();
+    }
+    return;
+  }
+  if (act == "select") {
+    let p = pl.path;
+    if (ev.ctrl || ev.shift) {
+      if (index_of(selectedPaths, p) < 0) push(selectedPaths, p);
+    } else {
+      selectedPaths = [p];
+    }
+    selectedPath = p;
+    dirty = true;
+    return;
+  }
+  if (act == "open") {
+    let target = pl.path != null ? pl.path : selectedPath;
+    open_entry(target);
+    return;
+  }
+  if (act == "new_name_input") {
+    newNameInput = str(ev.value);
+    dirty = true;
+    return;
+  }
+  if (act == "new_file") {
+    let nm = trim(newNameInput);
+    if (nm == "") nm = "untitled_" + str(floor(syscall("time") * 10)) + ".nos";
+    let p = curDir == "/" ? "/" + nm : curDir + "/" + nm;
+    let wr = syscall("fs_write", p, "// 新建 NOS 程序\nsyscall(\"log\", \"你好，Nested OS!\");\n");
+    if (wr != null && wr.ok) {
+      statusMsg = "已新建文件: " + p;
+      selectedPath = p;
+      newNameInput = "";
+      load_dir();
+    } else {
+      statusMsg = "新建失败: " + (wr != null ? str(wr.error) : "");
+      dirty = true;
+    }
+    return;
+  }
+  if (act == "new_folder") {
+    let nm = trim(newNameInput);
+    if (nm == "") nm = "新建文件夹_" + str(floor(syscall("time") * 10));
+    let p = curDir == "/" ? "/" + nm : curDir + "/" + nm;
+    let mr = syscall("fs_mkdir", p);
+    if (mr != null && mr.ok) {
+      statusMsg = "已新建目录: " + p;
+      newNameInput = "";
+      load_dir();
+    } else {
+      statusMsg = "新建目录失败";
+      dirty = true;
+    }
+    return;
+  }
+  if (act == "copy") {
+    if (selectedPath != null) {
+      clipboardPath = selectedPath;
+      statusMsg = "已复制: " + clipboardPath;
+      dirty = true;
+    }
+    return;
+  }
+  if (act == "paste") {
+    if (clipboardPath != null) {
+      let parts = split(clipboardPath, "/");
+      let base = parts[len(parts) - 1];
+      let dest = curDir == "/" ? "/" + base : curDir + "/" + base;
+      if (dest == clipboardPath) dest = curDir + "/copy_" + base;
+      let cr = syscall("fs_copy", clipboardPath, dest);
+      if (cr != null && cr.ok) {
+        statusMsg = "已粘贴到: " + dest;
+        load_dir();
+      } else {
+        statusMsg = "粘贴失败: " + (cr != null ? str(cr.error) : "");
+        dirty = true;
+      }
+    }
+    return;
+  }
+  if (act == "delete") {
+    let targets = len(selectedPaths) > 0 ? selectedPaths : (selectedPath != null ? [selectedPath] : []);
+    if (len(targets) > 0) {
+      let okCnt = 0;
+      for (let i = 0; i < len(targets); i += 1) {
+        let dr = syscall("fs_delete", targets[i]);
+        if (dr != null && dr.ok) okCnt += 1;
+      }
+      statusMsg = "已删除 " + str(okCnt) + " 项";
+      selectedPath = null;
+      selectedPaths = [];
+      load_dir();
+    }
+    return;
+  }
+  if (act == "restore") {
+    if (selectedPath != null) {
+      let rr = syscall("fs_restore", selectedPath);
+      if (rr != null && rr.ok) {
+        statusMsg = "已恢复至: " + str(rr.path);
+        selectedPath = null;
+        load_dir();
+      } else {
+        statusMsg = "恢复失败";
+        dirty = true;
+      }
+    }
+    return;
+  }
+  if (act == "rename_apply") {
+    let nm = trim(newNameInput);
+    if (selectedPath != null && nm != "") {
+      let dest = curDir == "/" ? "/" + nm : curDir + "/" + nm;
+      let mr = syscall("fs_move", selectedPath, dest);
+      if (mr != null && mr.ok) {
+        statusMsg = "已重命名为: " + nm;
+        selectedPath = dest;
+        newNameInput = "";
+        load_dir();
+      }
+    }
+    return;
+  }
+  if (act == "refresh") {
+    load_dir();
+    return;
+  }
+}
+
+fn render_ui() {
+  let navItems = [
+    { label: "文档", path: "/Documents" },
+    { label: "演示素材", path: "/Demo" },
+    { label: "示例程序", path: "/Programs" },
+    { label: "应用源码", path: "/apps" },
+    { label: "系统核心", path: "/sys" },
+    { label: "子系统", path: "/Systems" },
+    { label: "回收站", path: "/Trash" }
+  ];
+  let ui = {
+    kind: "files_app",
+    curDir: curDir,
+    selectedPath: selectedPath,
+    selectedPaths: selectedPaths,
+    clipboardPath: clipboardPath,
+    newNameInput: newNameInput,
+    statusMsg: statusMsg,
+    navItems: navItems,
+    entries: entries,
+    inTrash: (curDir == "/Trash")
+  };
+  syscall("app_present", winId, ui, null, null);
+}
+
+load_dir();
+
+while (true) {
+  let msg = syscall("recv", 0.2);
+  if (msg != null && msg.data != null) {
+    let d = msg.data;
+    if (d.type == "refresh") {
+      load_dir();
+    } else if (d.type == "ui_event" && d.event != null) {
+      let ev = d.event;
+      if (ev.type == "control_action" || ev.type == "input_change") {
+        handle_action(ev.action, ev);
+      }
+    }
+  }
+  if (dirty) {
+    render_ui();
+    dirty = false;
+  }
+}

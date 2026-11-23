@@ -1,0 +1,49 @@
+// ===========================================================================
+//  Fx.nsl —— 环境特效进程
+//  职责：根据飞行场景进程发布的状态计算下洗尘土、排气烟与火，提交特效层
+//  粒子本身由显示设备按提交的发射状态与时刻展开（确定性，不推进场景）
+// ===========================================================================
+var W = 640
+var H = 400
+
+func main() {
+  var first = sys.recv()
+  while (true) {
+    var s = sys.read("aircraft")
+    var t = sys.time()
+    var dust = { on: false, pos: [0, 0, 0], rate: 0, wind: [0, 0], t: t }
+    var smoke = { on: false, pos: [0, 0, 0], rate: 0, t: t }
+    var fire = { on: false, pos: [0, 0, 0], rate: 0, t: t }
+    if (s != null) {
+      var h = s.pos[1]
+      var alt = h - 0.55
+      if (alt < 0) { alt = 0 }
+      var rpmK = s.rpm / 34
+      if (rpmK > 1) { rpmK = 1 }
+      // 下洗气流：旋翼转速高且离地近时带起尘土
+      if (rpmK > 0.35 && alt < 7) {
+        dust.on = true
+        dust.pos = [s.pos[0], 0.15, s.pos[2]]
+        dust.rate = (1 - alt / 7) * rpmK
+        dust.wind = [Math.sin(s.yaw) * 0.6, -Math.cos(s.yaw) * 0.6]
+      }
+      // 排气烟：转速高时排出淡烟
+      if (rpmK > 0.8 && alt > 0.2) {
+        smoke.on = true
+        smoke.pos = [s.pos[0] - Math.sin(s.yaw) * 2.2, s.pos[1] + 0.5, s.pos[2] + Math.cos(s.yaw) * 2.2]
+        smoke.rate = (rpmK - 0.8) * 2.5
+      }
+      // 坠毁后的火与浓烟
+      if (s.crashed) {
+        fire.on = true
+        fire.pos = [s.pos[0], s.pos[1] + 0.3, s.pos[2]]
+        fire.rate = 1
+        smoke.on = true
+        smoke.pos = [s.pos[0], s.pos[1] + 1.2, s.pos[2]]
+        smoke.rate = 2.2
+      }
+    }
+    sys.scene("fx", { t: t, dust: dust, smoke: smoke, fire: fire })
+    sys.sleep(0.033)
+  }
+}

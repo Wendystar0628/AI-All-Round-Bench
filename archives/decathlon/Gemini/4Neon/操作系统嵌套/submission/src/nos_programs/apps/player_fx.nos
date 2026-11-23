@@ -1,0 +1,309 @@
+// /apps/player_fx.nos — 三维场景播放器进程 3：环境特效与同步帧提交进程
+// 职责：根据 player_scene.nos 的机体位姿、旋翼转速、故障与撞击时刻，在三维空间中确定性生成
+// 下洗气流尘土、草叶倾倒场、故障火花、浓烟烈火与碎片烟尘，并与 player_timer.nos 的界面状态合并后提交显示设备。
+
+let winId = ARGS.windowId;
+let timerPid = 0;
+let scenePid = 0;
+
+let cachedResourceId = "";
+let cachedResource = null;
+let resourceDirty = false;
+let cachedGpuBytes = 65536;
+let lastFrame = null;
+let lastUiMeta = null;
+let lastSelection = null;
+
+// 确定性哈希伪随机 [0, 1)
+fn det_rand(seed) {
+  let x = sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return x - floor(x);
+}
+
+fn generate_fx_particles(sim) {
+  let particles = [];
+  if (sim == null) return particles;
+  let t = sim.t;
+  let hx = sim.pos[0];
+  let hy = sim.pos[1];
+  let hz = sim.pos[2];
+  let gy = sim.groundY;
+
+  // 1) 下洗气流尘土环（随旋翼转速与离地高度动态变化）
+  if (!sim.crashed && sim.rotorRpm > 0.32 && sim.altitude < 13.5) {
+    let strength = clamp((1.0 - sim.altitude / 13.5) * sim.rotorRpm, 0.0, 1.0);
+    let count = floor(10 + strength * 22);
+    for (let i = 0; i < count; i += 1) {
+      let cycle = (t * 1.45 + det_rand(i * 17.3 + 1.0)) % 1.0;
+      let ang = det_rand(i * 31.7 + floor(t * 1.45 + det_rand(i * 17.3 + 1.0)) * 7.1) * 6.283185;
+      let rad = 1.6 + cycle * (5.5 + strength * 5.2);
+      let lift = sin(cycle * 3.14159) * (0.65 + strength * 1.35);
+      push(particles, {
+        kind: "dust",
+        pos: [hx + cos(ang) * rad, gy + 0.18 + lift, hz + sin(ang) * rad],
+        size: 0.75 + cycle * 2.1,
+        opacity: (1.0 - cycle) * 0.48 * strength,
+        color: "#c9b38c"
+      });
+    }
+  }
+
+  // 2) 故障征兆火花与浓烟（在失控前即清晰可见，随机体位置拖出醒目尾迹）
+  if (!sim.crashed && sim.faultType != "none" && sim.faultStartT >= 0 && t >= sim.faultStartT) {
+    let fAge = t - sim.faultStartT;
+    let yaw = sim.rot[1];
+    // 引擎排气口与尾梁连接处世界位置
+    let exX = hx + sin(yaw) * 1.9;
+    let exY = hy + 2.05;
+    let exZ = hz + cos(yaw) * 1.9;
+    let smokeCount = sim.faultSevere ? 30 : 20;
+    for (let i = 0; i < smokeCount; i += 1) {
+      let age = (i / smokeCount) * min(2.6, max(0.35, fAge));
+      let driftX = -sim.vel[0] * age * 0.55 + sin(yaw) * age * 1.4 + sim.windX * age * 0.35 + (det_rand(i * 9.1 + floor(t * 12)) - 0.5) * 0.9;
+      let driftZ = -sim.vel[2] * age * 0.55 + cos(yaw) * age * 1.4 + sim.windZ * age * 0.35 + (det_rand(i * 13.7 + floor(t * 12)) - 0.5) * 0.9;
+      push(particles, {
+        kind: "smoke",
+        pos: [exX + driftX, exY + age * 1.45, exZ + driftZ],
+        size: 1.05 + age * 2.15,
+        opacity: clamp((1.0 - age / 2.6) * (sim.faultSevere ? 0.88 : 0.72), 0.12, 0.88),
+        color: sim.faultSevere ? "#1b1c22" : "#3a3d48"
+      });
+    }
+    let sparkCount = sim.faultSevere ? 24 : 16;
+    for (let i = 0; i < sparkCount; i += 1) {
+      let ph = (t * 4.8 + det_rand(i * 23.1)) % 1.0;
+      let spreadX = (det_rand(i * 41.3 + floor(t * 16)) - 0.5) * 3.8 + sin(yaw) * 2.2;
+      let spreadY = (det_rand(i * 19.7 + floor(t * 16)) - 0.35) * 2.4 - ph * 2.0;
+      let spreadZ = (det_rand(i * 53.9 + floor(t * 16)) - 0.5) * 3.8 + cos(yaw) * 2.2;
+      push(particles, {
+        kind: "spark",
+        pos: [exX + spreadX * ph, exY + spreadY * ph, exZ + spreadZ * ph],
+        size: 0.55 + (1.0 - ph) * 0.55,
+        opacity: clamp((1.0 - ph) * 1.2, 0.0, 1.0),
+        color: (i % 2 == 0) ? "#ffd15c" : "#ff7b1a"
+      });
+    }
+  }
+
+  // 3) 撞击高潮火球、冲击尘浪与余波烟火（真实三维坐标，与残骸及地形正确遮挡）
+  if (sim.crashed && sim.crashTime >= 0 && t >= sim.crashTime) {
+    let cAge = t - sim.crashTime;
+    let cx = sim.pos[0];
+    let cy = sim.groundY;
+    let cz = sim.pos[2];
+
+    // 3a. 撞击瞬间火球闪光 (0.0s ~ 1.2s)
+    if (cAge < 1.35) {
+      let u = cAge / 1.35;
+      for (let i = 0; i < 18; i += 1) {
+        let ang = det_rand(i * 11.3) * 6.283185;
+        let r = (0.4 + det_rand(i * 29.1) * 3.8) * (0.3 + u * 0.9);
+        let h = (0.6 + det_rand(i * 7.7) * 4.2) * (0.35 + u * 0.85);
+        push(particles, {
+          kind: "fire",
+          pos: [cx + cos(ang) * r, cy + h, cz + sin(ang) * r],
+          size: (2.6 + det_rand(i * 5.1) * 2.4) * (1.0 - u * 0.45),
+          opacity: clamp((1.0 - u) * 0.95, 0.0, 0.95),
+          color: (i % 3 == 0) ? "#fff0a6" : ((i % 2 == 0) ? "#ff7b1a" : "#e63917")
+        });
+      }
+      // 冲击尘土扩散环
+      for (let i = 0; i < 20; i += 1) {
+        let ang = (i / 20.0) * 6.283185;
+        let rad = 2.0 + u * 13.5;
+        push(particles, {
+          kind: "dust",
+          pos: [cx + cos(ang) * rad, cy + 0.4 + sin(u * 3.14159) * 2.4, cz + sin(ang) * rad],
+          size: 1.8 + u * 3.4,
+          opacity: clamp((1.0 - u) * 0.65, 0.0, 0.7),
+          color: "#bca482"
+        });
+      }
+    }
+
+    // 3b. 持续燃烧火焰与升腾黑烟柱（余波期间稳定燃烧）
+    for (let i = 0; i < 12; i += 1) {
+      let cyc = (t * 2.1 + det_rand(i * 19.3)) % 1.0;
+      let ox = (det_rand(i * 37.1) - 0.5) * 2.0;
+      let oz = (det_rand(i * 43.9) - 0.5) * 2.0;
+      push(particles, {
+        kind: "fire",
+        pos: [cx + ox, cy + 0.5 + cyc * 2.4, cz + oz],
+        size: (1.5 - cyc * 0.85) * (0.85 + det_rand(i * 3.7) * 0.4),
+        opacity: (1.0 - cyc) * 0.85,
+        color: cyc < 0.35 ? "#ffd25a" : "#ff5a14"
+      });
+    }
+
+    let plumeHeight = min(14.0, 3.0 + cAge * 3.8);
+    for (let i = 0; i < 26; i += 1) {
+      let cyc = (t * 0.38 + i / 26.0) % 1.0;
+      let yOff = 1.0 + cyc * plumeHeight;
+      let swX = sin(cyc * 4.5 + i) * (0.6 + cyc * 1.8) + sim.windX * cyc * 1.4;
+      let swZ = cos(cyc * 3.9 + i) * (0.6 + cyc * 1.8) + sim.windZ * cyc * 1.4;
+      push(particles, {
+        kind: "smoke",
+        pos: [cx + swX, cy + yOff, cz + swZ],
+        size: 1.4 + cyc * 4.2,
+        opacity: clamp((1.0 - cyc * 0.82) * 0.68, 0.08, 0.72),
+        color: cyc < 0.22 ? "#352824" : "#1d1e24"
+      });
+    }
+
+    // 3c. 未停稳碎片周围的翻滚尘土
+    if (sim.debris != null) {
+      for (let i = 0; i < len(sim.debris); i += 1) {
+        let db = sim.debris[i];
+        if (!db.settled) {
+          push(particles, {
+            kind: "dust",
+            pos: [db.pos[0], db.pos[1] + 0.2, db.pos[2]],
+            size: 0.9,
+            opacity: 0.45,
+            color: "#b79f7d"
+          });
+        }
+      }
+    }
+  }
+
+  return particles;
+}
+
+fn present_unified() {
+  if (lastFrame == null) return;
+  let sim = lastFrame.sim;
+  let uiMeta = lastUiMeta != null ? lastUiMeta : lastFrame.uiMeta;
+  if (uiMeta == null) return;
+
+  let particles = lastFrame.isFlightScene ? generate_fx_particles(sim) : [];
+
+  // 下洗草叶压倒场（由显示设备据此弯折草叶，纯数据提交）
+  let downwash = null;
+  if (lastFrame.isFlightScene && sim != null && !sim.crashed && sim.rotorRpm > 0.25 && sim.altitude < 14.0) {
+    downwash = {
+      x: sim.pos[0],
+      z: sim.pos[2],
+      radius: 8.5 + (1.0 - clamp(sim.altitude / 14.0, 0, 1)) * 4.5,
+      strength: clamp((1.0 - sim.altitude / 14.0) * sim.rotorRpm, 0.0, 1.0)
+    };
+  }
+
+  // 撞击闪光点光源数据
+  let flashIntensity = 0.0;
+  let flashPos = null;
+  if (sim != null && sim.crashed && sim.crashTime >= 0) {
+    let ca = sim.t - sim.crashTime;
+    if (ca >= 0 && ca < 1.2) {
+      flashIntensity = (1.0 - ca / 1.2) * 14.0;
+      flashPos = [sim.pos[0], sim.groundY + 2.4, sim.pos[2]];
+    } else if (ca >= 1.2) {
+      // 余波持续火光微颤
+      flashIntensity = 2.8 + sin(sim.t * 14.0) * 0.7;
+      flashPos = [sim.pos[0], sim.groundY + 1.6, sim.pos[2]];
+    }
+  }
+
+  let scene3dPacket = {
+    resourceId: cachedResourceId,
+    gpuBytes: cachedGpuBytes,
+    resource: resourceDirty ? cachedResource : null,
+    frameTime: lastFrame.frameTime,
+    isFlightScene: lastFrame.isFlightScene,
+    camera: lastFrame.camera,
+    aircraft: sim != null ? {
+      pos: sim.pos,
+      rot: sim.rot,
+      rotorAngle: sim.rotorAngle,
+      tailAngle: sim.tailAngle,
+      rotorRpm: sim.rotorRpm,
+      tailRpm: sim.tailRpm,
+      crashed: sim.crashed,
+      damage: sim.damage,
+      altitude: sim.altitude
+    } : null,
+    debris: sim != null ? sim.debris : [],
+    particles: particles,
+    downwash: downwash,
+    flash: flashPos != null ? { pos: flashPos, intensity: flashIntensity } : null,
+    targetMarker: (uiMeta.mode == "rehearsal" && lastFrame.targetPos != null) ? lastFrame.targetPos : null
+  };
+
+  let telemetry = null;
+  if (lastFrame.isFlightScene && sim != null) {
+    telemetry = {
+      altitude: round(sim.altitude * 10) / 10,
+      speed: round(sqrt(sim.vel[0]*sim.vel[0] + sim.vel[1]*sim.vel[1] + sim.vel[2]*sim.vel[2]) * 10) / 10,
+      rpm: round(sim.rotorRpm * 100),
+      heading: round(((sim.rot[1] * 57.29578) % 360 + 360) % 360),
+      crashed: sim.crashed,
+      landed: sim.landed,
+      faultType: sim.faultType,
+      frameTime: round(lastFrame.frameTime * 100) / 100
+    };
+  }
+
+  let ui = {
+    kind: "player_app",
+    meta: uiMeta,
+    telemetry: telemetry,
+    selection: lastSelection != null ? lastSelection : lastFrame.selection,
+    frameTime: lastFrame.frameTime
+  };
+
+  let env = syscall("wm_get_env");
+  let playerMeta = {
+    kind: "player",
+    windowId: winId,
+    systemId: env != null ? env.systemId : "",
+    state: uiMeta.playState,
+    mode: uiMeta.mode,
+    position: round(uiMeta.position * 1000) / 1000,
+    duration: round(uiMeta.duration * 1000) / 1000,
+    rate: uiMeta.rate,
+    scene: uiMeta.scenePath,
+    frameTime: round(lastFrame.frameTime * 1000) / 1000
+  };
+
+  let res = syscall("app_present", winId, ui, scene3dPacket, playerMeta);
+  if (res != null && res.ok) {
+    resourceDirty = false;
+  } else if (res != null && !res.ok && res.error != null) {
+    // 若内存配额不足导致场景资源无法载入，提交纯错误 UI 反馈
+    ui.errorBanner = str(res.error);
+    syscall("app_present", winId, ui, null, playerMeta);
+  }
+}
+
+while (true) {
+  let msg = syscall("recv", 0.15);
+  if (msg == null || msg.data == null) continue;
+  let d = msg.data;
+
+  if (d.type == "bind_peers") {
+    timerPid = d.timerPid;
+    scenePid = d.scenePid;
+  } else if (d.type == "frame_tick") {
+    lastUiMeta = d.uiMeta;
+    // 若飞行场景进程 (player_scene) 被单独挂起，保持机体静止的同时仍响应时序进度与界面刷新
+    if (scenePid > 0 && syscall("is_proc_suspended", scenePid) && lastFrame != null) {
+      present_unified();
+    }
+  } else if (d.type == "selection_update") {
+    lastSelection = d.selection;
+    present_unified();
+  } else if (d.type == "scene_frame") {
+    if (d.resourceId != null && d.resourceId != cachedResourceId) {
+      cachedResourceId = d.resourceId;
+      cachedGpuBytes = d.gpuBytes;
+    }
+    if (d.resource != null) {
+      cachedResource = d.resource;
+      resourceDirty = true;
+    }
+    lastFrame = d;
+    lastSelection = d.selection;
+    if (d.uiMeta != null) lastUiMeta = d.uiMeta;
+    present_unified();
+  }
+}

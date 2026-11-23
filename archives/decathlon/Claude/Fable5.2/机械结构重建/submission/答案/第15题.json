@@ -1,0 +1,10 @@
+{"problem":"15","parts":[{"name":"1","title":"双轴错层传动箱体(初稿)","features":[
+{"type":"extrude","name":"底板","plane":"XY","loops":[{"rect":[0,0,214,144]}],"depth":16},
+{"type":"extrude","name":"箱体","plane":"XZ","loops":[{"path":[[14,16],[200,16],[200,68],[152,116],[58,116],[14,72]]}],"depth":[-132,-12]},
+{"type":"extrude","name":"左轴承凸缘Φ78","plane":"XZ","loops":[{"circle":[62,78],"d":78}],"depth":[-144,0]},
+{"type":"extrude","name":"右轴承凸缘Φ68","plane":"XZ","loops":[{"circle":[144,52],"d":68}],"depth":[-144,0]},
+{"type":"hole","name":"左轴孔(估Φ44)","plane":"XZ","origin":[0,0,0],"at":[62,78],"d":44,"depth":144},
+{"type":"hole","name":"右轴孔Φ32","plane":"XZ","origin":[0,0,0],"at":[144,52],"d":32,"depth":144},
+{"type":"extrude","op":"cut","name":"底板槽","plane":"XY","loops":[{"rect":[92,0,122,144]}],"depth":8},
+{"type":"hole","name":"地脚沉孔Φ10/Φ16","plane":"XY","origin":[0,0,16],"at":[[7,7],[207,7],[7,137],[207,137]],"d":10,"through":true,"cbore":{"d":16,"depth":6}}
+]}]}

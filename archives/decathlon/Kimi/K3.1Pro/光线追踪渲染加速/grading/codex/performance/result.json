@@ -1,0 +1,68 @@
+{
+  "task": "光线追踪渲染加速",
+  "complete": true,
+  "grader": "GPT 6.1 Sol",
+  "items": [
+    {
+      "name": "渲染加速",
+      "max": 100,
+      "score": 35.7,
+      "reason": "官方 evaluate.py 的有效正式测量：R=509.8159 ms，C=181.5255 ms，s=2.808508446，q=35.714515970；5 次计时画面、12 个隐藏输入全部通过，c=h=1。按未舍入 qch 计算后报告一位小数。源码人工核对未确认实质性违规。"
+    }
+  ],
+  "metrics": {
+    "baseline_min_ms": 509.8159,
+    "submission_min_ms": 181.5255,
+    "speedup": 2.808508446471708,
+    "q": 35.71451596950549,
+    "c": 1,
+    "h": 1,
+    "unrounded_score": 35.71451596950549,
+    "timed_factors": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hidden_factors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "public_boundary_status": [
+      "pass",
+      "pass",
+      "pass"
+    ],
+    "performance_exceptions": [
+      806,
+      806,
+      806,
+      806,
+      806
+    ],
+    "performance_exception_limit": 3232,
+    "hidden_10_render_ms": 117796.4024,
+    "results_json": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Kimi\\K3.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\official_evaluation\\results.json",
+    "formal": true,
+    "valid": true,
+    "cpus": "16-27",
+    "priority": "high",
+    "source_sha256": "28CD37E4CAAA54488BF530E1F1A1898557EABBD3BB758E55946CCCD438454768",
+    "nsight_host_to_device_bytes": 16815340,
+    "nsight_device_to_host_bytes": 24883212,
+    "solution_extra_device_to_host_bytes": 0,
+    "nsight_review": "E:\\Project\\AI_OneShot_Bench\\orchestrator\\grading\\Kimi\\K3.1Pro\\光线追踪渲染加速\\codex\\performance\\work\\nsight_evidence\\review.json"
+  },
+  "notes": "评的是作答结束时工作目录的完整副本，不看 git 提交；未修改原提交代码。正式 evaluate.py 仅运行一次，编译和测量均经 process_job.py --cpus 16-27 包装，官方入口保留 --cpus 16-27。规则扫描三处提示已人工核对：build_nodes 每次 render 重建；建树线程均 join；cudaHostAlloc 缓冲只组织场景上传，无解法图像回传；全部样本与规定反射层数在 GPU 上求交、采样和着色。hidden_10 仍通过，但 render_ms=117796.4，接近 120 秒进程限时。Nsight Systems 单次必需数据流追踪已完成，HtoD 共 16815340 字节，DtoH 共 24883212 字节，恰为评测器最终图像 24883200 字节加预热 12 字节；解法额外图像回传为 0。追踪不计入正式成绩。评测、追踪及统计进程均已正常退出，未启动浏览器或服务器。"
+}

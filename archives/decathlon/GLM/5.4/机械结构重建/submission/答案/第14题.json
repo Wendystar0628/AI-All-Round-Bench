@@ -1,0 +1,328 @@
+{
+ "problem": "14",
+ "parts": [
+  {
+   "name": "1",
+   "title": "偏置双出口泵体铸件",
+   "features": [
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        0,
+        140,
+        100
+       ]
+      }
+     ],
+     "depth": 10
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "loops": [
+      {
+       "rect": [
+        10,
+        10,
+        130,
+        90
+       ]
+      }
+     ],
+     "depth": 45
+    },
+    {
+     "type": "extrude",
+     "op": "cut",
+     "plane": "XZ",
+     "origin": [
+      0,
+      0,
+      0
+     ],
+     "loops": [
+      {
+       "path": [
+        [
+         10,
+         35
+        ],
+        [
+         -30,
+         35
+        ],
+        [
+         -30,
+         100
+        ],
+        [
+         55,
+         100
+        ],
+        [
+         55,
+         55
+        ]
+       ]
+      }
+     ],
+     "depth": [
+      -200,
+      0
+     ]
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      65,
+      10,
+      35
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 76
+      }
+     ],
+     "depth": 12
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      65,
+      -2,
+      35
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 50,
+     "depth": 40
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XZ",
+     "origin": [
+      65,
+      10,
+      35
+     ],
+     "loops": [
+      {
+       "circle": [
+        0,
+        0
+       ],
+       "d": 30
+      }
+     ],
+     "depth": 25
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      55
+     ],
+     "loops": [
+      {
+       "rect": [
+        45,
+        30,
+        85,
+        70
+       ]
+      }
+     ],
+     "depth": 12
+    },
+    {
+     "type": "extrude",
+     "op": "add",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "loops": [
+      {
+       "rect": [
+        0,
+        35,
+        10,
+        65
+       ]
+      },
+      {
+       "rect": [
+        130,
+        35,
+        140,
+        65
+       ]
+      }
+     ],
+     "depth": 28
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      5,
+      50,
+      38
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 24,
+     "depth": 40
+    },
+    {
+     "type": "hole",
+     "plane": "XZ",
+     "origin": [
+      135,
+      50,
+      38
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 28,
+     "depth": 40
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "at": [
+      [
+       8,
+       8
+      ],
+      [
+       132,
+       8
+      ],
+      [
+       8,
+       92
+      ],
+      [
+       132,
+       92
+      ]
+     ],
+     "d": 9,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": "XY",
+     "origin": [
+      0,
+      0,
+      10
+     ],
+     "at": [
+      [
+       30,
+       30
+      ],
+      [
+       30,
+       70
+      ]
+     ],
+     "d": 9,
+     "through": true
+    },
+    {
+     "type": "hole",
+     "plane": {
+      "origin": [
+       30,
+       50,
+       55
+      ],
+      "normal": [
+       0,
+       0.5,
+       0.86603
+      ],
+      "x_dir": [
+       1,
+       0,
+       0
+      ]
+     },
+     "origin": [
+      30,
+      50,
+      55
+     ],
+     "at": [
+      [
+       0,
+       0
+      ]
+     ],
+     "d": 8,
+     "depth": 52
+    },
+    {
+     "type": "chamfer",
+     "distance": 1,
+     "edges": [
+      [
+       20,
+       0,
+       0
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

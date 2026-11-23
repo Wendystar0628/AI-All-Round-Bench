@@ -1,0 +1,28 @@
+{
+  "problem": "15",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双轴错层传动箱体",
+      "features": [
+        {"type": "extrude", "op": "add", "plane": "XY", "loops": [{"rect": [0, 0, 94, 40]}], "depth": 8, "name": "底板94x40x8"},
+        {"type": "fillet", "radius": 2, "edges": [[0, 0, 4]], "name": "底板左前外竖棱R2"},
+        {"type": "chamfer", "distance": 1, "edges": [[47, 0, 0]], "name": "前下直棱C1"},
+        {"type": "extrude", "op": "add", "plane": "XY", "origin": [0, 0, 6], "loops": [{"rect": [6, 6, 88, 34]}], "depth": 50, "name": "主体Z6-56"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 8, 0], "loops": [{"circle": [40, 40], "d": 78}], "depth": 6, "name": "前凸台Φ78"},
+        {"type": "extrude", "op": "add", "plane": "XZ", "origin": [0, 8, 0], "loops": [{"circle": [58, 36], "d": 70}], "depth": 6, "name": "前凸台Φ70"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 2, 0], "at": [40, 40], "d": 38, "through": true, "name": "轴1孔Φ38通"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 2, 0], "at": [40, 40], "d": 48, "depth": 20, "name": "轴1中沉Φ48深20"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 2, 0], "at": [40, 40], "d": 52, "depth": 10, "name": "轴1前沉Φ52深10"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 2, 0], "at": [58, 36], "d": 32, "through": true, "name": "轴2孔Φ32通"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 2, 0], "at": [58, 36], "d": 44, "depth": 20, "name": "轴2中沉Φ44深20"},
+        {"type": "hole", "plane": "XZ", "origin": [0, 2, 0], "at": [58, 36], "d": 50, "depth": 10, "name": "轴2前沉Φ50深10"},
+        {"type": "hole", "plane": "YZ", "origin": [88, 0, 0], "at": [20, 40], "d": 42, "depth": 16, "name": "侧孔Φ42深16"},
+        {"type": "hole", "plane": {"origin": [58, 20, 71], "normal": [0.70710678, 0, 0.70710678], "x_dir": [0, 1, 0]}, "at": [0, 0], "d": 30, "depth": 58, "name": "斜孔1Φ30深58 倾45方位0"},
+        {"type": "hole", "plane": {"origin": [40, 4, 79], "normal": [0, 0.422618262, 0.906307787], "x_dir": [1, 0, 0]}, "at": [0, 0], "d": 10, "depth": 62, "name": "斜孔2Φ10深62 倾25方位90"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 56], "at": [[30, 20], [66, 20]], "d": 10, "depth": 10, "name": "2xΦ10顶孔"},
+        {"type": "hole", "plane": "XY", "origin": [0, 0, 8], "at": [[5, 5], [89, 5], [5, 35], [89, 35]], "d": 10, "through": true, "cbore": {"d": 16, "depth": 4}, "name": "4xΦ10沉Φ16"}
+      ]
+    }
+  ]
+}

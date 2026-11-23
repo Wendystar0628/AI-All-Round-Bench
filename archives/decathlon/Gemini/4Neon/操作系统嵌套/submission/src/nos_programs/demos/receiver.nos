@@ -1,0 +1,29 @@
+// /Programs/receiver.nos — 消息接收示例程序
+// 持续等待并按顺序输出收到的消息，验证消息投递、挂起保留与内核规则修改。
+
+let me = syscall("getpid");
+let expected = 5;
+if (ARGS != null && ARGS.expected != null) expected = ARGS.expected;
+
+syscall("log", "receiver (PID " + str(me.pid) + ") 已就绪，等待消息...");
+let received = [];
+
+while (len(received) < expected) {
+  let msg = syscall("recv", 10.0);
+  if (msg == null) {
+    syscall("log", "等待超时，继续等待...");
+    continue;
+  }
+  push(received, msg.data);
+  let txt = "";
+  if (type(msg.data) == "object" && msg.data.text != null) {
+    txt = str(msg.data.text);
+  } else {
+    txt = str(msg.data);
+  }
+  syscall("log", "收到 #" + str(len(received)) + " (来自 PID " + str(msg.fromPid) + "): " + txt);
+}
+
+syscall("log", "receiver 全部收齐，共 " + str(len(received)) + " 条消息");
+syscall("set_result", received);
+return received;

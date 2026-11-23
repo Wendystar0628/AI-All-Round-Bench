@@ -1,0 +1,986 @@
+// /sys/wm.nos — Nested OS 子系统窗口管理器程序
+// 负责本层桌面图标、任务栏、开始菜单、右键菜单、窗口层叠次序、焦点、命中判断、拖动/缩放/半屏贴靠、
+// 跨层投送入口与子系统窗口承载。修改下方策略函数并重启子系统后按新规则运行。
+
+// ==================== 可修改策略区（修改并重启后直接生效） ====================
+
+// 1. 窗口层叠策略：调整窗口数组次序并重新分配 z 值（数组末尾在最顶层）
+fn wm_bring_to_front(wm, winId) {
+  let found = null;
+  let rest = [];
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    let w = wm.windows[i];
+    if (w.id == winId) found = w;
+    else push(rest, w);
+  }
+  if (found != null) {
+    push(rest, found);
+    wm.windows = rest;
+  }
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    wm.windows[i].z = 10 + i * 2;
+  }
+}
+
+// 2. 焦点分配策略：决定哪个窗口获得当前键盘焦点
+fn wm_set_focus(wm, winId) {
+  wm.focusedWinId = winId;
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    wm.windows[i].focused = (wm.windows[i].id == winId);
+  }
+}
+
+// 3. 命中判断策略：按层叠从顶到底检测坐标 (x, y) 落在哪个窗口及区域
+fn wm_hit_test(wm, x, y) {
+  let i = len(wm.windows) - 1;
+  while (i >= 0) {
+    let w = wm.windows[i];
+    if (!w.minimized) {
+      let wx = w.x;
+      let wy = w.y;
+      let ww = w.w;
+      let wh = w.h;
+      if (x >= wx && x <= wx + ww && y >= wy && y <= wy + wh) {
+        let lx = x - wx;
+        let ly = y - wy;
+        let titleH = 30;
+        let edge = 7;
+        let zone = "client";
+        if (w.state != "maximized") {
+          let onL = lx <= edge;
+          let onR = lx >= ww - edge;
+          let onT = ly <= edge;
+          let onB = ly >= wh - edge;
+          if (onR && onB) zone = "resize-se";
+          else if (onL && onB) zone = "resize-sw";
+          else if (onR && onT) zone = "resize-ne";
+          else if (onL && onT) zone = "resize-nw";
+          else if (onR) zone = "resize-e";
+          else if (onL) zone = "resize-w";
+          else if (onB) zone = "resize-s";
+          else if (onT) zone = "resize-n";
+        }
+        if (zone == "client" && ly <= titleH) {
+          zone = "titlebar";
+        }
+        return { win: w, zone: zone, lx: lx, ly: ly, titleH: titleH };
+      }
+    }
+    i -= 1;
+  }
+  return null;
+}
+
+// ==================== 辅助函数 ====================
+
+fn find_win(wm, winId) {
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    if (wm.windows[i].id == winId) return wm.windows[i];
+  }
+  return null;
+}
+
+fn find_child_win(wm, childId) {
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    if (wm.windows[i].appId == "subsystem" && wm.windows[i].childId == childId) {
+      return wm.windows[i];
+    }
+  }
+  return null;
+}
+
+fn find_proj_win(wm, projKey) {
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    if (wm.windows[i].appId == "projection" && wm.windows[i].projKey == projKey) {
+      return wm.windows[i];
+    }
+  }
+  return null;
+}
+
+fn next_top_visible_win(wm) {
+  let i = len(wm.windows) - 1;
+  while (i >= 0) {
+    if (!wm.windows[i].minimized) return wm.windows[i].id;
+    i -= 1;
+  }
+  return null;
+}
+
+fn get_work_area(wm) {
+  let vw = max(320, floor(wm.viewport.w));
+  let vh = max(220, floor(wm.viewport.h));
+  let tbH = 34;
+  return { w: vw, h: max(180, vh - tbH), tbH: tbH };
+}
+
+fn clamp_win_to_desktop(wm, w) {
+  let area = get_work_area(wm);
+  if (w.state == "maximized") {
+    w.x = 0;
+    w.y = 0;
+    w.w = area.w;
+    w.h = area.h;
+    return;
+  }
+  if (w.state == "snapped-left") {
+    w.x = 0;
+    w.y = 0;
+    w.w = floor(area.w / 2);
+    w.h = area.h;
+    return;
+  }
+  if (w.state == "snapped-right") {
+    w.x = floor(area.w / 2);
+    w.y = 0;
+    w.w = area.w - w.x;
+    w.h = area.h;
+    return;
+  }
+  if (w.w > area.w) w.w = area.w;
+  if (w.h > area.h) w.h = area.h;
+  if (w.w < 220) w.w = min(220, area.w);
+  if (w.h < 140) w.h = min(140, area.h);
+  if (w.x < 0) w.x = 0;
+  if (w.y < 0) w.y = 0;
+  if (w.x + w.w > area.w) w.x = max(0, area.w - w.w);
+  if (w.y + w.h > area.h) w.y = max(0, area.h - w.h);
+}
+
+fn add_app_window(wm, info) {
+  let area = get_work_area(wm);
+  let idx = len(wm.windows);
+  let ww = floor(area.w * 0.72);
+  let wh = floor(area.h * 0.76);
+  if (info.appId == "player") {
+    ww = floor(area.w * 0.78);
+    wh = floor(area.h * 0.82);
+  } else if (info.appId == "charts") {
+    ww = floor(area.w * 0.70);
+    wh = floor(area.h * 0.76);
+  } else if (info.appId == "files") {
+    ww = floor(area.w * 0.68);
+    wh = floor(area.h * 0.72);
+  }
+  ww = clamp(ww, min(260, area.w), area.w);
+  wh = clamp(wh, min(180, area.h), area.h);
+  let wx = clamp(68 + (idx % 5) * 24, 0, max(0, area.w - ww));
+  let wy = clamp(14 + (idx % 5) * 20, 0, max(0, area.h - wh));
+
+  let w = {
+    id: info.windowId,
+    appId: info.appId,
+    title: info.title,
+    mainPid: info.mainPid,
+    x: wx,
+    y: wy,
+    w: ww,
+    h: wh,
+    prevRect: { x: wx, y: wy, w: ww, h: wh },
+    state: "normal",
+    minimized: false,
+    focused: true,
+    z: 10 + idx * 2,
+    projectable: (info.appId == "player" || info.appId == "charts"),
+    projectedTo: null,
+    childId: null,
+    projKey: null
+  };
+  push(wm.windows, w);
+  wm_bring_to_front(wm, w.id);
+  wm_set_focus(wm, w.id);
+  wm.dirty = true;
+}
+
+fn add_child_window(wm, childId, cname) {
+  if (find_child_win(wm, childId) != null) return;
+  let area = get_work_area(wm);
+  let idx = len(wm.windows);
+  let ww = clamp(floor(area.w * 0.82), min(300, area.w), area.w);
+  let wh = clamp(floor(area.h * 0.84), min(200, area.h), area.h);
+  let wx = clamp(76 + (idx % 3) * 20, 0, max(0, area.w - ww));
+  let wy = clamp(12 + (idx % 3) * 16, 0, max(0, area.h - wh));
+  let wid = "w-sub-" + childId;
+  let w = {
+    id: wid,
+    appId: "subsystem",
+    title: cname + " (" + childId + ")",
+    mainPid: 0,
+    x: wx,
+    y: wy,
+    w: ww,
+    h: wh,
+    prevRect: { x: wx, y: wy, w: ww, h: wh },
+    state: "normal",
+    minimized: false,
+    focused: true,
+    z: 10 + idx * 2,
+    projectable: false,
+    projectedTo: null,
+    childId: childId,
+    projKey: null
+  };
+  push(wm.windows, w);
+  wm_bring_to_front(wm, wid);
+  wm_set_focus(wm, wid);
+  syscall("wm_set_child_viewport", childId, { w: max(200, ww), h: max(140, wh - 56) });
+  wm.dirty = true;
+}
+
+fn upsert_proj_window(wm, proj) {
+  let key = proj.sourceSystemId + ":" + proj.sourceWindowId;
+  let existing = find_proj_win(wm, key);
+  if (existing != null) {
+    existing.projMeta = proj;
+    wm.dirty = true;
+    return;
+  }
+  let area = get_work_area(wm);
+  let ww = clamp(floor(area.w * 0.72), min(280, area.w), area.w);
+  let wh = clamp(floor(area.h * 0.76), min(200, area.h), area.h);
+  let wid = "w-proj-" + proj.sourceSystemId + "-" + proj.sourceWindowId;
+  let w = {
+    id: wid,
+    appId: "projection",
+    title: "[投送 · " + proj.sourceSystemId + "] " + proj.sourceTitle,
+    mainPid: 0,
+    x: clamp(40, 0, max(0, area.w - ww)),
+    y: clamp(20, 0, max(0, area.h - wh)),
+    w: ww,
+    h: wh,
+    prevRect: { x: 40, y: 20, w: ww, h: wh },
+    state: "normal",
+    minimized: false,
+    focused: true,
+    z: 10 + len(wm.windows) * 2,
+    projectable: false,
+    projectedTo: null,
+    childId: null,
+    projKey: key,
+    projMeta: proj
+  };
+  push(wm.windows, w);
+  wm_bring_to_front(wm, wid);
+  wm_set_focus(wm, wid);
+  wm.dirty = true;
+}
+
+fn remove_window(wm, winId) {
+  let rest = [];
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    if (wm.windows[i].id != winId) push(rest, wm.windows[i]);
+  }
+  wm.windows = rest;
+  if (wm.focusedWinId == winId) {
+    wm_set_focus(wm, next_top_visible_win(wm));
+  }
+  wm.dirty = true;
+}
+
+fn toggle_maximize(wm, w) {
+  let area = get_work_area(wm);
+  if (w.state == "maximized") {
+    w.state = "normal";
+    if (w.prevRect != null) {
+      w.x = w.prevRect.x;
+      w.y = w.prevRect.y;
+      w.w = w.prevRect.w;
+      w.h = w.prevRect.h;
+    }
+    clamp_win_to_desktop(wm, w);
+  } else {
+    if (w.state == "normal") {
+      w.prevRect = { x: w.x, y: w.y, w: w.w, h: w.h };
+    }
+    w.state = "maximized";
+    w.x = 0;
+    w.y = 0;
+    w.w = area.w;
+    w.h = area.h;
+  }
+  if (w.appId == "subsystem" && w.childId != null) {
+    syscall("wm_set_child_viewport", w.childId, { w: max(200, w.w), h: max(140, w.h - 56) });
+  }
+  wm.dirty = true;
+}
+
+fn close_window_action(wm, w, force) {
+  if (w == null) return;
+  if (w.appId == "subsystem" && !force) {
+    wm.modal = {
+      type: "confirm_close_child",
+      winId: w.id,
+      childId: w.childId,
+      title: "确认关闭子系统",
+      message: "关闭 " + w.childId + " 将停止整棵子系统树中的全部程序，已保存的快照仍可重新打开。是否继续？"
+    };
+    wm.dirty = true;
+    return;
+  }
+  if (w.appId == "subsystem") {
+    syscall("sys_cmd", w.childId, { action: "close" });
+    remove_window(wm, w.id);
+    return;
+  }
+  if (w.appId == "projection") {
+    syscall("wm_close_local_proj", w.projKey);
+    remove_window(wm, w.id);
+    return;
+  }
+  syscall("wm_close_window", w.id);
+  remove_window(wm, w.id);
+}
+
+fn open_app(wm, appId, launchArgs) {
+  let res = syscall("wm_open_app", appId, launchArgs);
+  if (res != null && res.ok) {
+    add_app_window(wm, res);
+    wm.startMenuOpen = false;
+    wm.contextMenu = null;
+    return res;
+  }
+  if (res != null && res.error != null) {
+    wm.toast = { text: "启动失败: " + str(res.error), until: syscall("time") + 4.0, kind: "error" };
+    wm.dirty = true;
+  }
+  return res;
+}
+
+// ==================== 输入事件处理 ====================
+
+fn handle_chrome_action(wm, act, payload) {
+  wm.contextMenu = null;
+  if (act == "start_toggle") {
+    wm.startMenuOpen = !wm.startMenuOpen;
+    wm.projectMenu = null;
+    wm.dirty = true;
+    return;
+  }
+  if (act == "launch_app") {
+    open_app(wm, payload.appId, payload.launchArgs);
+    return;
+  }
+  if (act == "system_new") {
+    wm.startMenuOpen = false;
+    let res = syscall("sys_new", null);
+    if (res != null && !res.ok && res.error != null) {
+      wm.toast = { text: "新建子系统错误: " + str(res.error), until: syscall("time") + 5.0, kind: "error" };
+    }
+    wm.dirty = true;
+    return;
+  }
+  if (act == "desktop_icon_select") {
+    wm.selectedIcon = payload.iconId;
+    wm.startMenuOpen = false;
+    wm.dirty = true;
+    return;
+  }
+  if (act == "desktop_icon_open") {
+    wm.startMenuOpen = false;
+    if (payload.appId == "new_system") {
+      syscall("sys_new", null);
+    } else if (payload.filePath != null) {
+      open_app(wm, "player", { openPath: payload.filePath });
+    } else {
+      open_app(wm, payload.appId, null);
+    }
+    return;
+  }
+  if (act == "taskbar_click") {
+    let w = find_win(wm, payload.winId);
+    if (w == null) return;
+    wm.startMenuOpen = false;
+    if (w.minimized) {
+      w.minimized = false;
+      wm_bring_to_front(wm, w.id);
+      wm_set_focus(wm, w.id);
+    } else if (wm.focusedWinId == w.id) {
+      w.minimized = true;
+      wm_set_focus(wm, next_top_visible_win(wm));
+    } else {
+      wm_bring_to_front(wm, w.id);
+      wm_set_focus(wm, w.id);
+    }
+    wm.dirty = true;
+    return;
+  }
+  if (act == "win_minimize") {
+    let w = find_win(wm, payload.winId);
+    if (w != null) {
+      w.minimized = true;
+      if (wm.focusedWinId == w.id) wm_set_focus(wm, next_top_visible_win(wm));
+      wm.dirty = true;
+    }
+    return;
+  }
+  if (act == "win_maximize") {
+    let w = find_win(wm, payload.winId);
+    if (w != null) {
+      wm_bring_to_front(wm, w.id);
+      wm_set_focus(wm, w.id);
+      toggle_maximize(wm, w);
+    }
+    return;
+  }
+  if (act == "win_close") {
+    let w = find_win(wm, payload.winId);
+    close_window_action(wm, w, false);
+    return;
+  }
+  if (act == "win_project_menu") {
+    let w = find_win(wm, payload.winId);
+    if (w != null) {
+      if (wm.projectMenu != null && wm.projectMenu.winId == w.id) {
+        wm.projectMenu = null;
+      } else {
+        wm.projectMenu = { winId: w.id, appId: w.appId, title: w.title, x: w.x + w.w - 180, y: w.y + 32 };
+      }
+      wm.dirty = true;
+    }
+    return;
+  }
+  if (act == "project_target") {
+    let w = find_win(wm, payload.winId);
+    if (w != null) {
+      w.projectedTo = payload.targetSystemId;
+      syscall("wm_project_start", w.id, payload.targetSystemId, w.appId, w.title);
+      wm.toast = { text: "已投送到 " + payload.targetSystemId, until: syscall("time") + 3.0, kind: "info" };
+    }
+    wm.projectMenu = null;
+    wm.dirty = true;
+    return;
+  }
+  if (act == "child_ctrl") {
+    let cid = payload.childId;
+    let op = payload.op;
+    if (op == "pause") syscall("sys_cmd", cid, { action: "pause" });
+    else if (op == "resume") syscall("sys_cmd", cid, { action: "resume" });
+    else if (op == "step") syscall("sys_cmd", cid, { action: "step" });
+    else if (op == "restart") syscall("sys_cmd", cid, { action: "restart" });
+    else if (op == "open_kernel") syscall("sys_cmd", cid, { action: "open_kernel" });
+    else if (op == "snapshot") {
+      let sr = syscall("sys_snapshot", cid, null);
+      if (sr != null && sr.ok) {
+        wm.toast = { text: "已保存快照: " + str(sr.path), until: syscall("time") + 4.0, kind: "info" };
+      } else if (sr != null) {
+        wm.toast = { text: "快照失败: " + str(sr.error), until: syscall("time") + 4.0, kind: "error" };
+      }
+    }
+    wm.dirty = true;
+    return;
+  }
+  if (act == "modal_confirm") {
+    if (wm.modal != null) {
+      let m = wm.modal;
+      wm.modal = null;
+      if (m.type == "confirm_close_child") {
+        let w = find_win(wm, m.winId);
+        close_window_action(wm, w, true);
+      } else if (m.type == "overwrite_prompt") {
+        let wr = syscall("fs_write", m.destPath, m.content);
+        if (wr != null && wr.ok) {
+          wm.toast = { text: "已覆盖写入 " + m.destPath, until: syscall("time") + 3.0, kind: "info" };
+        } else if (wr != null) {
+          wm.toast = { text: "写入失败: " + str(wr.error), until: syscall("time") + 4.0, kind: "error" };
+        }
+      }
+      wm.dirty = true;
+    }
+    return;
+  }
+  if (act == "modal_cancel") {
+    wm.modal = null;
+    wm.dirty = true;
+    return;
+  }
+  if (act == "ctx_new_sub") {
+    syscall("sys_new", null);
+    wm.dirty = true;
+    return;
+  }
+  if (act == "ctx_refresh") {
+    wm.dirty = true;
+    return;
+  }
+  if (act == "return_parent") {
+    syscall("wm_focus_parent");
+    return;
+  }
+}
+
+fn handle_raw_input(wm, ev) {
+  if (ev == null) return;
+  let et = ev.type;
+
+  // 键盘事件：按当前聚焦窗口与菜单状态严格分发，绝不泄漏到其他窗口
+  if (et == "keydown") {
+    if (ev.key == "Escape") {
+      if (wm.modal != null) { wm.modal = null; wm.dirty = true; return; }
+      if (wm.contextMenu != null) { wm.contextMenu = null; wm.dirty = true; return; }
+      if (wm.projectMenu != null) { wm.projectMenu = null; wm.dirty = true; return; }
+      if (wm.startMenuOpen) { wm.startMenuOpen = false; wm.dirty = true; return; }
+    }
+    if (wm.focusedWinId != null) {
+      let fw = find_win(wm, wm.focusedWinId);
+      if (fw != null && !fw.minimized) {
+        if (fw.appId == "subsystem") {
+          syscall("wm_route_child_event", fw.childId, ev, { w: fw.w, h: max(120, fw.h - 56) });
+        } else if (fw.appId == "projection") {
+          syscall("wm_route_proj_input", fw.projKey, ev);
+        } else if (fw.mainPid > 0) {
+          syscall("send", fw.mainPid, { type: "ui_event", event: ev });
+        }
+      }
+    }
+    return;
+  }
+
+  // 来自受控输入控件的值同步（仍严格校验目标窗口归属与焦点）
+  if (et == "control_action" || et == "input_change") {
+    // 若是桌面/任务栏/菜单/窗口框自身动作
+    if (ev.scope == "wm") {
+      // 若为窗口右上角按钮，确认该窗口可见
+      if (ev.winId != null) {
+        let tw = find_win(wm, ev.winId);
+        if (tw == null) return;
+      }
+      handle_chrome_action(wm, ev.action, ev.payload);
+      return;
+    }
+    if (ev.scope == "app" && ev.winId != null) {
+      let tw = find_win(wm, ev.winId);
+      if (tw == null || tw.minimized) return;
+      // 校验：若点击带坐标，必须通过 wm_hit_test 确实命中该窗口！
+      if (ev.x != null && ev.y != null) {
+        let hit = wm_hit_test(wm, ev.x, ev.y);
+        if (hit == null || hit.win.id != tw.id) return;
+      }
+      wm_bring_to_front(wm, tw.id);
+      wm_set_focus(wm, tw.id);
+      if (tw.appId == "projection") {
+        syscall("wm_route_proj_input", tw.projKey, ev);
+      } else if (tw.mainPid > 0) {
+        syscall("send", tw.mainPid, { type: "ui_event", event: ev });
+      }
+      wm.dirty = true;
+      return;
+    }
+  }
+
+  // 指针移动与释放：优先完成拖动或缩放
+  if (et == "pointermove" && wm.drag != null) {
+    let d = wm.drag;
+    let w = find_win(wm, d.winId);
+    if (w == null) { wm.drag = null; return; }
+    let area = get_work_area(wm);
+    let dx = ev.x - d.startX;
+    let dy = ev.y - d.startY;
+    if (d.mode == "move") {
+      if (w.state != "normal" && (abs(dx) > 6 || abs(dy) > 6)) {
+        w.state = "normal";
+        w.w = d.restoreW;
+        w.h = d.restoreH;
+        d.origX = clamp(ev.x - floor(w.w / 2), 0, max(0, area.w - w.w));
+        d.origY = clamp(ev.y - 14, 0, max(0, area.h - w.h));
+        d.startX = ev.x;
+        d.startY = ev.y;
+        dx = 0;
+        dy = 0;
+      }
+      w.x = clamp(d.origX + dx, 0, max(0, area.w - w.w));
+      w.y = clamp(d.origY + dy, 0, max(0, area.h - 32));
+      // 左右半屏贴靠预览
+      if (ev.x <= 18) wm.snapPreview = "left";
+      else if (ev.x >= area.w - 18) wm.snapPreview = "right";
+      else wm.snapPreview = null;
+    } else {
+      let nx = d.origX;
+      let ny = d.origY;
+      let nw = d.origW;
+      let nh = d.origH;
+      if (index_of(d.mode, "e") >= 0) nw = clamp(d.origW + dx, 240, area.w - nx);
+      if (index_of(d.mode, "s") >= 0) nh = clamp(d.origH + dy, 150, area.h - ny);
+      if (index_of(d.mode, "w") >= 0) {
+        let maxDx = d.origW - 240;
+        let clampedDx = clamp(dx, -d.origX, maxDx);
+        nx = d.origX + clampedDx;
+        nw = d.origW - clampedDx;
+      }
+      if (index_of(d.mode, "n") >= 0) {
+        let maxDy = d.origH - 150;
+        let clampedDy = clamp(dy, -d.origY, maxDy);
+        ny = d.origY + clampedDy;
+        nh = d.origH - clampedDy;
+      }
+      w.x = nx; w.y = ny; w.w = nw; w.h = nh;
+      w.prevRect = { x: nx, y: ny, w: nw, h: nh };
+      if (w.appId == "subsystem" && w.childId != null) {
+        syscall("wm_set_child_viewport", w.childId, { w: max(200, w.w), h: max(140, w.h - 56) });
+      }
+    }
+    wm.dirty = true;
+    return;
+  }
+
+  if (et == "pointerup") {
+    if (wm.drag != null) {
+      let w = find_win(wm, wm.drag.winId);
+      if (w != null && wm.snapPreview != null) {
+        let area = get_work_area(wm);
+        w.prevRect = { x: wm.drag.origX, y: wm.drag.origY, w: wm.drag.restoreW, h: wm.drag.restoreH };
+        if (wm.snapPreview == "left") {
+          w.state = "snapped-left"; w.x = 0; w.y = 0; w.w = floor(area.w / 2); w.h = area.h;
+        } else {
+          w.state = "snapped-right"; w.x = floor(area.w / 2); w.y = 0; w.w = area.w - w.x; w.h = area.h;
+        }
+        if (w.appId == "subsystem" && w.childId != null) {
+          syscall("wm_set_child_viewport", w.childId, { w: max(200, w.w), h: max(140, w.h - 56) });
+        }
+      }
+      wm.drag = null;
+      wm.snapPreview = null;
+      wm.dirty = true;
+      return;
+    }
+    // 转发 pointerup 给正在交互的窗口（例如 3D 镜头拖动结束）
+    if (wm.pointerCaptureWinId != null) {
+      let cw = find_win(wm, wm.pointerCaptureWinId);
+      wm.pointerCaptureWinId = null;
+      if (cw != null && !cw.minimized) {
+        let topOff = cw.appId == "subsystem" ? 56 : 30;
+        let cev = clone(ev);
+        cev.x = ev.x - cw.x;
+        cev.y = ev.y - cw.y - topOff;
+        if (cw.appId == "subsystem") {
+          syscall("wm_route_child_event", cw.childId, cev, { w: cw.w, h: max(120, cw.h - topOff) });
+        } else if (cw.appId == "projection") {
+          syscall("wm_route_proj_input", cw.projKey, cev);
+        } else if (cw.mainPid > 0) {
+          syscall("send", cw.mainPid, { type: "ui_event", event: cev });
+        }
+      }
+      return;
+    }
+  }
+
+  // 若有窗口捕获指针拖动（如 3D 自由镜头旋转或子系统内拖动），直接转发 pointermove
+  if (et == "pointermove" && wm.pointerCaptureWinId != null) {
+    let cw = find_win(wm, wm.pointerCaptureWinId);
+    if (cw != null && !cw.minimized) {
+      let topOff = cw.appId == "subsystem" ? 56 : 30;
+      let cev = clone(ev);
+      cev.x = ev.x - cw.x;
+      cev.y = ev.y - cw.y - topOff;
+      if (cw.appId == "subsystem") {
+        syscall("wm_route_child_event", cw.childId, cev, { w: cw.w, h: max(120, cw.h - topOff) });
+      } else if (cw.appId == "projection") {
+        syscall("wm_route_proj_input", cw.projKey, cev);
+      } else if (cw.mainPid > 0) {
+        syscall("send", cw.mainPid, { type: "ui_event", event: cev });
+      }
+    }
+    return;
+  }
+
+  if (et == "pointerdown" || et == "dblclick" || et == "wheel" || et == "contextmenu") {
+    let area = get_work_area(wm);
+    if (ev.y > area.h) return; // 任务栏区域由 control_action 处理
+
+    let hit = wm_hit_test(wm, ev.x, ev.y);
+    if (hit == null) {
+      if (et == "pointerdown") {
+        wm.startMenuOpen = false;
+        wm.projectMenu = null;
+        wm.contextMenu = null;
+        wm_set_focus(wm, null);
+        wm.dirty = true;
+      } else if (et == "contextmenu") {
+        wm.startMenuOpen = false;
+        wm.projectMenu = null;
+        wm.contextMenu = { x: clamp(ev.x, 4, max(4, area.w - 150)), y: clamp(ev.y, 4, max(4, area.h - 110)) };
+        wm.dirty = true;
+      }
+      return;
+    }
+
+    let w = hit.win;
+    if (et == "pointerdown") {
+      wm.startMenuOpen = false;
+      wm.contextMenu = null;
+      if (wm.projectMenu != null && wm.projectMenu.winId != w.id) wm.projectMenu = null;
+      wm_bring_to_front(wm, w.id);
+      wm_set_focus(wm, w.id);
+      wm.dirty = true;
+
+      if (hit.zone == "titlebar" && ev.button == 0) {
+        wm.drag = {
+          winId: w.id,
+          mode: "move",
+          startX: ev.x,
+          startY: ev.y,
+          origX: w.x,
+          origY: w.y,
+          restoreW: w.prevRect != null ? w.prevRect.w : w.w,
+          restoreH: w.prevRect != null ? w.prevRect.h : w.h
+        };
+        return;
+      }
+      if (substr(hit.zone, 0, 7) == "resize-" && ev.button == 0) {
+        wm.drag = {
+          winId: w.id,
+          mode: substr(hit.zone, 7, len(hit.zone) - 7),
+          startX: ev.x,
+          startY: ev.y,
+          origX: w.x,
+          origY: w.y,
+          origW: w.w,
+          origH: w.h,
+          restoreW: w.w,
+          restoreH: w.h
+        };
+        return;
+      }
+    }
+
+    if (et == "dblclick" && hit.zone == "titlebar") {
+      toggle_maximize(wm, w);
+      return;
+    }
+
+    // 命中窗口客户区：路由至子系统、投送源应用或本层应用进程！
+    if (hit.zone == "client") {
+      let topOff = w.appId == "subsystem" ? 56 : 30;
+      if (hit.ly < topOff) return;
+      let cev = clone(ev);
+      cev.x = hit.lx;
+      cev.y = hit.ly - topOff;
+      cev.viewportW = w.w;
+      cev.viewportH = max(100, w.h - topOff);
+      if (et == "pointerdown") wm.pointerCaptureWinId = w.id;
+
+      if (w.appId == "subsystem") {
+        syscall("wm_route_child_event", w.childId, cev, { w: w.w, h: max(120, w.h - topOff) });
+      } else if (w.appId == "projection") {
+        syscall("wm_route_proj_input", w.projKey, cev);
+      } else if (w.mainPid > 0) {
+        syscall("send", w.mainPid, { type: "ui_event", event: cev });
+      }
+    }
+  }
+}
+
+// ==================== 构建 2D 显示列表提交给显示设备 ====================
+
+fn submit_desktop_display(wm, env) {
+  let area = get_work_area(wm);
+  let childMap = {};
+  if (env.children != null) {
+    for (let i = 0; i < len(env.children); i += 1) {
+      childMap[env.children[i].childId] = env.children[i];
+    }
+  }
+
+  let winPackets = [];
+  let winMetas = [];
+  for (let i = 0; i < len(wm.windows); i += 1) {
+    let w = wm.windows[i];
+    clamp_win_to_desktop(wm, w);
+
+    let winState = w.minimized ? "minimized" : w.state;
+    push(winMetas, {
+      id: w.id,
+      systemId: wm.systemId,
+      appId: w.appId,
+      title: w.title,
+      state: winState
+    });
+
+    let pkt = {
+      id: w.id,
+      appId: w.appId,
+      title: w.title,
+      x: w.x,
+      y: w.y,
+      w: w.w,
+      h: w.h,
+      z: w.z,
+      state: winState,
+      minimized: w.minimized,
+      focused: w.focused,
+      projectable: w.projectable,
+      projectedTo: w.projectedTo
+    };
+
+    if (w.appId == "subsystem") {
+      pkt.childId = w.childId;
+      let cinfo = childMap[w.childId];
+      if (cinfo != null) {
+        pkt.childState = cinfo.state;
+        pkt.childError = cinfo.error;
+        pkt.childTimeRate = cinfo.timeRate;
+        pkt.childVtime = cinfo.vtime;
+        pkt.childDisplay = cinfo.display;
+      } else {
+        pkt.childState = "stopped";
+      }
+    } else if (w.appId == "projection") {
+      pkt.projKey = w.projKey;
+      let pm = env.localProjections[w.projKey];
+      if (pm == null) pm = w.projMeta;
+      if (pm != null) {
+        pkt.sourceSystemId = pm.sourceSystemId;
+        pkt.sourceWindowId = pm.sourceWindowId;
+        pkt.sourceAppId = pm.sourceAppId;
+        pkt.ui = pm.ui;
+        pkt.scene3d = pm.scene3d;
+      }
+    } else {
+      if (has(env.appDisplays, w.id)) pkt.ui = env.appDisplays[w.id];
+      if (has(env.appScenes, w.id)) pkt.scene3d = env.appScenes[w.id];
+    }
+    push(winPackets, pkt);
+  }
+
+  let toastObj = null;
+  if (wm.toast != null && env.vtime < wm.toast.until) {
+    toastObj = wm.toast;
+  }
+
+  let displayTree = {
+    kind: "subsystem_desktop",
+    systemId: env.systemId,
+    parentId: env.parentId,
+    name: env.name,
+    depth: env.depth,
+    vtime: env.vtime,
+    timeRate: env.timeRate,
+    viewport: { w: area.w, h: area.h + area.tbH },
+    desktopIcons: wm.desktopIcons,
+    selectedIcon: wm.selectedIcon,
+    windows: winPackets,
+    focusedWinId: wm.focusedWinId,
+    startMenuOpen: wm.startMenuOpen,
+    contextMenu: wm.contextMenu,
+    projectMenu: wm.projectMenu,
+    ancestors: env.ancestors,
+    snapPreview: wm.snapPreview,
+    modal: wm.modal,
+    toast: toastObj
+  };
+
+  syscall("wm_present", displayTree, winMetas);
+}
+
+// ==================== 主入口 ====================
+
+let reg = syscall("wm_register");
+let initEnv = syscall("wm_get_env");
+
+let WM = {
+  systemId: reg.systemId,
+  depth: reg.depth,
+  viewport: initEnv.viewport,
+  windows: [],
+  focusedWinId: null,
+  selectedIcon: null,
+  startMenuOpen: false,
+  contextMenu: null,
+  projectMenu: null,
+  drag: null,
+  pointerCaptureWinId: null,
+  snapPreview: null,
+  modal: null,
+  toast: null,
+  dirty: true,
+  lastSubmitTime: -1,
+  desktopIcons: [
+    { id: "ic-player", appId: "player", label: "三维播放器", icon: "player" },
+    { id: "ic-charts", appId: "charts", label: "图表工作台", icon: "charts" },
+    { id: "ic-files", appId: "files", label: "文件管理器", icon: "files" },
+    { id: "ic-editor", appId: "editor", label: "程序编辑器", icon: "editor" },
+    { id: "ic-tasks", appId: "tasks", label: "进程管理器", icon: "tasks" },
+    { id: "ic-newsub", appId: "new_system", label: "新建子系统", icon: "subsystem" },
+    { id: "ic-heli", appId: "file", filePath: "/Demo/helicopter-24.scene", label: "24号直升机", icon: "scene" }
+  ]
+};
+
+// 默认打开子系统时，呈现完整桌面并打开预置的三维场景播放器（窗口留出桌面与图标可见空间）
+if (WM.depth <= 2) {
+  open_app(WM, "player", { openPath: "/Demo/helicopter-24.scene" });
+}
+
+while (true) {
+  let env = syscall("wm_get_env");
+  if (env.viewport != null && (env.viewport.w != WM.viewport.w || env.viewport.h != WM.viewport.h)) {
+    WM.viewport = env.viewport;
+    WM.dirty = true;
+  }
+
+  // 处理收件箱中的所有消息
+  let msg = syscall("recv", 0);
+  while (msg != null) {
+    let d = msg.data;
+    if (d != null) {
+      if (d.type == "raw_input") {
+        handle_raw_input(WM, d.event);
+      } else if (d.type == "register_window") {
+        add_app_window(WM, d.info);
+      } else if (d.type == "child_created") {
+        add_child_window(WM, d.childId, d.name);
+      } else if (d.type == "child_stopped") {
+        let cw = find_child_win(WM, d.childId);
+        if (cw != null) remove_window(WM, cw.id);
+      } else if (d.type == "projection_update") {
+        upsert_proj_window(WM, d.proj);
+      } else if (d.type == "projection_ended") {
+        let pw = find_proj_win(WM, d.key);
+        if (pw != null) remove_window(WM, pw.id);
+        WM.toast = { text: "投送已结束: " + str(d.reason), until: env.vtime + 3.5, kind: "info" };
+        WM.dirty = true;
+      } else if (d.type == "app_dirty") {
+        WM.dirty = true;
+      } else if (d.type == "overwrite_prompt") {
+        WM.modal = {
+          type: "overwrite_prompt",
+          destPath: d.destPath,
+          fileName: d.fileName,
+          content: d.content,
+          title: "文件重名确认",
+          message: "目标路径 " + d.destPath + " 已存在同名文件，是否覆盖？"
+        };
+        WM.dirty = true;
+      } else if (d.type == "transfer_done") {
+        if (d.ok) WM.toast = { text: "跨层接收文件成功: " + str(d.path), until: env.vtime + 3.5, kind: "info" };
+        else WM.toast = { text: "跨层传输失败: " + str(d.error), until: env.vtime + 4.5, kind: "error" };
+        WM.dirty = true;
+      } else if (d.type == "system_id_remapped") {
+        WM.systemId = d.newId;
+        if (d.childMap != null) {
+          for (let wi = 0; wi < len(WM.windows); wi += 1) {
+            let ww = WM.windows[wi];
+            if (ww.appId == "subsystem" && ww.childId != null && has(d.childMap, ww.childId)) {
+              let oldCid = ww.childId;
+              let newCid = d.childMap[oldCid];
+              ww.childId = newCid;
+              if (index_of(ww.title, oldCid) >= 0) {
+                ww.title = replace(ww.title, oldCid, newCid);
+              }
+            }
+          }
+        }
+        WM.dirty = true;
+      }
+    }
+    msg = syscall("recv", 0);
+  }
+
+  // 每逻辑步至少在有更新或子系统活跃时刷新一次显示列表
+  let hasChildren = env.children != null && len(env.children) > 0;
+  if (WM.dirty || hasChildren || env.vtime - WM.lastSubmitTime >= 0.03) {
+    submit_desktop_display(WM, env);
+    WM.dirty = false;
+    WM.lastSubmitTime = env.vtime;
+  }
+
+  syscall("yield");
+}

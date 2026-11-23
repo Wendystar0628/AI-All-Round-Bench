@@ -1,0 +1,323 @@
+{
+  "problem": "20",
+  "parts": [
+    {
+      "name": "1",
+      "title": "双级迷宫旋流分离壳",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "地脚法兰底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 230, 220], "r": 6}],
+          "depth": 18
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "旋流筒身Φ184",
+          "plane": "XY",
+          "origin": [115, 110, 18],
+          "loops": [{"circle": [0, 0], "d": 184}],
+          "depth": 98
+        },
+        {
+          "type": "revolve",
+          "op": "add",
+          "name": "圆锥收束顶",
+          "plane": "XZ",
+          "origin": [115, 110, 0],
+          "axis": "y",
+          "loops": [{"path": [[0, 116], [92, 116], [46, 166], [0, 166]]}],
+          "angle": 360
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "顶颈Φ72",
+          "plane": "XY",
+          "origin": [115, 110, 166],
+          "loops": [{"circle": [0, 0], "d": 72}],
+          "depth": 18
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前切向入口凸台Φ46",
+          "plane": "XZ",
+          "origin": [0, 26, 0],
+          "loops": [{"circle": [62, 66], "d": 46}],
+          "depth": [-60, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "后侧排流凸台Φ50",
+          "plane": "XZ",
+          "origin": [0, 150, 0],
+          "loops": [{"circle": [164, 52], "d": 50}],
+          "depth": [-50, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "径向三角肋",
+          "plane": "XZ",
+          "origin": [0, 104, 0],
+          "loops": [{"path": [[198, 18], [224, 18], [198, 60]]}],
+          "depth": [-12, 0]
+        },
+        {
+          "type": "revolve",
+          "op": "cut",
+          "name": "内锥主腔",
+          "plane": "XZ",
+          "origin": [115, 110, 0],
+          "axis": "y",
+          "loops": [{"path": [[0, 30], [76, 30], [76, 110], [34, 158], [0, 158]]}],
+          "angle": 360
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "偏心内芯筒Φ96",
+          "plane": "XY",
+          "origin": [107, 110, 28],
+          "loops": [{"circle": [0, 0], "d": 96}],
+          "depth": 90
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "内芯通道Φ58",
+          "plane": "XY",
+          "origin": [107, 110, 30],
+          "loops": [{"circle": [0, 0], "d": 58}],
+          "depth": 92
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "迷宫环腔1-Φ90/Φ78",
+          "plane": "XY",
+          "origin": [107, 110, 38],
+          "loops": [
+            {"circle": [0, 0], "d": 90},
+            {"circle": [0, 0], "d": 78}
+          ],
+          "depth": 12
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "迷宫环腔2-Φ88/Φ76",
+          "plane": "XY",
+          "origin": [107, 110, 62],
+          "loops": [
+            {"circle": [0, 0], "d": 88},
+            {"circle": [0, 0], "d": 76}
+          ],
+          "depth": 12
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "迷宫环腔3-Φ86/Φ74",
+          "plane": "XY",
+          "origin": [107, 110, 86],
+          "loops": [
+            {"circle": [0, 0], "d": 86},
+            {"circle": [0, 0], "d": 74}
+          ],
+          "depth": 12
+        },
+        {
+          "type": "hole",
+          "name": "顶颈通孔Φ38",
+          "plane": "XY",
+          "origin": [115, 110, 186],
+          "at": [0, 0],
+          "d": 38,
+          "depth": 40
+        },
+        {
+          "type": "hole",
+          "name": "前切向流道Φ24",
+          "plane": "XZ",
+          "origin": [0, 24, 0],
+          "at": [62, 66],
+          "d": 24,
+          "depth": 80
+        },
+        {
+          "type": "hole",
+          "name": "后侧排流道Φ28",
+          "plane": "XZ",
+          "origin": [0, 202, 0],
+          "at": [164, 52],
+          "d": 28,
+          "depth": 80,
+          "reverse": true
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "分离支路1",
+          "plane": {
+            "origin": [75, 70, 126],
+            "normal": [-0.5254827, -0.5254827, 0.6691306],
+            "x_dir": [-0.7071068, 0.7071068, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "分离支路1通道",
+          "plane": {
+            "origin": [42.420, 37.420, 167.486],
+            "normal": [-0.5254827, -0.5254827, 0.6691306],
+            "x_dir": [-0.7071068, 0.7071068, 0]
+          },
+          "at": [0, 0],
+          "d": 22,
+          "depth": 112,
+          "cbore": {"d": 36, "depth": 8}
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "分离支路2",
+          "plane": {
+            "origin": [155, 150, 126],
+            "normal": [0.5996606, 0.5996606, 0.5299193],
+            "x_dir": [0.7071068, -0.7071068, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "分离支路2通道",
+          "plane": {
+            "origin": [192.179, 187.179, 158.855],
+            "normal": [0.5996606, 0.5996606, 0.5299193],
+            "x_dir": [0.7071068, -0.7071068, 0]
+          },
+          "at": [0, 0],
+          "d": 22,
+          "depth": 112,
+          "cbore": {"d": 36, "depth": 8}
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "分离支路3",
+          "plane": {
+            "origin": [145, 80, 134],
+            "normal": [0.3535534, -0.3535534, 0.8660254],
+            "x_dir": [0.7071068, 0.7071068, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "分离支路3通道",
+          "plane": {
+            "origin": [166.920, 58.080, 187.694],
+            "normal": [0.3535534, -0.3535534, 0.8660254],
+            "x_dir": [0.7071068, 0.7071068, 0]
+          },
+          "at": [0, 0],
+          "d": 22,
+          "depth": 112,
+          "cbore": {"d": 36, "depth": 8}
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "分离支路4",
+          "plane": {
+            "origin": [85, 140, 130],
+            "normal": [-0.4545195, 0.4545195, 0.7660444],
+            "x_dir": [0.7071068, 0.7071068, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "分离支路4通道",
+          "plane": {
+            "origin": [56.815, 168.185, 177.503],
+            "normal": [-0.4545195, 0.4545195, 0.7660444],
+            "x_dir": [0.7071068, 0.7071068, 0]
+          },
+          "at": [0, 0],
+          "d": 22,
+          "depth": 112,
+          "cbore": {"d": 36, "depth": 8}
+        },
+        {
+          "type": "hole",
+          "name": "跨迷宫斜孔1",
+          "plane": {
+            "origin": [115, 15, 92],
+            "normal": [0, -0.9510565, 0.3090170],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 142
+        },
+        {
+          "type": "hole",
+          "name": "跨迷宫斜孔2",
+          "plane": {
+            "origin": [115, 205, 102],
+            "normal": [0, 0.8829476, 0.4694716],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 142
+        },
+        {
+          "type": "hole",
+          "name": "跨迷宫斜孔3",
+          "plane": {
+            "origin": [65, 110, 178],
+            "normal": [-0.4226183, 0, 0.9063078],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 142
+        },
+        {
+          "type": "hole",
+          "name": "底排液孔Φ10",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "at": [115, 110],
+          "d": 10,
+          "depth": 40,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "地脚锪孔",
+          "plane": "XY",
+          "origin": [0, 0, 18],
+          "at": [[14, 14], [14, 206], [216, 14], [216, 206]],
+          "d": 10,
+          "depth": 20,
+          "cbore": {"d": 18, "depth": 7}
+        }
+      ]
+    }
+  ]
+}

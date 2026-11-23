@@ -1,0 +1,29 @@
+// 飞控程序：读取带时间戳的传感器值，写入总距与舵面
+// 传感器：pos vel yaw pitch roll rotor rpm；控制：coll(总距) cyc(周期变距) tail(尾舵)
+var kp = 2.2
+var kd = 1.6
+var targetAlt = 12
+var targetX = 0
+var targetZ = 0
+var lastT = 0
+while (true) {
+  var s = sys.read("aircraft")
+  var t = sys.time()
+  if (s != null && t > lastT + 0.016) {
+    lastT = t
+    var alt = s.pos[1]
+    var coll = 0.55 + (targetAlt - alt) * 0.04 - s.vel[1] * 0.02
+    if (coll < 0) { coll = 0 }
+    if (coll > 1) { coll = 1 }
+    var ex = targetX - s.pos[0]
+    var ez = targetZ - s.pos[2]
+    var cyc = (ex * 0.02 - s.vel[0] * 0.05) * 0.6
+    if (cyc < -0.4) { cyc = -0.4 }
+    if (cyc > 0.4) { cyc = 0.4 }
+    var tail = (0 - s.yaw) * 0.5 - s.roll * 0.3
+    if (tail < -0.5) { tail = -0.5 }
+    if (tail > 0.5) { tail = 0.5 }
+    sys.write_control(coll, cyc, tail)
+  }
+  sys.sleep(0.016)
+}

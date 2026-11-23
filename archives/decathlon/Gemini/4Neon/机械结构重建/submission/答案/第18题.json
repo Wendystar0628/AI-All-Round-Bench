@@ -1,0 +1,315 @@
+{
+  "problem": "18",
+  "parts": [
+    {
+      "name": "1",
+      "title": "复合环腔涡轮轴承箱",
+      "features": [
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "地脚法兰底板",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "loops": [{"rect": [0, 0, 250, 160], "r": 6}],
+          "depth": 18
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "主箱体轮廓",
+          "plane": "XZ",
+          "origin": [0, 18, 0],
+          "loops": [{"path": [[20, 18], [230, 18], [230, 96], [196, 140], [72, 146], [20, 102]]}],
+          "depth": [-124, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前后主轴承外座Φ116",
+          "plane": "XZ",
+          "origin": [0, 4, 0],
+          "loops": [{"circle": [108, 80], "d": 116}],
+          "depth": [-152, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "前轴承外凸台Φ64",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "loops": [{"circle": [108, 80], "d": 64}],
+          "depth": [-10, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "主环腔Φ100",
+          "plane": "XZ",
+          "origin": [0, 32, 0],
+          "loops": [{"circle": [108, 80], "d": 100}],
+          "depth": [-96, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "隔断迷宫环腔1-Φ116",
+          "plane": "XZ",
+          "origin": [0, 38, 0],
+          "loops": [
+            {"circle": [108, 80], "d": 116},
+            {"circle": [108, 80], "d": 106}
+          ],
+          "depth": [-10, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "隔断迷宫环腔2-Φ116",
+          "plane": "XZ",
+          "origin": [0, 66, 0],
+          "loops": [
+            {"circle": [108, 80], "d": 116},
+            {"circle": [108, 80], "d": 108}
+          ],
+          "depth": [-16, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "隔断迷宫环腔3-Φ114",
+          "plane": "XZ",
+          "origin": [0, 100, 0],
+          "loops": [
+            {"circle": [108, 80], "d": 114},
+            {"circle": [108, 80], "d": 104}
+          ],
+          "depth": [-12, 0]
+        },
+        {
+          "type": "hole",
+          "name": "主轴承通孔Φ46",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "at": [108, 80],
+          "d": 46,
+          "depth": 160
+        },
+        {
+          "type": "hole",
+          "name": "前轴承阶梯孔Φ60",
+          "plane": "XZ",
+          "origin": [0, 0, 0],
+          "at": [108, 80],
+          "d": 60,
+          "depth": 22
+        },
+        {
+          "type": "hole",
+          "name": "后轴承阶梯孔Φ64",
+          "plane": "XZ",
+          "origin": [0, 156, 0],
+          "at": [108, 80],
+          "d": 64,
+          "depth": 22,
+          "reverse": true
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "偏置副环腔Φ64",
+          "plane": "XZ",
+          "origin": [0, 42, 0],
+          "loops": [{"circle": [182, 82], "d": 64}],
+          "depth": [-76, 0]
+        },
+        {
+          "type": "hole",
+          "name": "右副轴承孔Φ32",
+          "plane": "YZ",
+          "origin": [230, 0, 0],
+          "at": [80, 82],
+          "d": 32,
+          "depth": 60
+        },
+        {
+          "type": "extrude",
+          "op": "cut",
+          "name": "上层油匣",
+          "plane": "XZ",
+          "origin": [0, 44, 0],
+          "loops": [{"rect": [76, 118, 176, 136]}],
+          "depth": [-72, 0]
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "轴系油座1",
+          "plane": {
+            "origin": [88, 38, 118],
+            "normal": [-0.3747095, -0.3747095, 0.8480481],
+            "x_dir": [-0.7071068, 0.7071068, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "轴系油座1通道与沉台",
+          "plane": {
+            "origin": [64.768, 14.768, 170.579],
+            "normal": [-0.3747095, -0.3747095, 0.8480481],
+            "x_dir": [-0.7071068, 0.7071068, 0]
+          },
+          "at": [0, 0],
+          "d": 20,
+          "depth": 96,
+          "cbore": {"d": 34, "depth": 7}
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "轴系油座2",
+          "plane": {
+            "origin": [172, 110, 114],
+            "normal": [0.5086501, 0.5086501, 0.6946584],
+            "x_dir": [0.7071068, -0.7071068, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "轴系油座2通道与沉台",
+          "plane": {
+            "origin": [203.536, 141.536, 157.069],
+            "normal": [0.5086501, 0.5086501, 0.6946584],
+            "x_dir": [0.7071068, -0.7071068, 0]
+          },
+          "at": [0, 0],
+          "d": 20,
+          "depth": 96,
+          "cbore": {"d": 34, "depth": 7}
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "轴系油座3",
+          "plane": {
+            "origin": [210, 38, 76],
+            "normal": [0.9271839, 0.0, 0.3746066],
+            "x_dir": [0, 1, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 62
+        },
+        {
+          "type": "hole",
+          "name": "轴系油座3通道与沉台",
+          "plane": {
+            "origin": [267.485, 38, 99.226],
+            "normal": [0.9271839, 0.0, 0.3746066],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 20,
+          "depth": 96,
+          "cbore": {"d": 34, "depth": 7}
+        },
+        {
+          "type": "extrude",
+          "op": "add",
+          "name": "轴系油座4",
+          "plane": {
+            "origin": [66, 122, 86],
+            "normal": [-1, 0, 0],
+            "x_dir": [0, 1, 0]
+          },
+          "loops": [{"circle": [0, 0], "d": 52}],
+          "depth": 90
+        },
+        {
+          "type": "hole",
+          "name": "轴系油座4通道与沉台",
+          "plane": {
+            "origin": [-24, 122, 86],
+            "normal": [-1, 0, 0],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 20,
+          "depth": 96,
+          "cbore": {"d": 34, "depth": 7}
+        },
+        {
+          "type": "hole",
+          "name": "迷宫交叉油孔1",
+          "plane": {
+            "origin": [108, 10, 140],
+            "normal": [0.0, -0.8660254, 0.5],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 8,
+          "depth": 100
+        },
+        {
+          "type": "hole",
+          "name": "迷宫交叉油孔2",
+          "plane": {
+            "origin": [108, 150, 140],
+            "normal": [0.0, 0.809017, 0.5877853],
+            "x_dir": [1, 0, 0]
+          },
+          "at": [0, 0],
+          "d": 9,
+          "depth": 100
+        },
+        {
+          "type": "hole",
+          "name": "迷宫交叉油孔3",
+          "plane": {
+            "origin": [60, 80, 160],
+            "normal": [-0.5591929, 0.0, 0.8290376],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 10,
+          "depth": 100
+        },
+        {
+          "type": "hole",
+          "name": "迷宫交叉油孔4",
+          "plane": {
+            "origin": [170, 80, 160],
+            "normal": [0.6427876, 0.0, 0.7660444],
+            "x_dir": [0, 1, 0]
+          },
+          "at": [0, 0],
+          "d": 11,
+          "depth": 100
+        },
+        {
+          "type": "hole",
+          "name": "底排液孔Φ10",
+          "plane": "XY",
+          "origin": [0, 0, 0],
+          "at": [125, 80],
+          "d": 10,
+          "depth": 40,
+          "reverse": true
+        },
+        {
+          "type": "hole",
+          "name": "地脚锪孔",
+          "plane": "XY",
+          "origin": [0, 0, 18],
+          "at": [[14, 14], [14, 146], [236, 14], [236, 146]],
+          "d": 10,
+          "depth": 20,
+          "cbore": {"d": 18, "depth": 7}
+        }
+      ]
+    }
+  ]
+}

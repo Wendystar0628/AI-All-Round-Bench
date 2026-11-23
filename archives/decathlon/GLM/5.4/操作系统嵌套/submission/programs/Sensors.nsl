@@ -1,0 +1,6 @@
+// 传感器读取：每 0.2 秒读取共享的飞行状态并打印
+while (true) {
+  var s = sys.read("aircraft")
+  if (s != null) { sys.log("高度 " + s.pos[1].toFixed(2) + " 旋翼 " + s.rotor.toFixed(2)) }
+  sys.sleep(0.2)
+}

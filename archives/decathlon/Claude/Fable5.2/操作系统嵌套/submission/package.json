@@ -1,0 +1,17 @@
+{
+  "name": "nested-os",
+  "version": "1.0.0",
+  "description": "嵌套图形操作系统（Nested OS）",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "node tools/build.js",
+    "test": "node tools/test.js"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "electron": "^45.2.1",
+    "three": "^0.187.0"
+  }
+}

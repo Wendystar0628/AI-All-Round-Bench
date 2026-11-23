@@ -1,0 +1,6 @@
+{"problem":"20","parts":[{"name":"1","title":"双级迷宫旋流分离壳(初稿)","features":[
+{"type":"extrude","name":"地脚法兰","plane":"XY","loops":[{"rect":[0,0,280,220]}],"depth":18},
+{"type":"revolve","name":"壳体回转","plane":"XZ","origin":[0,110,0],"axis":{"point":[140,0],"dir":[0,1]},"loops":[{"path":[[140,18],[232,18],[232,138],[170,186],[165,186],[165,202],[140,202]]}]},
+{"type":"hole","name":"顶颈孔(估)","plane":"XY","origin":[0,0,202],"at":[140,110],"d":30,"depth":60},
+{"type":"hole","name":"地脚孔Φ10/Φ18","plane":"XY","origin":[0,0,18],"at":[[12,12],[268,12],[12,208],[268,208]],"d":10,"through":true,"cbore":{"d":18,"depth":6}}
+]}]}

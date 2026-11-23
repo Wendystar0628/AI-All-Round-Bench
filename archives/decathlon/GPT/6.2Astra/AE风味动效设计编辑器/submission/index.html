@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>铸帧 Forgeframe · 动效设计工作台</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <svg viewBox="0 0 38 36">
+          <path
+            fill="#d1fa75"
+            d="M3 7 15 2 15 24 3 30ZM18 5 34 0 34 8 18 14ZM18 17 29 13 29 21 18 26Z"
+          /></svg
+        ><b>铸帧</b><span>FORGEFRAME</span>
+      </div>
+      <div class="crumb">
+        <i data-i="folder"></i> 工作空间 <em>/</em> <strong id="projName"></strong
+        ><span class="tag">.forge</span
+        ><button data-act="project" title="工程菜单"><i data-i="down"></i></button>
+      </div>
+      <div class="headright">
+        <span class="saved"><b></b><span id="saveState">工程已就绪</span></span
+        ><span class="divider"></span
+        ><button data-act="undo" title="撤销 Ctrl+Z"><i data-i="undo"></i></button
+        ><button data-act="redo" title="重做"><i data-i="redo"></i></button
+        ><button class="export" data-act="save"><i data-i="download"></i> 导出工程</button
+        ><button data-act="project" title="工程菜单"><i data-i="more"></i></button>
+      </div>
+    </header>
+    <main>
+      <nav id="rail"></nav>
+      <aside class="assets">
+        <div class="panelhead">
+          <strong>工程资源</strong><div><button data-act="add" title="添加图层"><i data-i="plus"></i></button><button data-act="project" title="工程操作"><i data-i="more"></i></button></div>
+        </div>
+        <div class="assetbody">
+          <label class="search"
+            ><i data-i="search"></i><input id="search" placeholder="搜索资源…" /><kbd>/</kbd></label
+          >
+          <div id="assetList"></div>
+        </div>
+        <div class="palette">
+          <div class="kicker">PROJECT PALETTE</div>
+          <div>
+            工程色板 <button data-act="palette" title="编辑基础色"><i data-i="sliders"></i></button>
+          </div>
+          <div class="swatches"></div>
+        </div>
+      </aside>
+      <section class="preview">
+        <div class="panelhead tabhead">
+          <div class="activetab"><i data-i="comp"></i><strong>合成预览</strong></div>
+          <span class="subname" id="compLabel"></span
+          ><button data-act="fullscreen" title="放大预览"><i data-i="expand"></i></button>
+        </div>
+        <div class="canvashold">
+          <div id="screen">
+            <canvas id="scene"></canvas>
+            <div id="overlay"></div>
+            <div id="handles"></div><div id="emptyCanvas" hidden><i data-i="layers"></i><strong>空合成</strong><div><button data-act="emptyShape">创建形状</button><button data-act="tool-type">创建文字</button></div></div>
+          </div>
+        </div>
+        <div class="viewerbar">
+          <button data-act="zoomview"><span id="viewZoom">适应</span><i data-i="down"></i></button
+          ><span class="divider"></span
+          ><button data-act="camera">
+            <i data-i="camera"></i><span id="camLabel">活动摄像机</span><i data-i="down"></i>
+          </button>
+          <div class="push"></div>
+          <span id="previewSize"></span><button data-act="grid" title="网格"><i data-i="grid"></i></button
+          ><button data-act="safe" title="安全框"><i data-i="frame"></i></button
+          ><span class="divider"></span><span class="quality"><b></b> 完整</span>
+        </div>
+      </section>
+      <aside class="inspector">
+        <div class="panelhead">
+          <div><i data-i="sliders"></i><strong>属性检查器</strong></div>
+          <span class="kicker">INSPECTOR</span>
+        </div>
+        <div id="props"></div>
+      </aside>
+      <section class="timeline">
+        <div class="panelhead timelinehead">
+          <div id="viewTabs"></div>
+          <span class="subname" id="seqName"></span>
+          <div class="push"></div>
+          <button data-act="snap" title="吸附"><i data-i="magnet"></i></button
+          ><button data-act="zoomout" title="缩小时间轴">−</button><i data-i="zoom"></i
+          ><button data-act="zoomin" title="放大时间轴">+</button>
+        </div>
+        <div id="timelineBody"></div>
+      </section>
+    </main>
+    <footer>
+      <span><b class="greenDot"></b> 工作台就绪</span><span class="footsep">/</span
+      ><span>WebGL 2.0</span>
+      <div class="push"></div>
+      <span><kbd>Space</kbd> 播放 / 暂停</span><span><kbd>←</kbd><kbd>→</kbd> 逐帧</span
+      ><span><kbd>F9</kbd> 缓入缓出</span><button data-act="help"><i data-i="help"></i></button>
+    </footer>
+    <div id="popup"></div>
+    <dialog id="modal"></dialog>
+    <div id="toast"></div>
+    <input type="file" id="file" hidden accept=".forge,.json" />
+    <script src="vendor/three.min.js"></script>
+    <script src="vendor/polygon-clipping.js"></script>
+    <script src="vendor/serif-outlines.js"></script><script src="expressions.js"></script>
+    <script src="engine.js"></script>
+    <script src="render.js"></script>
+    <script src="studio.js"></script>
+    <script src="vectors.js"></script>
+    <script src="ui.js"></script>
+    <script src="extras.js"></script>
+  </body>
+</html>
+

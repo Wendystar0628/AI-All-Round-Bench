@@ -1,0 +1,6 @@
+{"problem":"21","parts":[{"name":"1","title":"双回路桥接伺服总壳(初稿)","features":[
+{"type":"extrude","name":"地脚法兰R6","plane":"XY","loops":[{"rect":[0,0,300,200],"r":6}],"depth":18},
+{"type":"extrude","name":"总壳","plane":"XZ","loops":[{"path":[[18,18],[282,18],[282,104],[244,150],[188,150],[151,126],[95,150],[55,150],[18,108]]}],"depth":[-182,-18]},
+{"type":"extrude","name":"前凸缘Φ90","plane":"XZ","loops":[{"circle":[94,78],"d":90}],"depth":[-18,0]},
+{"type":"hole","name":"前孔(估)","plane":"XZ","origin":[0,0,0],"at":[94,78],"d":40,"depth":40}
+]}]}

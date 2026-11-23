@@ -1,0 +1,630 @@
+// ===========================================================================
+//  Compiler.nsl —— 自举编译器（把 NSL 源文件编译成字节码）
+//  由内核作为常驻服务进程运行：
+//    收到 {op:"compile", src} → 词法分析 → 语法分析 → 生成字节码 → reply
+//  修改本文件后，在编辑器里点「编译自身」，新编译器用于此后启动的程序。
+// ===========================================================================
+var src = ""
+var tt = []
+var tv = []
+var tl = []
+var ti = 0
+var code = []
+var consts = []
+var constMap = {}
+var funcs = {}
+var funcOrder = []
+var scopes = [{}]
+var loops = []
+
+var O_CONST = 1, O_LOAD = 2, O_STORE = 3, O_GLOAD = 4, O_GSTORE = 5
+var O_GETIDX = 6, O_SETIDX = 7, O_GETPROP = 8, O_SETPROP = 9
+var O_ADD = 10, O_SUB = 11, O_MUL = 12, O_DIV = 13, O_MOD = 14, O_NEG = 15, O_NOT = 16
+var O_LT = 17, O_GT = 18, O_LE = 19, O_GE = 20, O_EQ = 21, O_NE = 22
+var O_JMP = 23, O_JZ = 24, O_JNZ = 25, O_CALL = 26, O_RET = 27, O_POP = 28, O_DUP = 29
+var O_SYS = 30, O_ARRNEW = 31, O_MAPNEW = 32, O_METHOD = 33, O_THROW = 34, O_TRY = 35, O_ENDTRY = 36, O_DUP2 = 37
+
+func isDigit(c) { return c >= 48 && c <= 57 }
+func isIdStart(c) { return (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || c == 95 || c == 36 }
+func isId(c) { return isIdStart(c) || isDigit(c) }
+
+func pushTok(t, v, l) { tt.push(t); tv.push(v); tl.push(l) }
+
+func tokenize(s) {
+  tt = []; tv = []; tl = []
+  var i = 0
+  var line = 1
+  var n = s.length
+  while (i < n) {
+    var cc = s.charCodeAt(i)
+    if (cc == 10) { line = line + 1; i = i + 1; continue }
+    if (cc == 32 || cc == 9 || cc == 13) { i = i + 1; continue }
+    if (cc == 47 && i + 1 < n && s.charCodeAt(i + 1) == 47) {
+      while (i < n && s.charCodeAt(i) != 10) { i = i + 1 }
+      continue
+    }
+    if (cc == 47 && i + 1 < n && s.charCodeAt(i + 1) == 42) {
+      i = i + 2
+      while (i + 1 < n && !(s.charCodeAt(i) == 42 && s.charCodeAt(i + 1) == 47)) {
+        if (s.charCodeAt(i) == 10) { line = line + 1 }
+        i = i + 1
+      }
+      i = i + 2
+      continue
+    }
+    if (cc == 34) {
+      i = i + 1
+      var str = ""
+      while (i < n && s.charCodeAt(i) != 34) {
+        if (s.charCodeAt(i) == 92) {
+          var e = s.charCodeAt(i + 1)
+          if (e == 110) { str = str + "\n" } else if (e == 116) { str = str + "\t" } else if (e == 114) { str = str + "\r" } else if (e == 92) { str = str + "\\" } else if (e == 34) { str = str + "\"" } else { str = str + s.charAt(i + 1) }
+          i = i + 2
+        } else {
+          if (s.charCodeAt(i) == 10) { line = line + 1 }
+          str = str + s.charAt(i)
+          i = i + 1
+        }
+      }
+      if (i >= n) { throw "字符串没有结束（第 " + line + " 行）" }
+      i = i + 1
+      pushTok(1, str, line)
+      continue
+    }
+    if (isDigit(cc) || (cc == 46 && i + 1 < n && isDigit(s.charCodeAt(i + 1)))) {
+      var j = i
+      while (j < n && (isDigit(s.charCodeAt(j)) || s.charCodeAt(j) == 46)) { j = j + 1 }
+      pushTok(0, s.substr(i, j - i).toNumber(), line)
+      i = j
+      continue
+    }
+    if (isIdStart(cc)) {
+      var j = i
+      while (j < n && isId(s.charCodeAt(j))) { j = j + 1 }
+      pushTok(2, s.substr(i, j - i), line)
+      i = j
+      continue
+    }
+    var three = s.substr(i, 3)
+    if (three == "===" || three == "!==") { pushTok(3, three.substr(0, 2), line); i = i + 3; continue }
+    var two = s.substr(i, 2)
+    if (two == "&&" || two == "||" || two == "+=" || two == "-=" || two == "*=" || two == "/=" || two == "==" || two == "!=" || two == "<=" || two == ">=" || two == "++" || two == "--") {
+      pushTok(3, two, line); i = i + 2; continue
+    }
+    if ("+-*/%=<>!(){}[],.;:?".indexOf(s.charAt(i)) >= 0) { pushTok(3, s.charAt(i), line); i = i + 1; continue }
+    throw "无法识别的字符 '" + s.charAt(i) + "'（第 " + line + " 行）"
+  }
+  pushTok(4, null, line)
+}
+
+// ------------------------------- 语法分析 ---------------------------------
+func peek(off) { var k = ti + off; if (k >= tt.length) { k = tt.length - 1 } return k }
+func at(type, val) {
+  var k = ti
+  if (k >= tt.length) { k = tt.length - 1 }
+  if (tt[k] != type) { return false }
+  if (val == null) { return true }
+  return tv[k] == val
+}
+func lineNow() { var k = ti; if (k >= tt.length) { k = tt.length - 1 } return tl[k] }
+func expect(type, val) {
+  if (!at(type, val)) { throw "期望 " + (val == null ? "符号" : val) + "，实际是 '" + tv[ti] + "'（第 " + lineNow() + " 行）" }
+  ti = ti + 1
+  return tv[ti - 1]
+}
+func constIdx(v) {
+  var k = "z"
+  if (v != null) { k = v.type() + ":" + v }
+  if (constMap.has(k)) { return constMap[k] }
+  consts.push(v)
+  constMap[k] = consts.length - 1
+  return consts.length - 1
+}
+func emit(op, a, b) { code.push([op, a, b]); return code.length - 1 }
+func patch(idx) { code[idx][1] = code.length }
+func declare(n) { scopes[scopes.length - 1][n] = true }
+func resolve(n) {
+  for (var s = scopes.length - 1; s >= 0; s--) {
+    if (scopes[s].has(n)) { return s == 0 ? "global" : "local" }
+  }
+  if (n == "Math") { return "global" }
+  return null
+}
+func binOp(op) {
+  if (op == "+") { return O_ADD }
+  if (op == "-") { return O_SUB }
+  if (op == "*") { return O_MUL }
+  if (op == "/") { return O_DIV }
+  if (op == "%") { return O_MOD }
+  if (op == "<") { return O_LT }
+  if (op == ">") { return O_GT }
+  if (op == "<=") { return O_LE }
+  if (op == ">=") { return O_GE }
+  if (op == "==") { return O_EQ }
+  return O_NE
+}
+func skipToClose(open, close) {
+  var d = 0
+  while (ti < tt.length) {
+    var t = tv[ti]
+    if (tt[ti] == 3 && t == open) { d = d + 1 }
+    else if (tt[ti] == 3 && t == close) { d = d - 1; if (d == 0) { ti = ti + 1; return true } }
+    ti = ti + 1
+  }
+  return false
+}
+
+func compileSource(s) {
+  src = s
+  tokenize(s)
+  code = []; consts = []; constMap = {}; funcs = {}; funcOrder = []; scopes = [{}]; loops = []
+  ti = 0
+  // 扫描顶层函数
+  var fns = []
+  while (tt[ti] != 4) {
+    if (at(2, "func") && tt[peek(1)] == 2) {
+      var fn = { name: tv[peek(1)], params: [], bodyStart: 0, bodyEnd: 0 }
+      ti = ti + 2
+      expect(3, "(")
+      while (!at(3, ")") && tt[ti] != 4) {
+        fn.params.push(expect(2, null))
+        if (at(3, ",")) { ti = ti + 1 }
+      }
+      expect(3, ")")
+      fn.bodyStart = ti
+      if (!skipToClose("{", "}")) { throw "函数体没有结束（第 " + lineNow() + " 行）" }
+      fn.bodyEnd = ti
+      fns.push(fn)
+      continue
+    }
+    // 跳过一条顶层语句（按行与括号配对）
+    var line = tl[ti]
+    var d = 0
+    while (tt[ti] != 4) {
+      var t = tv[ti]
+      if (tt[ti] == 3 && (t == "{" || t == "(" || t == "[")) { d = d + 1 }
+      else if (tt[ti] == 3 && (t == "}" || t == ")" || t == "]")) { d = d - 1; if (d <= 0) { ti = ti + 1; break } }
+      else if (tt[ti] == 3 && t == ";" && d == 0) { ti = ti + 1; break }
+      ti = ti + 1
+      if (d == 0 && tt[ti] != 4 && tl[ti] != line) { break }
+    }
+  }
+  for (var i = 0; i < fns.length; i++) {
+    funcs[fns[i].name] = { pc: 0, params: fns[i].params }
+    funcOrder.push(fns[i].name)
+  }
+  ti = 0
+  while (tt[ti] != 4) { parseStmt() }
+  if (funcs.has("main")) { emit(O_CALL, constIdx("main"), 0) }
+  emit(O_RET, 0, 0)
+  for (var i = 0; i < fns.length; i++) {
+    var f = funcs[fns[i].name]
+    f.pc = code.length
+    scopes.push({})
+    for (var j = 0; j < fns[i].params.length; j++) { declare(fns[i].params[j]) }
+    collectVars(fns[i].bodyStart, fns[i].bodyEnd)
+    ti = fns[i].bodyStart
+    expect(3, "{")
+    while (!at(3, "}") && tt[ti] != 4) { parseStmt() }
+    expect(3, "}")
+    emit(O_RET, 0, 0)
+    scopes.pop()
+  }
+  return { ok: true, prog: { name: "program", code: code, consts: consts, funcs: funcs } }
+}
+func collectVars(a, b) {
+  var save = ti
+  ti = a
+  while (ti < b) {
+    if (at(2, "var") && tt[peek(1)] == 2) { declare(tv[peek(1)]); ti = ti + 2 }
+    else { ti = ti + 1 }
+  }
+  ti = save
+}
+func parseStmt() {
+  if (at(3, ";")) { ti = ti + 1; return }
+  if (at(3, "{")) {
+    ti = ti + 1
+    while (!at(3, "}") && tt[ti] != 4) { parseStmt() }
+    expect(3, "}")
+    return
+  }
+  if (tt[ti] == 2) {
+    var v = tv[ti]
+    if (v == "var") {
+      ti = ti + 1
+      while (true) {
+        var nm = expect(2, null)
+        declare(nm)
+        if (at(3, "=")) {
+          ti = ti + 1
+          var e = parseExpr()
+          genExpr(e)
+          var sc = resolve(nm)
+          emit(sc == "global" ? O_GSTORE : O_STORE, constIdx(nm), 0)
+        }
+        if (at(3, ",")) { ti = ti + 1; continue }
+        break
+      }
+      return
+    }
+    if (v == "if") {
+      ti = ti + 1
+      expect(3, "(")
+      var c = parseExpr()
+      genExpr(c)
+      expect(3, ")")
+      emit(O_JZ, 0, 0)
+      var jz = code.length - 1
+      parseStmt()
+      if (at(2, "else")) {
+        ti = ti + 1
+        emit(O_JMP, 0, 0)
+        var jmp = code.length - 1
+        patch(jz)
+        parseStmt()
+        patch(jmp)
+      } else { patch(jz) }
+      return
+    }
+    if (v == "while") {
+      ti = ti + 1
+      expect(3, "(")
+      var start = code.length
+      var c = parseExpr()
+      genExpr(c)
+      expect(3, ")")
+      emit(O_JZ, 0, 0)
+      var jz = code.length - 1
+      loops.push({ breaks: [], conts: [] })
+      parseStmt()
+      var lp = loops[loops.length - 1]
+      loops.pop()
+      emit(O_JMP, start, 0)
+      for (var i = 0; i < lp.breaks.length; i++) { patch(lp.breaks[i]) }
+      for (var i = 0; i < lp.conts.length; i++) { code[lp.conts[i]][1] = start }
+      patch(jz)
+      return
+    }
+    if (v == "for") {
+      ti = ti + 1
+      expect(3, "(")
+      if (!at(3, ";")) { parseSimple() }
+      expect(3, ";")
+      var condPc = code.length
+      var hasCond = false
+      if (!at(3, ";")) { var c = parseExpr(); genExpr(c); hasCond = true }
+      expect(3, ";")
+      var stepStart = ti
+      var d = 0
+      while (tt[ti] != 4) {
+        if (at(3, "(")) { d = d + 1 }
+        else if (at(3, ")")) { if (d == 0) { break } d = d - 1 }
+        ti = ti + 1
+      }
+      if (tt[ti] == 4) { throw "for 语句没有结束" }
+      var stepEnd = ti
+      expect(3, ")")
+      var jz = -1
+      if (hasCond) { emit(O_JZ, 0, 0); jz = code.length - 1 }
+      loops.push({ breaks: [], conts: [] })
+      var lp = loops[loops.length - 1]
+      parseStmt()
+      var stepPc = code.length
+      for (var i = 0; i < lp.conts.length; i++) { code[lp.conts[i]][1] = stepPc }
+      var save = ti
+      ti = stepStart
+      parseSimple()
+      ti = save
+      emit(O_JMP, condPc, 0)
+      loops.pop()
+      for (var i = 0; i < lp.breaks.length; i++) { patch(lp.breaks[i]) }
+      if (jz >= 0) { patch(jz) }
+      return
+    }
+    if (v == "return") {
+      ti = ti + 1
+      if (at(3, ";") || at(3, "}") || tt[ti] == 4) { emit(O_CONST, constIdx(null), 0) }
+      else { var e = parseExpr(); genExpr(e) }
+      emit(O_RET, 0, 0)
+      if (at(3, ";")) { ti = ti + 1 }
+      return
+    }
+    if (v == "break") {
+      ti = ti + 1
+      if (loops.length == 0) { throw "break 不在循环内" }
+      emit(O_JMP, 0, 0)
+      loops[loops.length - 1].breaks.push(code.length - 1)
+      return
+    }
+    if (v == "continue") {
+      ti = ti + 1
+      if (loops.length == 0) { throw "continue 不在循环内" }
+      emit(O_JMP, 0, 0)
+      loops[loops.length - 1].conts.push(code.length - 1)
+      return
+    }
+    if (v == "func") { ti = ti + 1; expect(2, null); skipToClose("(", ")"); skipToClose("{", "}"); return }
+    if (v == "try") {
+      ti = ti + 1
+      emit(O_TRY, 0, 0)
+      var tr = code.length - 1
+      parseStmt()
+      emit(O_ENDTRY, 0, 0)
+      emit(O_JMP, 0, 0)
+      var jmp = code.length - 1
+      patch(tr)
+      expect(2, "catch")
+      expect(3, "(")
+      var cv = expect(2, null)
+      expect(3, ")")
+      declare(cv)
+      emit(resolve(cv) == "global" ? O_GSTORE : O_STORE, constIdx(cv), 0)
+      parseStmt()
+      patch(jmp)
+      return
+    }
+    if (v == "throw") {
+      ti = ti + 1
+      var e = parseExpr()
+      genExpr(e)
+      emit(O_THROW, 0, 0)
+      if (at(3, ";")) { ti = ti + 1 }
+      return
+    }
+  }
+  var e = parseExpr()
+  if (e[0] != "assigned") { genExpr(e); emit(O_POP, 0, 0) }
+  if (at(3, ";")) { ti = ti + 1 }
+}
+func parseSimple() {
+  if (at(2, "var")) { parseStmt(); return }
+  var e = parseExpr()
+  if (e[0] == "assigned") { return }
+  genExpr(e)
+  emit(O_POP, 0, 0)
+}
+func parseExpr() { return parseAssign() }
+func parseAssign() {
+  var left = parseTernary()
+  var isAssign = false
+  var isIncr = false
+  var op = "="
+  if (at(3, "=") || at(3, "+=") || at(3, "-=") || at(3, "*=") || at(3, "/=")) { isAssign = true; op = tv[ti] }
+  if (at(3, "++") || at(3, "--")) { isIncr = true; op = at(3, "++") ? "+=" : "-=" }
+  if (!isAssign && !isIncr) { return left }
+  if (left[0] != "name" && left[0] != "idx" && left[0] != "prop") { throw "赋值目标必须是变量、下标或属性" }
+  ti = ti + 1
+  var kind = left[0]
+  var sc = null
+  var k = 0
+  if (kind == "name") {
+    sc = resolve(left[1])
+    if (sc == null) { throw "未声明的变量 " + left[1] }
+    k = constIdx(left[1])
+    if (op != "=") { emit(sc == "global" ? O_GLOAD : O_LOAD, k, 0) }
+  } else if (kind == "idx") {
+    genExpr(left[1]); genExpr(left[2])
+    if (op != "=") { emit(O_DUP2, 0, 0); emit(O_GETIDX, 0, 0) }
+  } else {
+    genExpr(left[1])
+    k = constIdx(left[2])
+    if (op != "=") { emit(O_DUP, 0, 0); emit(O_GETPROP, k, 0) }
+  }
+  if (isIncr) { emit(O_CONST, constIdx(1), 0) }
+  else {
+    var rhs = parseAssign()
+    if (rhs[0] != "assigned") { genExpr(rhs) }
+  }
+  if (op != "=") { emit(op == "+=" ? O_ADD : (op == "-=" ? O_SUB : (op == "*=" ? O_MUL : O_DIV)), 0, 0) }
+  if (kind == "name") { emit(sc == "global" ? O_GSTORE : O_STORE, k, 0) }
+  else if (kind == "idx") { emit(O_SETIDX, 0, 0) }
+  else { emit(O_SETPROP, k, 0) }
+  return ["assigned"]
+}
+func parseTernary() {
+  var c = parseOr()
+  if (!at(3, "?")) { return c }
+  ti = ti + 1
+  var a = parseAssign()
+  expect(3, ":")
+  var b = parseAssign()
+  return ["cond", c, a, b]
+}
+func parseOr() {
+  var l = parseAnd()
+  while (at(3, "||")) { ti = ti + 1; var r = parseAnd(); l = ["or", l, r] }
+  return l
+}
+func parseAnd() {
+  var l = parseEq()
+  while (at(3, "&&")) { ti = ti + 1; var r = parseEq(); l = ["and", l, r] }
+  return l
+}
+func parseEq() {
+  var l = parseRel()
+  while (at(3, "==") || at(3, "!=")) { var op = tv[ti]; ti = ti + 1; var r = parseRel(); l = ["bin", binOp(op), l, r] }
+  return l
+}
+func parseRel() {
+  var l = parseAdd()
+  while (at(3, "<") || at(3, ">") || at(3, "<=") || at(3, ">=")) { var op = tv[ti]; ti = ti + 1; var r = parseAdd(); l = ["bin", binOp(op), l, r] }
+  return l
+}
+func parseAdd() {
+  var l = parseMul()
+  while (at(3, "+") || at(3, "-")) { var op = tv[ti]; ti = ti + 1; var r = parseMul(); l = ["bin", binOp(op), l, r] }
+  return l
+}
+func parseMul() {
+  var l = parseUnary()
+  while (at(3, "*") || at(3, "/") || at(3, "%")) { var op = tv[ti]; ti = ti + 1; var r = parseUnary(); l = ["bin", binOp(op), l, r] }
+  return l
+}
+func parseUnary() {
+  if (at(3, "-")) { ti = ti + 1; return ["un", "-", parseUnary()] }
+  if (at(3, "!")) { ti = ti + 1; return ["un", "!", parseUnary()] }
+  return parsePostfix()
+}
+func parsePostfix() {
+  var e = parsePrimary()
+  while (true) {
+    if (at(3, ".")) {
+      ti = ti + 1
+      var n = expect(2, null)
+      if (at(3, "(")) {
+        ti = ti + 1
+        var args = parseArgs()
+        e = ["method", e, n, args]
+      } else { e = ["prop", e, n] }
+    } else if (at(3, "[")) {
+      ti = ti + 1
+      var idx = parseExpr()
+      expect(3, "]")
+      e = ["idx", e, idx]
+    } else { break }
+  }
+  return e
+}
+func parseArgs() {
+  var args = []
+  while (!at(3, ")") && tt[ti] != 4) {
+    var a = parseExpr()
+    args.push(a)
+    if (at(3, ",")) { ti = ti + 1 }
+  }
+  expect(3, ")")
+  return args
+}
+func parsePrimary() {
+  if (tt[ti] == 0) { var v = tv[ti]; ti = ti + 1; return ["num", v] }
+  if (tt[ti] == 1) { var v = tv[ti]; ti = ti + 1; return ["str", v] }
+  if (tt[ti] == 2) {
+    var v = tv[ti]
+    if (v == "true") { ti = ti + 1; return ["bool", true] }
+    if (v == "false") { ti = ti + 1; return ["bool", false] }
+    if (v == "null") { ti = ti + 1; return ["null"] }
+    if (v == "sys") {
+      ti = ti + 1
+      expect(3, ".")
+      var n = expect(2, null)
+      expect(3, "(")
+      var args = parseArgs()
+      return ["sys", n, args]
+    }
+    ti = ti + 1
+    if (at(3, "(")) { ti = ti + 1; var args = parseArgs(); return ["call", v, args] }
+    return ["name", v]
+  }
+  if (at(3, "(")) { ti = ti + 1; var e = parseExpr(); expect(3, ")"); return e }
+  if (at(3, "[")) {
+    ti = ti + 1
+    var items = []
+    while (!at(3, "]") && tt[ti] != 4) {
+      var a = parseExpr()
+      items.push(a)
+      if (at(3, ",")) { ti = ti + 1 }
+    }
+    expect(3, "]")
+    return ["arr", items]
+  }
+  if (at(3, "{")) {
+    ti = ti + 1
+    var props = []
+    while (!at(3, "}") && tt[ti] != 4) {
+      var k = ""
+      if (tt[ti] == 2 || tt[ti] == 1) { k = tv[ti]; ti = ti + 1 }
+      else if (tt[ti] == 0) { k = "" + tv[ti]; ti = ti + 1 }
+      else { throw "映射的键必须是标识符或字符串" }
+      expect(3, ":")
+      var val = parseExpr()
+      props.push([k, val])
+      if (at(3, ",")) { ti = ti + 1 }
+    }
+    expect(3, "}")
+    return ["map", props]
+  }
+  throw "意外的符号 '" + tv[ti] + "'（第 " + lineNow() + " 行）"
+}
+func genExpr(e) {
+  if (e[0] == "assigned") { return }
+  if (e[0] == "num" || e[0] == "str" || e[0] == "bool") { emit(O_CONST, constIdx(e[1]), 0); return }
+  if (e[0] == "null") { emit(O_CONST, constIdx(null), 0); return }
+  if (e[0] == "name") {
+    var sc = resolve(e[1])
+    if (sc == null) { throw "未声明的变量 " + e[1] }
+    emit(sc == "global" ? O_GLOAD : O_LOAD, constIdx(e[1]), 0)
+    return
+  }
+  if (e[0] == "arr") {
+    for (var i = 0; i < e[1].length; i++) { genExpr(e[1][i]) }
+    emit(O_ARRNEW, e[1].length, 0)
+    return
+  }
+  if (e[0] == "map") {
+    for (var i = 0; i < e[1].length; i++) { emit(O_CONST, constIdx(e[1][i][0]), 0); genExpr(e[1][i][1]) }
+    emit(O_MAPNEW, e[1].length, 0)
+    return
+  }
+  if (e[0] == "cond") {
+    genExpr(e[1])
+    emit(O_JZ, 0, 0); var jz = code.length - 1
+    genExpr(e[2])
+    emit(O_JMP, 0, 0); var jmp = code.length - 1
+    patch(jz)
+    genExpr(e[3])
+    patch(jmp)
+    return
+  }
+  if (e[0] == "and") {
+    genExpr(e[1]); emit(O_DUP, 0, 0)
+    emit(O_JZ, 0, 0); var jz = code.length - 1
+    emit(O_POP, 0, 0); genExpr(e[2]); patch(jz)
+    return
+  }
+  if (e[0] == "or") {
+    genExpr(e[1]); emit(O_DUP, 0, 0)
+    emit(O_JNZ, 0, 0); var jnz = code.length - 1
+    emit(O_POP, 0, 0); genExpr(e[2]); patch(jnz)
+    return
+  }
+  if (e[0] == "bin") { genExpr(e[2]); genExpr(e[3]); emit(e[1], 0, 0); return }
+  if (e[0] == "un") { genExpr(e[2]); emit(e[1] == "-" ? O_NEG : O_NOT, 0, 0); return }
+  if (e[0] == "idx") { genExpr(e[1]); genExpr(e[2]); emit(O_GETIDX, 0, 0); return }
+  if (e[0] == "prop") { genExpr(e[1]); emit(O_GETPROP, constIdx(e[2]), 0); return }
+  if (e[0] == "call") {
+    for (var i = 0; i < e[2].length; i++) { genExpr(e[2][i]) }
+    if (!funcs.has(e[1])) { throw "未定义的函数 " + e[1] }
+    emit(O_CALL, constIdx(e[1]), e[2].length)
+    return
+  }
+  if (e[0] == "method") {
+    genExpr(e[1])
+    for (var i = 0; i < e[3].length; i++) { genExpr(e[3][i]) }
+    emit(O_METHOD, constIdx(e[2]), e[3].length)
+    return
+  }
+  if (e[0] == "sys") {
+    for (var i = 0; i < e[2].length; i++) { genExpr(e[2][i]) }
+    emit(O_SYS, constIdx(e[1]), e[2].length)
+    return
+  }
+  throw "无法生成的表达式 " + e[0]
+}
+
+func main() {
+  while (true) {
+    var req = sys.recv()
+    if (req.op == "compile") {
+      var out = null
+      try {
+        out = compileSource(req.src)
+      } catch (e) {
+        out = { ok: false, error: "" + e }
+      }
+      sys.reply(out)
+    } else {
+      sys.reply({ ok: false, error: "未知请求" })
+    }
+  }
+}
