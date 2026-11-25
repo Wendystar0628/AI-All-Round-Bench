@@ -1,6 +1,6 @@
 # 十项全能专题网站设计总览
 
-展示「AI十项全能·定时挑战赛」各模型成绩的静态网站（站点项目 `website/topics/decathlon/`，挂在 `/decathlon/`），按桌面网页设计（宽 1024 以上）；模型得分页、题目类别榜和题目页在手机宽度下也能用，整页不出现横向滚动（阅读页的左栏移到正文之后；命令栏的入口在栏内横向滚动，字标文字、搜索提示和快捷键按钮收起）。设计系统用 `专题/十项全能/设计/stellar-ui-skill`，本目录只写本站自己的决定；技能里已有的规则不重复。
+展示「AI十项全能·定时挑战赛」各模型成绩的静态网站（站点项目 `website/topics/decathlon/`，挂在 `/decathlon/`），按桌面网页设计（宽 1024 以上）；模型得分页、题目类别榜和题目页在手机宽度下也能用，整页不出现横向滚动（阅读页的左栏移到正文之后；命令栏的入口在栏内横向滚动，字标文字、搜索提示和快捷键按钮收起）。设计系统用 `topics/十项全能/设计/stellar-ui-skill`，本目录只写本站自己的决定；技能里已有的规则不重复。
 
 ## 变体卡
 
@@ -119,7 +119,7 @@ models.json   [{ id, key, name, short, aliases, vendor, region, logo, agent, eff
                     "logo": "openai", "agent": "Codex", "effort": "xhigh", "tested": "2026-11-04" }
 tasks.json    [{ key, name, en, weight, tasks: [{ key, name, short, weight, minutes, kind, brief, deliverable }] }]
               short：放不下全名处用的短名（如「光线追踪加速」）；brief：一句定位；deliverable：交付物
-              brief、deliverable 取自十项全能 README（`专题/十项全能/README.md`）的题目总览和题目卡片
+              brief、deliverable 取自十项全能 README（`topics/十项全能/README.md`）的题目总览和题目卡片
               kind：standard（标准评判题，程序校验生成分数）或 design（主动设计题，两位评分员取平均）
 scores.json   { updated, order, notice, cost_source, scores: { <模型id>: { total, rank, status, done, kinds: { standard, design },
                                        categories: { <类别>: 分 | null }, tasks: { <题目>: 分 | null } } } }
@@ -134,9 +134,9 @@ stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections
 
 - 13 道题按 tasks.json 的顺序统一编号 01–13，矩阵、题目类别榜和题目页都用这套编号。
 
-- 模型全名用 `name`（如 Claude Opus 5.5、GPT 6.1 Sol），共用身份取自 `平台/型号.json`，参测信息取自 `专题/十项全能/参测.json`，正式上榜名单按专题确认快照筛选。
+- 模型全名用 `name`（如 Claude Opus 5.5、GPT 6.1 Sol），共用身份取自 `platform/型号.json`，参测信息取自 `topics/十项全能/参测.json`，正式上榜名单按专题确认快照筛选。
 - 凡是显示受测模型名的地方（榜单行、侧面板、模型得分页、首页前五名、题目页得分、搜索结果、对比视图），名字后面用半角括号标推理强度，取 `effort`：`Claude Opus 5.5 (xhigh)`。括号部分用 Saira，比名字小一级，次要墨色；名字放不下省略时，括号部分照常显示。评分员名不加。
-- 厂商图标从 `平台/厂商图标/mark/` 取：有彩色版 `<logo>-color.svg` 的用彩色版，深色主题也不反色；没有的（OpenAI 等）用单色版 `<logo>.svg`，跟随文字颜色。
+- 厂商图标从 `platform/厂商图标/mark/` 取：有彩色版 `<logo>-color.svg` 的用彩色版，深色主题也不反色；没有的（OpenAI 等）用单色版 `<logo>.svg`，跟随文字颜色。
 - 13 题没测完的模型标「评测中」，排在已排名模型之后，不参与总榜名次；某个类别的题出齐了，就参加这个类别的排名。
 
 ## 多模型扩展
@@ -152,7 +152,7 @@ stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections
 ## 技术
 
 - 多页静态站，用 Vite 构建，原生 JS 模块；图表用 D3 v7 画 SVG。导出、构建和发布只用 `website/tools/publish.py` 一条命令（`website/tools/README.md`）。
-- 素材只用新做的：从技能拷入 `stellar.css`、`fx.js`、星图底纹和 Saira 字体；装饰取自 `专题/十项全能/设计/decor`，厂商图标取自 `平台/厂商图标`，类别图标取自 `专题/十项全能/设计/icons/categories/<类别>.svg`（单色 `currentColor`）。不用 README 配图（`专题/十项全能/assets/readme/`）的图标和配色；README 只作为文字内容的来源。
+- 素材只用新做的：从技能拷入 `stellar.css`、`fx.js`、星图底纹和 Saira 字体；装饰取自 `topics/十项全能/设计/decor`，厂商图标取自 `platform/厂商图标`，类别图标取自 `topics/十项全能/设计/icons/categories/<类别>.svg`（单色 `currentColor`）。不用 README 配图（`topics/十项全能/assets/readme/`）的图标和配色；README 只作为文字内容的来源。
 - 网站轻量，不展示作品的截图、录像和解答，作品由视频展示。
 
 ## 目录
@@ -161,9 +161,9 @@ stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections
 website/topics/decathlon/   本站点项目（目录分工见 architecture.md）
   docs/                     设计文档（本目录）
   export.py  meta/  publish/  导出插件、站点文案、确认快照与公示
-专题/十项全能/设计/stellar-ui-skill/   设计系统
-专题/十项全能/设计/decor/              装饰 SVG
-专题/十项全能/设计/icons/categories/   10 个类别图标
-平台/厂商图标/                         厂商图标（全平台共用）
+topics/十项全能/设计/stellar-ui-skill/   设计系统
+topics/十项全能/设计/decor/              装饰 SVG
+topics/十项全能/设计/icons/categories/   10 个类别图标
+platform/厂商图标/                         厂商图标（全平台共用）
 website/hub/                           总站首页（另一个项目）
 ```

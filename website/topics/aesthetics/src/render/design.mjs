@@ -1,7 +1,7 @@
 // 设计系统的运行时，在 Node 里构建页面时用：把同步来的 logo/glyphs.js、logo/wordmark/wordmark.js、ornaments/ornaments.js、ae.js
 // 放进一个 vm 沙箱执行，取出 AE（题名字形、字标）和 AEOrn（四角星、吊星、星座）；
 // 再从 tokens.json 取颜色和十个方向的皮（题材色、票根实底、票根动作、英文类别、明暗基调）。
-// 这些文件都是 scripts/sync.mjs 从 专题/审美全能/设计/ 拷来的副本，这里只读、不改。
+// 这些文件都是 scripts/sync.mjs 从 topics/审美全能/设计/ 拷来的副本，这里只读、不改。
 //
 // 还在做的三样东西（锁定、进光立绘、代表画面静图）同步进来以后，这里的 lockupItem / litPortrait / stillOf 找得到就用，
 // 找不到时页面用各自的退路（docs/design.md 8.5）。
@@ -78,7 +78,7 @@ export function skinOf(taskKey, categoryName) {
 }
 
 /**
- * 题名有没有现成的字形：字形按题 key 登记（专题/审美全能/设计/logo/build_glyphs.py 生成），
+ * 题名有没有现成的字形：字形按题 key 登记（topics/审美全能/设计/logo/build_glyphs.py 生成），
  * 还要和要画的题名一字不差——题名改了而字形没重新生成时，退回纯文字，不画旧名字。
  */
 export const hasGlyph = (key, text) => Boolean(key && GLYPHS.titles[key] && GLYPHS.titles[key].text === text);

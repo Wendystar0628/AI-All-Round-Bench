@@ -6,7 +6,7 @@
 
 - 本站是 `website/topics/decathlon/` 这个站点项目，按 `website/README.md` 的站点项目契约构建：数据目录取 `ONESHOT_SITE_DATA_DIR`，站内根路径取 `ONESHOT_SITE_BASE`（`/decathlon/`）。
 - 数据由本专题的导出插件 `export.py` 写出（经共用驱动 `website/tools/export.py`），包含 `models.json`、`scores.json`、`tasks.json`、`search.json`、`zeros.json` 和题干 `stems/<类别>/<题目>.json`。实时数据在 `data/`，开发服务器优先读含本机私有型号的 `data-local/`。题干摘录规则见 `tasks.md`。
-- 型号身份取自 `平台/型号.json`，参测登记取自 `专题/十项全能/参测.json`；题序、权重、限时取自 `专题/十项全能/专题.json`，双语文案和搜索别名取自 `meta/tasks_meta.json`。
+- 型号身份取自 `platform/型号.json`，参测登记取自 `topics/十项全能/参测.json`；题序、权重、限时取自 `topics/十项全能/专题.json`，双语文案和搜索别名取自 `meta/tasks_meta.json`。
 - 正式成绩是 `publish/confirmed.json` 的确认快照，暂停公示是 `publish/notice.json`，0 分原因是 `publish/zero-reasons.json`。
 - 总站卡片的主色写在 `meta/card.json`（`accent`）。
 
@@ -29,7 +29,7 @@ website/topics/decathlon/
   package.json  vite.config.js  README.md
   pages/                 页面模板（骨架方建，各页负责人改自己那一个）
   data/                  导出插件的产物（数据方）
-  public/                字体、星图底纹、厂商图标、类别图标、装饰，由同步脚本从 专题/十项全能/设计 和 平台/厂商图标 拷入（骨架方）
+  public/                字体、星图底纹、厂商图标、类别图标、装饰，由同步脚本从 topics/十项全能/设计 和 platform/厂商图标 拷入（骨架方）
   src/
     core/                取数、i18n、路由信息、主题、网址参数和本地存储、格式化（模型名加推理强度）（骨架方）
     shell/               命令栏（含回总站入口）、全站搜索、快捷键表、模型侧面板、页脚、深浅和语言切换（骨架方）
@@ -49,8 +49,8 @@ website/topics/decathlon/
 
 ## 四、共同约束
 
-- 设计系统用 `专题/十项全能/设计/stellar-ui-skill`；视觉和动效按本目录的 `visual.md`、`motion.md`；各页内容按对应文档。
-- 素材只用 `专题/十项全能/设计/` 下的装饰（`decor`）和类别图标（`icons/categories`）、`平台/厂商图标` 和技能自带的素材，不用 README 配图（`专题/十项全能/assets/readme/`）。
+- 设计系统用 `topics/十项全能/设计/stellar-ui-skill`；视觉和动效按本目录的 `visual.md`、`motion.md`；各页内容按对应文档。
+- 素材只用 `topics/十项全能/设计/` 下的装饰（`decor`）和类别图标（`icons/categories`）、`platform/厂商图标` 和技能自带的素材，不用 README 配图（`topics/十项全能/assets/readme/`）。
 - 界面文字都放在 i18n 文件里，中文是主语言。
 - 按桌面网页设计（宽 1024 以上）；模型得分页、题目类别榜和题目页在手机宽度下也不出现横向滚动。浅色、深色两套主题都要验收。
 - 网站轻量，不展示作品的截图、录像和解答，也不放视频文件。

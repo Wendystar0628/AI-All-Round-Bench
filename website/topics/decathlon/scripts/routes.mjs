@@ -41,7 +41,7 @@ const readJSON = (file, fallback) => {
 };
 
 /**
- * 有彩色版的厂商标识名（public/logos/mark/<名>-color.svg，由 npm run sync 从 平台/厂商图标 拷入）。
+ * 有彩色版的厂商标识名（public/logos/mark/<名>-color.svg，由 npm run sync 从 platform/厂商图标 拷入）。
  * 全站厂商图标的规则：有彩色版用彩色版，没有的用单色版；页面脚本经 define 拿到这份名单（core/names.js）。
  */
 export function colorLogos(root) {

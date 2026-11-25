@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="960x606">
+<meta name="size-en" content="960x712">
+<title>公平与隔离</title>
+<link rel="stylesheet" href="../../../../topics/十项全能/assets/readme/src/tokens.css">
+<link rel="stylesheet" href="../platform.css">
+<style>
+  .desc { margin-top: 10px; }
+
+  /* The machine: one hairline box holding both accounts. */
+  .machine { margin-top: 22px; border: 1px solid var(--ink); padding: 14px 16px 16px; }
+  .mhead { display: flex; align-items: baseline; column-gap: 14px; }
+  .mhead h3 { font-size: 15px; }
+  .mhead .field { font-size: 12.5px; }
+  .accounts { display: grid; grid-template-columns: 1fr 64px 330px; margin-top: 12px; }
+
+  .acct { padding: 14px 16px 16px; }
+  .acct .name { display: flex; align-items: baseline; column-gap: 10px; }
+  .acct .name h3 { font-size: 16px; }
+  .acct .name span { font-family: var(--font-text); font-size: 12.5px; color: var(--ink-2); }
+
+  /* One tested session, layer inside layer. */
+  .layer { border: 1px solid var(--rule); padding: 8px 10px 10px; margin-top: 10px; background: var(--panel); }
+  .layer.l1 { border-color: var(--ink-2); }
+  .layer.l3 { background: var(--violet-100); border-color: var(--violet-300); }
+  .lt { display: flex; align-items: baseline; column-gap: 8px; font-size: 13px; line-height: 19px; }
+  .lt b { flex: none; font-weight: 700; }
+  .lt span { font-family: var(--font-text); font-size: 12.5px; color: var(--ink-2); }
+  .agent { display: flex; align-items: center; column-gap: 8px; margin-top: 8px; font-size: 13px; line-height: 19px; }
+  .agent .glint { flex: none; width: 16px; height: 16px; }
+  .agent span { font-family: var(--font-text); font-size: 12.5px; color: var(--ink-2); }
+  .more { display: flex; align-items: center; column-gap: 8px; margin-top: 10px; font-family: var(--font-text); font-size: 12.5px; color: var(--ink-2); }
+  .more i { display: inline-block; width: 26px; height: 12px; border: 1px dashed var(--ink-2); flex: none; }
+
+  /* The wall between the accounts: Windows permissions, not a request. */
+  .wall { position: relative; display: flex; justify-content: center; }
+  .wall::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 6px; margin-left: -3px; background: var(--ink); }
+  .wall .tag { position: relative; align-self: center; font-size: 12px; font-weight: 700; line-height: 16px; padding: 6px 5px; text-align: center; writing-mode: vertical-rl; letter-spacing: .08em; }
+  html[lang="en"] .wall .tag { writing-mode: horizontal-tb; letter-spacing: 0; padding: 5px 6px; font-size: 11px; }
+
+  .rows { margin-top: 6px; }
+  .rows div { display: grid; grid-template-columns: 72px 1fr; column-gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 13px; line-height: 19px; }
+  .rows div:last-child { border-bottom: none; }
+  .rows b { font-weight: 700; }
+  .rows span { font-family: var(--font-text); font-size: 12.5px; color: var(--ink-2); }
+  html[lang="en"] .rows div { grid-template-columns: 84px 1fr; }
+
+  /* Four more things every session gets the same. */
+  .band { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 16px; background: var(--lime-100); padding: 14px 0; }
+  .band > div { padding: 0 16px; border-left: 1px solid var(--rule); }
+  .band > div:first-child { border-left: none; }
+  .band h4 { font-size: 14px; font-weight: 700; line-height: 20px; }
+  .band p { font-family: var(--font-text); font-size: 12.5px; line-height: 19px; color: var(--ink-2); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="head">
+    <div class="pair"><span class="eyebrow slash">Isolation</span><h2 class="title"><span class="zh">公平与隔离</span><span class="en">Fairness and isolation</span></h2></div>
+    <i class="lead"></i>
+  </header>
+  <p class="desc"><span class="zh">作答和评分在同一台机器上，用两个 Windows 账户分开；挡住受测会话的是系统权限，不是一句嘱咐。</span><span class="en">Answering and grading share one machine but run under two Windows accounts; what holds a tested session back is system permissions, not a request.</span></p>
+
+  <div class="machine">
+    <div class="mhead"><h3><span class="zh">测试机</span><span class="en">Test machine</span></h3>
+      <span class="field facts"><span>Windows 11</span><span>Core i7-14700KF</span><span>RTX 4080 16 GB</span><span class="zh">64 GB 内存</span><span class="en">64 GB RAM</span></span></div>
+    <div class="accounts">
+      <div class="acct panel tab">
+        <div class="name"><h3><span class="zh">受测账户</span><span class="en">Tested account</span></h3><span><span class="zh">专用的普通账户，不在管理员组</span><span class="en">a dedicated standard account, not an admin</span></span></div>
+        <div class="layer l1">
+          <div class="lt"><b><span class="zh">单独登录</span><span class="en">Own logon</span></b><span><span class="zh">每个会话一次登录，进程权限收紧到这次登录</span><span class="en">each session is a separate logon; its processes are bound to it</span></span></div>
+          <div class="layer">
+            <div class="lt"><b><span class="zh">作业对象</span><span class="en">Job object</span></b><span><span class="zh">会话的全部进程都在里面，到时一并结束</span><span class="en">holds every process of the session; all end at time</span></span></div>
+            <div class="layer l3">
+              <div class="lt"><b><span class="zh">作答目录</span><span class="en">Work folder</span></b><span><span class="zh">按专题、型号、题分开，只放本题题面和材料</span><span class="en">per topic, model and task; only this task's files</span></span></div>
+              <div class="agent"><svg class="glint" viewBox="0 0 22 22"><path d="M11 1Q11.66 10.34 21 11Q11.66 11.66 11 21Q10.34 11.66 1 11Q10.34 10.34 11 1Z" fill="var(--lime)" stroke="var(--ink)" stroke-width="1" stroke-linejoin="round"/></svg><b><span class="zh">智能体</span><span class="en">Agent</span></b><span><span class="zh">不开沙箱和审批，能做什么由账户权限决定</span><span class="en">no sandbox or approvals; the account decides what it can do</span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="more"><i></i><span class="zh">同时作答的每个会话各有一套，彼此结束不了对方的进程</span><span class="en">every concurrent session gets its own set and cannot end another's processes</span></div>
+      </div>
+
+      <div class="wall"><span class="tag solid"><span class="zh">整体拒绝访问</span><span class="en">Denied</span></span></div>
+
+      <div class="acct panel tab">
+        <div class="name"><h3><span class="zh">管理员账户</span><span class="en">Admin account</span></h3></div>
+        <div class="rows">
+          <div><b><span class="zh">题库仓库</span><span class="en">Repository</span></b><span><span class="zh">题面原件、评分指南、参考答案、隐藏数据和测评程序</span><span class="en">original statements, grading guides, reference answers, hidden data, benchmark code</span></span></div>
+          <div><b><span class="zh">会话日志</span><span class="en">Session logs</span></b><span><span class="zh">受测会话关闭后移到这一侧</span><span class="en">moved here once a tested session closes</span></span></div>
+          <div><b><span class="zh">评分员</span><span class="en">Graders</span></b><span><span class="zh">按专题的评分指南评分；每个评分任务一个新会话，复制作答目录再评</span><span class="en">grade by the topic's guide; a fresh session per job, working on a copy of the folder</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div><h4><span class="zh">记忆清空</span><span class="en">Memory wiped</span></h4><p class="zh">开测前清空受测账户里智能体的记忆，作答时关闭自动记忆</p><p class="en">Agent memories in the tested account are cleared before testing; auto-memory is off</p></div>
+    <div><h4><span class="zh">同一套浏览器</span><span class="en">Same browser</span></h4><p class="zh">都接 chrome-devtools-mcp：本机无窗口 Chrome，用显卡，每次独立的临时用户目录</p><p class="en">All use chrome-devtools-mcp: local headless Chrome on the GPU, a fresh temp profile each time</p></div>
+    <div><h4><span class="zh">专用端口</span><span class="en">Own ports</span></h4><p class="zh">要起本地服务器或调试端口的题，平台给每个会话分配专用端口，同题并行也不冲突</p><p class="en">Tasks needing a local server or debug port get ports per session, so parallel runs never collide</p></div>
+    <div><h4><span class="zh">占机互斥</span><span class="en">Machine claims</span></h4><p class="zh">独占整机的题作答时不开别的作答；需要安静机器的题作答时不评分</p><p class="en">No other answering beside a whole-machine task; no grading while a quiet-machine task runs</p></div>
+  </div>
+</div>
+</body>
+</html>

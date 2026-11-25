@@ -1,6 +1,6 @@
 # 全站动效
 
-依据：迪士尼动画原则在界面上的用法（时间、缓入缓出、预备、跟随与重叠、舞台调度）；Material 动效（按距离和面积定时长、进入减速退出加速、共享元素过渡）；IBM Carbon 的效率型和表现型动效；Heer 与 Robertson 的统计图动画过渡（分阶段、对象恒常）；Doherty 阈值（回应要及时）；格式塔的共同命运。曲线、时长和错开沿用技能（`专题/十项全能/设计/stellar-ui-skill/references/motion.md`、`assets/tokens.json`、`fx.js`），变体 `动效 full`。本文写每个动效的用途、触发、曲线、档位和先后，具体时长以 `tokens.json` 为准。
+依据：迪士尼动画原则在界面上的用法（时间、缓入缓出、预备、跟随与重叠、舞台调度）；Material 动效（按距离和面积定时长、进入减速退出加速、共享元素过渡）；IBM Carbon 的效率型和表现型动效；Heer 与 Robertson 的统计图动画过渡（分阶段、对象恒常）；Doherty 阈值（回应要及时）；格式塔的共同命运。曲线、时长和错开沿用技能（`topics/十项全能/设计/stellar-ui-skill/references/motion.md`、`assets/tokens.json`、`fx.js`），变体 `动效 full`。本文写每个动效的用途、触发、曲线、档位和先后，具体时长以 `tokens.json` 为准。
 
 ## 一、原则
 

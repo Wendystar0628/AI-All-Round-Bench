@@ -1,21 +1,21 @@
 // 把网站用到的设计素材同步一份副本到 src/vendor/（不进 git）。只拷要用的文件；内容没变的不重拷，
 // src/vendor/ 里多出来的删掉。来源（相对仓库根）：
 //
-//   专题/审美全能/设计/tokens.css             -> src/vendor/design/tokens.css   去掉开头的字体 @import：
+//   topics/审美全能/设计/tokens.css             -> src/vendor/design/tokens.css   去掉开头的字体 @import：
 //                                                 字体由网站自己声明（scripts/fonts.mjs）
-//   专题/审美全能/设计/{tokens.json, ae.js}   -> src/vendor/design/
-//   专题/审美全能/设计/textures/textures.css  -> src/vendor/design/textures/
-//   专题/审美全能/设计/ornaments/ornaments.js -> src/vendor/design/ornaments/
-//   专题/审美全能/设计/logo/{glyphs.js, favicon.svg} -> src/vendor/design/logo/   favicon.svg 是标签栏图标
-//   专题/审美全能/设计/logo/wordmark/wordmark.js -> src/vendor/design/logo/wordmark/   字标的矢量字形（页面在构建时画成内联 SVG）
+//   topics/审美全能/设计/{tokens.json, ae.js}   -> src/vendor/design/
+//   topics/审美全能/设计/textures/textures.css  -> src/vendor/design/textures/
+//   topics/审美全能/设计/ornaments/ornaments.js -> src/vendor/design/ornaments/
+//   topics/审美全能/设计/logo/{glyphs.js, favicon.svg} -> src/vendor/design/logo/   favicon.svg 是标签栏图标
+//   topics/审美全能/设计/logo/wordmark/wordmark.js -> src/vendor/design/logo/wordmark/   字标的矢量字形（页面在构建时画成内联 SVG）
 //   scripts/fonts.mjs FONT_FILES 里的字体文件  -> src/vendor/design/fonts/
-//   平台/厂商图标/mark/*.svg                  -> src/vendor/logos/
+//   platform/厂商图标/mark/*.svg                  -> src/vendor/logos/
 //
 // 下面三个目录有了才拷（还在做的东西；没有时页面用各自的退路，见 docs/design.md 8.5）：
-//   专题/审美全能/设计/logo/lockups/  -> src/vendor/design/logo/lockups/   十个题名锁定（视频和网站共用的同一份：清单 lockups.js 和网页用的 WebP 图层，不拷 PNG 和 build/）
-//   专题/审美全能/设计/portraits/     -> src/vendor/design/portraits/      预渲的进光立绘：清单 portraits.json 和 players/、judges/ 里的图
+//   topics/审美全能/设计/logo/lockups/  -> src/vendor/design/logo/lockups/   十个题名锁定（视频和网站共用的同一份：清单 lockups.js 和网页用的 WebP 图层，不拷 PNG 和 build/）
+//   topics/审美全能/设计/portraits/     -> src/vendor/design/portraits/      预渲的进光立绘：清单 portraits.json 和 players/、judges/ 里的图
 //                                                                         （同目录的 build.mjs、render.html 是生成工具，不拷）
-//   专题/审美全能/设计/stills/        -> src/vendor/design/stills/         代表画面的静图（画面层，不带字）
+//   topics/审美全能/设计/stills/        -> src/vendor/design/stills/         代表画面的静图（画面层，不带字）
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,8 +23,8 @@ import { FONT_FILES, fontSource } from './fonts.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const bench = resolve(site, '..', '..', '..');
-const design = join(bench, '专题', '审美全能', '设计');
-const marks = join(bench, '平台', '厂商图标', 'mark');
+const design = join(bench, 'topics', '审美全能', '设计');
+const marks = join(bench, 'platform', '厂商图标', 'mark');
 const vendor = join(site, 'src', 'vendor');
 
 const dropFontImport = (buf) => Buffer.from(buf.toString('utf8').replace(/^@import url\("fonts\/fonts\.css"\);\s*/m, ''));

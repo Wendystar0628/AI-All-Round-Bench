@@ -38,7 +38,7 @@ $env:ONESHOT_SITE_BASE="/aesthetics/"; npm run preview                          
 | 作答关闭后刷新实时数据（不打包，平台自动跑） | `python website/tools/export.py --topic aesthetics --live` |
 
 - 草稿阶段只导出到 `data-local/`（不进 git）；上线后 `data/` 进 git，其中的 `media/`、`downloads/` 不进，随时可以从 `website/.build-cache/aesthetics/` 重新拷出。
-- 题目、方向的顺序和展示文案来自 `专题/审美全能/展示文案.json`，评委来自 `videos/topics/aesthetics/judges/judges.json`，型号来自参测登记；作品图由 `tools/shots.py` 挑，下载包由 `tools/package.py` 打。细节见 `docs/data.md`、`docs/downloads.md`。
+- 题目、方向的顺序和展示文案来自 `topics/审美全能/展示文案.json`，评委来自 `videos/topics/aesthetics/judges/judges.json`，型号来自参测登记；作品图由 `tools/shots.py` 挑，下载包由 `tools/package.py` 打。细节见 `docs/data.md`、`docs/downloads.md`。
 - 评语、PV设计和字体与Logo设计的题面现在都还没有；数据里有了，页面自己会显示，不用改代码（空状态见 `docs/design.md` 4.2）。
 
 ## 设计素材怎么同步
@@ -47,14 +47,14 @@ $env:ONESHOT_SITE_BASE="/aesthetics/"; npm run preview                          
 
 | 来源（相对仓库根） | 用来做什么 |
 |---|---|
-| `专题/审美全能/设计/tokens.css`、`tokens.json` | 令牌（颜色、字号、栅格、缓动）；十个方向各自的一套配色（世界色、点亮色、墨、光色）和票根动作，网站各题的颜色只从这里读 |
-| `专题/审美全能/设计/ae.js`、`logo/glyphs.js`、`logo/wordmark/wordmark.js`、`ornaments/ornaments.js` | 构建时在 Node 里画字标（`wordmark.js`）、题名字形、锁定的几何线、星座、吊星（`src/render/design.mjs`） |
-| `专题/审美全能/设计/logo/lockups/` | 十个题名锁定：清单 `lockups.js` 和网页用的 WebP 图层（视频和网站同一份；不拷 PNG 和 `build/`） |
-| `专题/审美全能/设计/portraits/` | 预渲的进光立绘：清单 `portraits.json` 和 `players/`、`judges/` 里的图（不拷 `build.mjs`、`render.html`） |
-| `专题/审美全能/设计/stills/` | 代表画面的静图（题目页页首）和几何线的落点 `links.json`（有的话）；静图还没有时页首画缺省画面 |
-| `专题/审美全能/设计/textures/textures.css`、`logo/favicon.svg` | 颗粒、网站图标（标签栏） |
-| `scripts/fonts.mjs` 的 `FONT_FILES` | 字体：Libre Bodoni、Tangerine 取设计系统的 `fonts/`；中文用 Noto Serif SC（思源宋体的同一设计，没有保留字名），先找 `专题/审美全能/设计/fonts/NotoSerifSC-VF.ttf`，没有时用本机装的那一份（Windows 的 `C:/Windows/Fonts/NotoSerifSC-VF.ttf`） |
-| `平台/厂商图标/mark/*.svg` | 厂商图标；缺了某个图标时构建照常，只打一行提示、页面上不画它 |
+| `topics/审美全能/设计/tokens.css`、`tokens.json` | 令牌（颜色、字号、栅格、缓动）；十个方向各自的一套配色（世界色、点亮色、墨、光色）和票根动作，网站各题的颜色只从这里读 |
+| `topics/审美全能/设计/ae.js`、`logo/glyphs.js`、`logo/wordmark/wordmark.js`、`ornaments/ornaments.js` | 构建时在 Node 里画字标（`wordmark.js`）、题名字形、锁定的几何线、星座、吊星（`src/render/design.mjs`） |
+| `topics/审美全能/设计/logo/lockups/` | 十个题名锁定：清单 `lockups.js` 和网页用的 WebP 图层（视频和网站同一份；不拷 PNG 和 `build/`） |
+| `topics/审美全能/设计/portraits/` | 预渲的进光立绘：清单 `portraits.json` 和 `players/`、`judges/` 里的图（不拷 `build.mjs`、`render.html`） |
+| `topics/审美全能/设计/stills/` | 代表画面的静图（题目页页首）和几何线的落点 `links.json`（有的话）；静图还没有时页首画缺省画面 |
+| `topics/审美全能/设计/textures/textures.css`、`logo/favicon.svg` | 颗粒、网站图标（标签栏） |
+| `scripts/fonts.mjs` 的 `FONT_FILES` | 字体：Libre Bodoni、Tangerine 取设计系统的 `fonts/`；中文用 Noto Serif SC（思源宋体的同一设计，没有保留字名），先找 `topics/审美全能/设计/fonts/NotoSerifSC-VF.ttf`，没有时用本机装的那一份（Windows 的 `C:/Windows/Fonts/NotoSerifSC-VF.ttf`） |
+| `platform/厂商图标/mark/*.svg` | 厂商图标；缺了某个图标时构建照常，只打一行提示、页面上不画它 |
 
 - 设计系统改了（字形、锁定、立绘重新生成），重新跑一次 `npm run dev` 或 `npm run build` 就同步过来，不用改站点代码。开发服务器开着时同步了新素材，要重启它（`design.mjs` 在启动时读这些文件）。
 - 字体映射只在 `scripts/fonts.mjs` 里改（`FACES`），出处里的字体名跟着 `FAMILIES` 列。
@@ -63,5 +63,5 @@ $env:ONESHOT_SITE_BASE="/aesthetics/"; npm run preview                          
 
 ## 上线之前
 
-- `专题/审美全能/` 整个目录现在还被 `.git/info/exclude` 排除在仓库外，而同步的设计素材、导出读的专题清单和展示文案都在里面：上线前要先把它放进仓库，否则在别处 clone 下来构建会在同步这一步失败。
+- `topics/审美全能/` 整个目录现在还被 `.git/info/exclude` 排除在仓库外，而同步的设计素材、导出读的专题清单和展示文案都在里面：上线前要先把它放进仓库，否则在别处 clone 下来构建会在同步这一步失败。
 - 用户说上线后，把专题清单的 `website_status` 改成 `online`，再按 `website/tools/README.md` 发布。

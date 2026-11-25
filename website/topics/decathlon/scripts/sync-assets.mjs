@@ -3,23 +3,23 @@
 // Never touches anything outside the folders listed here. Sources (relative to the
 // project root, the folder above website/):
 //
-//   专题/十项全能/设计/stellar-ui-skill/assets/fonts         -> public/fonts
-//   专题/十项全能/设计/decor/<type>/*.svg                    -> public/decor/<type>/
-//   平台/厂商图标/mark/*.svg                                 -> public/logos/mark/
-//   专题/十项全能/设计/icons/categories/*.svg                -> public/icons/categories/
-//   专题/十项全能/设计/stellar-ui-skill/assets/{stellar.css,fx.js,tokens.json,stars/*.svg}
+//   topics/十项全能/设计/stellar-ui-skill/assets/fonts         -> public/fonts
+//   topics/十项全能/设计/decor/<type>/*.svg                    -> public/decor/<type>/
+//   platform/厂商图标/mark/*.svg                                 -> public/logos/mark/
+//   topics/十项全能/设计/icons/categories/*.svg                -> public/icons/categories/
+//   topics/十项全能/设计/stellar-ui-skill/assets/{stellar.css,fx.js,tokens.json,stars/*.svg}
 //                                                         -> src/vendor/stellar/  (code: bundled by Vite)
 //
-// Nothing from the README figures (专题/十项全能/assets/readme) is used.
+// Nothing from the README figures (topics/十项全能/assets/readme) is used.
 import { readdirSync, statSync, mkdirSync, copyFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const bench = resolve(site, '..', '..', '..');
-const design = join(bench, '专题/十项全能/设计');
-const skill = join(bench, '专题/十项全能/设计/stellar-ui-skill/assets');
-const vendorMarks = join(bench, '平台/厂商图标/mark');
+const design = join(bench, 'topics/十项全能/设计');
+const skill = join(bench, 'topics/十项全能/设计/stellar-ui-skill/assets');
+const vendorMarks = join(bench, 'platform/厂商图标/mark');
 
 // [source dir, target dir, filter(name, isDir) ]
 const svgOnly = (name, dir) => dir || name.endsWith('.svg');

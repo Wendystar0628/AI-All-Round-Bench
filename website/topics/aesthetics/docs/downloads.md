@@ -72,7 +72,7 @@ packages/
 
 | 字段 | 含义 |
 |---|---|
-| `model` | 型号键，同 `平台/型号.json` 的 `key` |
+| `model` | 型号键，同 `platform/型号.json` 的 `key` |
 | `task` | 题 key，同 `专题.json` |
 | `file` | 包的文件名，只有小写英文、数字、`-` 和 `_` |
 | `bytes` | 文件大小 |

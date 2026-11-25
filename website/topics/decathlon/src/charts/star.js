@@ -1,5 +1,5 @@
 // The four-point star — the only star shape on the site (skill rule).
-// Same drawing as 专题/十项全能/设计/stellar-ui-skill/assets/stars/draw-stars.mjs star().
+// Same drawing as topics/十项全能/设计/stellar-ui-skill/assets/stars/draw-stars.mjs star().
 //
 //   starPath(cx, cy, tip, waist)   SVG path data; tip = centre-to-tip distance
 //   starD(tip, waist)              centred on 0,0 (for <path transform="translate(x,y)">)

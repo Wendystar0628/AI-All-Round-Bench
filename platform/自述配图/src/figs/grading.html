@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="960x340">
+<meta name="size-en" content="960x392">
+<title>从到时到成绩</title>
+<link rel="stylesheet" href="../../../../topics/十项全能/assets/readme/src/tokens.css">
+<link rel="stylesheet" href="../platform.css">
+<style>
+  .desc { margin-top: 10px; }
+  /* Six steps on one track: hollow numbers, a node star per step, the last node lime. */
+  .steps { display: grid; grid-template-columns: repeat(6, 1fr); column-gap: 14px; margin-top: 26px; position: relative; }
+  .track { position: absolute; left: 0; right: 0; top: 46px; height: 12px; }
+  .track .bar { position: absolute; left: 9px; right: 126px; top: 4px; height: 4px; background: var(--violet-300); }
+  .step .fig { font-size: 38px; }
+  .node { position: relative; height: 12px; margin-top: 8px; }
+  .node .star { position: absolute; left: 0; top: -3px; width: 18px; height: 18px; color: var(--ink); }
+  .node svg { position: absolute; left: -2px; top: -5px; }
+  .step h3 { font-size: 16px; margin-top: 14px; line-height: 1.35; }
+  .step p { font-family: var(--font-text); font-size: 12.5px; line-height: 19px; color: var(--ink-2); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="head">
+    <div class="pair"><span class="eyebrow slash">From Time-Up to Score</span><h2 class="title"><span class="zh">从到时到成绩</span><span class="en">From time-up to score</span></h2></div>
+    <i class="lead"></i>
+  </header>
+  <p class="desc"><span class="zh">一个型号答完一个专题以后的流程；评分员、评分指南和权重由各专题定。</span><span class="en">What happens after a model finishes a topic; graders, guides and weights are set by each topic.</span></p>
+
+  <div class="steps">
+    <div class="track"><i class="bar"></i></div>
+    <div class="step"><span class="fig hollow">01</span><div class="node"><span class="star"></span></div>
+      <h3><span class="zh">到时收卷</span><span class="en">Collect</span></h3>
+      <p class="zh">结束作业对象，作答目录原样留下；会话日志移出受测账户</p>
+      <p class="en">The Job ends, the work folder stays as it is, and session logs leave the tested account</p></div>
+    <div class="step"><span class="fig hollow">02</span><div class="node"><span class="star"></span></div>
+      <h3><span class="zh">排队等机器</span><span class="en">Queue</span></h3>
+      <p class="zh">还有需要安静机器或独占整机的作答在跑，评分就排队等着</p>
+      <p class="en">Grading queues while any quiet-machine or whole-machine answering is running</p></div>
+    <div class="step"><span class="fig hollow">03</span><div class="node"><span class="star"></span></div>
+      <h3><span class="zh">主体评分</span><span class="en">Main grading</span></h3>
+      <p class="zh">每个评分任务一个新会话，按专题评分指南评；能算的由程序算；最多 16 个同时</p>
+      <p class="en">A fresh session per job, by the topic's guide; anything computable is computed; up to 16 at once</p></div>
+    <div class="step"><span class="fig hollow">04</span><div class="node"><span class="star"></span></div>
+      <h3><span class="zh">性能评分</span><span class="en">Speed grading</span></h3>
+      <p class="zh">有性能项的题，等主体全部评完再测，一次一个，独占机器</p>
+      <p class="en">Tasks with a speed part are measured after all main grading, one at a time, alone on the machine</p></div>
+    <div class="step"><span class="fig hollow">05</span><div class="node"><span class="star"></span></div>
+      <h3><span class="zh">合成总分</span><span class="en">Combine</span></h3>
+      <p class="zh">按专题清单的评法和权重，把各题分数合成型号总分</p>
+      <p class="en">Task scores are combined into the model's total by the topic manifest's method and weights</p></div>
+    <div class="step"><span class="fig hollow">06</span><div class="node"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 1Q11.66 10.34 21 11Q11.66 11.66 11 21Q10.34 11.66 1 11Q10.34 10.34 11 1Z" fill="var(--lime)" stroke="var(--ink)" stroke-width="1" stroke-linejoin="round"/></svg></div>
+      <h3><span class="zh">发布与归档</span><span class="en">Publish</span></h3>
+      <p class="zh">各题正式结果齐备、确认后上网站；提交物、评分表和开销归档，逐文件记 SHA256</p>
+      <p class="en">Online once every task has a confirmed result; submissions, score sheets and costs archived with a SHA256 per file</p></div>
+  </div>
+</div>
+</body>
+</html>

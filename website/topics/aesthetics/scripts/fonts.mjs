@@ -29,13 +29,13 @@ const require = createRequire(import.meta.url);
  */
 export const FONT_FILES = {
   'NotoSerifSC-VF.ttf': [
-    '专题/审美全能/设计/fonts/NotoSerifSC-VF.ttf',
+    'topics/审美全能/设计/fonts/NotoSerifSC-VF.ttf',
     'C:/Windows/Fonts/NotoSerifSC-VF.ttf',
     `${process.env.LOCALAPPDATA ?? ''}/Microsoft/Windows/Fonts/NotoSerifSC-VF.ttf`,
   ],
-  'LibreBodoni-Variable.ttf': ['专题/审美全能/设计/fonts/LibreBodoni-Variable.ttf'],
-  'LibreBodoni-Italic-Variable.ttf': ['专题/审美全能/设计/fonts/LibreBodoni-Italic-Variable.ttf'],
-  'Tangerine-Bold.ttf': ['专题/审美全能/设计/fonts/Tangerine-Bold.ttf'],
+  'LibreBodoni-Variable.ttf': ['topics/审美全能/设计/fonts/LibreBodoni-Variable.ttf'],
+  'LibreBodoni-Italic-Variable.ttf': ['topics/审美全能/设计/fonts/LibreBodoni-Italic-Variable.ttf'],
+  'Tangerine-Bold.ttf': ['topics/审美全能/设计/fonts/Tangerine-Bold.ttf'],
 };
 
 /**

@@ -51,11 +51,11 @@ def read_optional(path: Path, what: str):
 # ---------- 方向、题目、评委 ----------
 
 def load_copy(ctx):
-    """共用展示文案 专题/审美全能/展示文案.json 的 directions：展示顺序、展示用的中英文名、点题短语、主要内容、看点。"""
+    """共用展示文案 topics/审美全能/展示文案.json 的 directions：展示顺序、展示用的中英文名、点题短语、主要内容、看点。"""
     data = read_optional(ctx.topic.content_dir / '展示文案.json', '展示文案.json ')
     rows = data.get('directions') if isinstance(data, dict) else None
     if not isinstance(rows, list):
-        warn('还没有展示文案 专题/审美全能/展示文案.json：方向先按专题清单的顺序排，名字用登记名，题目没有介绍')
+        warn('还没有展示文案 topics/审美全能/展示文案.json：方向先按专题清单的顺序排，名字用登记名，题目没有介绍')
         return None
     return rows
 
