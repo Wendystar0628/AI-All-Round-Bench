@@ -19,7 +19,7 @@ npm run preview   # http://localhost:5186/ ，看 dist/
 
 - `site.config.mjs`：总站名（正式名「AI全能测评」）、简介、仓库和备案链接、界面文字。这里不写任何专题。
 - `src/hub.css`、`src/hub.js`、`src/favicon.svg`：样式、卡片渲染、图标。`scripts/render.mjs` 是两页共用的 HTML。
-- 字体自带：`fonts/Saira.ttf`（数字和英文，OFL 许可证同目录）。厂商图标取自 `platform/厂商图标/mark`。构建时都拷进 `dist/`。
+- 字体自带：`fonts/Saira.ttf`（数字和英文，OFL 许可证同目录）。厂商图标取自 `assets/厂商图标/mark`。构建时都拷进 `dist/`。
 
 ## `topics.json`（通用卡片）
 

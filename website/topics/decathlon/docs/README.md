@@ -134,9 +134,9 @@ stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections
 
 - 13 道题按 tasks.json 的顺序统一编号 01–13，矩阵、题目类别榜和题目页都用这套编号。
 
-- 模型全名用 `name`（如 Claude Opus 5.5、GPT 6.1 Sol），共用身份取自 `platform/型号.json`，参测信息取自 `topics/十项全能/参测.json`，正式上榜名单按专题确认快照筛选。
+- 模型全名用 `name`（如 Claude Opus 5.5、GPT 6.1 Sol），共用身份取自仓库根目录的 `models.json`，参测信息取自 `topics/十项全能/参测.json`，正式上榜名单按专题确认快照筛选。
 - 凡是显示受测模型名的地方（榜单行、侧面板、模型得分页、首页前五名、题目页得分、搜索结果、对比视图），名字后面用半角括号标推理强度，取 `effort`：`Claude Opus 5.5 (xhigh)`。括号部分用 Saira，比名字小一级，次要墨色；名字放不下省略时，括号部分照常显示。评分员名不加。
-- 厂商图标从 `platform/厂商图标/mark/` 取：有彩色版 `<logo>-color.svg` 的用彩色版，深色主题也不反色；没有的（OpenAI 等）用单色版 `<logo>.svg`，跟随文字颜色。
+- 厂商图标从 `assets/厂商图标/mark/` 取：有彩色版 `<logo>-color.svg` 的用彩色版，深色主题也不反色；没有的（OpenAI 等）用单色版 `<logo>.svg`，跟随文字颜色。
 - 13 题没测完的模型标「评测中」，排在已排名模型之后，不参与总榜名次；某个类别的题出齐了，就参加这个类别的排名。
 
 ## 多模型扩展
@@ -152,7 +152,7 @@ stems/<类别>/<题目>.json   { statement, materials, omitted, blocks, sections
 ## 技术
 
 - 多页静态站，用 Vite 构建，原生 JS 模块；图表用 D3 v7 画 SVG。导出、构建和发布只用 `website/tools/publish.py` 一条命令（`website/tools/README.md`）。
-- 素材只用新做的：从技能拷入 `stellar.css`、`fx.js`、星图底纹和 Saira 字体；装饰取自 `topics/十项全能/设计/decor`，厂商图标取自 `platform/厂商图标`，类别图标取自 `topics/十项全能/设计/icons/categories/<类别>.svg`（单色 `currentColor`）。不用 README 配图（`topics/十项全能/assets/readme/`）的图标和配色；README 只作为文字内容的来源。
+- 素材只用新做的：从技能拷入 `stellar.css`、`fx.js`、星图底纹和 Saira 字体；装饰取自 `topics/十项全能/设计/decor`，厂商图标取自 `assets/厂商图标`，类别图标取自 `topics/十项全能/设计/icons/categories/<类别>.svg`（单色 `currentColor`）。不用 README 配图（`topics/十项全能/assets/readme/`）的图标和配色；README 只作为文字内容的来源。
 - 网站轻量，不展示作品的截图、录像和解答，作品由视频展示。
 
 ## 目录
@@ -164,6 +164,6 @@ website/topics/decathlon/   本站点项目（目录分工见 architecture.md）
 topics/十项全能/设计/stellar-ui-skill/   设计系统
 topics/十项全能/设计/decor/              装饰 SVG
 topics/十项全能/设计/icons/categories/   10 个类别图标
-platform/厂商图标/                         厂商图标（全平台共用）
+assets/厂商图标/                         厂商图标（全平台共用）
 website/hub/                           总站首页（另一个项目）
 ```

@@ -9,7 +9,7 @@
 //   topics/审美全能/设计/logo/{glyphs.js, favicon.svg} -> src/vendor/design/logo/   favicon.svg 是标签栏图标
 //   topics/审美全能/设计/logo/wordmark/wordmark.js -> src/vendor/design/logo/wordmark/   字标的矢量字形（页面在构建时画成内联 SVG）
 //   scripts/fonts.mjs FONT_FILES 里的字体文件  -> src/vendor/design/fonts/
-//   platform/厂商图标/mark/*.svg                  -> src/vendor/logos/
+//   assets/厂商图标/mark/*.svg                  -> src/vendor/logos/
 //
 // 下面三个目录有了才拷（还在做的东西；没有时页面用各自的退路，见 docs/design.md 8.5）：
 //   topics/审美全能/设计/logo/lockups/  -> src/vendor/design/logo/lockups/   十个题名锁定（视频和网站共用的同一份：清单 lockups.js 和网页用的 WebP 图层，不拷 PNG 和 build/）
@@ -24,7 +24,7 @@ import { FONT_FILES, fontSource } from './fonts.mjs';
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const bench = resolve(site, '..', '..', '..');
 const design = join(bench, 'topics', '审美全能', '设计');
-const marks = join(bench, 'platform', '厂商图标', 'mark');
+const marks = join(bench, 'assets', '厂商图标', 'mark');
 const vendor = join(site, 'src', 'vendor');
 
 const dropFontImport = (buf) => Buffer.from(buf.toString('utf8').replace(/^@import url\("fonts\/fonts\.css"\);\s*/m, ''));

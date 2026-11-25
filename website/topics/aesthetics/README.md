@@ -54,7 +54,7 @@ $env:ONESHOT_SITE_BASE="/aesthetics/"; npm run preview                          
 | `topics/审美全能/设计/stills/` | 代表画面的静图（题目页页首）和几何线的落点 `links.json`（有的话）；静图还没有时页首画缺省画面 |
 | `topics/审美全能/设计/textures/textures.css`、`logo/favicon.svg` | 颗粒、网站图标（标签栏） |
 | `scripts/fonts.mjs` 的 `FONT_FILES` | 字体：Libre Bodoni、Tangerine 取设计系统的 `fonts/`；中文用 Noto Serif SC（思源宋体的同一设计，没有保留字名），先找 `topics/审美全能/设计/fonts/NotoSerifSC-VF.ttf`，没有时用本机装的那一份（Windows 的 `C:/Windows/Fonts/NotoSerifSC-VF.ttf`） |
-| `platform/厂商图标/mark/*.svg` | 厂商图标；缺了某个图标时构建照常，只打一行提示、页面上不画它 |
+| `assets/厂商图标/mark/*.svg` | 厂商图标；缺了某个图标时构建照常，只打一行提示、页面上不画它 |
 
 - 设计系统改了（字形、锁定、立绘重新生成），重新跑一次 `npm run dev` 或 `npm run build` 就同步过来，不用改站点代码。开发服务器开着时同步了新素材，要重启它（`design.mjs` 在启动时读这些文件）。
 - 字体映射只在 `scripts/fonts.mjs` 里改（`FACES`），出处里的字体名跟着 `FAMILIES` 列。

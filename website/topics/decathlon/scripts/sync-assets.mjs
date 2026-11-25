@@ -5,7 +5,7 @@
 //
 //   topics/十项全能/设计/stellar-ui-skill/assets/fonts         -> public/fonts
 //   topics/十项全能/设计/decor/<type>/*.svg                    -> public/decor/<type>/
-//   platform/厂商图标/mark/*.svg                                 -> public/logos/mark/
+//   assets/厂商图标/mark/*.svg                                 -> public/logos/mark/
 //   topics/十项全能/设计/icons/categories/*.svg                -> public/icons/categories/
 //   topics/十项全能/设计/stellar-ui-skill/assets/{stellar.css,fx.js,tokens.json,stars/*.svg}
 //                                                         -> src/vendor/stellar/  (code: bundled by Vite)
@@ -19,7 +19,7 @@ const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const bench = resolve(site, '..', '..', '..');
 const design = join(bench, 'topics/十项全能/设计');
 const skill = join(bench, 'topics/十项全能/设计/stellar-ui-skill/assets');
-const vendorMarks = join(bench, 'platform/厂商图标/mark');
+const vendorMarks = join(bench, 'assets/厂商图标/mark');
 
 // [source dir, target dir, filter(name, isDir) ]
 const svgOnly = (name, dir) => dir || name.endsWith('.svg');

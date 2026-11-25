@@ -67,7 +67,7 @@ PV设计、卡通渲染、白模渲染、创意网页设计、大型场景建模
 |---|---|
 | `id` | `gpt`、`claude`、`gemini` |
 | `name` | 显示名，如 `GPT 6.2 Sol`（评委不是受测身份，不带推理强度） |
-| `model` | `{key, id, vendor, logo}`：评委对应的型号；`logo` 是厂商图标名（`platform/厂商图标/mark/<logo>.svg`）。评委同时参测时，可以用 `key` 在 `models.json` 里找到它的型号页 |
+| `model` | `{key, id, vendor, logo}`：评委对应的型号；`logo` 是厂商图标名（`assets/厂商图标/mark/<logo>.svg`）。评委同时参测时，可以用 `key` 在 `models.json` 里找到它的型号页 |
 | `persona` | 人设 `{zh, en}` |
 | `categories` | 负责的方向 `key`，按展示顺序 |
 | `portrait` | 立绘，格式见下文「图片」，带 `head` |
@@ -83,7 +83,7 @@ PV设计、卡通渲染、白模渲染、创意网页设计、大型场景建模
 | `name`、`short` | 名称、简称 |
 | `effort` | 推理强度，如 `max` |
 | `display_name` | 页面上写的名字「名字 (推理强度)」，如 `GPT 6.2 Astra (max)`；没有推理强度时就是名字 |
-| `vendor`、`logo` | 厂商名、厂商图标名（站点从 `platform/厂商图标/mark/<logo>.svg` 同步） |
+| `vendor`、`logo` | 厂商名、厂商图标名（站点从 `assets/厂商图标/mark/<logo>.svg` 同步） |
 | `agent` | 作答用的智能体，如 `Codex` |
 | `released` | 发布日期 |
 | `tested` | 测评日期：参测登记写了就用它，否则取这个型号在本专题最近一次开始作答的日期 |

@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 export const HUB = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const BENCH = resolve(HUB, '..', '..');
 // vendor marks are shared by the whole platform; the font is the hub's own (fonts/), no topic's design system
-export const LOGO_DIR = join(BENCH, 'platform/厂商图标/mark');
+export const LOGO_DIR = join(BENCH, 'assets/厂商图标/mark');
 export const FONT_DIR = join(HUB, 'fonts');
 export const PAGES = { zh: { path: '', root: './', alt: './en/' }, en: { path: 'en/', root: '../', alt: '../' } };
 

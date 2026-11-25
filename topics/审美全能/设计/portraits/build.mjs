@@ -10,7 +10,7 @@ import { launch } from '../../../../videos/engine/browser.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url)), ROOT = path.resolve(HERE, '../../../..');
 const read = f => JSON.parse(fs.readFileSync(path.join(ROOT, f), 'utf8').replace(/^\uFEFF/, ''));
 const PORTRAITS = path.join(ROOT, 'videos/model_character/transparent');
-const models = read('platform/型号.json'), entries = Object.keys(read('topics/审美全能/参测.json'));
+const models = read('models.json'), entries = Object.keys(read('topics/审美全能/参测.json'));
 const judges = read('videos/topics/aesthetics/judges/judges.json').judges;
 
 const jobs = [

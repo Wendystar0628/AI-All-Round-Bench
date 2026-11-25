@@ -132,13 +132,13 @@ function footer(ctx) {
   </footer>`;
 }
 
-/** 本页用到的厂商图标，各放一份 <symbol>（单色，颜色跟文字）。图标文件缺了（新厂商还没收进 platform/厂商图标/mark）就不画这一个，照常出页 */
+/** 本页用到的厂商图标，各放一份 <symbol>（单色，颜色跟文字）。图标文件缺了（新厂商还没收进 assets/厂商图标/mark）就不画这一个，照常出页 */
 const warned = new Set();
 function logoSprite(names) {
   const symbols = [...names].sort().flatMap((name) => {
     const file = join(logoDir, `${name}.svg`);
     if (!existsSync(file)) {
-      if (!warned.has(name)) console.warn(`[site] 厂商图标缺文件：platform/厂商图标/mark/${name}.svg，页面上先不画这个图标`);
+      if (!warned.has(name)) console.warn(`[site] 厂商图标缺文件：assets/厂商图标/mark/${name}.svg，页面上先不画这个图标`);
       warned.add(name);
       return [];
     }

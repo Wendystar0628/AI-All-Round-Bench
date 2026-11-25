@@ -12,8 +12,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent                     # platform/自述配图/src
-OUT = HERE.parent                                          # platform/自述配图
+HERE = Path(__file__).resolve().parent                     # assets/自述配图/src
+OUT = HERE.parent                                          # assets/自述配图
 KIT = HERE.parents[2] / 'topics' / '十项全能' / 'assets' / 'readme' / 'src'
 
 names = sys.argv[1:] or [p.stem for p in sorted((HERE / 'figs').glob('*.html')) if not p.stem.startswith(('.', '_'))]

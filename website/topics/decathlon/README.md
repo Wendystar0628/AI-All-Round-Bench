@@ -61,7 +61,7 @@ website/topics/decathlon/
   scripts/routes.mjs  scripts/sync-assets.mjs 骨架方
   pages/<类型>.html          模板：骨架方建，<main> 里面归各页负责人
   data/                      数据方（导出脚本的产物）
-  public/                    favicon.svg（网站标识：切角紫方块上的几何“10”和荧光绿四角星，分享图顶栏同用）；fonts/ decor/ logos/ icons/ 由 npm run sync 从 topics/十项全能/设计 和 platform/厂商图标 拷入，不要手改
+  public/                    favicon.svg（网站标识：切角紫方块上的几何“10”和荧光绿四角星，分享图顶栏同用）；fonts/ decor/ logos/ icons/ 由 npm run sync 从 topics/十项全能/设计 和 assets/厂商图标 拷入，不要手改
   src/
     vendor/stellar/          技能的 stellar.css、fx.js、tokens.json、星图（sync 拷入，不要手改）
     core/  shell/  charts/  ui/  styles/  motion.js     骨架方
@@ -360,7 +360,7 @@ tb.openCompare(); tb.setCompareView(on);        // 总榜打开时就在对比�
 |---|---|---|
 | `topics/十项全能/设计/stellar-ui-skill/assets/fonts` | `public/fonts/` | `/fonts/Saira.ttf`（已在 tokens.css 里 `@font-face`） |
 | `topics/十项全能/设计/decor/<类型>/*.svg` | `public/decor/` | `iconURL.decor('orbit/orbit-nested')` 或 CSS `url('/decor/…')` |
-| `platform/厂商图标/mark` | `public/logos/mark/` | `iconURL.vendor(logo)` |
+| `assets/厂商图标/mark` | `public/logos/mark/` | `iconURL.vendor(logo)` |
 | `topics/十项全能/设计/icons/categories` | `public/icons/categories/` | `iconURL.category(key)` |
 | `topics/十项全能/设计/stellar-ui-skill/assets/{stellar.css,fx.js,tokens.json,stars}` | `src/vendor/stellar/` | 由 Vite 打包 |
 

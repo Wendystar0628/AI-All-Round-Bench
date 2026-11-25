@@ -35,7 +35,7 @@ export function modelNameHTML(model, { short = false } = {}) {
   return `<span class="mname" title="${esc(modelLabel(model))}"><span class="mname-text">${esc(name)}</span>${effort}</span>`;
 }
 
-// 厂商标识：有彩色版（platform/厂商图标/mark/<名>-color.svg）就用彩色版，没有的用单色版。
+// 厂商标识：有彩色版（assets/厂商图标/mark/<名>-color.svg）就用彩色版，没有的用单色版。
 // 名单由路由插件在构建和开发时按 public/logos/mark 里的文件给出（scripts/routes.mjs colorLogos）。
 /* global __OCTA_COLOR_LOGOS__ */
 const COLOR_LOGOS = new Set(typeof __OCTA_COLOR_LOGOS__ === 'undefined' ? [] : __OCTA_COLOR_LOGOS__);
@@ -44,7 +44,7 @@ const COLOR_LOGOS = new Set(typeof __OCTA_COLOR_LOGOS__ === 'undefined' ? [] : _
 export const hasColorLogo = (logo) => COLOR_LOGOS.has(logo);
 
 export const iconURL = {
-  /** platform/厂商图标/mark/<logo>-color.svg（有彩色版时），否则 <logo>.svg；{ mono: true } 只取单色版 */
+  /** assets/厂商图标/mark/<logo>-color.svg（有彩色版时），否则 <logo>.svg；{ mono: true } 只取单色版 */
   vendor: (logo, { mono = false } = {}) => `${BASE}logos/mark/${logo}${!mono && COLOR_LOGOS.has(logo) ? '-color' : ''}.svg`,
   /** topics/十项全能/设计/icons/categories/<key>.svg */
   category: (key) => `${BASE}icons/categories/${key}.svg`,
