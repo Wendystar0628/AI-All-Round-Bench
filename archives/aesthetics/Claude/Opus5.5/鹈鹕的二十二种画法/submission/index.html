@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鹈鹕的二十二种画法 · Twenty-Two Ways to Draw a Pelican</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0d0d10; overflow: hidden; }
+  body { font-family: "HarmonyOS Sans SC", "MiSans", "Microsoft YaHei", sans-serif; color: #eee; user-select: none; }
+  #film { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #box { width: min(100vw, 177.7778vh); height: min(56.25vw, 100vh); overflow: hidden; position: relative; }
+  #svg { display: block; width: 100%; height: 100%; background: #f7f4ec; transform-origin: 43.75% 61.1%; transform: scale(1); will-change: transform; }
+  #film { overflow: hidden; }
+  #svg text { font-kerning: normal; }
+  /* 过框放大时暂停上一版块的滤镜与混合（放大数倍的滤镜代价极高） */
+  #svg .nofx, #svg .nofx * { filter: none !important; mix-blend-mode: normal !important; }
+  body.exporting #controls, body.exporting #start, body.exporting #info, body.exporting #hint { display: none !important; }
+  body.exporting { cursor: none; }
+
+  /* ---------- 控制条 ---------- */
+  #controls { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); width: min(1180px, 92vw);
+    background: rgba(18, 18, 24, .78); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px; padding: 10px 16px 12px; box-sizing: border-box; transition: opacity .35s, transform .35s;
+    box-shadow: 0 10px 40px rgba(0,0,0,.35); z-index: 5; }
+  #controls.hide { opacity: 0; transform: translate(-50%, 18px); pointer-events: none; }
+  .row { display: flex; align-items: center; gap: 14px; }
+  #play { width: 40px; height: 40px; border-radius: 50%; border: none; background: #f4efe2; color: #16161c; cursor: pointer; flex: none;
+    display: flex; align-items: center; justify-content: center; }
+  #play:hover { background: #fff; }
+  #play svg { width: 18px; height: 18px; }
+  #secname { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; letter-spacing: .04em; }
+  #secname b { font-weight: 700; color: #fff; margin-right: 10px; }
+  #secname .no { display: inline-block; font: 600 12px/1 "JetBrains Mono", Consolas, monospace; color: #16161c; background: #f4efe2; border-radius: 4px; padding: 4px 6px; margin-right: 10px; vertical-align: 2px; }
+  #secname .en { color: #a9a9b6; font-size: 13px; letter-spacing: .08em; }
+  #time { font: 13px "JetBrains Mono", Consolas, monospace; color: #c9c9d2; flex: none; }
+  #infobtn { flex: none; background: transparent; color: #ddd; border: 1px solid rgba(255,255,255,.25); border-radius: 18px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-family: inherit; }
+  #infobtn:hover { background: rgba(255,255,255,.1); }
+  #track { position: relative; height: 22px; margin-top: 8px; cursor: pointer; }
+  #bar { position: absolute; left: 0; right: 0; top: 9px; height: 5px; border-radius: 3px; overflow: hidden; display: flex; background: #333; }
+  #bar i { display: block; height: 100%; opacity: .55; border-right: 1px solid rgba(0,0,0,.5); box-sizing: border-box; }
+  #fill { position: absolute; left: 0; top: 9px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.85); mix-blend-mode: overlay; pointer-events: none; }
+  #knob { position: absolute; top: 4px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(0,0,0,.35); pointer-events: none; }
+  #tip { position: absolute; bottom: 26px; transform: translateX(-50%); background: #f4efe2; color: #16161c; font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s; }
+  #track:hover #tip { opacity: 1; }
+  #audiostate { font-size: 12px; color: #9a9aa8; flex: none; }
+
+  /* ---------- 开场遮罩 ---------- */
+  #start { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 6;
+    background: radial-gradient(ellipse at center, rgba(247,244,236,.0) 0%, rgba(20,20,26,.35) 100%); cursor: pointer; }
+  body.warming #start { background: rgba(246,243,234,.9); }
+  #start .card { background: rgba(250, 248, 242, .94); color: #1b1b22; padding: 34px 54px 30px; border-radius: 6px; text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,.25), 0 0 0 1px rgba(0,0,0,.06); }
+  #start h1 { margin: 0; font: 700 44px "Source Han Serif CN", "Noto Serif SC", serif; letter-spacing: .12em; }
+  #start .sub { margin-top: 8px; font: italic 18px "Cormorant Garamond", Georgia, serif; letter-spacing: .12em; color: #55555f; }
+  #start .go { margin: 26px auto 0; display: inline-flex; align-items: center; gap: 12px; background: #1b1b22; color: #f7f4ec; padding: 12px 26px; border-radius: 30px; font-size: 16px; letter-spacing: .1em; }
+  #start .go svg { width: 16px; height: 16px; }
+  #start .meta { margin-top: 16px; font-size: 13px; color: #77777f; letter-spacing: .05em; }
+
+  /* ---------- 说明 ---------- */
+  #info { position: absolute; right: 24px; bottom: 120px; width: min(520px, 90vw); max-height: 70vh; overflow: auto; background: rgba(250,248,242,.97); color: #1d1d24;
+    border-radius: 10px; padding: 22px 26px; box-sizing: border-box; z-index: 7; box-shadow: 0 20px 60px rgba(0,0,0,.35); display: none; font-size: 14px; line-height: 1.75; user-select: text; }
+  #info.on { display: block; }
+  #info h2 { margin: 0 0 6px; font: 700 20px "Source Han Serif CN", serif; letter-spacing: .08em; }
+  #info h3 { margin: 16px 0 4px; font-size: 15px; }
+  #info ol { margin: 4px 0; padding-left: 20px; }
+  #info li { margin: 4px 0; }
+  #info .x { position: absolute; right: 14px; top: 10px; cursor: pointer; font-size: 20px; color: #777; }
+  #info kbd { font: 12px "JetBrains Mono", monospace; background: #e8e3d6; padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="film"><div id="box">
+  <svg id="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+    <defs id="defs"></defs>
+    <g id="stage"></g>
+    <g id="ov"></g>
+  </svg>
+</div></div>
+
+<div id="start">
+  <div class="card">
+    <h1>鹈鹕的二十二种画法</h1>
+    <div class="sub">Twenty-Two Ways to Draw a Pelican on a Bicycle</div>
+    <div class="go"><svg viewBox="0 0 16 16"><path d="M3 1.5v13l11-6.5z" fill="currentColor"/></svg><span id="golabel">播放 · 2:29</span></div>
+    <div class="meta" id="startmeta">SVG 动画短片 · 配乐全部由程序实时合成</div>
+  </div>
+</div>
+
+<div id="controls">
+  <div class="row">
+    <button id="play" title="播放 / 暂停（空格）"><svg viewBox="0 0 16 16" id="playicon"><path d="M3 1.5v13l11-6.5z" fill="currentColor"/></svg></button>
+    <div id="secname"></div>
+    <span id="audiostate"></span>
+    <span id="time">00:00 / 02:29</span>
+    <button id="infobtn">说明</button>
+  </div>
+  <div id="track"><div id="bar"></div><div id="fill"></div><div id="knob"></div><div id="tip"></div></div>
+</div>
+
+<div id="info">
+  <span class="x" id="infox">×</span>
+  <h2>鹈鹕的二十二种画法</h2>
+  <div>一条指令，一只鹈鹕，一条贯穿全片的路：它一直在骑，画风在它的骑行中一种接一种地变换——每到强拍，新画风从车轮下或画面一侧铺开，或由上一版的某个元素变形而来，背景、道路先换，鹈鹕自己最后被重画。全片 120 BPM，每个版块 3 小节；画面全部为 SVG，配乐全部由程序合成（Web Audio）。</div>
+  <h3>主动扩张：题面之外加入的内容</h3>
+  <ol>
+    <li><b>喙尖上的小鱼（贯穿全片的彩蛋）</b>：鹈鹕的喉囊里一直兜着一条小鱼，鱼尾巴从喙尖探出来，随踏板的节奏甩动；它在每个版块里都跟着换成那种画法（剪纸的鱼、像素的鱼、霓虹的鱼……），片尾冲线照片里 23 只鹈鹕的嘴边也都有它。</li>
+    <li><b>路边的里程碑（贯穿全片）</b>：每个版块的路边都立着一块写着画法编号的里程碑（No.01 – No.22），也按那个版块的画风画成：海报字、星图铭牌、木牌、像素砖、全息标签……证明这是同一条路。</li>
+    <li><b>片头的“歪喙”桥段</b>：朴素的线稿鹈鹕被画好之后，一块橡皮擦想把歪掉的喙擦正，喙却“弹”回了原样——于是它就带着这只歪喙出发了。</li>
+    <li><b>片尾的终点计时与成绩条</b>：冲线定格后，终点摄影的扫描线划过画面，冲线照片上打出计时 02:29.00 与名次条，标出领先半格的线稿鹈鹕，并以 22 只车铃组成的和弦收尾。</li>
+  </ol>
+  <h3>操作</h3>
+  <div><kbd>空格</kbd> 播放／暂停　<kbd>←</kbd><kbd>→</kbd> 前后 5 秒　<kbd>[</kbd><kbd>]</kbd> 上／下一个版块　拖动进度条可跳到任意时刻。</div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/pelican.js"></script>
+<script src="js/intro.js"></script>
+<script src="js/scenes1.js"></script>
+<script src="js/scenes2.js"></script>
+<script src="js/scenes3.js"></script>
+<script src="js/scenes4.js"></script>
+<script src="js/scenes5.js"></script>
+<script src="js/scenes6.js"></script>
+<script src="js/scenes7.js"></script>
+<script src="js/scenes8.js"></script>
+<script src="js/scenes9.js"></script>
+<script src="js/scenes10.js"></script>
+<script src="js/scenes11.js"></script>
+<script src="js/remake1.js"></script>
+<script src="js/remake2.js"></script>
+<script src="js/remake3.js"></script>
+<script src="js/remake4.js"></script>
+<script src="js/remake5.js"></script>
+<script src="js/remake6.js"></script>
+<script src="js/outro.js"></script>
+<script src="js/trans.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/engine.js"></script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+/* 公共部件（src/render/parts.mjs）。每个部件是同一个世界里的一件物：图版是贴在墙上的照片，入口和下载是一张票，
+   空状态是一张空图版、一扇云遮的窗或一枚网点的印，卷目是视频底部那条星座。
+   纸物件一律用同一张纸纹（.ae-sheet）和短而实的接触阴影（--contact）；作品图本身不加滤镜、不加颗粒、不调色。
+   悬停时的位移都乘 --motion（base.css）。 */
+
+/* ---------- 一等字：字形、字标、锁定 ---------- */
+.ae-glyph { display: inline-block; line-height: 0; vertical-align: bottom; }
+.ae-glyph svg { display: block; width: auto; height: 1.02em; overflow: visible; }
+
+.ae-wordmark { display: inline-flex; flex-direction: column; align-items: center; line-height: 0; }
+.ae-wordmark-hair { display: block; width: 1.3em; height: 1px; margin-top: 0.28em; background: linear-gradient(90deg, transparent, rgba(233, 220, 205, 0.6), transparent); }
+.ae-wordmark-en { margin-top: 0.34em; font: 500 0.24em/1 var(--f-didone); letter-spacing: 0.5em; padding-left: 0.5em; color: var(--ae-sand); }
+
+/* 展示字的纯文字：主角件放大，字靠字 */
+.ae-display { display: inline-flex; align-items: baseline; line-height: 1; color: var(--ae-title-top); }
+.ae-display .is-hero { font-size: 1.42em; line-height: 0.8; margin: 0 0.02em; }
+
+.ae-lockup-img { display: block; width: 100%; height: auto; }
+.ae-lockup-en { display: block; font: 500 1em/1.02 var(--f-didone); letter-spacing: -0.005em; text-wrap: balance; }
+
+/* 迷你锁定：题名是宋体 700，主角件一点箔 */
+.ae-mini { font: 700 1em/1.3 var(--f-song); letter-spacing: 0.02em; }
+.ae-mini .ae-foil { font-size: 1.16em; letter-spacing: 0; }
+.ae-mini.is-en { font: 500 1em/1.25 var(--f-didone); letter-spacing: 0; }
+img.ae-mini { display: inline-block; height: 1.6em; width: auto; vertical-align: middle; }
+
+/* ---------- 二等字：小节标题、卷的小标、名字 ---------- */
+.ae-sec { display: grid; justify-items: start; gap: 12px; }
+.ae-sec-title { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 18px; font: 700 clamp(30px, 2.6vw, 44px)/1.15 var(--f-song); letter-spacing: 0.04em; color: var(--ae-title-bottom); }
+.ae-sec-title .en { font: 500 12px/1 var(--f-didone); letter-spacing: 0.36em; color: var(--ae-sand); }
+html[lang="en"] .ae-sec-title { font: 500 clamp(32px, 2.8vw, 48px)/1.1 var(--f-didone); letter-spacing: 0; }
+.ae-sec .ae-hair3 { width: min(320px, 60%); }
+.ae-sec-line { max-width: 40em; font-size: 15.5px; line-height: 1.85; color: var(--ae-text-2); }
+
+/* 三截发丝线（长—短—短），1px */
+.ae-hair3 {
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(214, 196, 160, 0.42) 0 78%, transparent 78% 81%, rgba(214, 196, 160, 0.42) 81% 88%, transparent 88% 91%, rgba(214, 196, 160, 0.42) 91% 94%, transparent 94%);
+}
+
+.ae-vol { display: inline-flex; align-items: baseline; gap: 10px; color: var(--ae-text); text-decoration: none; white-space: nowrap; }
+.ae-vol .no { font: italic 500 22px/1 var(--f-didone); color: var(--ae-brass-pale); }
+.ae-vol .dash { width: 22px; height: 1px; align-self: center; background: rgba(214, 196, 160, 0.5); }
+.ae-vol .cn { font: 600 16px/1 var(--f-song); letter-spacing: 0.24em; }
+.ae-vol .en { font: 500 10.5px/1 var(--f-didone); letter-spacing: 0.34em; color: var(--ae-sand); }
+html[lang="en"] .ae-vol .cn { font: 500 15px/1 var(--f-didone); letter-spacing: 0.04em; }
+
+.ae-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.ae-model { display: inline-flex; align-items: center; gap: 0.55em; color: var(--ae-text); text-decoration: none; font-size: 18px; line-height: 1.2; }
+a.ae-model { min-height: 32px; }
+.ae-model--s { font-size: 15px; }
+.ae-model--l { font-size: var(--ae-web-name); }
+.ae-model .ae-logo { flex: none; width: 0.9em; height: 0.9em; color: var(--ae-text-2); }
+.ae-model-text { display: inline-flex; flex-direction: column; }
+.ae-model-vendor { margin-top: 0.3em; font: 500 0.44em/1.2 var(--f-didone); letter-spacing: 0.3em; text-transform: uppercase; color: var(--ae-sand); }
+a.ae-model:hover .nm { color: var(--ae-star); }
+.ae-mname { white-space: nowrap; }
+.ae-mname .nm { font-family: var(--f-didone); font-weight: 400; letter-spacing: 0.005em; }
+.ae-mname .eff { font-family: var(--f-didone); font-style: italic; font-weight: 400; font-size: 0.6em; vertical-align: 0.5em; color: var(--ae-brass-pale); }
+
+/* 评委名的排法（缩小版）：GPT 拉开字距的大写，Claude 斜体，Gemini 斜体小字 */
+.ae-jname { font-family: var(--f-didone); font-weight: 400; white-space: nowrap; }
+.ae-jname--gpt { font-weight: 500; font-size: 0.84em; letter-spacing: 0.2em; text-transform: uppercase; }
+.ae-jname--claude { font-style: italic; font-size: 1.06em; }
+.ae-jname--gemini { font-style: italic; font-size: 0.94em; letter-spacing: 0.02em; }
+
+/* ---------- 星 ---------- */
+.ae-star { display: inline-block; vertical-align: middle; flex: none; }
+.ae-glint { display: block; overflow: visible; }
+.ae-glint .halo { fill: var(--lit, rgb(255, 214, 160)); fill-opacity: 0.18; }
+.ae-glint .rays { fill: #F4E2BC; }
+.ae-glint .core { fill: var(--lit, #FFF6E2); }
+.ae-const { display: inline-block; flex: none; color: var(--ae-brass); vertical-align: middle; }
+
+/* ---------- 十卷星座 ---------- */
+.ae-chart { --pt: 28px; position: relative; }
+.ae-chart ol { margin: 0; padding: 0; list-style: none; }
+.ae-ch-item a {
+  position: relative;
+  display: grid;
+  grid-template-rows: 18px var(--pt) auto;
+  justify-items: center;
+  min-width: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+.ae-ch-item .no { align-self: end; font: italic 500 12.5px/1 var(--f-didone); color: rgba(200, 184, 156, 0.52); transition: color var(--ae-t-hover); }
+.ae-ch-item .pt { position: relative; display: grid; place-items: center; width: var(--pt); height: var(--pt); }
+.ae-ch-item .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lit, rgba(232, 214, 176, 0.82)); box-shadow: 0 0 4px color-mix(in srgb, var(--lit, #E8D6B0) 55%, transparent); transition: opacity 0.2s; }
+.ae-ch-item .ae-glint { position: absolute; left: 50%; top: 50%; width: 30px; height: auto; transform: translate(-50%, -50%) scale(0.4); opacity: 0; transition: opacity 0.25s, transform 0.35s var(--ae-ease-land); }
+.ae-ch-item .nm { margin-top: 2px; font: 500 13.5px/1.2 var(--f-song); letter-spacing: 0.12em; color: rgba(206, 196, 180, 0.6); white-space: nowrap; transition: color var(--ae-t-hover); }
+html[lang="en"] .ae-ch-item .nm { font: 500 13px/1.2 var(--f-didone); letter-spacing: 0.04em; }
+.ae-ch-item.is-clouded .dot { width: 7px; height: 7px; background: none; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lit, #D6C6AA) 55%, transparent); }
+.ae-ch-item.is-clouded .nm { color: rgba(190, 180, 165, 0.34); }
+.ae-ch-item.is-clouded .no { color: rgba(200, 184, 156, 0.32); }
+/* 当前那一颗、悬停或聚焦的那一颗：芒星 */
+.ae-ch-item.is-here .dot,
+.ae-ch-item a:hover .dot,
+.ae-ch-item a:focus-visible .dot { opacity: 0; }
+.ae-ch-item.is-here .ae-glint,
+.ae-ch-item a:hover .ae-glint,
+.ae-ch-item a:focus-visible .ae-glint { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.ae-ch-item.is-here .no,
+.ae-ch-item a:hover .no,
+.ae-ch-item a:focus-visible .no { color: rgba(226, 196, 140, 0.95); }
+.ae-ch-item.is-here .nm,
+.ae-ch-item a:hover .nm,
+.ae-ch-item a:focus-visible .nm { color: rgba(240, 232, 216, 0.95); }
+.ae-ch-item.is-here .nm { font-weight: 600; }
+.ae-ch-item a:focus-visible { outline-offset: 4px; }
+/* 悬停的纸签：迷你锁定 + 作品件数 */
+.ae-ch-tag {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 4px);
+  z-index: 3;
+  display: grid;
+  gap: 4px;
+  min-width: 190px;
+  padding: 10px 14px 11px;
+  text-align: left;
+  color: var(--ae-ink);
+  background-color: var(--ae-paper);
+  background-image: var(--tex-paper);
+  background-size: 256px;
+  background-blend-mode: multiply;
+  box-shadow: inset 0 0 6px rgba(110, 84, 52, 0.2), var(--contact);
+  transform: translate(-50%, 6px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s linear, transform 0.3s var(--ae-ease-land), visibility 0.18s;
+}
+.ae-ch-tag .k { font: 500 11px/1 var(--f-song); letter-spacing: 0.14em; color: rgba(43, 39, 35, 0.62); }
+.ae-ch-tag .ae-mini { font-size: 17px; white-space: nowrap; color: var(--ae-ink); }
+.ae-ch-tag .ae-mini .ae-foil { background: radial-gradient(70% 90% at 30% 18%, #D7B064, transparent 62%), linear-gradient(172deg, #A67C34 20%, #6E4F22 92%); -webkit-background-clip: text; background-clip: text; }
+.ae-ch-tag .n { justify-self: end; font: italic 400 13px/1 var(--f-didone); color: rgba(43, 39, 35, 0.6); }
+.ae-ch-item a:hover .ae-ch-tag,
+.ae-ch-item a:focus-visible .ae-ch-tag { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+.ae-ch-item:nth-child(-n+2) .ae-ch-tag { left: 0; transform: translate(-12px, 6px); }
+.ae-ch-item:nth-child(-n+2) a:hover .ae-ch-tag,
+.ae-ch-item:nth-child(-n+2) a:focus-visible .ae-ch-tag { transform: translate(-12px, 0); }
+.ae-ch-item:nth-last-child(-n+2) .ae-ch-tag { left: auto; right: 0; transform: translate(12px, 6px); }
+.ae-ch-item:nth-last-child(-n+2) a:hover .ae-ch-tag,
+.ae-ch-item:nth-last-child(-n+2) a:focus-visible .ae-ch-tag { transform: translate(12px, 0); }
+
+/* 直线：十段等宽，每段的线在星点那一高度；没有作品的那段是点线；右端断开 */
+.ae-chart--line ol { display: flex; }
+.ae-chart--line .ae-ch-item { flex: 1; display: flex; justify-content: center; }
+.ae-chart--line .ae-ch-line { position: absolute; left: 0; right: 0; top: calc(18px + var(--pt) / 2); display: flex; }
+.ae-chart--line .seg { flex: 1; height: 1px; background: rgba(214, 198, 170, 0.22); }
+.ae-chart--line .seg.is-clouded { background: radial-gradient(circle, rgba(214, 198, 170, 0.4) 0.6px, transparent 0.9px) 0 50% / 5px 1px repeat-x; }
+.ae-chart--line .seg:first-child { mask: linear-gradient(90deg, transparent, #000 40%); }
+.ae-chart--line .seg:last-child { mask: linear-gradient(90deg, #000 0 52%, transparent 52% 60%, #000 60% 70%, transparent 70% 78%, #000 78% 82%, transparent 82%); }
+.ae-chart--line .ae-ch-item a { z-index: 1; }
+
+/* 弧：十颗星按各自的高度落在一条二次曲线上（弧的高度 --arc 由页面给） */
+.ae-chart--arc { --arc: 68px; height: var(--arc); }
+.ae-chart--arc .ae-ch-line { position: absolute; left: 0; top: 0; width: 100%; height: var(--arc); overflow: visible; mask: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); }
+.ae-chart--arc .ae-ch-line path { fill: none; stroke: rgba(214, 198, 170, 0.26); stroke-width: 1; }
+.ae-chart--arc .ae-ch-item { position: absolute; left: calc((var(--i) + 0.5) / var(--n) * 100%); top: calc((1 - var(--lift)) * var(--arc)); }
+.ae-chart--arc .ae-ch-item > a { transform: translate(-50%, calc(-18px - var(--pt) / 2)); }
+
+/* ---------- 图：封面图版（纸边；图框固定 16:9，图按原比例放在里面）---------- */
+.ae-plate { position: relative; display: block; color: inherit; text-decoration: none; }
+.ae-plate-paper {
+  display: block;
+  padding: 7px;
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 238, 0.35), inset 0 0 7px rgba(110, 84, 52, 0.22), var(--contact);
+  transition: transform var(--ae-t-hover) var(--ae-ease-land);
+}
+.ae-plate-paper img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #DCD0BA; }
+.ae-plate-label { display: block; margin-top: 10px; font-size: 14px; color: var(--ae-text-2); }
+a.ae-plate:hover .ae-plate-paper { transform: translateY(calc(-2px * var(--motion))); }
+a.ae-plate:hover .ae-plate-label { color: var(--ae-text); }
+
+.ae-blank-in {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  aspect-ratio: 16 / 9;
+  color: var(--ae-ink-2);
+  text-align: center;
+}
+.ae-blank-in .ae-const { width: clamp(28px, 22%, 64px); height: auto; color: rgba(43, 39, 35, 0.32); }
+.ae-blank-in .t { font-size: 13px; line-height: 1.4; padding: 0 8px; }
+.ae-blank { position: relative; width: min(100%, 560px); padding-bottom: 18px; }
+.ae-blank .ae-plate-paper { transform: rotate(-0.6deg); }
+.ae-blank-slip { position: absolute; right: -10px; bottom: 0; transform: rotate(-3deg); }
+
+/* ---------- 作品图墙：每张图一圈纸边、接触阴影，下面一个图版编号 ---------- */
+.ae-wall { display: grid; row-gap: 34px; }
+.ae-wall-row { display: flex; gap: 26px; align-items: flex-start; }
+.ae-wall-item { flex: var(--r) 1 0; min-width: 0; }
+.ae-wall-pad { flex: var(--r) 1 0; }
+.ae-shot {
+  display: block;
+  padding: 6px;
+  background-color: var(--ae-paper);
+  background-image: var(--tex-paper);
+  background-size: 256px;
+  background-blend-mode: multiply;
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 238, 0.3), inset 0 0 6px rgba(110, 84, 52, 0.2), var(--contact);
+  transition: transform var(--ae-t-hover) var(--ae-ease-land);
+  cursor: zoom-in;
+}
+.ae-wall-item.is-lead .ae-shot { padding: 9px; }
+.ae-shot img { display: block; width: 100%; height: auto; background: var(--ae-slate-1); }
+.ae-shot:hover { transform: translateY(calc(-2px * var(--motion))); }
+.ae-shot:focus-visible { outline: 2px solid var(--ae-ember); outline-offset: 4px; }
+.ae-wall-no { margin-top: 10px; font: italic 400 13px/1 var(--f-didone); color: var(--ae-brass); letter-spacing: 0.04em; }
+@media (max-width: 760px) {
+  .ae-wall { display: flex; flex-wrap: wrap; gap: 20px 12px; }
+  .ae-wall::after { content: ""; flex: 999 1 0; }
+  .ae-wall-row { display: contents; }
+  .ae-wall-pad { display: none; }
+  .ae-wall-item { flex: var(--r) 1 calc(150px * var(--r)); }
+  .ae-wall-item.is-lead { flex-basis: 100%; }
+  .ae-shot { padding: 4px; }
+}
+
+/* ---------- 票：观测卡（入口）和取件票（下载）是同一种纸 ----------
+   票面奶油纸、微型印刷（一行拉开字距的小型大写、细线、3×2 点阵），一列打孔，票根是题材色的深色实底 */
+.ae-card,
+.ae-ticket {
+  --stub: #35302C;                                      /* 母版页上的票根：暖的深灰；题目里换成那一题世界色最深的一档 */
+  position: relative;
+  display: inline-flex;
+  color: var(--ae-ink);
+  text-decoration: none;
+  text-align: left;
+  box-shadow: var(--contact);
+  transition: transform var(--ae-t-hover) var(--ae-ease-land);
+}
+.ae-card .face,
+.ae-ticket .face {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 9px 16px 9px 18px;
+}
+.ae-card-top,
+.ae-card-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: 500 8px/1 var(--f-didone);
+  letter-spacing: 0.26em;
+  color: color-mix(in srgb, var(--card-ink, #2B2723) 58%, transparent);
+  white-space: nowrap;
+}
+.ae-card-top { padding-bottom: 6px; border-bottom: 1px solid color-mix(in srgb, var(--card-ink, #2B2723) 22%, transparent); }
+.ae-card-top > span:first-child { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.ae-card-top > span:last-child { flex: none; }
+.ae-card-top .hair { flex: 0 0 34%; align-self: center; height: 1px; background: rgba(43, 39, 35, 0.3); }
+.ae-card:not(.has-no) .ae-card-top { border-bottom: 0; padding-bottom: 2px; }
+.ae-card-foot { align-items: center; margin-top: auto; padding-top: 6px; font-size: 7.5px; letter-spacing: 0.2em; color: rgba(43, 39, 35, 0.46); }
+.ae-dots { flex: none; width: 13px; height: 8px; background: radial-gradient(circle, rgba(43, 39, 35, 0.55) 1px, transparent 1.3px) 0 0 / 4.5px 4px; }
+.ae-card-body { display: flex; align-items: center; gap: 14px; padding: 8px 0 6px; }
+.ae-card-no { display: inline-flex; align-items: baseline; gap: 3px; color: var(--card-ink, var(--ae-ink)); }
+.ae-card-no i { font: italic 400 12px/1 var(--f-didone); color: rgba(43, 39, 35, 0.6); }
+.ae-card-no b { font: italic 400 40px/0.8 var(--f-didone); letter-spacing: -0.02em; }
+.ae-card-no small { font: italic 400 13px/1 var(--f-didone); color: rgba(43, 39, 35, 0.55); }
+.ae-card-text { display: grid; gap: 3px; min-width: 0; }
+.ae-card .t1,
+.ae-ticket .t1 { font: 600 17px/1.3 var(--f-song); letter-spacing: 0.06em; }
+.ae-card .t2 { font: 400 12.5px/1.4 var(--f-song); letter-spacing: 0.06em; color: rgba(43, 39, 35, 0.62); }
+html[lang="en"] .ae-card .t1,
+html[lang="en"] .ae-ticket .t1 { font: 500 17px/1.25 var(--f-didone); letter-spacing: 0; }
+.ae-card-const { margin-left: auto; color: var(--card-ink, #8C6A30); opacity: 0.8; }
+.ae-card-const .ae-const { display: block; }
+.ae-card .perf,
+.ae-ticket .perf { flex: none; width: 6px; background: radial-gradient(circle, rgba(40, 24, 16, 0.42) 1.3px, transparent 1.7px) 50% 4px / 6px 8px repeat-y, var(--ae-paper); }
+.ae-card .stub,
+.ae-ticket .stub {
+  position: relative;
+  flex: none;
+  width: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 4px;
+  text-align: center;
+  background-color: var(--stub);
+  background-image: var(--tex-paper);
+  background-size: 256px;
+  background-blend-mode: multiply;
+  color: var(--ae-cream-on-stub);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.22);
+  transition: filter var(--ae-t-hover), transform 0.2s var(--ae-ease-land);
+}
+.ae-card .stub b,
+.ae-ticket .stub b { font: 500 21px/1 var(--f-song); letter-spacing: 0.14em; padding-left: 0.14em; }
+.ae-card .stub small,
+.ae-ticket .stub small { font: 500 8px/1 var(--f-didone); letter-spacing: 0.24em; padding-left: 0.24em; color: rgba(243, 235, 221, 0.62); white-space: nowrap; }
+html[lang="en"] .ae-card .stub b,
+html[lang="en"] .ae-ticket .stub b { font: 500 13px/1.1 var(--f-didone); letter-spacing: 0.22em; padding-left: 0.22em; }
+.ae-card .punch,
+.ae-ticket .punch { width: 7px; height: 7px; margin-top: 2px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(243, 235, 221, 0.45); }
+a.ae-card:hover,
+a.ae-ticket:hover { transform: translateY(calc(-2px * var(--motion))); }
+a.ae-card:hover .stub,
+a.ae-ticket:hover .stub { filter: brightness(1.14); }
+a.ae-card:active .stub,
+a.ae-ticket:active .stub { transform: translateX(calc(2px * var(--motion))); }
+
+.ae-ticket { width: min(100%, 380px); min-height: 112px; transform: rotate(-0.8deg); }
+a.ae-ticket:hover { transform: rotate(calc(-0.8deg + 0.8deg * var(--motion))) translateY(calc(-2px * var(--motion))); }
+.ae-ticket .t1 { margin-top: 8px; }
+.ae-ticket .t2 { font: 400 14px/1.4 var(--f-didone); color: var(--ae-ink-2); }
+.ae-ticket .t2 b { font-weight: 600; letter-spacing: 0.06em; color: var(--ae-ink); }
+.ae-ticket .t3 { margin: 2px 0 6px; font-size: 12.5px; line-height: 1.55; color: var(--ae-ink-2); text-wrap: pretty; }
+.ae-ticket .face .ae-dots { position: absolute; right: 14px; bottom: 10px; }
+/* 仅展映：票面暗一档，票根石板灰 */
+.ae-ticket.is-off .face { filter: brightness(0.9) saturate(0.7); }
+.ae-ticket.is-off .stub { width: 100px; background-color: var(--ae-slate-2); color: var(--ae-text-2); }
+
+/* ---------- 纸签 ---------- */
+.ae-slip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 14px 8px;
+  transform: rotate(-2deg);
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 238, 0.35), inset 0 0 7px rgba(110, 84, 52, 0.22), var(--contact);
+  white-space: nowrap;
+}
+.ae-slip .t { font: 600 13.5px/1.4 var(--f-song); letter-spacing: 0.14em; padding-left: 0.14em; }
+.ae-slip .s { font-size: 12px; line-height: 1.4; color: var(--ae-ink-2); }
+
+/* ---------- 云遮印：单色网点的一枚圆章，直接盖在布上、墙上 ---------- */
+.ae-stamp {
+  --c: rgba(214, 200, 176, 0.5);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  align-content: center;
+  width: 4.6em;
+  height: 4.6em;
+  font-size: 13px;
+  color: var(--c);
+  transform: rotate(-9deg);
+  flex: none;
+}
+.ae-stamp::before {                                  /* 网点：中间密、边上疏，边缘不齐 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, currentColor 0.8px, transparent 1.15px) 0 0 / 3.4px 3.4px;
+  mask: radial-gradient(closest-side, #000 52%, rgba(0, 0, 0, 0.4) 74%, transparent 100%);
+  opacity: 0.55;
+}
+.ae-stamp::after {                                   /* 两圈细的印框 */
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px currentColor, inset 0 0 0 4px transparent, inset 0 0 0 5px rgba(214, 200, 176, 0.3);
+}
+.ae-stamp .t { position: relative; font: 700 1.08em/1 var(--f-song); letter-spacing: 0.3em; padding-left: 0.3em; color: var(--ae-text-2); text-shadow: 0 0 4px rgba(10, 12, 16, 0.9); }
+.ae-stamp .s { position: relative; margin-top: 4px; font-size: 0.7em; letter-spacing: 0.1em; color: var(--ae-text-2); text-shadow: 0 0 4px rgba(10, 12, 16, 0.9); }
+html[lang="en"] .ae-stamp .t { font: 500 0.86em/1 var(--f-didone); letter-spacing: 0.24em; text-transform: uppercase; }
+/* 长方的那一种（书脊上）：一个细框，框里网点从左往右由小变大 */
+.ae-stamp.is-rect { width: 7.2em; height: 2.5em; transform: rotate(-3deg); }
+.ae-stamp.is-rect::before {
+  border-radius: 0;
+  inset: 3px;
+  background: radial-gradient(circle, currentColor 0.7px, transparent 1px) 0 0 / 4px 4px;
+  mask: linear-gradient(90deg, rgba(0, 0, 0, 0.3), #000);
+  opacity: 0.5;
+}
+.ae-stamp.is-rect::after { inset: 0; border-radius: 0; box-shadow: inset 0 0 0 1.2px currentColor; }
+.ae-stamp.is-rect .t { font-size: 1.15em; text-shadow: none; color: inherit; filter: brightness(1.5); }
+
+/* ---------- 云遮的窗：一扇夜窗，窗里一层网点的云，星座只描边 ---------- */
+.ae-cloud { position: relative; width: min(100%, 560px); padding-bottom: 16px; }
+.ae-cloud-sky {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  color: rgba(201, 170, 104, 0.5);
+  background:
+    radial-gradient(1.2px 1.2px at 18% 24%, rgba(240, 234, 223, 0.55), transparent),
+    radial-gradient(1px 1px at 78% 18%, rgba(240, 234, 223, 0.45), transparent),
+    radial-gradient(1px 1px at 88% 52%, rgba(240, 234, 223, 0.3), transparent),
+    linear-gradient(180deg, #0A0D14, #111722 70%, #161C26);
+  box-shadow: inset 0 0 0 7px #0B0C10, inset 0 0 0 8px rgba(201, 170, 104, 0.32), inset 0 0 60px rgba(0, 0, 0, 0.5);
+}
+.ae-cloud-sky::after {
+  content: "";
+  position: absolute;
+  inset: -6%;
+  background:
+    radial-gradient(34% 22% at 26% 68%, rgba(150, 160, 172, 0.3), transparent 70%),
+    radial-gradient(40% 24% at 72% 40%, rgba(150, 160, 172, 0.24), transparent 70%),
+    radial-gradient(60% 26% at 50% 100%, rgba(150, 160, 172, 0.3), transparent 70%);
+  mask: radial-gradient(circle, #000 0.9px, transparent 1.3px) 0 0 / 3px 3px;
+}
+.ae-cloud-sky .ae-const { width: 36%; height: auto; }
+.ae-cloud-sky .ae-const path { fill: none; stroke: currentColor; stroke-width: 1; }
+.ae-cloud-sky .ae-const line { stroke-dasharray: 3 4; }
+.ae-cloud-stamp { position: absolute; right: 6%; bottom: 0; font-size: 15px; }
+
+/* ---------- 评语：评委名按她的排法，一根三截线，评语常规字重、行距宽，说完一个 ▽ ---------- */
+.ae-comment { display: grid; gap: 12px; }
+.ae-comment .who { display: flex; align-items: baseline; gap: 12px; font-size: 19px; color: var(--ae-text); }
+.ae-comment .who::before { content: ""; align-self: center; width: 6px; height: 6px; background: var(--lit, var(--ae-brass)); transform: rotate(45deg); }
+.ae-comment .role { font: 500 10px/1 var(--f-didone); letter-spacing: 0.3em; color: var(--ae-sand); text-transform: uppercase; }
+html[lang="zh-CN"] .ae-comment .role { font: 600 12.5px/1 var(--f-song); letter-spacing: 0.24em; }
+.ae-comment::before { content: ""; order: 1; width: min(240px, 50%); height: 1px; background: linear-gradient(90deg, rgba(214, 196, 160, 0.4) 0 78%, transparent 78% 82%, rgba(214, 196, 160, 0.4) 82% 90%, transparent 90%); }
+.ae-comment .tx { order: 2; max-width: 36em; line-height: 1.95; text-align: justify; line-break: strict; color: var(--ae-text); }
+html[lang="en"] .ae-comment .tx { text-align: left; }
+.ae-comment .end { margin-left: 0.4em; color: var(--ae-brass); font-size: 12px; }
+.ae-comment.is-pending .tx { color: var(--ae-text-2); }
+
+/* ---------- 立绘：数据里的原图先压暗、染一层灯色、受光一侧一道窄边缘光，脚下化进雾（预渲的进光图来了就不用这些） ---------- */
+.ae-portrait { display: block; height: auto; }
+span.is-none { display: grid; place-items: center; color: var(--ae-brass); }   /* 没有立绘时那颗小吊星 */
+img.is-raw {
+  filter:
+    brightness(var(--expo, 0.8)) saturate(var(--sat, 0.9)) sepia(var(--tint, 0.1))
+    drop-shadow(var(--rim-x, -1.5px) -1px 0 var(--rim, rgba(236, 150, 92, 0.42)));
+  mask: linear-gradient(180deg, #000 0 var(--fog-at, 66%), rgba(0, 0, 0, 0.5) calc(var(--fog-at, 66%) + 14%), transparent 96%);
+}
+
+/* ---------- 文字链 ---------- */
+.ae-more { display: inline-flex; align-items: center; gap: 0.5em; min-height: 32px; color: var(--ae-brass-pale); text-decoration: none; letter-spacing: 0.04em; }
+.ae-more::after { content: ""; width: 18px; height: 1px; background: currentColor; transition: width var(--ae-t-hover) var(--ae-ease-land); }
+.ae-more:hover { color: var(--ae-star); }
+.ae-more:hover::after { width: 30px; }

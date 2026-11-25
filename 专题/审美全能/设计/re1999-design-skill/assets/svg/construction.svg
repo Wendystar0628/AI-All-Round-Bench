@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <!-- 结构线：几何作图留下的金色发丝线，叠在古典或建筑题材的意象上。内联后用变量 re-orn-gold 换色 -->
+  <style>
+    .g{fill:none;stroke:var(--re-orn-gold,#C9AA68);stroke-width:2.2;opacity:.8}
+    .t{fill:none;stroke:var(--re-orn-gold,#C9AA68);stroke-width:1.6;opacity:.6}
+    .d{fill:none;stroke:var(--re-orn-gold,#C9AA68);stroke-width:1.6;opacity:.55;stroke-dasharray:4 10}
+    .n{fill:var(--re-orn-gold,#C9AA68);opacity:.8}
+  </style>
+  <!-- 大圆：在上方断开一小段 -->
+  <path class="g" d="M412 70 A330 330 0 1 1 388 70"/>
+  <!-- 同心虚线圆 -->
+  <circle class="d" cx="400" cy="400" r="250"/>
+  <!-- 压扁的椭圆：像穿过形体的一道水平剖切 -->
+  <ellipse class="t" cx="400" cy="520" rx="330" ry="86"/>
+  <!-- 水平中线：伸出圆外，在交点处断开 -->
+  <path class="t" d="M30 400 H62 M78 400 H140 M156 400 H644 M660 400 H722 M738 400 H770"/>
+  <!-- 竖直中线 -->
+  <path class="t" d="M400 20 H400 M400 20 V60 M400 80 V140 M400 160 V640 M400 660 V720 M400 740 V780"/>
+  <!-- 交点上的小圆与刻度 -->
+  <circle class="n" cx="70" cy="400" r="3.2"/>
+  <circle class="n" cx="730" cy="400" r="3.2"/>
+  <circle class="g" cx="400" cy="150" r="7"/>
+  <circle class="n" cx="400" cy="650" r="3.2"/>
+  <path class="t" d="M150 394 V406 M650 394 V406 M394 400 H406"/>
+  <!-- 一道斜向的作图线 -->
+  <path class="t" d="M168 168 L632 632" stroke-dasharray="160 14 40 14"/>
+</svg>

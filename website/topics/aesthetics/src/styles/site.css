@@ -1,0 +1,8 @@
+/* 全站样式入口：设计令牌（同步来的副本，字体由构建另行注入）→ 纹理 → 基础 → 页头页脚 → 公共部件 → 看图器。
+   每页再加一份自己的 src/styles/pages/<页>.css。 */
+@import '../vendor/design/tokens.css';
+@import '../vendor/design/textures/textures.css';
+@import './base.css';
+@import './shell.css';
+@import './parts.css';
+@import './lightbox.css';

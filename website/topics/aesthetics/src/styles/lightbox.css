@@ -1,0 +1,101 @@
+/* 看图器（src/client/lightbox.js）：背景压暗到近黑并模糊，图按原比例居中，下面一条展签；左右细线箭头，右下几样工具。
+   打开 0.22s（从 96% 放大并淡入），关闭 0.08s 淡出。 */
+html.lb-open { overflow: hidden; }
+
+.lb {
+  --lb-fade: 1;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  background: rgba(7, 10, 16, calc(0.95 * var(--lb-fade)));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.08s linear;
+}
+.lb.is-open { opacity: 1; transition: opacity 0.22s var(--ae-ease-land); }
+.lb[hidden] { display: none; }
+
+.lb-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 56px 88px 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
+.lb-img {
+  display: block;
+  max-width: none;
+  background: var(--ae-slate-1);
+  box-shadow: 0 0 0 1px rgba(233, 220, 205, 0.08), 0 30px 80px rgba(0, 0, 0, 0.6);
+  transform-origin: center;
+  cursor: zoom-in;
+  -webkit-user-drag: none;
+}
+.lb.is-open .lb-img { animation: lb-in 0.22s var(--ae-ease-land); }
+.lb-img.is-anim { transition: transform 0.3s var(--ae-ease-land); }
+.lb.is-zoomed .lb-img { cursor: grab; }
+.lb.is-zoomed .lb-img:active { cursor: grabbing; }
+.lb.is-zoomed .lb-stage { overflow: visible; }
+@keyframes lb-in { from { opacity: 0; transform: scale(0.96); } }
+
+.lb-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ae-text-2);
+  cursor: pointer;
+  transition: color var(--ae-t-hover), background-color var(--ae-t-hover);
+}
+.lb-btn:hover { color: var(--ae-star); background: rgba(233, 220, 205, 0.06); }
+.lb-btn svg { width: 20px; height: 20px; }
+.lb-prev, .lb-next { position: absolute; top: calc(50% - 40px); width: 56px; height: 96px; border-radius: 4px; }
+.lb-prev svg, .lb-next svg { width: 20px; height: 40px; }
+.lb-prev { left: 16px; }
+.lb-next { right: 16px; }
+.lb-btn[hidden] { display: none; }
+
+.lb-bar { display: flex; align-items: center; gap: 20px; padding: 14px 24px 18px 32px; }
+.lb-cap { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 14px; font-size: 15px; color: var(--ae-text); }
+.lb-count { flex: none; font: 400 15px/1 var(--ae-font-didone); color: var(--ae-brass-pale); letter-spacing: 0.04em; }
+.lb-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-tools { display: flex; align-items: center; gap: 4px; }
+.lb.is-zoomed .lb-zoom { color: var(--ae-brass-pale); }
+.lb.is-zoomed .lb-zoom-plus { display: none; }             /* 放大以后放大镜里的加号变成减号：再按就还原 */
+
+.lb-toast {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  padding: 7px 14px;
+  background: var(--ae-paper);
+  color: var(--ae-ink);
+  font-size: 14px;
+  transform: rotate(-1deg) translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s linear, transform 0.2s var(--ae-ease-land);
+}
+.lb-toast.is-on { opacity: 1; transform: rotate(-1deg); transition: opacity 0.2s linear, transform 0.2s var(--ae-ease-land); }
+
+@media (max-width: 760px) {
+  .lb-stage { margin: 12px 8px 0; }
+  .lb-prev, .lb-next { display: none; }
+  .lb-bar { flex-wrap: wrap; gap: 6px 12px; padding: 10px 12px 14px 16px; }
+  .lb-cap { flex-basis: 100%; font-size: 14px; }
+  .lb-text { white-space: normal; }
+  .lb-tools { margin-left: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lb, .lb.is-open { transition: opacity 0.15s linear; }
+  .lb.is-open .lb-img { animation: none; }
+}

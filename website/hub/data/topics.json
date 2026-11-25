@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-23",
+  "updated": "2026-11-25",
   "topics": [
     {
       "id": "decathlon",
@@ -79,11 +79,37 @@
       "id": "aesthetics",
       "name": "AI审美全能",
       "name_en": "AI Aesthetics",
-      "status": "soon",
+      "status": "online",
+      "url": "/aesthetics/",
+      "accent": "#b55829",
+      "updated": "2026-11-25",
       "about": {
-        "zh": "不打分的作品展：各模型按同一份题面完成作品，并排展示，由你自己比较。",
-        "en": "An unscored showcase: every model builds from the same brief, and the works are shown side by side for you to compare."
-      }
+        "zh": "AI 设计作品展：十个创作方向，各模型按同一份题面完成作品，并排陈列。",
+        "en": "A showcase of AI design: ten creative directions, every model building from the same brief, the works hung side by side."
+      },
+      "stats": [
+        {
+          "label": {
+            "zh": "题目",
+            "en": "Tasks"
+          },
+          "value": 10
+        },
+        {
+          "label": {
+            "zh": "型号",
+            "en": "Models"
+          },
+          "value": 3
+        },
+        {
+          "label": {
+            "zh": "作品",
+            "en": "Works"
+          },
+          "value": 28
+        }
+      ]
     }
   ]
 }

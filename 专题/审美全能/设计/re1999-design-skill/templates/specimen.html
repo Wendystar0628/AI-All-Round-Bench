@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1999 设计语言样张</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/textures/texture-kit.css">
+<style>
+/* =========================================================
+   样张：十一张 1920×1080。?p=1 … ?p=11 单独看一张。
+   ========================================================= */
+html, body { margin: 0; background: #080808; }
+body { font-family: var(--re-font-song); color: var(--re-text); -webkit-font-smoothing: antialiased; }
+#deck { display: flex; flex-direction: column; align-items: center; gap: 48px; padding: 48px 0; }
+.plate { position: relative; width: 1920px; height: 1080px; flex: none; overflow: hidden; isolation: isolate; background: var(--re-char); }
+body.single { background: var(--re-char); }
+body.single #deck { display: block; padding: 0; }
+body.single .plate { display: none; }
+body.single .plate.on { display: block; }
+.abs { position: absolute; }
+img { display: block; }
+.lift { z-index: 35; }   /* 要读的字在颗粒和暗角之上 */
+
+/* 文档页的页眉页脚 */
+.ph { position: absolute; left: 75px; right: 75px; top: 52px; display: flex; align-items: center; gap: 16px; z-index: 5; }
+.ph-no { font: italic 400 56px/1 var(--re-font-italic); color: rgba(233,220,205,.26); margin-right: 4px; }
+.ph-cn { font: 600 34px/1 var(--re-font-song); color: var(--re-camel); }
+.ph-bar { width: 1px; height: 26px; background: var(--re-hair-strong); }
+.ph-en { font: 300 13px/1 var(--re-font-micro); letter-spacing: .32em; color: var(--re-sand); }
+.ph-tail { flex: 1; margin-left: 10px; }
+.ph-note { font: 400 16px/1 var(--re-font-song); color: var(--re-text-3); margin-left: 18px; }
+.pf { position: absolute; left: 75px; right: 75px; bottom: 30px; display: flex; justify-content: space-between; z-index: 5;
+  font: 300 11px/1 var(--re-font-micro); letter-spacing: .44em; color: rgba(187,168,147,.5); }
+
+/* 通用小字 */
+.cap { font: 600 17px/1.2 var(--re-font-song); color: var(--re-text-2); }
+.cap small { display: block; margin-top: 5px; font: 400 12px/1.3 var(--re-font-type); color: var(--re-text-3); letter-spacing: .02em; }
+.micro { font: 300 12px/1 var(--re-font-micro); letter-spacing: .3em; color: var(--re-sand); }
+.code { font: 400 12px/1.4 var(--re-font-type); color: var(--re-text-3); }
+.star { width: 18px; height: 21px; }
+
+/* ===================== 01 封面 ===================== */
+.p1 { background: #0C1011; }
+.p1-bg, .p1-fg { left: 0; top: 0; width: 1920px; height: 1080px; }
+.p1-word { left: 1250px; top: 342px; transform: translateX(-50%); padding-left: .45em; white-space: nowrap;
+  font: 600 112px/1 var(--re-font-roman); letter-spacing: .45em;
+  background: linear-gradient(90deg, #5E4C35 0%, #8A7150 50%, #B0966A 100%); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: .92; }
+.p1-orbit { left: 0; top: 0; width: 1920px; height: 1080px; }
+.p1-flare { left: 1556px; top: 104px; width: 120px; height: 120px; opacity: .95; }
+.p1-smudge { left: 40px; top: 250px; width: 860px; height: 420px; }
+.p1-cluster { left: 120px; top: 268px; width: 780px; }
+.p1-eyebrow { font: 300 14px/1 var(--re-font-micro); letter-spacing: .34em; color: var(--re-sand); }
+.p1-cn { margin: 40px 0 0; display: flex; align-items: flex-end; font-weight: 400; line-height: 1; }
+.p1-cn .a { font: 400 128px/1 var(--re-font-display-cn); filter: url(#re-stem-2-5); }
+.p1-cn .b { font: 400 204px/.86 var(--re-font-display-cn); margin-bottom: -40px; margin-left: 4px; filter: url(#re-stem-4); }
+.p1-cn .a, .p1-cn .b { background: linear-gradient(180deg, var(--re-title-top), var(--re-title-bottom)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.p1-voice { position: relative; height: 104px; margin: -10px 0 0 0; }
+.p1-voice i { position: absolute; left: -16px; top: 0; font: italic 400 60px/1 var(--re-font-italic); color: rgba(233,220,205,.42); }
+.p1-voice span { position: absolute; left: 350px; top: 46px; font: 400 76px/1 var(--re-font-didone); letter-spacing: .06em; color: var(--re-sand); }
+.p1-desc { margin: 26px 0 0; max-width: 560px; font: 400 26px/1.8 var(--re-font-song); color: var(--re-text-2); }
+.p1-credits { left: 120px; top: 812px; }
+.p1-credits .k { font: 300 12px/1 var(--re-font-micro); letter-spacing: .44em; color: rgba(187,168,147,.75); margin-bottom: 12px; }
+.p1-credits .v { font: 600 22px/2 var(--re-font-roman); letter-spacing: .16em; color: var(--re-text-2); }
+.p1-credits .v2 { font: 600 15px/2 var(--re-font-roman); letter-spacing: .26em; color: var(--re-text-3); }
+.p1-date { left: 1545px; top: 868px; text-align: right; }
+.p1-date .d { font: 400 64px/1 var(--re-font-didone); color: var(--re-ivory); letter-spacing: .02em; }
+.p1-date .d em { font-style: normal; font-size: 30px; color: var(--re-ember); margin: 0 10px; vertical-align: middle; }
+.p1-date .t { margin-top: 12px; font: 700 26px/1 var(--re-font-song); color: var(--re-text); letter-spacing: .5em; }
+.lockup { left: 44px; top: 44px; text-align: center; z-index: 36; }
+.lockup .cn { font: 700 26px/1 var(--re-font-song); color: var(--re-ivory); letter-spacing: .12em; }
+.lockup .ln { width: 84px; height: 1px; background: rgba(233,220,205,.45); margin: 9px auto 7px; }
+.lockup .en { font: 300 9px/1 var(--re-font-micro); letter-spacing: 1.1em; color: var(--re-sand); padding-left: 1.1em; }
+.p1-tr { right: 44px; top: 50px; font: 300 12px/1 var(--re-font-micro); letter-spacing: .42em; color: var(--re-sand); }
+.p1-rail { left: 0; right: 0; bottom: 34px; text-align: center; font: 300 11px/1 var(--re-font-micro); letter-spacing: .62em; color: rgba(187,168,147,.5); }
+
+/* ===================== 02 配色 ===================== */
+.p2 { background: var(--re-char); }
+.sw-rows { left: 75px; top: 142px; width: 1150px; }
+.sw-row { display: flex; gap: 22px; margin-bottom: 20px; }
+.sw-lab { width: 132px; flex: none; padding-top: 4px; }
+.sw-lab .cn { font: 600 20px/1 var(--re-font-song); color: var(--re-camel); }
+.sw-lab .en { margin-top: 8px; font: 300 11px/1 var(--re-font-micro); letter-spacing: .3em; color: var(--re-sand); }
+.sw-list { display: flex; gap: 16px; }
+.sw { width: 92px; }
+.sw .c { width: 92px; height: 86px; box-shadow: inset 0 0 0 1px rgba(233,220,205,.10); }
+.sw .n { margin-top: 8px; font: 400 12px/1.25 var(--re-font-type); color: var(--re-text-2); white-space: nowrap; }
+.sw .h { font: 400 11px/1.25 var(--re-font-type); color: var(--re-text-3); }
+.flag { width: 52px; height: 80px; clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%); position: relative; }
+.flag img { position: absolute; left: 14px; top: 20px; width: 24px; height: 28px; }
+.sw-side { left: 1290px; top: 142px; width: 555px; }
+.side-h { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.side-h .cn { font: 600 20px/1 var(--re-font-song); color: var(--re-camel); }
+.side-h .en { font: 300 11px/1 var(--re-font-micro); letter-spacing: .3em; color: var(--re-sand); }
+.bar { display: flex; height: 26px; outline: 1px solid rgba(233,220,205,.22); outline-offset: 0; }
+.bar-l { display: flex; margin-top: 8px; font: 400 11px/1.3 var(--re-font-type); color: var(--re-text-3); }
+.duo { display: flex; gap: 24px; margin-top: 8px; }
+.mini { width: 265px; height: 170px; position: relative; overflow: hidden; }
+.mini-c { margin-top: 10px; font: 400 15px/1.55 var(--re-font-song); color: var(--re-text-2); }
+.mini-c b { color: var(--re-text); font-weight: 600; }
+.sets .set { margin-bottom: 12px; }
+.sets .lab { display: flex; justify-content: space-between; font: 400 12px/1 var(--re-font-type); color: var(--re-text-3); margin-bottom: 6px; }
+.sets .lab b { font: 600 14px/1 var(--re-font-song); color: var(--re-text-2); }
+
+/* ===================== 03 字体 ===================== */
+.p3 { background: var(--re-night); }
+.ty { left: 75px; top: 140px; width: 1130px; }
+.ty-row { display: grid; grid-template-columns: 210px 1fr; align-items: center; min-height: 63px; border-bottom: 1px solid rgba(233,220,205,.09); }
+.ty-row .r { font: 600 15px/1.2 var(--re-font-song); color: var(--re-camel); }
+.ty-row .r small { display: block; margin-top: 4px; font: 400 11px/1.25 var(--re-font-type); color: var(--re-text-3); }
+.ty-row .s { color: var(--re-text); white-space: nowrap; overflow: hidden; }
+.ty-side { left: 1290px; top: 140px; width: 555px; }
+.ladder .l { display: grid; grid-template-columns: 74px 1fr; align-items: baseline; border-bottom: 1px solid rgba(233,220,205,.08); padding: 6px 0; }
+.ladder .l .k { font: 400 12px/1 var(--re-font-type); color: var(--re-text-3); }
+.ratio { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 26px; }
+.ratio .box { padding: 18px 16px 14px; position: relative; }
+.ratio .lab { margin-top: 10px; font: 400 12px/1.4 var(--re-font-type); color: var(--re-text-3); }
+
+/* 主按钮（样张多处复用） */
+.btn { position: relative; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; height: 64px; padding: 0 46px;
+  background: var(--re-orange); color: #FFF8F0; box-shadow: 0 3px 10px rgba(0,0,0,.28); }
+.btn .z { font: 600 26px/1 var(--re-font-song); letter-spacing: .18em; padding-left: .18em; }
+.btn .e { margin-top: 6px; font: 300 9px/1 var(--re-font-micro); letter-spacing: .34em; opacity: .6; padding-left: .34em; }
+.btn .pr { position: absolute; inset: 0; width: 100%; height: 100%; }
+.btn.alt { background: #FBF8F2; color: #2B2723; }
+.btn.alt .pr { display: none; }
+.btn.alt::after { content: ""; position: absolute; right: 9px; top: 8px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid rgba(43,39,35,.55); }
+
+/* ===================== 04 标题排法 ===================== */
+.p4 { background: var(--re-char); }
+.rc { width: 572px; height: 384px; overflow: hidden; }
+.rc-c { width: 572px; font: 400 14px/1.5 var(--re-font-song); color: var(--re-text-2); margin-top: 10px; }
+.rc-c b { font-family: var(--re-font-type); font-weight: 400; color: var(--re-text-3); font-size: 12px; margin-right: 10px; }
+/* A */
+.rA { background: radial-gradient(80% 90% at 30% 70%, #18233A, #0D1420 70%); }
+.rA .wm { left: 250px; top: -70px; font: 700 440px/1 var(--re-font-didone); color: rgba(181,88,41,.12); }
+.rA .cn { left: 64px; top: 108px; display: flex; align-items: flex-end; font: 400 68px/1 var(--re-font-display-cn); filter: url(#re-stem-1-5);
+  background: linear-gradient(180deg, var(--re-title-top), var(--re-title-bottom)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.rA .cn b { font-size: 112px; line-height: .86; margin-bottom: -18px; font-weight: 400; }
+.rA .it { left: 50px; top: 190px; font: italic 400 32px/1 var(--re-font-italic); color: rgba(233,220,205,.42); }
+.rA .kw { left: 292px; top: 232px; font: 400 42px/1 var(--re-font-didone); color: var(--re-sand); letter-spacing: .06em; }
+.rA .sw { left: 40px; top: 150px; width: 420px; transform: rotate(-7deg); opacity: .9; }
+.rA .ds { left: 66px; top: 318px; font: 400 15px/1.7 var(--re-font-song); color: var(--re-text-3); }
+/* B */
+.rB { background: #1B1C19; }
+.rB .grid { inset: 0; background-image: linear-gradient(rgba(150,180,200,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(150,180,200,.06) 1px, transparent 1px); background-size: 24px 24px; }
+.rB .smudge { left: 30px; top: 60px; width: 520px; height: 270px; }
+.rB .mic { left: 66px; top: 74px; font: 300 11px/1 var(--re-font-micro); letter-spacing: .5em; color: rgba(233,220,205,.55); }
+.rB .main { left: 60px; top: 100px; font: 700 94px/1 "Oswald", sans-serif; letter-spacing: .02em; color: #E7E3D8;
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 41px, transparent 41px 44px); mask: repeating-linear-gradient(90deg, #000 0 41px, transparent 41px 44px); }
+.rB .sub { left: 66px; top: 214px; font: italic 400 38px/1 var(--re-font-italic); color: #C25E30; }
+.rB .cn { left: 66px; top: 268px; font: 600 30px/1 var(--re-font-song); letter-spacing: .32em; color: var(--re-text); }
+.rB .emb { left: 476px; top: 40px; width: 62px; height: 62px; }
+/* C */
+.rC { background: #0C0E0B; }
+.rC .tri { inset: 0; opacity: .5; background:
+  linear-gradient(60deg, transparent 49.6%, rgba(120,96,70,.10) 50%, transparent 50.4%) 0 0/120px 208px,
+  linear-gradient(-60deg, transparent 49.6%, rgba(120,96,70,.10) 50%, transparent 50.4%) 0 0/120px 208px; }
+.rC .sun { left: 186px; top: 24px; width: 200px; height: 200px; }
+.rC .shd { left: 262px; top: 58px; width: 76px; height: 196px; filter: blur(5px); opacity: .55; mix-blend-mode: multiply; }
+.rC .word { left: 286px; top: 96px; transform: translateX(-50%); padding-left: .55em; white-space: nowrap; font: 600 44px/1 var(--re-font-roman); letter-spacing: .55em;
+  background: linear-gradient(90deg, #6E5A3F, #9A8057 60%, #B49A6B); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.rC .fig { left: 248px; top: 52px; width: 76px; height: 196px; -webkit-mask: linear-gradient(#000 62%, transparent 100%); mask: linear-gradient(#000 62%, transparent 100%); }
+.rC .name { left: 286px; top: 262px; transform: translateX(-50%); font: 600 30px/1 var(--re-font-song); color: var(--re-text); letter-spacing: .14em; padding-left: .14em; }
+.rC .ln { left: 186px; top: 304px; width: 200px; height: 1px; background: linear-gradient(90deg, transparent, rgba(233,220,205,.5) 20%, rgba(233,220,205,.5) 80%, transparent); }
+.rC .stars { left: 286px; top: 314px; transform: translateX(-50%); display: flex; gap: 0; }
+.rC .stars img { width: 26px; height: 30px; margin: 0 -1px; }
+.rC .q { left: 0; right: 0; top: 354px; text-align: center; font: 400 12px/1 var(--re-font-song); color: #787979; }
+/* D */
+.rD { background: radial-gradient(60% 70% at 72% 30%, rgba(201,138,60,.22), transparent 70%), linear-gradient(160deg, #2A1E15 0%, #1A130E 55%, #0F0B08 100%); }
+.rD .pin { left: 64px; top: 58px; font: 400 14px/1 var(--re-font-song); color: var(--re-text-2); }
+.rD .code { left: 66px; top: 128px; font: 300 11px/1 var(--re-font-micro); letter-spacing: .3em; color: rgba(233,220,205,.5); }
+.rD .no { left: 124px; top: 108px; font: 400 40px/1 var(--re-font-didone); color: var(--re-text); }
+.rD .no img { display: inline-block; width: 18px; height: 21px; margin-left: 6px; vertical-align: top; }
+.rD .t { left: 62px; top: 160px; font: 700 50px/1 var(--re-font-song); color: var(--re-text); display: flex; align-items: flex-end; }
+.rD .t b { font-size: 76px; line-height: .9; font-weight: 700; margin-right: 2px; }
+.rD .q { left: 66px; top: 262px; font: 400 20px/1 var(--re-font-fangsong); color: var(--re-text-2); }
+.rD .ln { left: 66px; top: 300px; width: 330px; }
+/* E */
+.rE { background: #0D1420; }
+.rE .polar { left: 46px; top: -134px; width: 480px; height: 480px; opacity: .5; }
+.rE .pair { left: 286px; top: 132px; transform: translateX(-50%); text-align: center; }
+.rE .zh { font: 700 52px/1 var(--re-font-song); color: var(--re-text); white-space: nowrap; }
+.rE .en { margin-top: 8px; font: 400 40px/1 var(--re-font-didone); color: var(--re-ivory); white-space: nowrap; }
+.rE .pair .s { position: absolute; top: 46px; width: 22px; height: 26px; }
+.rE .mark { left: 0; right: 0; top: 70px; text-align: center; font: 300 10px/1 var(--re-font-micro); letter-spacing: .6em; color: var(--re-sand); }
+.rE .q { left: 0; right: 0; top: 296px; text-align: center; font: 300 11px/1.8 var(--re-font-micro); letter-spacing: .3em; color: rgba(233,220,205,.4); }
+/* F */
+.rF { background: #0C0D0C; }
+.rF .giant { left: -36px; top: -30px; font: 400 360px/1 "Anton", "Bebas Neue", sans-serif; letter-spacing: -.01em; color: #2C1914; white-space: nowrap; }
+.rF .cn { left: 0; right: 0; top: 160px; text-align: center; font: 700 52px/1 var(--re-font-song-print); letter-spacing: .55em; padding-left: .55em; color: #E3DED6; }
+.rF .foot { left: 30px; bottom: 22px; font: 300 9px/1.6 var(--re-font-micro); letter-spacing: .3em; color: rgba(233,220,205,.32); }
+
+/* ===================== 05 装饰 ===================== */
+.p5 { background: var(--re-char); }
+.og { left: 75px; top: 132px; width: 1770px; display: grid; grid-template-columns: repeat(6, 1fr); row-gap: 12px; column-gap: 14px; }
+.oc { height: 164px; display: flex; flex-direction: column; }
+.oc .v { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+.oc .v img { max-width: 230px; max-height: 108px !important; }
+.oc .cap { border-top: 1px solid rgba(233,220,205,.09); padding-top: 9px; }
+
+/* ===================== 06 材质 ===================== */
+.p6 { background: var(--re-char); }
+.tg { left: 75px; top: 140px; width: 1770px; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 18px; row-gap: 14px; }
+.tile { height: 236px; position: relative; overflow: hidden; isolation: isolate; }
+.tile canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ===================== 07 部件 ===================== */
+.p7 { background: var(--re-char); }
+.col { position: absolute; top: 138px; }
+.blk { margin-bottom: 30px; }
+.blk-h { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+.blk-h .cn { font: 600 18px/1 var(--re-font-song); color: var(--re-camel); }
+.blk-h .en { font: 300 10px/1 var(--re-font-micro); letter-spacing: .32em; color: var(--re-sand); }
+.blk-h i { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(233,220,205,.18) 0 84%, transparent 84% 87%, rgba(233,220,205,.18) 87% 93%, transparent 93%); align-self: center; }
+.tabs { display: flex; gap: 26px; align-items: flex-end; }
+.tab { position: relative; font: 600 20px/1 var(--re-font-song); color: #707070; padding-bottom: 10px; }
+.tab small { display: block; margin-top: 5px; font: 300 9px/1 var(--re-font-micro); letter-spacing: .3em; }
+.tab.on { color: var(--re-ember); }
+.tab.on::before { content: ""; position: absolute; left: -6px; top: -6px; width: 40px; height: 34px; z-index: -1;
+  background: radial-gradient(circle, rgba(222,107,52,.35) 1.2px, transparent 1.7px) 0 0/6px 6px; }
+.tab.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, #DE6B34, #FF8A4E); }
+.tsep { width: 1px; height: 22px; background: rgba(233,220,205,.18); margin-bottom: 14px; }
+.dnav .it { display: flex; align-items: center; gap: 14px; height: 46px; font: 400 21px/1 var(--re-font-song); color: var(--re-text-2); }
+.dnav .it i { width: 10px; height: 10px; background: #888179; transform: rotate(45deg); margin: 0 6px; }
+.dnav .it.on { color: var(--re-ember); font-weight: 600; }
+.dnav .it.on i { width: 10px; height: 10px; background: var(--re-ember); box-shadow: 0 0 0 5px var(--re-char), 0 0 0 6.2px var(--re-ember); transform: rotate(54deg); }
+.dnav .it small { font: 300 10px/1 var(--re-font-micro); letter-spacing: .28em; color: var(--re-sand); margin-left: 4px; }
+.tags { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.ell { display: inline-block; padding: 7px 18px; border: 1px solid rgba(233,220,205,.55); border-radius: 50%; font: italic 400 17px/1 var(--re-font-italic); color: var(--re-text); }
+.newsq { width: 14px; height: 14px; background: var(--re-alert); display: inline-block; }
+.newtag { display: inline-block; padding: 4px 9px 5px; background: #D64236; font: italic 400 16px/1 var(--re-font-italic); color: #FFF4EC; }
+.lst .row { display: grid; grid-template-columns: 46px 1fr auto 22px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid rgba(233,220,205,.10); }
+.lst .no { font: italic 400 18px/1 var(--re-font-italic); color: var(--re-text-3); }
+.lst .tt { font: 400 21px/1 var(--re-font-song); color: var(--re-text); }
+.lst .vv { font: 400 21px/1 var(--re-font-didone); color: var(--re-text-2); }
+.lst .ar { font: 400 16px/1 var(--re-font-didone); color: var(--re-text-3); text-align: right; }
+.load { position: relative; height: 18px; }
+.load .done { position: absolute; left: 0; top: 7px; width: 58%; height: 4px; background: linear-gradient(90deg, rgba(233,220,205,.28), rgba(245,240,232,.96)); }
+.load .head { position: absolute; left: calc(58% + 9px); top: 6px; width: 6px; height: 6px; border-radius: 50%; background: #FFF6EA; box-shadow: 0 0 8px 2px rgba(255,214,170,.6); }
+.load .rest { position: absolute; left: calc(58% + 24px); right: 0; top: 8px; }
+.dots { display: flex; gap: 9px; }
+.dots i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(222,107,52,.8); }
+.dots i.f { background: var(--re-ember); }
+.lv { display: flex; gap: 6px; }
+.lv i { width: 26px; height: 3px; background: rgba(233,220,205,.22); }
+.lv i.f { background: #F1ECE3; }
+.vu { display: flex; gap: 4px; align-items: flex-end; }
+.vu i { width: 9px; height: 18px; background: rgba(150,208,132,.18); }
+.vu i.f { background: #7FB86A; }
+.vu i.f.h { background: #C9A04A; }
+.vu i.f.x { background: #DE6B34; }
+.nums { display: flex; align-items: baseline; gap: 34px; flex-wrap: wrap; }
+.nums .a { font: 400 46px/1 var(--re-font-didone); color: var(--re-text); }
+.nums .a sub { font-size: .55em; vertical-align: baseline; color: var(--re-text-2); }
+.nums .b { font: italic 400 40px/1 var(--re-font-italic); color: var(--re-gold); }
+.nums .c { font: 400 40px/1 var(--re-font-didone); color: var(--re-ivory); }
+.nums .d { font: italic 400 26px/1 var(--re-font-italic); color: var(--re-text-2); }
+.nums .e { font: 400 30px/1 var(--re-font-didone); color: var(--re-text); }
+.nums .e small { font-size: .5em; vertical-align: .9em; margin-right: 6px; color: var(--re-text-2); }
+.dlg { position: relative; width: 520px; padding: 26px 30px; box-sizing: border-box; transform: rotate(-.6deg); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+.dlg .x { position: absolute; right: 22px; top: 18px; width: 22px; height: 22px; }
+.dlg .ti { display: flex; align-items: baseline; gap: 12px; font: 600 24px/1 var(--re-font-song); color: var(--re-ink); }
+.dlg .ti small { font: italic 400 13px/1 var(--re-font-italic); color: var(--re-ink-2); }
+.dlg .tl { margin-top: 12px; height: 1px; background: linear-gradient(90deg, rgba(43,39,35,.35) 0 76%, transparent 76% 79%, rgba(43,39,35,.35) 79% 90%, transparent 90%); }
+.dlg .body { display: grid; grid-template-columns: 150px 1fr; gap: 22px; margin-top: 18px; }
+.slip { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; margin-bottom: 10px; font: 600 17px/1 var(--re-font-song); background: #F6F1E8; color: var(--re-ink); box-shadow: 0 1px 0 rgba(43,39,35,.15); }
+.slip.on { background: var(--re-orange); color: #FFF8F0; }
+.dlg p { margin: 0; font: 400 15px/1.85 var(--re-font-song); color: var(--re-ink); }
+.dlg p em { font-style: normal; color: #A64A26; }
+.toast { display: flex; align-items: center; gap: 14px; width: 360px; padding: 14px 18px; background: #EBDFDA; color: var(--re-ink); font: 400 16px/1.4 var(--re-font-song); box-shadow: 0 8px 20px rgba(0,0,0,.35); }
+.toast i { width: 30px; height: 30px; flex: none; border: 1.5px solid #C0503E; border-radius: 50%; display: grid; place-items: center; font: 700 17px/1 var(--re-font-didone); color: #C0503E; font-style: normal; }
+.toast em { font-style: normal; color: #BE523F; }
+.band { left: 0; right: 0; top: 832px; height: 112px; background: var(--re-paper-rose); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 3;
+  -webkit-mask: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); mask: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); }
+.band p { margin: 0; font: 400 22px/1.4 var(--re-font-song); color: var(--re-ink); }
+.band p em { font-style: normal; color: #A64A26; }
+.band-t { left: 0; right: 0; top: 744px; text-align: center; z-index: 3; }
+.band-t .c { font: 600 26px/1 var(--re-font-song); letter-spacing: .5em; padding-left: .5em; color: var(--re-text); }
+.band-t .e { margin-top: 8px; font: 300 9px/1 var(--re-font-micro); letter-spacing: .5em; color: var(--re-sand); }
+.band-t .e::before { content: "( "; } .band-t .e::after { content: " )"; }
+.band-b { left: 0; right: 0; top: 962px; display: flex; justify-content: center; gap: 34px; z-index: 3; }
+.band-dim { left: 0; right: 0; top: 740px; bottom: 0; background: linear-gradient(180deg, transparent, rgba(8,7,6,.55) 18%); z-index: 2; }
+
+/* ===================== 08 介绍页 ===================== */
+.p8 { background: #0D0B0A; }
+.p8-bg { left: 0; top: 0; width: 1920px; height: 1080px; }
+.p8-cons { left: 856px; top: 338px; width: 420px; height: 420px; opacity: .5; }
+.p8-smudge { left: 40px; top: 210px; width: 860px; height: 420px; }
+.p8-no { left: 120px; top: 222px; display: flex; align-items: center; gap: 12px; font: 400 46px/1 var(--re-font-didone); color: var(--re-text); }
+.p8-no img { width: 20px; height: 24px; }
+.p8-no small { font: 600 18px/1 var(--re-font-song); letter-spacing: .12em; color: var(--re-text-2); margin-left: 10px; }
+.p8-no small b { font: 300 11px/1 var(--re-font-micro); letter-spacing: .36em; color: var(--re-sand); margin-left: 10px; font-weight: 300; }
+.p8-mic { left: 124px; top: 296px; font: 300 11px/1 var(--re-font-micro); letter-spacing: .5em; color: rgba(233,220,205,.5); }
+.p8-the { left: 120px; top: 322px; font: italic 400 46px/1 var(--re-font-italic); color: var(--re-sand); }
+.p8-main { left: 112px; top: 344px; font: 900 124px/1 var(--re-font-didone); letter-spacing: .02em;
+  background: linear-gradient(180deg, var(--re-title-top) 0%, #E9DCCD 50%, #CDB487 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.p8-cn { left: 124px; top: 488px; font: 600 46px/1 var(--re-font-song); letter-spacing: .3em; color: var(--re-text); }
+.p8-desc { left: 124px; top: 580px; width: 660px; font: 400 30px/1.72 var(--re-font-song); color: var(--re-text-2); }
+.p8-pts { left: 124px; top: 724px; }
+.p8-pts .pt { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; font: 400 28px/1 var(--re-font-song); color: var(--re-text); }
+.p8-pts .pt img { width: 16px; height: 19px; }
+.p8-pts .pt span { padding-bottom: 9px; background: linear-gradient(rgba(233,220,205,.3), rgba(233,220,205,.3)) left bottom/100% 1px no-repeat; }
+.p8-pts .pt em { font: 400 22px/1 var(--re-font-didone); font-style: normal; color: var(--re-ember); }
+.p8-tr { right: 44px; top: 50px; font: 300 12px/1 var(--re-font-micro); letter-spacing: .42em; color: var(--re-sand); }
+.p8-tick { left: 1424px; top: 852px; width: 420px; height: 104px; transform: rotate(-1deg); display: flex; box-shadow: 0 14px 30px rgba(0,0,0,.45); }
+.p8-tick .face { position: relative; flex: 1; background: var(--re-paper-cream); padding: 16px 18px 0 30px; box-sizing: border-box; }
+.p8-tick .face::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--re-rust-deep); }
+.p8-tick .face .k { font: 300 10px/1 var(--re-font-micro); letter-spacing: .3em; color: #6E6860; }
+.p8-tick .face .t { margin-top: 10px; font: italic 400 38px/1 var(--re-font-italic); color: #2B2723; }
+.p8-tick .face .r { margin-top: 9px; font: 300 9px/1 var(--re-font-micro); letter-spacing: .3em; color: #8A847B; }
+.p8-tick .stub { position: relative; width: 132px; background: var(--re-orange); color: #FFF8F0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-left: 2px dashed rgba(239,229,210,.9); }
+.p8-tick .stub::before, .p8-tick .stub::after { content: ""; position: absolute; left: -9px; width: 16px; height: 16px; border-radius: 50%; background: #0D0B0A; }
+.p8-tick .stub::before { top: -8px; } .p8-tick .stub::after { bottom: -8px; }
+.p8-tick .stub .z { font: 600 30px/1 var(--re-font-song); letter-spacing: .16em; padding-left: .16em; }
+.p8-tick .stub .e { margin-top: 7px; font: 300 9px/1 var(--re-font-micro); letter-spacing: .34em; opacity: .7; padding-left: .34em; }
+.p8-tick .stub svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.p8-rule { left: 75px; right: 75px; top: 986px; height: 80px; }
+.p8-rule svg { display: block; width: 100%; height: 80px; overflow: visible; }
+
+/* ===================== 10 片头标题卡 ===================== */
+.p10 { background: #0A0D0F; }
+.p10-bg { left: 0; top: 132px; width: 1920px; height: 816px; background: radial-gradient(60% 70% at 50% 46%, #11171A 0%, #0B0F11 55%, #090B0C 100%); }
+.p10-ht { left: 0; top: 700px; width: 360px; height: 248px; --re-ht-color: rgba(233,220,205,.10); --re-ht-step: 8px; --re-ht-dir: 45deg; }
+.p10-flare { left: 915px; top: 262px; width: 90px; height: 90px; }
+.p10-title { left: 0; right: 0; top: 372px; text-align: center; font: 400 150px/1 var(--re-font-display-cn); }
+.p10-title span { filter: url(#re-stem-3); background: linear-gradient(180deg, var(--re-title-top), var(--re-title-bottom)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.p10-ln { left: 894px; top: 551px; width: 132px; height: 1px; background: rgba(233,220,205,.5); }
+.p10-rail { left: 0; right: 0; top: 576px; text-align: center; font: 300 18px/1 var(--re-font-micro); letter-spacing: 1.7em; padding-left: 1.7em; color: rgba(187,168,147,.85); }
+.p10-credits { left: 460px; width: 1000px; top: 664px; text-align: center; font: 300 14px/1.65 var(--re-font-micro); letter-spacing: .14em; color: rgba(233,220,205,.40); }
+.p10-credits b { font-weight: 400; color: rgba(233,220,205,.62); }
+.p10-date { left: 0; right: 0; top: 772px; text-align: center; font: 400 30px/1 var(--re-font-didone); letter-spacing: .3em; padding-left: .3em; color: rgba(233,220,205,.78); }
+.p10-line { left: 0; right: 0; top: 880px; height: 1px; background: linear-gradient(90deg, transparent, rgba(181,88,41,.75) 8%, rgba(181,88,41,.75) 92%, transparent); }
+.p10-lamp { left: 938px; top: 826px; width: 44px; height: 54px; }
+.p10-co { left: 0; right: 0; top: 902px; text-align: center; font: italic 400 19px/1 var(--re-font-italic); color: rgba(187,168,147,.7); }
+
+/* ===================== 11 分寸对照 ===================== */
+.p11 { background: var(--re-char); }
+.cmp { width: 560px; }
+.cmp .tile { width: 560px; height: 315px; position: relative; overflow: hidden; isolation: isolate; }
+.cmp .tile canvas { position: absolute; left: 0; top: 0; width: 560px; height: 315px; }
+.cmp .tag { display: flex; align-items: baseline; gap: 12px; margin-top: 12px; }
+.cmp .tag b { flex: none; font: 600 17px/1 var(--re-font-song); }
+.cmp .tag b.ok { color: var(--re-text); } .cmp .tag b.no { color: #A3958A; }
+.cmp .tag span { font: 400 14px/1.55 var(--re-font-song); color: var(--re-text-3); }
+.col-h { position: absolute; top: 132px; display: flex; align-items: baseline; gap: 12px; }
+.col-h .cn { font: 600 20px/1 var(--re-font-song); color: var(--re-camel); }
+.col-h .en { font: 300 11px/1 var(--re-font-micro); letter-spacing: .3em; color: var(--re-sand); }
+
+/* ===================== 09 换皮 ===================== */
+.p9 { background: var(--re-char); }
+.sk { width: 704px; height: 396px; overflow: hidden; position: relative; box-shadow: 0 0 0 1px rgba(233,220,205,.12); }
+.sk .stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: scale(.366667); transform-origin: 0 0; overflow: hidden; }
+.sk-c { margin-top: 10px; display: flex; align-items: baseline; gap: 14px; }
+.sk-c .cn { font: 600 18px/1 var(--re-font-song); color: var(--re-text); }
+.sk-c .en { font: 300 10px/1 var(--re-font-micro); letter-spacing: .3em; color: var(--re-sand); }
+.sk-c .d { font: 400 14px/1 var(--re-font-song); color: var(--re-text-3); }
+.wire { position: absolute; border: 2px dashed rgba(233,220,205,.38); display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;
+  font: 600 34px/1.3 var(--re-font-song); color: rgba(233,220,205,.72); text-align: center; }
+.wire small { display: block; font: 400 24px/1.3 var(--re-font-type); color: rgba(233,220,205,.45); }
+.wire.mv { border-color: rgba(222,107,52,.85); color: #F0A27A; }
+.mi-no { position: absolute; left: 120px; top: 196px; font: 400 96px/1 var(--mi-num); color: var(--mi-ink); }
+.mi-pts { position: absolute; left: 124px; top: 720px; }
+.mi-pts div { margin-bottom: 22px; font: 400 30px/1 var(--re-font-song); color: var(--mi-ink); display: flex; gap: 14px; align-items: center; }
+.mi-pts div i { width: 14px; height: 14px; background: var(--mi-acc); transform: rotate(45deg); }
+.mi-go { position: absolute; right: 110px; top: 880px; height: 76px; padding: 0 56px; display: flex; align-items: center; background: var(--mi-acc); color: var(--mi-btn-ink, #FFF8F0); font: 600 30px/1 var(--re-font-song); letter-spacing: .18em; }
+.mi-rule { position: absolute; left: 75px; right: 75px; top: 1040px; height: 2px; background: var(--mi-line); }
+.mi-rule::after { content: ""; position: absolute; left: 41%; top: -10px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--mi-acc); }
+</style>
+</head>
+<body>
+<main id="deck">
+
+<!-- =================================================================== 01 封面 -->
+<section class="plate p1" id="p1">
+  <!-- 画面层：墙上的一盏光（圆）、地面、立柱的影子（p1Bg）；立柱与前景帘子（p1Fg），全部点画渐变 -->
+  <canvas class="abs p1-bg" id="p1Bg" width="1920" height="1080"></canvas>
+  <div class="abs p1-word">NOCTURNE</div>
+  <svg class="abs p1-orbit" viewBox="0 0 1920 1080" aria-hidden="true">
+    <g transform="rotate(-11 1250 300)"><path d="M950 300 A300 64 0 0 1 1550 300" fill="none" stroke="rgba(233,220,205,.30)" stroke-width="1.2"/></g>
+  </svg>
+  <canvas class="abs p1-fg" id="p1Fg" width="1920" height="1080"></canvas>
+  <svg class="abs p1-orbit" viewBox="0 0 1920 1080" aria-hidden="true">
+    <g transform="rotate(-11 1250 300)">
+      <path d="M1550 300 A300 64 0 0 1 950 300" fill="none" stroke="rgba(233,220,205,.52)" stroke-width="1.2" pathLength="100" stroke-dasharray="62 3 35"/>
+      <circle cx="1532" cy="322" r="6" fill="#DE6B34"/>
+      <circle cx="1532" cy="322" r="12.5" fill="none" stroke="#DE6B34" stroke-width="1"/>
+    </g>
+  </svg>
+  <img class="abs p1-flare" src="../assets/svg/star4-flare.svg" alt="">
+
+  <i class="re-smudge p1-smudge"></i>
+  <div class="abs p1-cluster lift">
+    <div class="p1-eyebrow">No. 07 ／ A STILL LIFE IN THREE MOVEMENTS</div>
+    <h1 class="p1-cn"><span class="a">静物夜</span><span class="b">曲</span></h1>
+    <div class="p1-voice"><i>a nocturne for</i><span>PLASTER</span></div>
+    <p class="p1-desc">一只石膏球、一根立柱、一盏台灯——<br>三件静物在夜里轮流被照亮。</p>
+  </div>
+
+  <div class="abs p1-credits lift">
+    <div class="k">FEATURING</div>
+    <div class="v">THE SPHERE ｜ THE COLUMN ｜ THE LAMP</div>
+    <div class="v2">LIGHT BY THE NORTH WINDOW · A STUDIO, 1930</div>
+  </div>
+  <div class="abs p1-date lift"><div class="d">11/24<em>✦</em>12/31</div><div class="t">每夜开映</div></div>
+
+  <div class="abs lockup lift"><div class="cn">样张</div><div class="ln"></div><div class="en">SPECIMEN</div></div>
+  <div class="abs p1-tr lift">◆ PLATE 01 / 11</div>
+  <div class="abs p1-rail lift">THE QUIET HOUR — A DESIGN LANGUAGE SPECIMEN</div>
+  <i class="re-vignette" style="--re-vig:.42"></i><i class="re-grain" style="--re-grain:.22"></i>
+</section>
+
+<!-- =================================================================== 02 配色 -->
+<section class="plate p2" id="p2">
+  <i class="re-glow re-glow--ember" style="--re-glow-x:4%;--re-glow-y:100%;--re-glow-a:.22"></i>
+  <header class="ph"><span class="ph-no">02</span><span class="ph-cn">配色</span><i class="ph-bar"></i><span class="ph-en">PALETTE</span><i class="ph-tail re-hair-tail"></i></header>
+  <div class="abs sw-rows" id="swRows"></div>
+  <div class="abs sw-side">
+    <div class="side-h"><span class="cn">面积</span><span class="en">AREA</span></div>
+    <div class="bar" id="areaBar"></div>
+    <div class="bar-l" id="areaLab"></div>
+
+    <div class="side-h" style="margin-top:34px"><span class="cn">分寸</span><span class="en">JUST ENOUGH ／ ONE STEP TOO FAR</span></div>
+    <div class="duo">
+      <div>
+        <div class="mini" style="background:#242423">
+          <i class="re-glow" style="--re-glow-x:12%;--re-glow-y:100%;--re-glow-r:60%;--re-glow-a:.45"></i>
+          <div class="abs" style="left:150px;top:22px;width:86px;height:86px;border-radius:50%;background:#A63A39"></div>
+          <div class="abs" style="left:24px;top:30px;width:96px;height:10px;background:#E9DCCD"></div>
+          <div class="abs" style="left:24px;top:50px;width:64px;height:5px;background:rgba(187,168,147,.7)"></div>
+          <div class="abs" style="left:24px;top:68px;width:110px;height:3px;background:rgba(230,226,221,.4)"></div>
+          <div class="abs" style="left:24px;top:78px;width:96px;height:3px;background:rgba(230,226,221,.4)"></div>
+          <div class="abs" style="left:176px;top:132px;width:68px;height:20px;background:#C25E30"></div>
+          <i class="re-vignette"></i>
+        </div>
+        <div class="mini-c"><b>刚好</b>：底有光晕，强调约 4%，<br>最亮处是象牙。</div>
+      </div>
+      <div>
+        <div class="mini" style="background:#505051">
+          <div class="abs" style="left:150px;top:22px;width:86px;height:86px;border-radius:50%;background:#E0453A;box-shadow:0 0 24px #ff6b4a"></div>
+          <div class="abs" style="left:24px;top:30px;width:96px;height:10px;background:#FFFFFF"></div>
+          <div class="abs" style="left:24px;top:50px;width:64px;height:5px;background:#F0B429"></div>
+          <div class="abs" style="left:0;top:96px;width:265px;height:20px;background:#E86A2C"></div>
+          <div class="abs" style="left:24px;top:132px;width:68px;height:20px;background:#3B7BE0;border-radius:10px"></div>
+          <div class="abs" style="left:176px;top:132px;width:68px;height:20px;background:#F07A2F;border-radius:10px;box-shadow:0 0 10px #F07A2F"></div>
+        </div>
+        <div class="mini-c"><b>再多一步</b>：底被提亮、高光冷白，<br>三个颜色在叫，按钮在发光。</div>
+      </div>
+    </div>
+
+    <div class="side-h" style="margin-top:34px"><span class="cn">六套组合</span><span class="en">READY-MADE SETS</span></div>
+    <div class="sets" id="sets"></div>
+  </div>
+  <footer class="pf"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>II / XI</span></footer>
+  <i class="re-grain"></i>
+</section>
+
+<!-- =================================================================== 03 字体 -->
+<section class="plate p3" id="p3">
+  <header class="ph"><span class="ph-no">03</span><span class="ph-cn">字体</span><i class="ph-bar"></i><span class="ph-en">TYPOGRAPHY</span><i class="ph-tail re-hair-tail"></i></header>
+  <div class="abs ty">
+    <div class="ty-row"><div class="r">标题 · 高反差宋<small>ZCOOL XiaoWei + 竖笔 · OFL</small></div><div class="s" style="font:400 60px/1.05 var(--re-font-display-cn);filter:url(#re-stem-1)">静物夜曲，石膏与灯</div></div>
+    <div class="ty-row"><div class="r">中文主力<small>Source Han Serif CN · OFL</small></div><div class="s" style="font:700 34px/1 var(--re-font-song)">页面标题 七百<span style="font-weight:600;font-size:28px;margin-left:30px">标签 六百</span><span style="font-weight:400;font-size:28px;margin-left:30px">正文 四百</span><span style="font-weight:300;font-size:28px;margin-left:30px">注释 三百</span></div></div>
+    <div class="ty-row"><div class="r">粗宋 · 金属字<small>Source Han Serif CN 900</small></div><div class="s" style="font:900 46px/1 var(--re-font-song);background:linear-gradient(180deg,#F1E7D2,#D7BE86 55%,#9C7A45);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(30,20,10,.8))">神秘新秀 <span style="font-size:24px;font-weight:600;color:#8F8A85;-webkit-text-fill-color:#8F8A85;filter:none">只给金属字与铅字卡</span></div></div>
+    <div class="ty-row"><div class="r">铅字感标题<small>ChillHuoSong_F · OFL</small></div><div class="s" style="font:400 50px/1 var(--re-font-song-print)">全景声音档案</div></div>
+    <div class="ty-row"><div class="r">旧明朝引文<small>LXGW Neo ZhiSong · IPA</small></div><div class="s" style="font:400 31px/1 var(--re-font-ming)">灯熄之前，还来得及把最后一页读完。</div></div>
+    <div class="ty-row"><div class="r">仿宋题记<small>Zhuque Fangsong · OFL</small></div><div class="s" style="font:400 30px/1 var(--re-font-fangsong)">光从北窗进来，正好落在第三个石膏球上。</div></div>
+    <div class="ty-row"><div class="r">西文高反差<small>Playfair Display · OFL</small></div><div class="s" style="font:400 54px/1 var(--re-font-didone)">NOCTURNE <i style="font-style:italic;color:var(--re-sand)">a nocturne for</i></div></div>
+    <div class="ty-row"><div class="r">巨号数字<small>DM Serif Display · OFL</small></div><div class="s" style="font:400 56px/1 var(--re-font-didone-heavy)">1930 <i style="font-style:italic">×14</i> 05/31</div></div>
+    <div class="ty-row"><div class="r">古典大写<small>Cormorant Garamond 600 · .5em</small></div><div class="s" style="font:600 36px/1 var(--re-font-roman);letter-spacing:.5em;color:#B39A6B">SERENITY</div></div>
+    <div class="ty-row"><div class="r">西文正文<small>Source Serif 4 · OFL</small></div><div class="s" style="font:400 25px/1 var(--re-font-book);color:var(--re-text-2)">The quiet hour begins when the last lamp is lit.</div></div>
+    <div class="ty-row"><div class="r">签名<small>Great Vibes · OFL</small></div><div class="s" style="font:400 54px/1.1 var(--re-font-script);color:var(--re-orange)">Nocturne</div></div>
+    <div class="ty-row"><div class="r">系统微型<small>Oswald 300 · .26em</small></div><div class="s" style="font:300 18px/1 var(--re-font-micro);letter-spacing:.3em;color:#D4C4B6">AUTO ▷&nbsp;&nbsp;&nbsp;SKIP ▷|&nbsp;&nbsp;&nbsp;NOTICE&nbsp;&nbsp;&nbsp;CONFIRM</div></div>
+    <div class="ty-row"><div class="r">打字机<small>Courier Prime · OFL</small></div><div class="s" style="font:400 24px/1 var(--re-font-type);color:var(--re-text-2)">No. 0427 · LP1×L2P · ARCHIVE</div></div>
+  </div>
+  <div class="abs ty-side">
+    <div class="side-h"><span class="cn">字号阶梯</span><span class="en">SCALE · 1080P</span></div>
+    <div class="ladder">
+      <div class="l"><span class="k">128</span><span style="font:400 116px/1.05 var(--re-font-display-cn);filter:url(#re-stem-2)">曲</span></div>
+      <div class="l"><span class="k">68</span><span style="font:700 60px/1.1 var(--re-font-song)">页面标题</span></div>
+      <div class="l"><span class="k">44</span><span style="font:600 40px/1.15 var(--re-font-song);color:var(--re-text-2)">人名 小节</span></div>
+      <div class="l"><span class="k">30</span><span style="font:400 28px/1.3 var(--re-font-song);color:var(--re-text-2)">标签、正文、字幕</span></div>
+      <div class="l"><span class="k">22</span><span style="font:400 21px/1.4 var(--re-font-song);color:var(--re-text-3)">说明与次级信息</span></div>
+      <div class="l"><span class="k">14</span><span style="font:300 13px/1.6 var(--re-font-micro);letter-spacing:.3em;color:var(--re-sand)">CREDITS · MICRO · RAIL</span></div>
+    </div>
+    <div class="ratio">
+      <div class="box" style="background:#242423">
+        <div class="btn" style="height:58px;padding:0 34px"><svg class="pr" viewBox="0 0 300 64" preserveAspectRatio="none"><use href="#btnprint"/></svg><span class="z" style="font-size:24px">确认</span><span class="e">CONFIRM</span></div>
+        <div class="lab">按钮：英文 = 0.32 × 中文</div>
+      </div>
+      <div class="box re-paper" style="background-color:#E8E2D8">
+        <div style="font:600 30px/1 var(--re-font-song);color:#2B2723">等级</div>
+        <div style="margin-top:5px;font:italic 400 16px/1 var(--re-font-italic);color:#6E6860">Level</div>
+        <div style="position:absolute;right:16px;top:18px;font:400 34px/1 var(--re-font-didone);color:#2B2723">60<span style="font-size:.55em;color:#6E6860">/60</span></div>
+        <div class="lab" style="color:#6E6860">纸卡：英文 = 0.55 × 中文；分母 0.55</div>
+      </div>
+      <div class="box" style="background:#242423">
+        <div style="display:flex;align-items:baseline"><span style="font:400 64px/1 var(--re-font-didone);color:var(--re-ivory);position:relative;z-index:0">N<i style="position:absolute;left:-6px;top:6px;width:44px;height:44px;border-radius:50%;background:rgba(181,88,41,.5);z-index:-1"></i></span><span style="font:400 30px/1 var(--re-font-didone);letter-spacing:.06em;color:var(--re-ivory)">OCTURN</span><span style="font:400 30px/1 var(--re-font-didone);color:var(--re-ivory);filter:blur(.6px);text-shadow:5px 0 3px rgba(233,220,205,.5),10px 0 5px rgba(233,220,205,.25)">E</span></div>
+        <div class="lab">首字母 2.1 倍，共基线；末字母一道拖影</div>
+      </div>
+      <div class="box" style="background:#242423">
+        <div style="display:flex;align-items:baseline;white-space:nowrap;font:400 42px/1 var(--re-font-display-cn);color:var(--re-text);filter:url(#re-stem-1)"><span style="font:500 42px/1 var(--re-font-didone);margin-right:.1em">LP</span>唱片<b style="font-weight:400;font-size:68px;line-height:.8;margin-bottom:-10px">行</b></div>
+        <div class="lab" style="margin-top:18px">字母用 Playfair、同字号、默认基线；末字 1.6 倍下沉</div>
+      </div>
+    </div>
+  </div>
+  <footer class="pf"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>III / XI</span></footer>
+  <i class="re-grain"></i>
+</section>
+
+<!-- =================================================================== 04 标题排法 -->
+<section class="plate p4" id="p4">
+  <header class="ph"><span class="ph-no">04</span><span class="ph-cn">标题排法</span><i class="ph-bar"></i><span class="ph-en">TITLE RECIPES</span><i class="ph-tail re-hair-tail"></i></header>
+
+  <div class="abs" style="left:75px;top:140px">
+    <div class="rc re-stage rA">
+      <div class="abs wm">L</div>
+      <div class="abs cn"><span>迟来的回</span><b>信</b></div>
+      <div class="abs it">the belated</div>
+      <div class="abs kw">LETTER</div>
+      <img class="abs sw" src="../assets/svg/swash.svg" alt="">
+      <div class="abs ds">一封在抽屉里放了三十年的信，今天寄到。</div>
+      <i class="re-vignette"></i><i class="re-grain"></i>
+    </div>
+    <div class="rc-c"><b>A</b>中文主角 + 英文第二声部：高反差宋，末字放大下沉，斜体短语压在字脚，签名横穿（可选），背后巨大首字母</div>
+  </div>
+
+  <div class="abs" style="left:674px;top:140px">
+    <div class="rc re-stage rB">
+      <i class="abs grid"></i>
+      <i class="re-smudge rB smudge" style="position:absolute"></i>
+      <div class="abs mic">No. 03 — ACIÉRIE CENTRALE — 1952</div>
+      <div class="abs main">FOUNDRY</div>
+      <div class="abs sub">hours</div>
+      <div class="abs cn">铸造厂的钟点</div>
+      <svg class="abs emb" viewBox="0 0 66 66"><circle cx="33" cy="33" r="30" fill="none" stroke="#E7E3D8" stroke-width="1.4"/><circle cx="33" cy="33" r="21" fill="none" stroke="#E7E3D8" stroke-width=".8" stroke-dasharray="3 4"/><path d="M33 12 V54 M12 33 H54" stroke="#C25E30" stroke-width="1.4"/><circle cx="33" cy="33" r="4" fill="#C25E30"/></svg>
+      <i class="re-vignette"></i><i class="re-grain"></i>
+    </div>
+    <div class="rc-c"><b>B</b>题材字当主角 + 中文宋体副：主词 1.0 · 次级 0.37 · 微型 0.11，一枚徽记，一种材质（模板断口），一团暗底</div>
+  </div>
+
+  <div class="abs" style="left:1273px;top:140px">
+    <div class="rc re-stage rC">
+      <i class="abs tri"></i>
+      <img class="abs sun" src="../assets/svg/disc-light.svg" alt="">
+      <i class="re-spot" style="--re-spot-k:.08"></i>
+      <svg class="abs shd" viewBox="0 0 80 230"><path d="M40 8 C 58 8 62 26 52 40 C 70 58 74 96 64 130 C 58 150 60 170 66 188 L 70 230 H10 L14 188 C 20 170 22 150 16 130 C 6 96 10 58 28 40 C 18 26 22 8 40 8 Z" fill="#1A0606"/></svg>
+      <div class="abs word">SERENITY</div>
+      <svg class="abs fig" viewBox="0 0 80 230"><defs><linearGradient id="vz" x1="0" x2="1"><stop offset="0" stop-color="#E9E2D4"/><stop offset=".45" stop-color="#B9B1A2"/><stop offset="1" stop-color="#4A463F"/></linearGradient></defs>
+        <path d="M40 8 C 58 8 62 26 52 40 C 70 58 74 96 64 130 C 58 150 60 170 66 188 L 70 230 H10 L14 188 C 20 170 22 150 16 130 C 6 96 10 58 28 40 C 18 26 22 8 40 8 Z" fill="url(#vz)"/></svg>
+      <div class="abs name">静默</div>
+      <i class="abs ln"></i>
+      <div class="abs stars"><img src="../assets/svg/star4.svg" alt=""><img src="../assets/svg/star4.svg" alt=""><img src="../assets/svg/star4.svg" alt=""><img src="../assets/svg/star4.svg" alt=""></div>
+      <div class="abs q">“请让灯再亮一会儿。”</div>
+      <i class="re-vignette"></i><i class="re-grain"></i>
+    </div>
+    <div class="rc-c"><b>C</b>登场舞台：红日是一盏光（人影落在上面、顶上两道光锥），身后大词被挡住中间，名字、渐隐线、相切的星、台词</div>
+  </div>
+
+  <div class="abs" style="left:75px;top:600px">
+    <div class="rc re-stage rD">
+      <div class="abs pin">⌖ 北岸钟表街 · 第七号铺</div>
+      <div class="abs code">HRLG</div>
+      <div class="abs no">03<img src="../assets/svg/star4.svg" alt=""></div>
+      <div class="abs t"><b>钟</b>表匠的午后</div>
+      <div class="abs q">「请把灯留给下一位读者。」</div>
+      <i class="abs ln re-hair-tail"></i>
+      <i class="re-vignette"></i><i class="re-grain"></i>
+    </div>
+    <div class="rc-c"><b>D</b>首字放大的地名：编号 + 四角星 + 小代码，一句台词，不写描述，无框</div>
+  </div>
+
+  <div class="abs" style="left:674px;top:600px">
+    <div class="rc re-stage rE">
+      <img class="abs polar" src="../assets/svg/polar-chart.svg" alt="">
+      <div class="abs mark">◆ ◆ &nbsp; CHAPTER &nbsp; IV</div>
+      <div class="abs pair" id="eqPair">
+        <div class="zh re-chroma" id="eqZh">全新展厅开放</div>
+        <div class="en re-chroma" id="eqEn">NEW GALLERIES</div>
+        <img class="s" style="left:-44px" src="../assets/svg/star4.svg" alt=""><img class="s" style="right:-44px" src="../assets/svg/star4.svg" alt="">
+      </div>
+      <div class="abs q">YIELDING TO A QUIETER HOUR · WE KEPT THE LIGHTS LOW</div>
+      <i class="re-vignette"></i><i class="re-grain"></i>
+    </div>
+    <div class="rc-c"><b>E</b>中英等宽对齐：两行同宽、行距极紧、两侧四角星、一点色散（只在这种字卡上）</div>
+  </div>
+
+  <div class="abs" style="left:1273px;top:600px">
+    <div class="rc re-stage rF">
+      <div class="abs giant">ARCHIVE</div>
+      <div class="abs cn re-misreg" data-text="全景声音档案" style="--re-misreg-color:rgba(166,58,57,.55)">全景声音档案</div>
+      <div class="abs foot">1930 THE QUIET HOUR · SOUND ARCHIVE<br>© SPECIMEN · NOT FOR SALE</div>
+      <i class="re-vignette"></i><i class="re-grain re-grain--film"></i><i class="re-scratches"></i>
+    </div>
+    <div class="rc-c"><b>F</b>宽字距中文压英文巨字：铅字感粗宋字距 .55em，背后窄体巨字作底纹，套印错位一处</div>
+  </div>
+  <footer class="pf"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>IV / XI</span></footer>
+</section>
+
+<!-- =================================================================== 05 装饰 -->
+<section class="plate p5" id="p5">
+  <header class="ph"><span class="ph-no">05</span><span class="ph-cn">装饰元件</span><i class="ph-bar"></i><span class="ph-en">ORNAMENTS</span><i class="ph-tail re-hair-tail"></i><span class="ph-note">一件作品只用：一个圆 + 一条线 + 一两颗星</span></header>
+  <div class="abs og" id="ornGrid"></div>
+  <footer class="pf"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>V / XI</span></footer>
+  <i class="re-grain"></i>
+</section>
+
+<!-- =================================================================== 06 材质 -->
+<section class="plate p6" id="p6">
+  <header class="ph"><span class="ph-no">06</span><span class="ph-cn">纹理与材质</span><i class="ph-bar"></i><span class="ph-en">MATERIALS</span><i class="ph-tail re-hair-tail"></i><span class="ph-note">远看是平的，凑近才看见</span></header>
+  <div class="abs tg">
+    <div><div class="tile" style="background:radial-gradient(60% 80% at 30% 40%,#3A3732,#1E1D1B 60%,#141514)"><i class="re-grain" style="--re-grain:.45;clip-path:inset(0 0 0 50%)"></i><div style="position:absolute;left:24px;bottom:20px;font:300 11px/1 var(--re-font-micro);letter-spacing:.3em;color:rgba(233,220,205,.6)">WITHOUT</div><div style="position:absolute;left:236px;bottom:20px;font:300 11px/1 var(--re-font-micro);letter-spacing:.3em;color:rgba(233,220,205,.6)">WITH GRAIN</div><i style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(233,220,205,.2)"></i></div><div class="cap" style="margin-top:8px">颗粒<small>soft-light 16%：平整处起伏约 3 级（此处加到 45% 便于看清）</small></div></div>
+    <div><div class="tile"><canvas id="cvPaper"></canvas></div><div class="cap" style="margin-top:8px">纸<small>纤维 ≤12% · 旧渍 · 一角渗桃</small></div></div>
+    <div><div class="tile" style="background:#242423"><canvas id="cvHalf"></canvas></div><div class="cap" style="margin-top:8px">网点<small>只比底亮 10–20% · 由大到小渐隐</small></div></div>
+    <div><div class="tile re-paper re-paper--news" style="display:grid;place-items:center"><div class="re-misreg" data-text="套印 MISREG" style="font:700 54px/1 var(--re-font-song-print);color:#2B2723;--re-misreg-color:rgba(181,88,41,.6);--re-misreg-x:3px;--re-misreg-y:2px">套印 MISREG</div></div><div class="cap" style="margin-top:8px">套印错位<small>第二色错开 1–3px，只一处</small></div></div>
+
+    <div><div class="tile" style="background:#141514"><div class="re-paper re-torn-bottom" style="position:absolute;left:36px;right:36px;top:0;height:170px;transform:rotate(-1.2deg);padding:30px 30px;box-sizing:border-box;font:600 24px/1.5 var(--re-font-song)">撕下来的一页<div style="font:400 14px/1.7 var(--re-font-song);color:#6E6860;margin-top:6px">边缘起伏，露出一条更白的纤维带。</div></div></div><div class="cap" style="margin-top:8px">撕边<small>一条边撕，三条边齐</small></div></div>
+    <div><div class="tile"><canvas id="cvStipple"></canvas></div><div class="cap" style="margin-top:8px">点画渐变<small>两三级色阶，过渡带用颗粒散开 · ReTexture.stipple()</small></div></div>
+    <div><div class="tile" style="background:#0E0C0A;display:grid;place-items:center"><div class="re-halation" style="font:400 92px/1 var(--re-font-didone);color:#FFF3E4">1929</div></div><div class="cap" style="margin-top:8px">柔光晕<small>亮部向外渗暖光 · 滤色 20–30%</small></div></div>
+    <div><div class="tile" style="background:linear-gradient(180deg,#24221F,#141310)"><canvas id="cvDamage"></canvas><div style="position:absolute;left:28px;bottom:26px;font:600 26px/1 var(--re-font-roman);letter-spacing:.4em;color:rgba(233,220,205,.75)">REEL 03</div></div><div class="cap" style="margin-top:8px">划痕与尘点<small>每帧 0–2 根划痕、0–5 粒尘，各活 1–3 帧</small></div></div>
+
+    <div><div class="tile" style="background:linear-gradient(160deg,#1C2026,#0F1115)"><div style="position:absolute;right:40px;top:40px;width:120px;height:160px;background:linear-gradient(180deg,#2E3640,#1A1F26)"></div><i class="re-leak"></i><div style="position:absolute;left:30px;bottom:28px;font:400 14px/1 var(--re-font-song);color:var(--re-text-3)">一段只出现一次</div></div><div class="cap" style="margin-top:8px">漏光<small>一侧橙红光 · screen</small></div></div>
+    <div><div class="tile" style="background:repeating-linear-gradient(115deg,#5A4A3C 0 22px,#2E3B44 22px 40px,#8A6A4E 40px 52px,#1E2A30 52px 80px)"><i class="re-smudge" style="left:40px;top:50px;width:360px;height:150px"></i><div style="position:absolute;left:62px;top:96px;font:900 46px/1 var(--re-font-song);color:#EDE6DA;letter-spacing:.04em">字压在画上</div></div><div class="cap" style="margin-top:8px">暗底污渍<small>几团模糊的近黑 · 代替底板和描边</small></div></div>
+    <div><div class="tile" style="background:#0D1420;display:grid;place-items:center"><div class="re-chroma" style="font:400 64px/1 var(--re-font-didone);color:#EDE8DF;letter-spacing:.14em">ECLIPSE</div></div><div class="cap" style="margin-top:8px">色散<small>红青错开 1–1.5px · 只在闪白和冲击</small></div></div>
+    <div><div class="tile" style="background:#0F1A22"><canvas id="cvCut"></canvas></div><div class="cap" style="margin-top:8px">剪纸层叠<small>每层朝光的反方向投影 4–10px · 越后越暗 · 手剪的边</small></div></div>
+  </div>
+  <footer class="pf"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>VI / XI</span></footer>
+</section>
+
+<!-- =================================================================== 07 部件 -->
+<section class="plate p7" id="p7">
+  <i class="re-glow re-glow--ember" style="--re-glow-x:100%;--re-glow-y:0%;--re-glow-a:.18"></i>
+  <header class="ph"><span class="ph-no">07</span><span class="ph-cn">界面部件</span><i class="ph-bar"></i><span class="ph-en">COMPONENTS</span><i class="ph-tail re-hair-tail"></i></header>
+
+  <div class="col" style="left:75px;width:540px">
+    <div class="blk">
+      <div class="blk-h"><span class="cn">按钮</span><span class="en">BUTTONS</span><i></i></div>
+      <div style="display:flex;gap:22px;align-items:center">
+        <div class="btn"><svg class="pr" viewBox="0 0 300 64" preserveAspectRatio="none"><use href="#btnprint"/></svg><span class="z">开映</span><span class="e">START</span></div>
+        <div class="btn alt"><span class="z">取消</span><span class="e">CANCEL</span></div>
+        <div style="font:600 20px/1 var(--re-font-song);color:var(--re-ember)">去看看 »</div>
+      </div>
+      <div style="display:flex;gap:26px;align-items:center;margin-top:22px">
+        <svg width="104" height="104" viewBox="0 0 104 104"><defs><path id="rg" d="M52 52 m-40 0 a40 40 0 1 1 80 0 a40 40 0 1 1 -80 0"/></defs><circle cx="52" cy="52" r="34" fill="#B55829"/><circle cx="52" cy="52" r="48" fill="none" stroke="rgba(233,220,205,.5)" stroke-width="1"/><text font-family="Oswald" font-weight="300" font-size="9" letter-spacing="3.2" fill="#E9DCCD"><textPath href="#rg">· ENTER · THE · QUIET · HOUR · ENTER ·</textPath></text><text x="52" y="58" text-anchor="middle" font-family="Source Han Serif CN" font-weight="700" font-size="18" fill="#FFF6EC">入座</text></svg>
+        <img src="../assets/svg/ticket.svg" style="width:300px;transform:rotate(-1deg)" alt="">
+      </div>
+    </div>
+    <div class="blk">
+      <div class="blk-h"><span class="cn">页签与导航</span><span class="en">TABS · NAV</span><i></i></div>
+      <div class="tabs"><div class="tab on">全部<small>ALL</small></div><i class="tsep"></i><div class="tab">放映中<small>NOW</small></div><i class="tsep"></i><div class="tab">已归档<small>ARCHIVED</small></div></div>
+      <div class="dnav" style="margin-top:16px">
+        <div class="it on"><i></i>封面<small>COVER</small></div>
+        <div class="it"><i></i>声音<small>VOICE</small></div>
+        <div class="it"><i></i>物件<small>ITEM</small></div>
+      </div>
+    </div>
+    <div class="blk">
+      <div class="blk-h"><span class="cn">标签与提醒</span><span class="en">TAGS</span><i></i></div>
+      <div class="tags">
+        <span class="ell">Style</span>
+        <img src="../assets/svg/timer-pill.svg" style="width:104px" alt="">
+        <span style="display:inline-flex;align-items:center;gap:10px;font:400 18px/1 var(--re-font-song);color:var(--re-text-2)"><i class="newsq"></i>新到</span>
+        <span class="newtag">New</span>
+        <img src="../assets/svg/flag-tag.svg" style="width:30px" alt="">
+      </div>
+    </div>
+  </div>
+
+  <div class="col" style="left:690px;width:560px">
+    <div class="blk">
+      <div class="blk-h"><span class="cn">列表</span><span class="en">LIST</span><i></i></div>
+      <div class="lst">
+        <div class="row"><span class="no">01/</span><span class="tt">北窗下的石膏球</span><span class="vv">×3</span><span class="ar">»</span></div>
+        <div class="row"><span class="no">02/</span><span class="tt">一盏灯的四种影子</span><span class="vv">04</span><span class="ar">»</span></div>
+        <div class="row"><span class="no">03/</span><span class="tt">玻璃与陶土</span><span class="vv">1930</span><span class="ar">»</span></div>
+      </div>
+    </div>
+    <div class="blk">
+      <div class="blk-h"><span class="cn">进度</span><span class="en">PROGRESS</span><i></i></div>
+      <div class="load"><i class="done"></i><i class="head"></i><i class="rest re-dotted"></i></div>
+      <div style="position:relative;height:64px;margin-top:14px">
+        <img src="../assets/svg/ruler.svg" style="position:absolute;left:0;top:0;width:560px;height:30px" alt="">
+        <div style="position:absolute;left:206px;top:-14px;font:400 15px/1 var(--re-font-didone);color:var(--re-text)">06/ <span style="font:600 13px/1 var(--re-font-song)">档案室</span></div>
+        <div style="position:absolute;left:150px;top:-8px;font:400 11px/1 var(--re-font-didone);color:rgba(233,220,205,.45)">05/</div>
+      </div>
+      <div style="display:flex;gap:40px;align-items:center;margin-top:-6px">
+        <div class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="lv"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></div>
+        <div class="vu"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f h"></i><i class="f h"></i><i class="f x"></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="blk">
+      <div class="blk-h"><span class="cn">数字</span><span class="en">FIGURES</span><i></i></div>
+      <div class="nums"><span class="a">60<sub>/60</sub></span><span class="b">×14</span><span class="c">05/31</span><span class="d">EP. 01</span><span class="e"><small>2ND</small>14</span></div>
+    </div>
+  </div>
+
+  <div class="col" style="left:1325px;width:520px">
+    <div class="blk-h"><span class="cn">纸面弹窗</span><span class="en">PAPER DIALOG</span><i></i></div>
+    <div class="dlg re-paper">
+      <svg class="x" viewBox="0 0 22 22"><path d="M2 2 L20 20 M20 2 L2 20" stroke="#B55829" stroke-width="1.2"/></svg>
+      <div class="ti">「静物夜曲」放映说明<small>Screening Notes</small></div>
+      <div class="tl"></div>
+      <div class="body">
+        <div><div class="slip on">放映规则 <span>›</span></div><div class="slip">场次详情</div></div>
+        <p>每晚只放映一场。入场前请把灯调暗，放映进行到第<em>三</em>件静物时，北窗会被打开。迟到的观众请在<em>【门厅】</em>等候下一场。</p>
+      </div>
+    </div>
+    <div style="margin-top:26px" class="toast"><i>!</i><span>第三件静物已<em>点亮</em>，可以入座。</span></div>
+  </div>
+
+  <div class="col" style="left:1325px;top:496px;width:520px">
+    <div class="blk-h"><span class="cn">字幕对白</span><span class="en">DIALOGUE · NO BOX</span><i></i></div>
+    <div style="position:relative;width:404px;height:200px;overflow:hidden;background:radial-gradient(50% 70% at 70% 35%,#5A4434,#2A1E16 55%,#140E0B)">
+      <div style="position:absolute;left:238px;top:26px;width:86px;height:150px;border-radius:43px 43px 8px 8px;background:linear-gradient(90deg,#6E5A4A,#3A2C22)"></div>
+      <div style="position:absolute;left:258px;top:4px;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#8A7462,#3A2C22)"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(180deg,transparent,rgba(23,17,17,.92) 55%)"></div>
+      <div style="position:absolute;left:86px;top:120px;font:400 15px/1 var(--re-font-book);color:#B8AEA9">The Narrator</div>
+      <div style="position:absolute;left:84px;top:142px;width:250px;height:1px;background:linear-gradient(90deg,rgba(233,220,205,.3) 0 5.2%,transparent 5.2% 6.7%,rgba(233,220,205,.3) 6.7% 92.3%,transparent 92.3% 93.8%,rgba(233,220,205,.3) 93.8%)"></div>
+      <div style="position:absolute;left:86px;top:154px;font:400 13px/1.6 var(--re-font-song);color:#E6E2E1">灯一亮，它就只剩明暗两件事可说。</div>
+      <div style="position:absolute;right:16px;bottom:10px;font:400 10px/1 var(--re-font-didone);color:rgba(233,220,205,.6)">▽</div>
+    </div>
+  </div>
+
+  <i class="abs band-dim"></i>
+  <div class="abs band-t"><div style="font:400 16px/1 var(--re-font-didone);color:var(--re-text-3);margin-bottom:6px">^</div><div class="c">提示</div><div class="e">NOTICE</div></div>
+  <div class="abs band re-paper re-paper--rose"><p>本场将在 <em>23:00</em> 开映，入座后不能离开。是否现在<em>入座</em>？</p></div>
+  <div class="abs band-b">
+    <div class="btn alt"><span class="z">取消</span><span class="e">CANCEL</span></div>
+    <div class="btn"><svg class="pr" viewBox="0 0 300 64" preserveAspectRatio="none"><use href="#btnprint"/></svg><span class="z">确认</span><span class="e">CONFIRM</span></div>
+  </div>
+  <footer class="pf" style="z-index:6"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>VII / XI</span></footer>
+  <i class="re-grain"></i>
+</section>
+
+<!-- =================================================================== 08 介绍页 -->
+<section class="plate p8" id="p8">
+  <!-- 一张满版的画：北窗、窗光、石膏球与台座、落在地上的影子；左边那面墙更暗，字住在那里 -->
+  <canvas class="abs p8-bg" id="p8Bg" width="1920" height="1080"></canvas>
+  <img class="abs p8-cons" src="../assets/svg/construction.svg" alt="">
+
+  <i class="re-vignette" style="--re-vig:.45"></i><i class="re-grain" style="--re-grain:.26"></i>
+  <i class="re-smudge p8-smudge" style="z-index:31"></i>
+  <div class="abs p8-no lift">07<img src="../assets/svg/star4.svg" alt=""><small>静物<b>STILL LIFE</b></small></div>
+  <div class="abs p8-mic lift">STUDIO NOCTURNE — NORTH WINDOW — 1930</div>
+  <div class="abs p8-the lift">the</div>
+  <div class="abs p8-main lift">PLASTER</div>
+  <div class="abs p8-cn lift">石膏的钟点</div>
+  <div class="abs p8-desc lift">一间朝北的画室里，三件白色石膏<br>被一扇窗轮流照亮，只靠明暗说话。</div>
+  <div class="abs p8-pts lift">
+    <div class="pt"><img src="../assets/svg/star4.svg" alt=""><span>明暗交界线落在哪里</span><em>≫</em></div>
+    <div class="pt"><img src="../assets/svg/star4.svg" alt=""><span>一扇窗能做出几种影子</span><em>≫</em></div>
+    <div class="pt"><img src="../assets/svg/star4.svg" alt=""><span>石膏、玻璃与陶土的反光</span><em>≫</em></div>
+  </div>
+
+  <div class="abs lockup"><div class="cn">样张</div><div class="ln"></div><div class="en">SPECIMEN</div></div>
+  <div class="abs p8-tr lift">◆◆ STILL LIFE</div>
+  <div class="abs p8-tick lift">
+    <div class="face"><div class="k">ADMIT ONE · STUDIO NOCTURNE</div><div class="t">the Plaster</div><div class="r">RETAIN THIS STUB</div></div>
+    <div class="stub"><svg viewBox="0 0 132 104" preserveAspectRatio="none"><path d="M98 10 H108 L103 17 Z M111 10 H121 L116 17 Z" fill="none" stroke="#fff" stroke-width=".9" opacity=".75"/><g fill="#fff" opacity=".4"><circle cx="104" cy="86" r="1.4"/><circle cx="110" cy="86" r="1.4"/><circle cx="116" cy="86" r="1.4"/><circle cx="104" cy="92" r="1.4"/><circle cx="110" cy="92" r="1.4"/><circle cx="116" cy="92" r="1.4"/></g></svg><span class="z">开灯</span><span class="e">LIGHTS ON</span></div>
+  </div>
+
+  <div class="abs p8-rule lift" id="p8Rule"></div>
+</section>
+
+<!-- =================================================================== 10 片头标题卡 -->
+<section class="plate p10 re-letterbox" id="p10">
+  <i class="abs p10-bg"></i>
+  <i class="re-halftone p10-ht"></i>
+  <img class="abs p10-flare" src="../assets/svg/star4-flare.svg" alt="">
+  <div class="abs p10-title lift"><span>静物夜曲</span></div>
+  <i class="abs p10-ln lift"></i>
+  <div class="abs p10-rail lift">THE QUIET HOUR</div>
+  <div class="abs p10-credits lift"><b>IN ORDER OF APPEARANCE</b> ｜ THE SPHERE ｜ THE COLUMN ｜ THE LAMP ｜ THE GLASS JAR ｜ THE CLAY POT<br>THE NORTH WINDOW ｜ THE EASEL ｜ THE CHARCOAL ｜ THE DRAPERY ｜ THE PLINTH ｜ THE STUDENT<br>LIGHTING BY THE MOON ｜ <b>A STUDIO NOCTURNE PICTURE</b></div>
+  <div class="abs p10-date lift">MCMXXX</div>
+  <i class="abs p10-line"></i>
+  <svg class="abs p10-lamp" viewBox="0 0 34 42" aria-hidden="true"><path d="M6 41 H28 V39 H18 V20 L26 10 L22 4 L9 13 L13 17 L16 15 V39 H6 Z M20 2 A5 3.4 -35 1 1 29 10 Z" fill="#B55829"/></svg>
+  <div class="abs p10-co lift">a design language specimen</div>
+  <i class="re-grain re-grain--film" style="--re-grain:.26"></i>
+</section>
+
+<!-- =================================================================== 11 分寸对照 -->
+<section class="plate p11" id="p11">
+  <header class="ph"><span class="ph-no">11</span><span class="ph-cn">分寸对照</span><i class="ph-bar"></i><span class="ph-en">JUST ENOUGH ／ ONE STEP TOO FAR</span><i class="ph-tail re-hair-tail"></i><span class="ph-note">上一排刚好，下一排再多一步</span></header>
+  <div class="col-h" style="left:75px"><span class="cn">暗处放什么</span><span class="en">THE DARK</span></div>
+  <div class="col-h" style="left:680px"><span class="cn">一件做出来的物件</span><span class="en">THE OBJECT</span></div>
+  <div class="col-h" style="left:1285px"><span class="cn">标题的重量</span><span class="en">THE TITLE</span></div>
+
+  <div class="abs cmp" style="left:75px;top:170px">
+    <div class="tile"><canvas id="cmpA1" width="560" height="315"></canvas>
+      <div class="abs" style="left:34px;top:92px;font:400 40px/1 var(--re-font-display-cn);color:#EDE5D8;filter:url(#re-stem-1)">石膏的钟点</div>
+      <div class="abs" style="left:36px;top:150px;width:220px;font:400 13px/1.7 var(--re-font-song);color:#BDB3AA">一间朝北的画室里，三件白色石膏被一扇窗轮流照亮。</div>
+      <i class="re-grain" style="--re-grain:.24"></i></div>
+    <div class="tag"><b class="ok">刚好</b><span>一个有光的地方：墙、窗、地上的影子，字写在更暗的那面墙上</span></div>
+  </div>
+  <div class="abs cmp" style="left:75px;top:590px">
+    <div class="tile" style="background:linear-gradient(160deg,#121820,#0B0E12)">
+      <img class="abs" src="../assets/svg/polar-chart.svg" style="left:250px;top:-90px;width:440px;opacity:.75" alt="">
+      <div class="abs" style="left:240px;top:-120px;width:520px;height:520px;background:repeating-conic-gradient(from 0deg at 50% 50%, rgba(233,220,205,.16) 0 .25deg, transparent .25deg 7.5deg)"></div>
+      <svg class="abs" style="left:0;top:0" width="560" height="315"><g fill="none" stroke="rgba(233,220,205,.45)"><ellipse cx="410" cy="150" rx="150" ry="36" transform="rotate(-12 410 150)"/><ellipse cx="410" cy="150" rx="120" ry="70" transform="rotate(20 410 150)" stroke-dasharray="3 5"/></g><circle cx="410" cy="150" r="46" fill="#C9C2B6"/></svg>
+      <div class="abs" style="left:34px;top:92px;font:400 40px/1 var(--re-font-display-cn);color:#EDE5D8;filter:url(#re-stem-1)">石膏的钟点</div>
+      <div class="abs" style="left:36px;top:150px;width:220px;font:400 13px/1.7 var(--re-font-song);color:#BDB3AA">一间朝北的画室里，三件白色石膏被一扇窗轮流照亮。</div></div>
+    <div class="tag"><b class="no">走样</b><span>平的深色渐变上浮着一件没有影子的物件，四周用星图、光芒线和轨道把暗处填满</span></div>
+  </div>
+
+  <div class="abs cmp" style="left:680px;top:170px">
+    <div class="tile"><canvas id="cmpB1" width="560" height="315"></canvas></div>
+    <div class="tag"><b class="ok">刚好</b><span>圆是一盏光：羽化、下沿被吃掉、物件的影子落在上面；物件用点画明暗，背光一侧沾一点红</span></div>
+  </div>
+  <div class="abs cmp" style="left:680px;top:590px">
+    <div class="tile" style="background:#14171A">
+      <div class="abs" style="left:170px;top:40px;width:220px;height:220px;border-radius:50%;background:#E2503C;box-shadow:0 0 40px 8px rgba(255,110,70,.55)"></div>
+      <div class="abs" style="left:236px;top:96px;width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFFFFF 0 8%,#F2EEE8 14%,#BFB8AE 60%,#77716A 100%);border:2px solid #FFFFFF;box-shadow:0 10px 18px rgba(0,0,0,.6)"></div>
+      <div class="abs" style="left:252px;top:186px;width:56px;height:90px;background:linear-gradient(90deg,#F4F0EA,#B6AFA4);border:2px solid #FFFFFF"></div></div>
+    <div class="tag"><b class="no">走样</b><span>边缘锐利、鲜亮发光的圆片；物件是平滑渐变加描边和玻璃高光，像一个应用图标</span></div>
+  </div>
+
+  <div class="abs cmp" style="left:1285px;top:170px">
+    <div class="tile" style="background:radial-gradient(80% 90% at 30% 70%,#18233A,#0D1420 70%)">
+      <div class="abs" style="left:250px;top:-60px;font:700 380px/1 var(--re-font-didone);color:rgba(181,88,41,.10)">L</div>
+      <div class="abs" style="left:52px;top:84px;display:flex;align-items:flex-end;font:400 74px/1 var(--re-font-display-cn)"><span style="filter:url(#re-stem-1-5);background:linear-gradient(180deg,#F2ECE2,#E2D3B8);-webkit-background-clip:text;background-clip:text;color:transparent">迟来的回</span><span style="font-size:122px;line-height:.86;margin-bottom:-18px;filter:url(#re-stem-2);background:linear-gradient(180deg,#F2ECE2,#E2D3B8);-webkit-background-clip:text;background-clip:text;color:transparent">信</span></div>
+      <div class="abs" style="left:40px;top:170px;font:italic 400 35px/1 var(--re-font-italic);color:rgba(233,220,205,.42)">the belated</div>
+      <div class="abs" style="left:300px;top:210px;font:400 44px/1 var(--re-font-didone);letter-spacing:.06em;color:var(--re-sand)">LETTER</div>
+      <i class="re-grain"></i></div>
+    <div class="tag"><b class="ok">刚好</b><span>细横粗竖的高反差宋，暖白；末字放大下沉；斜体短语半透明压在字脚，大写词小一半</span></div>
+  </div>
+  <div class="abs cmp" style="left:1285px;top:590px">
+    <div class="tile" style="background:radial-gradient(80% 90% at 30% 70%,#18233A,#0D1420 70%)">
+      <div class="abs" style="left:46px;top:100px;font:900 64px/1 var(--re-font-song);background:linear-gradient(180deg,#FFF6C8,#F2B640 50%,#B8741C);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #5A3108) drop-shadow(0 0 14px rgba(255,190,80,.6))">迟来的回信</div>
+      <div class="abs" style="left:48px;top:186px;font:700 40px/1 var(--re-font-didone);color:#F6E7B8;letter-spacing:.02em">THE BELATED LETTER</div></div>
+    <div class="tag"><b class="no">走样</b><span>最粗的宋体刷金渐变、加投影和外发光；英文和中文一样大并排</span></div>
+  </div>
+  <footer class="pf"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>XI / XI</span></footer>
+</section>
+
+<!-- =================================================================== 09 换皮 -->
+<section class="plate p9" id="p9">
+  <header class="ph"><span class="ph-no">09</span><span class="ph-cn">换皮</span><i class="ph-bar"></i><span class="ph-en">RESKIN</span><i class="ph-tail re-hair-tail"></i><span class="ph-note">骨架锁死，只换字、色、材质、母题与意象</span></header>
+  <div class="abs" style="left:212px;top:130px"><div class="sk" id="skWire"></div><div class="sk-c"><span class="cn">骨架</span><span class="en">SKELETON</span><span class="d">只有标题簇（橙色虚线）会跟着意象走动</span></div></div>
+  <div class="abs" style="left:1004px;top:130px"><div class="sk" id="skA"></div><div class="sk-c"><span class="cn">蓝图 · 1950 工业</span><span class="en">BLUEPRINT</span><span class="d">藏青黑 · 模板字 · 尺寸标注</span></div></div>
+  <div class="abs" style="left:212px;top:584px"><div class="sk" id="skB"></div><div class="sk-c"><span class="cn">温室 · 19 世纪末图鉴</span><span class="en">HERBARIUM</span><span class="d">亮底 · Didone 与斜体 · 陶土</span></div></div>
+  <div class="abs" style="left:1004px;top:584px"><div class="sk" id="skC"></div><div class="sk-c"><span class="cn">街机 · 1980 像素</span><span class="en">ARCADE</span><span class="d">深夜 · 像素字 · 扫描线</span></div></div>
+  <footer class="pf"><span>RE1999 DESIGN LANGUAGE — SPECIMEN</span><span>IX / XI</span></footer>
+  <i class="re-grain"></i>
+</section>
+
+</main>
+
+<!-- 主按钮的印刷记号（迷宫细线 + 点阵 + 两个小倒三角），由 assets/svg/button-print.svg 内联 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="btnprint" viewBox="0 0 300 64">
+    <path d="M8 52 V36 H22 V22 H40 V44 H56 V12 H74 V30 H90 V52 M30 52 V44 M110 12 V26 H96" fill="none" stroke="#fff" stroke-width="1" opacity=".1"/>
+    <g fill="#fff" opacity=".4"><circle cx="262" cy="44" r="1.5"/><circle cx="262" cy="51" r="1.5"/><circle cx="269" cy="44" r="1.5"/><circle cx="269" cy="51" r="1.5"/><circle cx="276" cy="44" r="1.5"/><circle cx="276" cy="51" r="1.5"/></g>
+    <path d="M268 8 H278 L273 15 Z M281 8 H291 L286 15 Z" fill="none" stroke="#fff" stroke-width=".9" opacity=".75"/>
+  </symbol>
+</svg>
+
+<script src="../assets/textures/texture-kit.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  window.ReTexture.injectFilters();   /* 竖笔加粗 re-stem-*、粗糙边 re-rough */
+
+  /* ---------- 02 配色 ---------- */
+  var rows = [
+    ['地', 'GROUND', [['void', '#0C0D0C'], ['night', '#141514'], ['char', '#242423'], ['char-2', '#2E2C29'], ['night-ink', '#0D1420'], ['night-moss', '#0E1712'], ['night-teal', '#111819'], ['night-umber', '#1A130E'], ['night-wine', '#180D0F']]],
+    ['纸', 'PAPER', [['paper', '#E8E2D8'], ['cream', '#EFE5D2'], ['rose', '#F2E9E4'], ['news', '#EAE8E1'], ['aged', '#D7CDB9'], ['kraft', '#BFA27A'], ['peach', '#E3A78F'], ['glow', '#654838'], ['glow-core', '#8A664E']]],
+    ['字', 'TEXT', [['text', '#E6E2DD'], ['text-2', '#BDB3AA'], ['text-3', '#8F8A85'], ['ivory', '#E9DCCD'], ['sand', '#BBA893'], ['camel', '#C9A07B'], ['ink', '#2B2723'], ['ink-2', '#6E6860'], ['star', '#F0EADF']]],
+    ['强调', 'ACCENT', [['rust', '#B55829'], ['orange', '#C25E30'], ['orange-web', '#AE5228'], ['ember', '#DE6B34'], ['flare', '#F08447'], ['rust-deep', '#8E492A'], ['sun', '#A63A39'], ['wine', '#842A29'], ['alert', '#CB4438']]],
+    ['金 · 冷 · 语义', 'GOLD · COOL', [['bronze', '#90744E'], ['brass', '#A67243'], ['gold', '#C9AA68'], ['gold-pale', '#E4D2A0'], ['petrol', '#2F4552'], ['teal', '#4B8487'], ['verdigris', '#3E7C74'], ['timer', '#96D084'], ['timer-line', '#5A823E']]]
+  ];
+  var cats = ['#2E486B', '#6B4A2E', '#6B2E33', '#2E6B42', '#662E6B', '#7F7339', '#2E6B6B', '#6B362E', '#567F39', '#382E6B', '#6B2E57', '#2E6B5C'];
+  var html = '';
+  rows.forEach(function (r) {
+    html += '<div class="sw-row"><div class="sw-lab"><div class="cn">' + r[0] + '</div><div class="en">' + r[1] + '</div></div><div class="sw-list">';
+    r[2].forEach(function (s) { html += '<div class="sw"><div class="c" style="background:' + s[1] + '"></div><div class="n">' + s[0] + '</div><div class="h">' + s[1] + '</div></div>'; });
+    html += '</div></div>';
+  });
+  html += '<div class="sw-row"><div class="sw-lab"><div class="cn">分类</div><div class="en">CATEGORY</div></div><div class="sw-list" style="gap:30px">';
+  cats.forEach(function (c) { html += '<div><div class="flag" style="background:' + c + '"><img src="../assets/svg/star4.svg" alt=""></div><div class="h" style="margin-top:8px;font:400 10px/1 var(--re-font-type);color:var(--re-text-3)">' + c + '</div></div>'; });
+  html += '</div></div>';
+  $('swRows').innerHTML = html;
+
+  var area = [['地', 68, '#242423'], ['中性', 16, '#5E5C56'], ['纸 · 主色相', 10, '#E8E2D8'], ['强调', 4, '#C25E30'], ['高光', 2, '#F0EADF']];
+  $('areaBar').innerHTML = area.map(function (a) { return '<i style="width:' + a[1] + '%;background:' + a[2] + '"></i>'; }).join('');
+  $('areaLab').innerHTML = area.map(function (a) { return '<span style="width:' + a[1] + '%;white-space:nowrap">' + (a[1] >= 10 ? a[0] + ' ' + a[1] + '%' : '') + '</span>'; }).join('') ;
+  $('areaLab').insertAdjacentHTML('afterend', '<div style="margin-top:6px;font:400 12px/1.4 var(--re-font-type);color:var(--re-text-3)">强调 ≤5% · 高光（近白）≤2%</div>');
+
+  var sets = [
+    ['A 炭灰 + 锈橙', '界面母版', [[66, '#242423'], [10, '#654838'], [10, '#8C8A84'], [10, '#E8E2D8'], [4, '#C25E30']]],
+    ['B 墨青夜 + 红日 + 铜金', '登场舞台', [[56, '#0C0E0B'], [16, '#111819'], [18, '#A63A39'], [6, '#90744E'], [4, '#F0EADF']]],
+    ['C 纸 + 墨 + 锈', '阅读与档案', [[70, '#E8E2D8'], [10, '#E3A78F'], [12, '#2B2723'], [5, '#6E6860'], [3, '#A64A26']]],
+    ['D 藏青雨夜 + 一点暖灯', '叙事画面', [[58, '#0D1420'], [18, '#293437'], [14, '#789BB4'], [6, '#DDDACE'], [4, '#B55829']]],
+    ['E 黑白灰 + 一种暗红', '平面图形片', [[50, '#151714'], [20, '#777674'], [22, '#DFE1DE'], [8, '#9E1B32']]],
+    ['F 墨青星空 + 灰月 + 金线', '天体题材', [[62, '#0B1117'], [14, '#2E5F66'], [12, '#5C5E5A'], [6, '#C9AA68'], [4, '#F0EADF'], [2, '#DE6B34']]]
+  ];
+  $('sets').innerHTML = sets.map(function (s) {
+    return '<div class="set"><div class="lab"><b>' + s[0] + '</b><span>' + s[1] + '</span></div><div class="bar" style="height:22px">' +
+      s[2].map(function (p) { return '<i style="width:' + p[0] + '%;background:' + p[1] + '"></i>'; }).join('') + '</div></div>';
+  }).join('');
+
+  /* ---------- 05 装饰 ---------- */
+  var orn = [
+    ['star4', '四角星', 'star4.svg', 'max-height:70px'], ['star4-flare', '长芒星', 'star4-flare.svg', 'max-height:128px'],
+    ['orbit', '倾斜轨道 + 小行星', 'orbit.svg', ''], ['disc-light', '大圆 · 一盏光', 'disc-light.svg', 'max-height:140px'],
+    ['disc-halftone', '小圆 · 网点渐隐', 'disc-halftone.svg', 'max-height:140px'], ['construction', '结构线', 'construction.svg', 'max-height:140px'],
+    ['hairline-broken', '三截发丝线', 'hairline-broken.svg', 'width:230px;height:4px'], ['double-slash', '双斜线', 'double-slash.svg', 'max-height:90px'],
+    ['arch-frame', '拱窗', 'arch-frame.svg', 'max-height:140px'], ['ticket', '票根', 'ticket.svg', 'max-width:220px'],
+    ['seal', '印章 · 环形字', 'seal.svg', 'max-height:140px'], ['postmark', '邮戳', 'postmark.svg', 'max-width:170px', '#E8E2D8'],
+    ['flag-tag', '分类竖旗', 'flag-tag.svg', 'max-height:90px'], ['triangle-frame', '线框三角 + 星', 'triangle-frame.svg', 'max-height:130px'],
+    ['triangles-scatter', '散落的小三角', 'triangles-scatter.svg', 'max-height:130px'], ['ruler', '刻度尺 · 定位环', 'ruler.svg', 'width:230px'],
+    ['polar-chart', '极坐标星图', 'polar-chart.svg', 'max-height:128px'], ['diamond-nav', '菱形导航（未选 / 选中）', 'diamond-nav.svg', 'max-height:44px'],
+    ['corners', '取景框四角', 'corners.svg', 'max-height:120px'], ['timer-pill', '限时椭圆', 'timer-pill.svg', 'max-height:44px'],
+    ['film-strip', '胶片格', 'film-strip.svg', 'max-height:128px'], ['paperclip', '回形针', 'paperclip.svg', 'max-height:110px'],
+    ['swash', '签名花笔', 'swash.svg', 'max-width:220px'], ['button-print', '按钮印刷记号', 'button-print.svg', 'width:220px;height:47px', '#C25E30'],
+    ['torn-edge', '撕边', 'torn-edge.svg', 'width:230px;height:22px'], ['noise', '颗粒瓦片', '../textures/noise.svg', 'max-height:110px;opacity:.6']
+  ];
+  $('ornGrid').innerHTML = orn.map(function (o) {
+    var bg = o[4] ? 'background:' + o[4] + ';padding:10px 14px;' : '';
+    return '<div class="oc"><div class="v"><div style="' + bg + '"><img src="../assets/svg/' + o[2] + '" style="' + o[3] + '" alt=""></div></div>' +
+      '<div class="cap">' + o[1] + '<small>' + o[2].replace('../textures/', 'textures/') + '</small></div></div>';
+  }).join('');
+
+  /* ---------- 06 材质（Canvas） ---------- */
+  function fit(cv) { var r = cv.parentNode.getBoundingClientRect(); cv.width = 424; cv.height = 236; return cv.getContext('2d'); }
+  var T = window.ReTexture;
+  var cp = $('cvPaper'); fit(cp); cp.getContext('2d').drawImage(T.paper(424, 236, { seed: 9 }), 0, 0);
+  var ch = $('cvHalf'), hc = fit(ch);
+  T.halftone(hc, 0, 0, 424, 236, { step: 9, maxR: 3.4, color: 'rgba(233,220,205,.20)', falloff: function (fx, fy) { return 1.15 - Math.hypot(fx - 0, fy - 1) * 1.05; } });
+  var cd = $('cvDamage'), dc = fit(cd);
+  for (var f = 0; f < 4; f++) T.filmDamage(dc, 424, 236, f * 3 + 1, { seed: 4, scratchChance: .9, maxDust: 7 });
+  /* 点画渐变：一片夜空往地平线变亮，地平线是一道近黑的屋顶剪影 */
+  var cs = $('cvStipple'), sc = fit(cs);
+  T.stipple(sc, 0, 0, 424, 236, { stops: ['#0B1117', '#131C25', '#1F2E3A', '#2E4250'], angle: 90, spread: .5, seed: 8 });
+  sc.fillStyle = '#080B0D';
+  sc.beginPath(); sc.moveTo(0, 236); sc.lineTo(0, 196); sc.lineTo(46, 196); sc.lineTo(46, 178); sc.lineTo(58, 178); sc.lineTo(58, 190); sc.lineTo(120, 190); sc.lineTo(138, 172); sc.lineTo(156, 190);
+  sc.lineTo(230, 190); sc.lineTo(230, 168); sc.lineTo(238, 168); sc.lineTo(238, 186); sc.lineTo(300, 186); sc.lineTo(300, 200); sc.lineTo(360, 200); sc.lineTo(372, 182); sc.lineTo(384, 200); sc.lineTo(424, 200); sc.lineTo(424, 236); sc.closePath(); sc.fill();
+  sc.fillStyle = '#E9B96A'; sc.fillRect(250, 192, 4, 5);
+  [[60, 40, 1.6], [180, 26, 1.1], [300, 58, 1.3], [360, 30, 1], [112, 92, .9]].forEach(function (s) { sc.fillStyle = 'rgba(240,234,223,.8)'; sc.beginPath(); sc.arc(s[0], s[1], s[2], 0, 7); sc.fill(); });
+  /* 剪纸层叠：四层纸，越后越暗，朝右下投影，边缘手剪 */
+  var cc = $('cvCut'), ct = fit(cc);
+  var layers = [['#1E3442', 70], ['#2B4757', 110], ['#3C5D6C', 150], ['#C9C1B2', 196]];
+  layers.forEach(function (L, i) {
+    var yb = L[1], r2 = T.rng(40 + i);
+    ct.save();
+    ct.shadowColor = 'rgba(6,12,16,.55)'; ct.shadowBlur = 10; ct.shadowOffsetX = 5; ct.shadowOffsetY = 6;
+    ct.fillStyle = L[0];
+    ct.beginPath(); ct.moveTo(-10, 240);
+    for (var x = -10; x <= 434; x += 6) { var yy = yb + Math.sin(x / (46 + i * 9) + i * 1.7) * (14 - i * 2) + (r2() - .5) * 1.6; ct.lineTo(x, yy); }
+    ct.lineTo(434, 240); ct.closePath(); ct.fill(); ct.restore();
+  });
+  T.applyGrain(ct, 424, 236, { seed: 3, alpha: .3 });
+
+  /* ---------- 画面：点画上色的物件 ---------- */
+  function stippleIn(ctx, pathFn, x, y, w, h, opt) {
+    var c = T.stipple(null, 0, 0, Math.ceil(w), Math.ceil(h), opt);
+    ctx.save(); ctx.beginPath(); pathFn(ctx); ctx.clip(); ctx.drawImage(c, x, y); ctx.restore();
+  }
+  function rect(x, y, w, h) { return function (c) { c.rect(x, y, w, h); }; }
+  function poly(pts) { return function (c) { c.moveTo(pts[0], pts[1]); for (var i = 2; i < pts.length; i += 2) c.lineTo(pts[i], pts[i + 1]); c.closePath(); }; }
+  function circ(cx, cy, r) { return function (c) { c.arc(cx, cy, r, 0, Math.PI * 2); }; }
+  var STONE = ['#EEE7DA', '#D3CABB', '#A0988B', '#625C53', '#3B3732'];
+  var STONE_R = STONE.slice().reverse();
+  function glowRim(ctx, pathFn, gx, gy, gr, color) {   /* 背光一侧沾一点“日”的红 */
+    ctx.save(); ctx.beginPath(); pathFn(ctx); ctx.clip();
+    var g = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr); g.addColorStop(0, color); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = g; ctx.fillRect(gx - gr, gy - gr, gr * 2, gr * 2); ctx.restore();
+  }
+
+  /* 01 封面：墙上的一盏红光、地面、立柱和它的影子、右缘的帘子 */
+  (function () {
+    var bg = $('p1Bg').getContext('2d'), fg = $('p1Fg').getContext('2d');
+    T.stipple(bg, 0, 0, 1920, 792, { stops: ['#0F1314', '#121819', '#161D1D', '#1A2221'], angle: 90, spread: .55, seed: 3 });
+    T.stipple(bg, 0, 792, 1920, 288, { stops: ['#1C1C18', '#161613', '#11110F'], angle: 90, spread: .6, seed: 5 });
+    var r = T.rng(77), i, g;
+    for (i = 0; i < 16; i++) {
+      var x = r() * 1920, y = r() * 760, rad = 120 + r() * 260, lt = r() < .5;
+      g = bg.createRadialGradient(x, y, 0, x, y, rad);
+      g.addColorStop(0, lt ? 'rgba(190,205,200,0.03)' : 'rgba(0,0,0,0.07)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      bg.fillStyle = g; bg.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+    }
+    g = bg.createLinearGradient(0, 780, 0, 806); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.55, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    bg.fillStyle = g; bg.fillRect(0, 780, 1920, 26);
+    g = bg.createRadialGradient(1250, 430, 220, 1250, 430, 640); g.addColorStop(0, 'rgba(166,58,57,0.10)'); g.addColorStop(1, 'rgba(166,58,57,0)');
+    bg.fillStyle = g; bg.fillRect(0, 0, 1920, 1080);
+    T.lightDisc(bg, 1250, 430, 300, { core: '#A63A39', edge: '#8F3433', feather: .035, sink: .24, grain: .32, seed: 12 });
+    bg.save(); bg.translate(1250, 842); bg.scale(1, .2);
+    g = bg.createRadialGradient(0, 0, 0, 0, 0, 520); g.addColorStop(0, 'rgba(166,58,57,0.16)'); g.addColorStop(1, 'rgba(166,58,57,0)');
+    bg.fillStyle = g; bg.beginPath(); bg.arc(0, 0, 520, 0, 7); bg.fill(); bg.restore();
+    /* 立柱的轮廓（影子和本体共用） */
+    function column(c, dx, dy) {
+      dx = dx || 0; dy = dy || 0;
+      c.moveTo(1250 + 106 + dx, 258 + dy); c.arc(1250 + dx, 258 + dy, 106, 0, Math.PI * 2);
+      c.rect(1112 + dx, 366 + dy, 276, 26);
+      c.moveTo(1118 + dx, 392 + dy); c.quadraticCurveTo(1150 + dx, 414 + dy, 1176 + dx, 418 + dy); c.lineTo(1324 + dx, 418 + dy); c.quadraticCurveTo(1350 + dx, 414 + dy, 1382 + dx, 392 + dy); c.closePath();
+      c.rect(1176 + dx, 418 + dy, 148, 10); c.rect(1182 + dx, 428 + dy, 136, 384);
+      c.rect(1166 + dx, 812 + dy, 168, 16); c.rect(1150 + dx, 828 + dy, 200, 18); c.rect(1135 + dx, 846 + dy, 230, 54);
+    }
+    /* 影子落在墙上的光圈上（光从左上前方来） */
+    bg.save(); bg.beginPath(); bg.rect(0, 0, 1920, 792); bg.clip();
+    bg.filter = 'blur(9px)'; bg.globalCompositeOperation = 'multiply'; bg.fillStyle = 'rgba(28,10,10,.62)';
+    bg.beginPath(); column(bg, 104, 18); bg.fill(); bg.restore();
+    bg.save(); bg.filter = 'blur(14px)'; bg.globalCompositeOperation = 'multiply'; bg.fillStyle = 'rgba(0,0,0,.55)';
+    bg.beginPath(); poly([1140, 900, 1370, 900, 1520, 818, 1300, 812])(bg); bg.fill(); bg.restore();
+    /* 立柱本体：点画明暗，左亮右暗，背光一侧沾红 */
+    stippleIn(fg, circ(1250, 258, 106), 1144, 152, 212, 212, { stops: ['#F2ECE1', '#D8CFC0', '#A69E90', '#6B655B', '#3E3A34'], radial: { x: .32, y: .28, r: .92 }, spread: .3, seed: 31 });
+    glowRim(fg, circ(1250, 258, 106), 1340, 330, 120, 'rgba(166,58,57,.42)');
+    stippleIn(fg, rect(1112, 366, 276, 26), 1112, 366, 276, 26, { stops: STONE, angle: 0, spread: .35, seed: 32 });
+    stippleIn(fg, function (c) { c.moveTo(1118, 392); c.quadraticCurveTo(1150, 414, 1176, 418); c.lineTo(1324, 418); c.quadraticCurveTo(1350, 414, 1382, 392); c.closePath(); }, 1112, 392, 276, 28, { stops: STONE.slice(1), angle: 0, spread: .35, seed: 33 });
+    stippleIn(fg, rect(1176, 418, 148, 10), 1176, 418, 148, 10, { stops: STONE.slice(1), angle: 0, spread: .3, seed: 34 });
+    stippleIn(fg, rect(1182, 428, 136, 384), 1182, 428, 136, 384, { stops: STONE, angle: 0, spread: .42, seed: 35 });
+    for (i = 0; i < 7; i++) { fg.fillStyle = i % 2 ? 'rgba(255,250,240,.14)' : 'rgba(30,26,22,.26)'; fg.fillRect(1194 + i * 18, 430, 1.6, 380); }
+    g = fg.createLinearGradient(0, 428, 0, 478); g.addColorStop(0, 'rgba(20,16,14,.45)'); g.addColorStop(1, 'rgba(20,16,14,0)');
+    fg.fillStyle = g; fg.fillRect(1182, 428, 136, 50);
+    glowRim(fg, rect(1182, 428, 136, 384), 1330, 600, 70, 'rgba(166,58,57,.30)');
+    [[1166, 812, 168, 16, 36], [1150, 828, 200, 18, 37], [1135, 846, 230, 54, 38]].forEach(function (b) {
+      stippleIn(fg, rect(b[0], b[1], b[2], b[3]), b[0], b[1], b[2], b[3], { stops: STONE.slice(1), angle: 0, spread: .35, seed: b[4] });
+      fg.fillStyle = 'rgba(255,250,240,.10)'; fg.fillRect(b[0], b[1], b[2], 1.5);
+    });
+    g = fg.createLinearGradient(0, 846, 0, 900); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.35)');
+    fg.fillStyle = g; fg.fillRect(1135, 846, 230, 54);
+    /* 前景：右缘一道虚化的暗帘 */
+    fg.save(); fg.filter = 'blur(7px)';
+    g = fg.createLinearGradient(1770, 0, 1920, 0); g.addColorStop(0, 'rgba(13,15,16,0)'); g.addColorStop(.35, 'rgba(13,15,16,.93)'); g.addColorStop(1, 'rgba(13,15,16,.97)');
+    fg.fillStyle = g; fg.fillRect(1760, -20, 180, 1120);
+    fg.fillStyle = 'rgba(92,44,40,.16)'; fg.fillRect(1822, -20, 9, 1120); fg.fillRect(1872, -20, 7, 1120);
+    fg.restore();
+  })();
+
+  /* 08 介绍页：北窗、窗光、石膏球与台座、地上的影子 */
+  (function () {
+    var bg = $('p8Bg').getContext('2d'), g, i;
+    T.stipple(bg, 0, 0, 1920, 800, { stops: ['#15120F', '#191612', '#1E1A15', '#25201A', '#2D271F'], angle: 0, spread: .45, seed: 51, ease: function (t) { return t * t; } });
+    g = bg.createLinearGradient(0, 0, 0, 800); g.addColorStop(0, 'rgba(0,0,0,.28)'); g.addColorStop(.5, 'rgba(0,0,0,0)');
+    bg.fillStyle = g; bg.fillRect(0, 0, 1920, 800);
+    var r = T.rng(52);
+    for (i = 0; i < 14; i++) {
+      var x = r() * 1700, y = r() * 760, rad = 100 + r() * 240;
+      g = bg.createRadialGradient(x, y, 0, x, y, rad); g.addColorStop(0, r() < .5 ? 'rgba(200,190,170,0.025)' : 'rgba(0,0,0,0.06)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      bg.fillStyle = g; bg.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+    }
+    T.stipple(bg, 0, 800, 1920, 280, { stops: ['#1C1813', '#17140F', '#12100D'], angle: 90, spread: .6, seed: 53 });
+    bg.strokeStyle = 'rgba(0,0,0,.35)'; bg.lineWidth = 1.2;
+    for (i = 0; i < 5; i++) { bg.beginPath(); bg.moveTo(0, 836 + i * 52 + i * i * 6); bg.lineTo(1920, 826 + i * 46 + i * i * 4); bg.stroke(); }
+    bg.fillStyle = '#0C0A08'; bg.fillRect(0, 792, 1920, 14);
+    /* 窗 */
+    var win = function (c) { c.moveTo(1190, 340); c.arc(1360, 340, 170, Math.PI, 0); c.lineTo(1530, 700); c.lineTo(1190, 700); c.closePath(); };
+    stippleIn(bg, win, 1190, 170, 340, 530, { stops: ['#34465A', '#465C6E', '#5E7383', '#7A8D99'], angle: 90, spread: .45, seed: 54 });
+    bg.save(); bg.beginPath(); win(bg); bg.clip(); bg.fillStyle = '#1A2329';
+    bg.beginPath(); bg.moveTo(1190, 700); bg.lineTo(1190, 620); bg.lineTo(1236, 620); bg.lineTo(1236, 596); bg.lineTo(1250, 596); bg.lineTo(1250, 612); bg.lineTo(1306, 612); bg.lineTo(1330, 586); bg.lineTo(1354, 612);
+    bg.lineTo(1410, 612); bg.lineTo(1410, 578); bg.lineTo(1420, 578); bg.lineTo(1420, 604); bg.lineTo(1478, 604); bg.lineTo(1478, 626); bg.lineTo(1530, 626); bg.lineTo(1530, 700); bg.closePath(); bg.fill();
+    bg.fillStyle = 'rgba(233,185,106,.85)'; bg.fillRect(1436, 640, 5, 6); bg.restore();
+    bg.fillStyle = '#29231C'; bg.fillRect(1176, 300, 16, 404);
+    bg.strokeStyle = '#100D0B'; bg.lineWidth = 16; bg.beginPath(); win(bg); bg.stroke();
+    bg.fillStyle = '#100D0B'; bg.fillRect(1354, 176, 12, 524); bg.fillRect(1190, 440, 340, 7); bg.fillRect(1190, 574, 340, 7);
+    bg.fillStyle = '#2C2620'; bg.fillRect(1166, 700, 388, 18); bg.fillStyle = 'rgba(214,220,224,.16)'; bg.fillRect(1166, 700, 388, 2);
+    /* 窗光：一道斜进来的光柱和地上的一块亮 */
+    bg.save(); bg.filter = 'blur(12px)'; bg.globalCompositeOperation = 'screen';
+    g = bg.createLinearGradient(1500, 330, 900, 1060); g.addColorStop(0, 'rgba(196,208,218,.13)'); g.addColorStop(1, 'rgba(196,208,218,.03)');
+    bg.fillStyle = g; bg.beginPath(); poly([1196, 330, 1526, 330, 1430, 1080, 820, 1080])(bg); bg.fill(); bg.restore();
+    /* 地上那块窗光：点画，裁成窗的形状 */
+    var patch = T.stipple(null, 0, 0, 700, 220, { stops: ['#16130F', '#3A3A36', '#5C5E5C'], radial: { x: .62, y: .45, r: .62 }, spread: .55, seed: 59, ease: function (t) { return 1 - t; } });
+    bg.save(); bg.beginPath(); poly([940, 866, 1500, 866, 1410, 1076, 800, 1076])(bg); bg.clip(); bg.globalCompositeOperation = 'screen'; bg.globalAlpha = .55;
+    bg.filter = 'blur(2px)'; bg.drawImage(patch, 800, 862); bg.restore();
+    /* 影子：往左前方落在地上 */
+    bg.save(); bg.filter = 'blur(10px)'; bg.globalCompositeOperation = 'multiply'; bg.fillStyle = 'rgba(0,0,0,.72)';
+    bg.beginPath(); poly([980, 858, 1152, 858, 930, 1080, 720, 1080])(bg); bg.fill();
+    bg.beginPath(); bg.ellipse(800, 1050, 120, 40, -0.6, 0, 7); bg.fill(); bg.restore();
+    /* 台座：右面和顶面朝窗，正面背光 */
+    stippleIn(bg, poly([980, 640, 1150, 640, 1176, 622, 1006, 622]), 980, 622, 196, 18, { stops: ['#9E978B', '#C3BCB0', '#DCD5C9'], angle: 0, spread: .5, seed: 55 });
+    stippleIn(bg, poly([1150, 640, 1176, 622, 1176, 842, 1150, 860]), 1150, 622, 26, 238, { stops: ['#8C857A', '#B3AC9F', '#CBC4B7'], angle: 90, spread: .5, seed: 56 });
+    stippleIn(bg, rect(980, 640, 170, 220), 980, 640, 170, 220, { stops: ['#2F2B26', '#3E3933', '#57514A', '#6C665D'], angle: 0, spread: .45, seed: 57 });
+    g = bg.createLinearGradient(0, 640, 0, 860); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.3)');
+    bg.fillStyle = g; bg.fillRect(980, 640, 170, 220);
+    /* 石膏球：亮面朝窗，明暗交界线清楚，暗面留一点地面的反光 */
+    bg.save(); bg.filter = 'blur(3px)'; bg.fillStyle = 'rgba(0,0,0,.5)'; bg.beginPath(); bg.ellipse(1060, 626, 66, 7, 0, 0, 7); bg.fill(); bg.restore();
+    stippleIn(bg, circ(1066, 548, 74), 992, 474, 148, 148, { stops: ['#F0EADF', '#D6CDBE', '#A39B8D', '#615B52', '#38342F'], radial: { x: .72, y: .26, r: .98 }, spread: .3, seed: 58 });
+    glowRim(bg, circ(1066, 548, 74), 1010, 616, 60, 'rgba(120,110,96,.30)');
+    /* 前景：右上角一道虚化的垂帘 */
+    bg.save(); bg.filter = 'blur(9px)'; bg.fillStyle = 'rgba(14,12,11,.94)';
+    bg.beginPath(); bg.moveTo(1700, -20); bg.quadraticCurveTo(1790, 160, 1760, 420); bg.lineTo(1940, 470); bg.lineTo(1940, -20); bg.closePath(); bg.fill(); bg.restore();
+    /* 异象：一颗星停在窗台上（室内的星），落在环境里，不在主体上 */
+    bg.save(); bg.translate(1486, 698); bg.fillStyle = 'rgba(0,0,0,.4)'; bg.filter = 'blur(2px)'; bg.beginPath(); bg.ellipse(-6, 1, 14, 3, 0, 0, 7); bg.fill(); bg.restore();
+    bg.save(); bg.translate(1486, 684); bg.fillStyle = '#F0EADF'; bg.shadowColor = 'rgba(255,236,210,.85)'; bg.shadowBlur = 16;
+    bg.beginPath(); bg.moveTo(0, -15); bg.quadraticCurveTo(1.6, -1.6, 13, 0); bg.quadraticCurveTo(1.6, 1.6, 0, 15); bg.quadraticCurveTo(-1.6, 1.6, -13, 0); bg.quadraticCurveTo(-1.6, -1.6, 0, -15); bg.fill(); bg.restore();
+  })();
+
+  /* 11 分寸对照：“刚好”一排直接取 08 与 01 的画面 */
+  (function () {
+    var a = $('cmpA1').getContext('2d'); a.drawImage($('p8Bg'), 0, 0, 560, 315);
+    var b = $('cmpB1').getContext('2d');
+    b.fillStyle = '#0C1011'; b.fillRect(0, 0, 560, 315);
+    b.drawImage($('p1Bg'), 600, 150, 1300, 731, 0, 0, 560, 315);
+    b.drawImage($('p1Fg'), 600, 150, 1300, 731, 0, 0, 560, 315);
+  })();
+
+  /* ---------- 04E 中英等宽 ---------- */
+  function equalize() {
+    var zh = $('eqZh'), en = $('eqEn');
+    if (!zh || !en) return;
+    en.style.letterSpacing = '0px';
+    var w0 = zh.getBoundingClientRect().width / (window.__zoom || 1), w1 = en.getBoundingClientRect().width / (window.__zoom || 1);
+    var n = en.textContent.length;
+    var ls = (w0 - w1) / (n - 1);
+    en.style.letterSpacing = ls.toFixed(2) + 'px';
+    en.style.marginRight = (-ls).toFixed(2) + 'px';
+  }
+
+  /* ---------- 09 换皮 ---------- */
+  function mini(o) {
+    return '<div class="stage" style="background:' + o.ground + ';--mi-ink:' + o.ink + ';--mi-acc:' + o.acc + ';--mi-line:' + o.line + ';--mi-num:' + o.num + (o.btnInk ? ';--mi-btn-ink:' + o.btnInk : '') + '">' +
+      (o.layer || '') + (o.image || '') +
+      '<div class="mi-no">07</div>' +
+      (o.title || '') +
+      '<div style="position:absolute;left:124px;top:600px;width:640px;font:400 28px/1.7 var(--re-font-song);color:' + o.ink2 + '">' + o.desc + '</div>' +
+      '<div class="mi-pts">' + o.pts.map(function (p) { return '<div><i></i>' + p + '</div>'; }).join('') + '</div>' +
+      '<div class="mi-go">' + o.verb + '</div><div class="mi-rule"></div>' + (o.over || '') + '</div>';
+  }
+  $('skWire').innerHTML = '<div class="stage" style="background:#1E1E1D">' +
+    '<div class="wire" style="left:75px;top:56px;width:170px;height:70px">字标</div>' +
+    '<div class="wire" style="left:1420px;top:40px;width:425px;height:80px">编号 · 系列标<small>74–96%W</small></div>' +
+    '<div class="wire mv" style="left:110px;top:210px;width:670px;height:360px">标题簇<small>≤35%W · 放在意象让出的一侧</small></div>' +
+    '<div class="wire" style="left:110px;top:590px;width:670px;height:96px">主要内容 一两句</div>' +
+    '<div class="wire" style="left:110px;top:706px;width:670px;height:170px">看点 ✦ … ≫<small>三条</small></div>' +
+    '<div class="wire" style="left:900px;top:160px;width:620px;height:700px">代表意象<small>中央 50–60%</small></div>' +
+    '<div class="wire" style="left:1390px;top:880px;width:420px;height:96px">进入<small>72–96%W</small></div>' +
+    '<div class="wire" style="left:75px;top:1000px;width:1770px;height:56px;font-size:26px">刻度尺进度条</div></div>';
+  $('skA').innerHTML = mini({
+    ground: '#0D1420', ink: '#E6E2DD', ink2: '#AEB6BE', acc: '#C25E30', line: 'rgba(200,215,230,.35)', num: "'Oswald'",
+    layer: '<div style="position:absolute;inset:0;background-image:linear-gradient(rgba(140,170,200,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(140,170,200,.10) 1px,transparent 1px),linear-gradient(rgba(140,170,200,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(140,170,200,.05) 1px,transparent 1px);background-size:160px 160px,160px 160px,32px 32px,32px 32px"></div>',
+    image: '<svg style="position:absolute;left:900px;top:150px" width="640" height="720" viewBox="0 0 640 720"><g fill="none" stroke="#C9D6E2" stroke-width="2.2" opacity=".8"><circle cx="320" cy="300" r="210"/><circle cx="320" cy="300" r="150" stroke-dasharray="10 10"/><path d="M110 300 H530 M320 90 V510"/><path d="M200 560 H440 L470 700 H170 Z"/><path d="M60 90 V40 H580 V90" stroke="#C25E30"/><path d="M60 64 H580" stroke="#C25E30" stroke-dasharray="2 8"/></g><text x="320" y="30" fill="#C25E30" font-family="Courier Prime" font-size="26" text-anchor="middle">Ø 4200</text><circle cx="320" cy="300" r="40" fill="#C25E30"/></svg>',
+    title: '<div style="position:absolute;left:112px;top:310px;font:700 150px/1 Oswald,sans-serif;color:#E7E3D8;-webkit-mask:repeating-linear-gradient(90deg,#000 0 58px,transparent 58px 63px)">BOLT</div><div style="position:absolute;left:124px;top:478px;font:600 48px/1 var(--re-font-song);letter-spacing:.34em;color:#E6E2DD">第三船坞</div>',
+    desc: '一枚螺栓立在码头上，它的影子是一座灯塔。', pts: ['尺寸标注怎么排', '雨里的钢板反光', '钠灯只亮一盏'], verb: '装配'
+  });
+  $('skB').innerHTML = mini({
+    ground: '#E6E2D9', ink: '#2B2723', ink2: '#6E6860', acc: '#A65A3A', line: 'rgba(43,39,35,.3)', num: "'Playfair Display'",
+    layer: '<div style="position:absolute;right:-120px;bottom:-160px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(169,179,162,.55),transparent 65%)"></div>',
+    image: '<svg style="position:absolute;left:930px;top:120px" width="580" height="780" viewBox="0 0 300 430"><path d="M12 414 V160 A138 138 0 0 1 288 160 V414" fill="none" stroke="#2B2723" stroke-width="1.6"/><path d="M24 414 V160 A126 126 0 0 1 276 160 V414" fill="none" stroke="#2B2723" stroke-width=".8" opacity=".5"/><line x1="0" y1="414" x2="300" y2="414" stroke="#2B2723" stroke-width="1.6"/><g fill="none" stroke="#5E6B57" stroke-width="1.4"><path d="M150 400 C 150 300 150 250 140 190"/><path d="M146 300 C 110 280 96 250 100 220 C 126 232 142 260 146 300"/><path d="M148 260 C 184 236 200 206 196 178 C 170 190 152 218 148 260"/><path d="M142 210 C 116 190 110 166 116 142 C 136 156 144 180 142 210"/></g><path d="M118 360 H182 L174 414 H126 Z" fill="#A65A3A"/></svg>',
+    title: '<div style="position:absolute;left:118px;top:300px;font:italic 400 64px/1 var(--re-font-italic);color:#6E6860">Hortus</div><div style="position:absolute;left:112px;top:360px;font:400 132px/1 var(--re-font-didone);letter-spacing:.04em;color:#2B2723">SICCUS</div><div style="position:absolute;left:124px;top:508px;font:600 46px/1 var(--re-font-song);letter-spacing:.3em;color:#2B2723">玻璃温室图鉴</div>',
+    desc: '玻璃罩里的一株植物，被画成图鉴的第一页。', pts: ['叶脉用几根线', '陶土只给一只花盆', '图鉴页的留白'], verb: '翻页'
+  });
+  $('skC').innerHTML = mini({
+    ground: 'radial-gradient(70% 80% at 60% 45%,#123438,#0B1A1D 60%,#070D0F)', ink: '#DDF2EC', ink2: '#8FB7B0', acc: '#3FB6AE', line: 'rgba(160,230,220,.35)', num: "'Ark Pixel 12px M zh_cn'", btnInk: '#062022',
+    layer: '<div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 6px)"></div>',
+    image: '<div style="position:absolute;left:940px;top:200px;width:560px;height:560px;display:grid;grid-template-columns:repeat(14,40px);grid-auto-rows:40px">' +
+      (function () { var s = '', m = ['00000011000000', '00000111100000', '00001111110000', '00011111111000', '00000022000000', '00000022000000', '00333333333300', '03333333333330', '33343333334333', '33333333333333', '03333333333330', '00333333333300', '00004444440000', '00000444400000']; m.forEach(function (row) { for (var i = 0; i < row.length; i++) { var c = { '0': 'transparent', '1': '#E9F7F2', '2': '#8A6A4E', '3': '#2F7C74', '4': '#E0A040' }[row[i]]; s += '<i style="background:' + c + '"></i>'; } }); return s; })() + '</div>',
+    title: '<div style="position:absolute;left:118px;top:330px;font:400 120px/1 var(--re-font-pixel);color:#DDF2EC;text-shadow:0 0 18px rgba(120,255,230,.35)">ISLE</div><div style="position:absolute;left:124px;top:480px;font:400 48px/1 var(--re-font-pixel);letter-spacing:.2em;color:#DDF2EC">浮岛 · 投币</div>',
+    desc: '一座像素小岛浮在扫描线里，按下开始就会起风。', pts: ['方块怎么排出云', '扫描线只给屏幕', '只有一个青色'], verb: 'START'
+  });
+
+  /* ---------- 08 刻度尺进度条 ---------- */
+  (function () {
+    var W = 1770, items = 11, cur = 7, y = 58, svg = '';
+    var gap = W / (items - 1);
+    svg += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" stroke="rgba(233,220,205,.30)" stroke-width="1"/>';
+    svg += '<line x1="0" y1="' + y + '" x2="' + ((cur - 1) * gap).toFixed(1) + '" y2="' + y + '" stroke="rgba(233,220,205,.82)" stroke-width="1.3"/>';
+    for (var i = 0; i < items; i++) {
+      var x = i * gap;
+      svg += '<line x1="' + x.toFixed(1) + '" y1="' + (y - 10) + '" x2="' + x.toFixed(1) + '" y2="' + y + '" stroke="rgba(233,220,205,' + (i < cur ? .7 : .35) + ')" stroke-width="1"/>';
+      if (i < items - 1) for (var k = 1; k < 10; k++) { var xx = x + gap * k / 10; svg += '<line x1="' + xx.toFixed(1) + '" y1="' + (y - 4) + '" x2="' + xx.toFixed(1) + '" y2="' + y + '" stroke="rgba(233,220,205,' + (i < cur - 1 ? .5 : .22) + ')" stroke-width="1"/>'; }
+      var no = (i + 1 < 10 ? '0' : '') + (i + 1) + '/';
+      if (i + 1 < cur) svg += '<text x="' + (x + 6).toFixed(1) + '" y="' + (y - 16) + '" font-family="Playfair Display" font-size="15" fill="rgba(233,220,205,' + (i + 1 === cur - 1 ? .55 : .35) + ')">' + no + '</text>';
+    }
+    var cx = (cur - 1) * gap;
+    svg += '<circle cx="' + cx.toFixed(1) + '" cy="' + y + '" r="9" fill="#141009" stroke="#DE6B34" stroke-width="1.4"/><circle cx="' + cx.toFixed(1) + '" cy="' + y + '" r="2.8" fill="#DE6B34"/>';
+    svg += '<text x="' + (cx + 4).toFixed(1) + '" y="' + (y - 22) + '"><tspan font-family="Playfair Display" font-size="24" fill="#E6E2DD">07/</tspan><tspan dx="8" font-family="Source Han Serif CN" font-weight="600" font-size="18" fill="#E6E2DD">石膏的钟点</tspan></text>';
+    var px = (cur - 2) * gap + 40;
+    svg += '<path transform="translate(' + px.toFixed(1) + ' ' + (y - 24) + ')" d="M0 -9 Q1 -1 7 0 Q1 1 0 9 Q-1 1 -7 0 Q-1 -1 0 -9 Z" fill="rgba(240,234,223,.75)"/>';
+    $('p8Rule').innerHTML = '<svg viewBox="0 0 ' + W + ' 80">' + svg + '</svg>';
+  })();
+
+  /* ---------- 单张模式与缩放 ---------- */
+  var m = /[?&]p=(\d+)/.exec(location.search);
+  if (m) {
+    document.body.classList.add('single');
+    var el = $('p' + m[1]); if (el) el.classList.add('on');
+  } else {
+    var z = Math.min(1, (window.innerWidth - 32) / 1920);
+    window.__zoom = z;
+    document.getElementById('deck').style.zoom = z;
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(equalize); else equalize();
+})();
+</script>
+</body>
+</html>

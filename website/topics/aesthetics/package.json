@@ -1,0 +1,19 @@
+{
+  "name": "aesthetics-site",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AI审美全能 专题网站（Vite 多页静态站，挂在 /aesthetics/）",
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync.mjs",
+    "dev": "node scripts/sync.mjs && vite",
+    "build": "node scripts/sync.mjs && vite build",
+    "preview": "vite preview",
+    "package": "python tools/package.py"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "subset-font": "2.9.0",
+    "vite": "8.3.5"
+  }
+}

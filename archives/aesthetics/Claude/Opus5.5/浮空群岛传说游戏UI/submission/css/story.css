@@ -1,0 +1,114 @@
+/* =====================================================================
+   4.7 剧情画面：对话框 / 名词解释 / 章节标题卡
+   ===================================================================== */
+.scene-story .st-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 520px; background: linear-gradient(0deg, rgba(10, 6, 30, 0.78), rgba(10, 6, 30, 0)); pointer-events: none; }
+.st-loc { position: absolute; left: 64px; top: 52px; display: flex; align-items: center; gap: 18px; animation: slideL 0.8s var(--ease-out) 0.3s both; }
+.st-loc .pin { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid rgba(255, 226, 154, 0.7); background: rgba(10, 8, 30, 0.45); }
+.st-loc .pin .ico { width: 26px; height: 26px; color: var(--gold-300); }
+.st-loc b { display: block; font: 400 30px/1 var(--f-title); letter-spacing: 0.14em; color: #fff; text-shadow: 0 2px 10px rgba(20, 10, 50, 0.8); }
+.st-loc small { display: block; margin-top: 8px; font: 400 14px/1 var(--f-en); letter-spacing: 0.34em; color: var(--gold-300); }
+.st-loc .time { margin-left: 18px; padding: 8px 16px; border-radius: 16px; border: 1px solid rgba(255, 200, 150, 0.4); font: 500 17px/1 var(--f-sans); color: #ffd9b0; background: rgba(40, 10, 30, 0.4); }
+
+/* 说话人阵列（以徽记代替立绘） */
+.st-cast { position: absolute; left: 196px; bottom: 326px; display: flex; align-items: flex-end; gap: 18px; z-index: 3; }
+.st-cast .cm { position: relative; width: 74px; display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0.55; filter: saturate(0.4) brightness(0.8); transition: opacity 0.35s, filter 0.35s, transform 0.45s var(--ease-back); transform-origin: 50% 100%; animation: fadeUp 0.6s var(--ease-out) both; animation-delay: calc(0.4s + var(--i) * 0.07s); }
+.st-cast .cm .crest { width: 74px; height: 74px; }
+.st-cast .cm i { font: 500 15px/1 var(--f-sans-m); font-style: normal; letter-spacing: 0.12em; color: #fff; text-shadow: 0 1px 4px #000; }
+.st-cast .cm::before { content: ''; position: absolute; left: 50%; top: 37px; width: 104px; height: 104px; margin: -52px 0 0 -52px; border-radius: 50%; border: 2px solid var(--c); opacity: 0; transform: scale(0.7); transition: opacity 0.3s, transform 0.5s var(--ease-out); box-shadow: 0 0 22px var(--cg), inset 0 0 14px var(--cg); }
+.st-cast .cm.on { opacity: 1; filter: none; transform: scale(1.3) translateY(-6px); }
+.st-cast .cm.on::before { opacity: 1; transform: scale(1); animation: castRing 2s ease-in-out infinite; }
+@keyframes castRing { 50% { transform: scale(1.08); opacity: 0.6; } }
+
+/* 对话框 */
+.dlg { position: absolute; left: 150px; right: 150px; bottom: 54px; height: 236px; z-index: 4; animation: dlgIn 0.7s var(--ease-out) 0.2s both; }
+@keyframes dlgIn { from { opacity: 0; transform: translateY(40px); } }
+.dlg-box {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(14, 18, 52, 0.9), rgba(8, 10, 34, 0.94));
+  border: 1.5px solid rgba(236, 204, 130, 0.55); border-radius: 22px; corner-shape: bevel;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+.dlg-box::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(236, 204, 130, 0.16); border-radius: 16px; corner-shape: bevel; }
+.dlg-box::after { content: ''; position: absolute; left: 60px; right: 60px; top: -1px; height: 2px; background: linear-gradient(90deg, transparent, var(--c, #ffe29a), transparent); box-shadow: 0 0 16px var(--cg, rgba(255, 226, 154, 0.6)); transition: background 0.4s; }
+.dlg .orn { position: absolute; right: 26px; bottom: 18px; width: 120px; height: 120px; opacity: 0.12; }
+.dlg .orn svg { width: 100%; height: 100%; animation: spin 40s linear infinite; }
+.nameplate { position: absolute; left: 44px; top: -34px; height: 62px; z-index: 2; display: flex; align-items: center; gap: 14px; padding: 0 34px 0 16px; border-radius: 12px; corner-shape: bevel; background: linear-gradient(100deg, var(--c2), var(--c) 70%, var(--c1)); border: 1.5px solid rgba(255, 255, 255, 0.7); box-shadow: 0 10px 24px -6px var(--cg), 0 0 0 4px rgba(8, 10, 34, 0.6); }
+.nameplate .elb { width: 38px; height: 38px; }
+.nameplate b { font: 400 34px/1 var(--f-title); letter-spacing: 0.16em; color: #fff; text-shadow: 0 2px 0 var(--cd), 0 0 12px rgba(0, 0, 0, 0.4); }
+.nameplate em { font: 400 14px/1 var(--f-en); font-style: normal; letter-spacing: 0.3em; color: rgba(255, 255, 255, 0.85); text-shadow: 0 1px 0 var(--cd); }
+.nameplate.swap { animation: plateIn 0.45s var(--ease-out) both; }
+@keyframes plateIn { 0% { opacity: 0; transform: translateX(-36px) skewX(-12deg); } 100% { opacity: 1; transform: none; } }
+.dlg-text { position: absolute; left: 76px; right: 300px; top: 56px; font: 400 33px/1.72 var(--f-serif-m); letter-spacing: 0.05em; color: #f8f4ea; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+.dlg-text .c { opacity: 0; transition: opacity 0.14s linear; }
+.dlg-text .c.on { opacity: 1; }
+.term { position: relative; color: #ffd77a; cursor: help; white-space: nowrap; }
+.term::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px; background: repeating-linear-gradient(90deg, #ffd77a 0 5px, transparent 5px 9px); opacity: 0.85; }
+.term .bk { position: absolute; right: -16px; top: -6px; width: 15px; height: 15px; color: #ffd77a; opacity: 0; transition: opacity 0.2s; }
+.term.ready .bk { opacity: 0.9; }
+.term.hov { color: #fff3c8; text-shadow: 0 0 14px rgba(255, 210, 120, 0.95); }
+.term.hov::after, .term.pinned::after { background: #ffe29a; height: 2.5px; box-shadow: 0 0 8px rgba(255, 210, 120, 0.9); }
+.term.pinned { color: #fff3c8; }
+.dlg-next { position: absolute; right: 70px; bottom: 34px; width: 30px; height: 30px; opacity: 0; transition: opacity 0.2s; }
+.dlg-next.on { opacity: 1; animation: bob 1s ease-in-out infinite; }
+.dlg-next svg { width: 100%; height: 100%; fill: var(--gold-300); filter: drop-shadow(0 0 6px #ffd27a); }
+
+.dlg-ctl { position: absolute; right: 44px; top: -26px; display: flex; gap: 12px; z-index: 2; }
+.dlg-btn {
+  position: relative; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px 0 14px; border-radius: 24px;
+  background: linear-gradient(180deg, rgba(26, 32, 80, 0.98), rgba(12, 14, 44, 0.98)); border: 1.5px solid rgba(236, 204, 130, 0.55);
+  font: 500 19px/1 var(--f-sans-m); letter-spacing: 0.1em; color: #f2ead6; transition: background 0.2s, border-color 0.2s, transform 0.2s var(--ease-out), box-shadow 0.2s;
+}
+.dlg-btn .ico { width: 22px; height: 22px; color: var(--gold-300); }
+.dlg-btn em { font: 400 11px/1 var(--f-en); letter-spacing: 0.2em; font-style: normal; color: rgba(255, 226, 154, 0.7); }
+.dlg-btn kbd { min-width: 26px; height: 24px; font-size: 13px; }
+.dlg-btn.hov { border-color: var(--gold-300); transform: translateY(-2px); box-shadow: 0 0 18px rgba(255, 210, 120, 0.4); }
+.dlg-btn.on { background: linear-gradient(180deg, #fff3cc, #f0b547); color: #2a1604; border-color: #fff3cc; box-shadow: 0 0 22px rgba(255, 200, 90, 0.7); }
+.dlg-btn.on .ico, .dlg-btn.on em { color: #5a3400; }
+.dlg-btn.on .ico { animation: spin 1.6s linear infinite; }
+.dlg-btn.ff.on .ico { animation: ffPulse 0.5s ease-in-out infinite; }
+@keyframes ffPulse { 50% { transform: translateX(4px); } }
+.dlg-btn .prog { position: absolute; left: 16px; right: 16px; bottom: 5px; height: 2px; background: rgba(90, 52, 0, 0.6); transform-origin: 0 50%; transform: scaleX(0); }
+
+/* 名词解释卡 */
+.gloss { position: absolute; z-index: 8; width: 460px; padding: 24px 28px 24px; transform-origin: 50% 100%; animation: glossIn 0.32s var(--ease-out) both; pointer-events: none; }
+.gloss.out { animation: glossOut 0.18s ease both; }
+@keyframes glossIn { from { opacity: 0; transform: translateY(14px) scale(0.94); } }
+@keyframes glossOut { to { opacity: 0; transform: translateY(8px) scale(0.97); } }
+.gloss .g-cat { display: inline-flex; align-items: center; gap: 8px; font: 500 14px/1 var(--f-sans); color: var(--gold-300); letter-spacing: 0.14em; padding: 6px 12px; border: 1px solid rgba(255, 226, 154, 0.4); border-radius: 13px; }
+.gloss .g-cat .ico { width: 16px; height: 16px; }
+.gloss h4 { margin: 14px 0 4px; font: 400 36px/1 var(--f-title); letter-spacing: 0.12em; color: #fff; }
+.gloss .g-en { font: 400 14px/1 var(--f-en); letter-spacing: 0.3em; color: rgba(255, 226, 154, 0.85); }
+.gloss p { margin: 14px 0 0; font: 400 20px/1.7 var(--f-sans); color: rgba(240, 240, 250, 0.92); letter-spacing: 0.03em; }
+.gloss .g-arrow { position: absolute; left: 50%; bottom: -13px; width: 24px; height: 24px; margin-left: -12px; transform: rotate(45deg); background: #0b1838; border-right: 1.5px solid rgba(236, 204, 130, 0.5); border-bottom: 1.5px solid rgba(236, 204, 130, 0.5); }
+.gloss .g-pin { position: absolute; right: 18px; top: 18px; font: 400 12px/1 var(--f-sans); color: var(--txt-dim); letter-spacing: 0.1em; }
+
+/* 章节标题卡 */
+.chapter { position: absolute; inset: 0; z-index: 20; overflow: hidden; }
+.chapter .cc-veil { position: absolute; inset: 0; background: #02040c; animation: ccVeil 1s ease both; }
+@keyframes ccVeil { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 0; } }
+.chapter .cc-ring { position: absolute; left: 960px; top: 540px; width: 1000px; height: 1000px; margin: -500px 0 0 -500px; animation: ccRing 4.8s var(--ease-out) 0.3s both; }
+.chapter .cc-ring svg { width: 100%; height: 100%; }
+.chapter .cc-ring .rot { animation: spin 60s linear infinite; transform-origin: 0 0; }
+.chapter .cc-ring .rotr { animation: spinR 80s linear infinite; transform-origin: 0 0; }
+.chapter .cc-ring .draw { stroke-dasharray: 3200; stroke-dashoffset: 3200; animation: drawLine 2.4s var(--ease-out) 0.4s both; }
+@keyframes ccRing { from { opacity: 0; transform: scale(0.8) rotate(-30deg); } to { opacity: 1; transform: none; } }
+.chapter .cc-num { position: absolute; left: 0; right: 0; top: 352px; text-align: center; animation: ccNum 1.2s var(--ease-out) 0.7s both; }
+.chapter .cc-num b { font: 400 40px/1 var(--f-serif); letter-spacing: 0.8em; padding-left: 0.8em; color: var(--gold-300); }
+.chapter .cc-num em { display: block; margin-top: 18px; font: 400 18px/1 var(--f-en); font-style: normal; letter-spacing: 0.9em; padding-left: 0.9em; color: rgba(220, 230, 255, 0.8); }
+@keyframes ccNum { from { opacity: 0; letter-spacing: 1.4em; filter: blur(8px); } }
+.chapter .cc-title { position: absolute; left: 0; right: 0; top: 452px; text-align: center; white-space: nowrap; }
+.chapter .cc-title span { position: relative; display: inline-block; font: 400 156px/1 var(--f-title); letter-spacing: 0.12em; color: #fff; animation: ccCh 1.1s var(--ease-out) both; animation-delay: calc(1.25s + var(--i) * 0.13s); }
+.chapter .cc-title span::before { content: attr(data-t); position: absolute; left: 0; top: 0; color: rgba(0, 0, 0, 0.01); text-shadow: 0 0 40px rgba(255, 170, 90, 0.6), 0 8px 0 rgba(0, 0, 0, 0.4); }
+.chapter .cc-title span i { position: relative; font-style: normal; background: linear-gradient(180deg, #ffffff 0%, #ffe9b8 45%, #ffb35a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+@keyframes ccCh { 0% { opacity: 0; transform: translateY(30px) scale(1.15); filter: blur(16px); clip-path: inset(0 100% 0 0); } 60% { clip-path: inset(0 0 0 0); filter: blur(2px); } 100% { opacity: 1; transform: none; filter: none; clip-path: none; } }
+.chapter .cc-line { position: absolute; left: 50%; top: 660px; width: 900px; height: 2px; margin-left: -450px; background: linear-gradient(90deg, transparent, #ffe29a 20%, #fff 50%, #ffe29a 80%, transparent); transform: scaleX(0); animation: ccLine 1.2s var(--ease-out) 1.9s both; box-shadow: 0 0 16px rgba(255, 210, 120, 0.8); }
+.chapter .cc-line::before { content: ''; position: absolute; left: 50%; top: -9px; width: 20px; height: 20px; margin-left: -10px; background: #fff; clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%); filter: drop-shadow(0 0 8px #ffd27a); }
+@keyframes ccLine { to { transform: scaleX(1); } }
+.chapter .cc-en { position: absolute; left: 0; right: 0; top: 694px; text-align: center; font: 400 26px/1 var(--f-en); letter-spacing: 0.6em; padding-left: 0.6em; color: #f2e8d0; animation: ccNum 1.3s var(--ease-out) 2.1s both; }
+.chapter .cc-tag { position: absolute; left: 0; right: 0; top: 760px; text-align: center; font: 400 26px/1 var(--f-serif-m); letter-spacing: 0.3em; color: rgba(240, 230, 220, 0.82); animation: fadeUp 1.2s var(--ease-out) 2.5s both; }
+.chapter.leave .cc-stack { animation: ccLeave 0.9s var(--ease-in) both; }
+@keyframes ccLeave { to { opacity: 0; transform: scale(1.08); filter: blur(10px); } }
+.chapter .cc-skip { position: absolute; right: 60px; bottom: 44px; font: 400 16px/1 var(--f-sans); color: rgba(220, 225, 245, 0.55); letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px; animation: fadeIn 1s ease 2.6s both; }
+
+.dlg.is-pressed { transform: none !important; filter: brightness(1.06); }

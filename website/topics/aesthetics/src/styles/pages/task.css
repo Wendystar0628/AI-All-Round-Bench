@@ -1,0 +1,269 @@
+/* 题目页（质感贯穿方案 3.5、4.4；特质与配色增补第五节）。
+   页首就是视频的介绍页：静图、题名锁定、正文那一栏都在同一块 1920×1080 的「台」上（--px 是一个舞台像素在网页上多大，
+   台宽等于视口宽，台顶让开半个页头），锁定的几何线才接得上静图里的落点。页首是这一题自己的颜色：
+   底下垫世界色（--world），画面下沿化进世界色，再经过一段 .tk-sink 慢慢沉回夜。
+   颜色都来自令牌（data-tone="light" 是亮底：字、页头换成这一题的墨 --ink）。点亮色 --lit 只给页签选中的短线、评语的记号。 */
+
+.tk { --world: #232733; --world-deep: #14161C; --lit: var(--ae-brass); --ink: var(--ae-text); --mark: var(--lit); }
+
+/* ================= 页首 ================= */
+.tk-head {
+  --px: calc(100vw / 1920);
+  --shift: calc(var(--head-h) * 0.5);
+  position: relative;
+  isolation: isolate;
+  height: max(640px, min(100svh, calc(var(--shift) + 1080 * var(--px))), calc(var(--shift) + 440 * var(--px) + 430px));
+  overflow: hidden;
+  background: var(--world);
+  color: var(--ink);
+}
+.tk-stage { position: absolute; left: 0; top: var(--shift); z-index: -3; width: calc(1920 * var(--px)); height: calc(1080 * var(--px)); }
+.tk-still { position: absolute; inset: 0; display: block; width: 100%; height: 100%; mask: linear-gradient(180deg, transparent, #000 9%); }   /* 上沿化进页头那一条世界色 */
+.tk[data-tone="light"] .tk-still { mask: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.35) 10%, #000 22%); }   /* 亮底：页头和编号小标落在这一题的浅色上，画面再往下化出来 */
+/* 暗底的题：页头那一条压一层这一题最深的世界色，纸白的页头字在亮一点的画面上也读得清 */
+.tk[data-tone="dark"] .tk-head::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  z-index: -1;
+  height: calc(var(--head-h) * 1.5);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--world-deep) 62%, transparent), transparent);
+  pointer-events: none;
+}
+/* 画面下沿化进世界色：这一题的颜色从画面里接到页面上 */
+.tk-head::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: -1;
+  height: 26%;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--world) 70%, transparent) 55%, var(--world));
+  pointer-events: none;
+}
+/* 缺省画面：这一卷的星座在夜空里，上方吊着那颗星，一片灯光落在墙上 */
+.tk-default { position: absolute; inset: 0; background: url("../../assets/light/sky.webp") 50% 100% / cover no-repeat; }
+.tk-pool { position: absolute; right: -4%; top: 14%; width: 62%; aspect-ratio: 1.4; background: url("../../assets/light/pool.webp") 50% 50% / 100% 100% no-repeat; opacity: 0.95; }
+.tk-emblem { position: absolute; right: 8%; top: 22%; width: 30%; aspect-ratio: 1; color: rgba(214, 184, 120, 0.7); }
+.tk-const { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.tk-hang { position: absolute; left: 50%; top: -30%; width: 26%; transform: translateX(-50%); transform-origin: 50% 0; animation: tk-sway var(--ae-t-pendulum, 5.6s) ease-in-out infinite; }
+.tk-hang .ae-hang { display: block; width: 100%; height: auto; overflow: visible; }
+@keyframes tk-sway { 0%, 100% { transform: translateX(-50%) rotate(-0.5deg); } 50% { transform: translateX(-50%) rotate(0.5deg); } }
+
+/* 字后面化开的暗渍（暗底）或淡渍（亮底）：代替文字底板。和颗粒一起在台里、静图之上、锁定之下——
+   只压画面，不压锁定（锁定自带的底版原样放，和视频一样），也不压正文 */
+.tk-smudge {
+  position: absolute;
+  left: -6%;
+  top: calc(400 * var(--px));
+  width: 64%;
+  height: 70%;
+  background:
+    radial-gradient(closest-side at 36% 30%, color-mix(in srgb, var(--world-deep) 80%, transparent), transparent),
+    radial-gradient(closest-side at 44% 62%, color-mix(in srgb, var(--world-deep) 66%, transparent), transparent);
+  filter: blur(22px);
+  pointer-events: none;
+}
+.tk[data-tone="light"] .tk-smudge {
+  top: calc(360 * var(--px));
+  height: 62%;
+  background:
+    radial-gradient(closest-side at 30% 20%, color-mix(in srgb, var(--world-pale) 72%, transparent), transparent),
+    radial-gradient(closest-side at 38% 52%, color-mix(in srgb, var(--world-pale) 62%, transparent), transparent);
+  filter: blur(26px);
+}
+.tk-grain { opacity: 0.16; }                     /* 颗粒只盖画面：在台里、静图之上、锁定之下，题名和字都不盖 */
+.tk[data-tone="light"] .tk-grain { mix-blend-mode: multiply; opacity: 0.05; }
+
+/* 锁定：按视频的摆法放在台上（--lx --ly --lk 来自 design.mjs lockupPlace，锁定坐标 u 落在 x + k·u） */
+.tk-title-row { position: relative; }
+.tk-head.is-framed .tk-title-row { position: absolute; inset: 0; pointer-events: none; }
+.tk-title { margin: 0; font-size: clamp(52px, 5.4vw, 104px); line-height: 0; color: var(--ink); }
+.ae-lk {
+  position: absolute;
+  left: calc(var(--lx) * var(--px));
+  top: calc(var(--ly) * var(--px));
+  width: calc(var(--lw) * var(--lk) * var(--px));
+  height: calc(var(--lh) * var(--lk) * var(--px));
+}
+.ae-lk-art { display: block; width: 100%; height: 100%; overflow: visible; }
+.ae-lk-tag { position: absolute; font-size: max(9px, calc(var(--px) * var(--lk) * 19)); line-height: 1; white-space: nowrap; }
+.ae-lk-tag .ae-vol { gap: 0.6em; }
+.ae-lk-tag .no { font-size: 1.5em; }
+.ae-lk-tag .dash { width: 1.3em; }
+.ae-lk-tag .cn { font-size: 1em; }
+.ae-lk-tag .en { font-size: 0.6em; }
+/* 编号小标跟着这一页的字走（暗底纸白、亮底墨），编号用这一题的颜色 */
+.ae-lk-tag .ae-vol { color: var(--ink); }
+.ae-lk-tag .no { color: var(--mark); }
+.ae-lk-tag .dash { background: color-mix(in srgb, var(--ink) 45%, transparent); }
+.ae-lk-tag .en { color: color-mix(in srgb, var(--ink) 70%, transparent); }
+.tk-prov { align-self: flex-start; margin: 0 0 12px; }
+.tk-head:not(.is-framed) .tk-prov { position: absolute; right: -6em; top: 0; }
+
+/* 正文那一栏：在台上 x 100、英文小档的基线（y 422）下面；字是网页的三等字 */
+.tk-copy {
+  position: absolute;
+  z-index: 1;
+  left: calc(100 * var(--px));
+  top: calc(var(--shift) + 446 * var(--px));
+  width: min(calc(860 * var(--px)), 46vw);
+  min-width: min(620px, calc(100vw - 2 * var(--margin)));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+/* 没有锁定（英文页、锁定还没做的题）：卷的小标和题名写在左上，字照常排 */
+.tk-head:not(.is-framed) .tk-copy { top: calc(var(--head-h) + clamp(16px, 5svh, 56px)); left: var(--margin); width: min(52%, 880px); }
+.tk-copy > .ae-vol { margin-bottom: clamp(16px, 2.6svh, 28px); }
+.tk-head:not(.is-framed) .tk-tagline { margin-top: clamp(22px, 4svh, 44px); }
+.tk-title--en,
+.tk-title .ae-lockup-en { font-size: clamp(40px, 3.8vw, 72px); line-height: 1.02; max-width: 13em; color: var(--ink); }
+.tk-title .ae-dcn { line-height: 1.1; }
+
+/* 点题短语：中文在前、一道细斜线、斜体英文在后，共一条基线 */
+.tk-tagline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font: 400 clamp(18px, 1.3vw, 22px)/1.5 var(--f-song);
+  letter-spacing: 0.08em;
+}
+.tk-tagline .sl { font-style: normal; color: var(--mark); }
+/* 英文折到下一行时（task.js 判断）：英文自成一行，中间那道细斜线不挂在行尾 */
+.tk-tagline.is-wrapped .sl { display: none; }
+.tk-tagline.is-wrapped em { flex-basis: 100%; }
+.tk-tagline em { font: italic 400 0.9em/1.4 var(--f-didone); letter-spacing: 0.01em; color: color-mix(in srgb, var(--ink) 78%, transparent); }
+.tk-summary { max-width: 34em; margin-top: clamp(10px, 1.8svh, 20px); font-size: clamp(15.5px, 1.05vw, 17.5px); line-height: 1.95; color: color-mix(in srgb, var(--ink) 80%, transparent); text-align: justify; line-break: strict; }
+html[lang="en"] .tk-summary { text-align: left; }
+.tk-points { display: grid; gap: 2px; margin: clamp(10px, 1.8svh, 20px) 0 0; padding: 0; list-style: none; }
+.tk-points li { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); align-items: baseline; font-size: clamp(15.5px, 1.05vw, 17.5px); line-height: 1.65; }
+.tk-points i { font: italic 400 1.05em/1 var(--f-didone); color: var(--mark); text-align: right; padding-right: 0.7em; }
+.tk-judge { display: flex; align-items: baseline; gap: 14px; margin-top: clamp(12px, 2.2svh, 24px); font-size: 15px; }
+.tk-judge .k { font: 600 12.5px/1 var(--f-song); letter-spacing: 0.24em; color: color-mix(in srgb, var(--ink) 66%, transparent); }
+.tk-judge a { color: var(--ink); text-decoration: none; font-size: 18px; }
+.tk-judge a:hover { filter: brightness(1.2); }
+
+/* 观测卡：躺在画面的光里；票根是世界色最深的一档 */
+.tk-card { position: absolute; z-index: 2; right: clamp(24px, 6vw, 120px); bottom: clamp(36px, 7svh, 88px); width: min(440px, 32vw); min-height: 118px; transform: rotate(-1.2deg); }
+a.tk-card:hover { transform: rotate(-1.2deg) translateY(calc(-2px * var(--motion))); }
+.tk-stamp { position: absolute; z-index: 2; right: clamp(40px, 9vw, 160px); bottom: clamp(48px, 10svh, 110px); font-size: 20px; }
+.tk[data-tone="light"] .tk-card { box-shadow: 0 1px 0 rgba(40, 30, 20, 0.3), 0 3px 6px -2px rgba(40, 30, 20, 0.35); }
+.tk[data-tone="light"] .tk-stamp { --c: color-mix(in srgb, var(--ink) 55%, transparent); }
+.tk[data-tone="light"] .tk-stamp .t,
+.tk[data-tone="light"] .tk-stamp .s { color: var(--ink); text-shadow: none; }
+
+/* 亮底的题：页头还浮在亮的页首上时，换成这一题的墨；往下滚以后页头垫了夜色的底，回到默认的亮字 */
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-hub,
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-home,
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-nav-item,
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-nav-item[aria-current] .cn,
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-lang a,
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-menu-btn { color: var(--page-ink); }
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-nav-item .r { color: color-mix(in srgb, var(--page-ink) 75%, transparent); }
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-nav-item small { color: color-mix(in srgb, var(--page-ink) 55%, transparent); }
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-brand-slash { background: color-mix(in srgb, var(--page-ink) 40%, transparent); }
+html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-nav-item:hover .cn { color: #000; }
+
+/* 往下慢慢沉回夜：世界色 → 夜墙 */
+.tk-sink {
+  display: block;
+  height: clamp(140px, 28svh, 300px);
+  background: linear-gradient(180deg, var(--world), color-mix(in srgb, var(--world) 42%, var(--wall)) 46%, var(--wall));
+}
+
+/* ================= 作品 ================= */
+.tk-works { max-width: calc(var(--max) + 2 * var(--margin)); margin: 0 auto; padding: clamp(8px, 2vw, 40px) var(--margin) 0; scroll-margin-top: 0; }
+.tk-tabs { display: flex; flex-wrap: wrap; gap: 22px clamp(20px, 2.6vw, 40px); margin-top: 40px; }
+.tk-tab { position: relative; display: grid; gap: 12px; width: 220px; padding-bottom: 12px; color: inherit; text-decoration: none; opacity: 0.62; transition: opacity var(--ae-t-hover); }
+.tk-tab .ae-plate-paper { padding: 5px; }
+.tk-tab .ae-plate-paper img { object-fit: cover; object-position: 50% 12%; }
+.tk-tab::after { content: ""; position: absolute; left: 0; bottom: 0; width: 28px; height: 2px; background: var(--lit); transform: scaleX(0); transform-origin: 0 50%; transition: transform var(--ae-t-hover) var(--ae-ease-land); }
+.tk-tab:hover { opacity: 0.9; }
+.tk-tab[aria-selected="true"] { opacity: 1; }
+.tk-tab[aria-selected="true"]::after { transform: none; }
+.tk-tab[aria-selected="true"] .ae-plate-paper { transform: translateY(calc(-3px * var(--motion))); }
+.no-js .tk-tab,
+.tk-works:not(.is-tabbed) .tk-tab { opacity: 1; }
+
+.tk-panels { margin-top: 56px; }
+.tk-panel + .tk-panel { margin-top: 96px; }
+.is-tabbed .tk-panel + .tk-panel { margin-top: 0; }
+.tk-panel[hidden] { display: none; }
+.tk-panel.is-swap { animation: tk-in 0.4s var(--ae-ease-land); }
+@keyframes tk-in { from { opacity: 0; transform: translateY(6px); } }
+.tk-panel-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 24px 40px; margin-bottom: 40px; }
+.tk-who { display: grid; gap: 8px; justify-items: start; }
+.tk-who .ae-model--l { font-size: 30px; }
+.tk-meta { display: flex; flex-wrap: wrap; gap: 2px 18px; font-size: 13.5px; letter-spacing: 0.04em; color: var(--ae-text-2); }
+.tk-live { margin-top: 6px; }
+.tk-packing { font-size: 14px; color: var(--ae-text-2); }
+.tk-panel-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px 48px; margin-top: 56px; }
+.tk-links { display: grid; justify-items: end; gap: 6px; }
+.tk-link { display: inline-flex; align-items: baseline; gap: 10px; min-height: 32px; color: var(--ae-text-2); text-decoration: none; font-size: 14.5px; letter-spacing: 0.04em; }
+.tk-link .k { font: 600 12.5px/1 var(--f-song); letter-spacing: 0.2em; color: var(--ae-sand); }
+.tk-link:hover { color: var(--ae-star); }
+.tk-none { margin-top: 40px; }
+
+/* ================= 页尾：上一卷 / 下一卷（和卷目页同一本书）、十卷星座 ================= */
+.tk-pager { max-width: calc(var(--max) + 2 * var(--margin)); margin: clamp(96px, 9vw, 150px) auto 0; padding: 0 var(--margin); }
+.tk-vols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px clamp(24px, 4vw, 80px); }
+.tk-vol { display: grid; gap: 10px; color: inherit; text-decoration: none; }
+.tk-vol--next { justify-items: end; text-align: right; }
+.tk-vol-dir { font: 600 12.5px/1 var(--f-song); letter-spacing: 0.3em; color: var(--ae-sand); }
+html[lang="en"] .tk-vol-dir { font: 500 11px/1 var(--f-didone); letter-spacing: 0.28em; text-transform: uppercase; }
+.tk-vol-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 16px;
+  width: min(100%, 640px);
+  height: 62px;
+  padding: 0 26px;
+  text-align: left;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(255, 240, 214, 0.22) 0 1px, rgba(0, 0, 0, 0.16) 1px, transparent 26%, transparent 70%, rgba(0, 0, 0, 0.26)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h2v1H0zM2 2h2v1H2z' fill='%23fff' fill-opacity='.05'/%3E%3Cpath d='M1 1h1v2H1zM3 3h1v1H3z' fill='%23000' fill-opacity='.08'/%3E%3C/svg%3E"),
+    var(--cloth);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 4px 7px -2px rgba(0, 0, 0, 0.5);
+  filter: brightness(0.92);
+  transition: transform var(--ae-t-hover) var(--ae-ease-land), filter var(--ae-t-hover);
+}
+.tk-vol-body .no { font: italic 500 19px/1 var(--f-didone); }
+.tk-vol.is-dark .no { color: rgba(236, 214, 170, 0.9); }
+.tk-vol.is-light .no { color: var(--cloth-deep); }
+.tk-vol-body .cat { font: 600 12.5px/1 var(--f-song); letter-spacing: 0.22em; opacity: 0.62; white-space: nowrap; }
+.tk-vol-body .ttl { display: flex; align-items: center; min-width: 0; font-size: 18px; white-space: nowrap; overflow: hidden; }
+.tk-vol-body .ttl img.ae-mini { height: 1.95em; width: auto; }
+.tk-vol.is-clouded .ttl { opacity: 0.34; filter: grayscale(0.6); }
+.tk-vol-stamp { font-size: 10px; margin: -8px 0; }
+.tk-vol.is-dark .tk-vol-stamp { --c: rgba(236, 226, 206, 0.5); }
+.tk-vol.is-light .tk-vol-stamp { --c: rgba(43, 39, 35, 0.48); }
+.tk-vol:hover .tk-vol-body { filter: brightness(1.06); transform: translateX(calc(-6px * var(--motion))); }
+.tk-vol--next:hover .tk-vol-body { transform: translateX(calc(6px * var(--motion))); }
+.tk-vol.is-none { visibility: hidden; }
+.tk-chart { margin-top: clamp(56px, 6vw, 96px); }
+
+/* ================= 平板与手机：台只占一块 16:9 的画，字排在画下面 ================= */
+@media (max-width: 960px) {
+  .tk-head { height: auto; padding-top: calc(var(--shift) + 1080 * var(--px)); }
+  .tk-copy,
+  .tk-head:not(.is-framed) .tk-copy { position: relative; left: auto; top: auto; width: auto; min-width: 0; padding: 28px var(--margin) 24px; }
+  .tk-smudge { display: none; }
+  .tk-card { position: relative; right: auto; bottom: auto; display: flex; width: min(calc(100% - 2 * var(--margin)), 440px); margin: 8px var(--margin) 48px; }
+  .tk-stamp { position: relative; right: auto; bottom: auto; margin: 0 0 40px var(--margin); }
+  .tk-head::after { top: calc(var(--shift) + 1080 * var(--px) - 18%); bottom: auto; height: 18%; }
+  .tk-panel-foot { grid-template-columns: 1fr; }
+  .tk-links { justify-items: start; }
+}
+@media (max-width: 760px) {
+  .tk-tabs { flex-wrap: nowrap; overflow-x: auto; margin: 32px calc(-1 * var(--margin)) 0; padding: 0 var(--margin) 8px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .tk-tab { flex: none; width: 168px; scroll-snap-align: start; }
+  .tk-vols { grid-template-columns: 1fr; }
+  .tk-vol--next { justify-items: start; text-align: left; }
+  .tk-vol-body { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .tk-vol-body .cat { display: none; }
+  .tk-chart .ae-ch-item .nm { display: none; }
+}

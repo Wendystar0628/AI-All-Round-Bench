@@ -1,0 +1,57 @@
+/* =====================================================================
+   AI审美全能 · 字体声明
+   本目录里的字体全部是 SIL OFL 1.1（许可证见同目录 OFL-*.txt），视频和网站共用。
+   家族名统一用 "AE …" 前缀，避免和系统里同名字体的字重映射打架；
+   src 先找本机已装的同名字体（渲染视频时最快），找不到再读本目录的文件。
+   网站上线时按站内用字做子集，家族名不变，见 设计系统.md「字体」。网页的中文子集取同目录的 NotoSerifSC-VF.ttf
+   （和思源宋体同一设计、OFL 不带保留字名，许可证 OFL-NotoSerifSC.txt）；它只给网站的构建用，这里不声明，也不同步进视频模板。
+   ===================================================================== */
+
+/* ---------- 母版：中文（思源宋体） ---------- */
+
+/* 展示宋：片名、字标 900；题名、页面标题 700。字距 0，字靠字。竖笔不再另加粗 */
+@font-face { font-family: "AE Display CN"; font-weight: 900; font-style: normal; font-display: swap;
+  src: local("Source Han Serif CN Heavy"), local("SourceHanSerifCN-Heavy"), url("SourceHanSerifCN-Heavy.otf") format("opentype"); }
+@font-face { font-family: "AE Display CN"; font-weight: 700; font-style: normal; font-display: swap;
+  src: local("Source Han Serif CN Bold"), local("SourceHanSerifCN-Bold"), url("SourceHanSerifCN-Bold.otf") format("opentype"); }
+
+/* 正文与标签：视频正文 500 / 网页正文 400 / 人名、小节、标签 600 / 书脊与小标题 700 / 导航里的字标 900 */
+@font-face { font-family: "AE Song"; font-weight: 400; font-style: normal; font-display: swap;
+  src: local("Source Han Serif CN"), local("SourceHanSerifCN-Regular"), url("SourceHanSerifCN-Regular.otf") format("opentype"); }
+@font-face { font-family: "AE Song"; font-weight: 500; font-style: normal; font-display: swap;
+  src: local("Source Han Serif CN Medium"), local("SourceHanSerifCN-Medium"), url("SourceHanSerifCN-Medium.otf") format("opentype"); }
+@font-face { font-family: "AE Song"; font-weight: 600; font-style: normal; font-display: swap;
+  src: local("Source Han Serif CN SemiBold"), local("SourceHanSerifCN-SemiBold"), url("SourceHanSerifCN-SemiBold.otf") format("opentype"); }
+@font-face { font-family: "AE Song"; font-weight: 700; font-style: normal; font-display: swap;
+  src: local("Source Han Serif CN Bold"), local("SourceHanSerifCN-Bold"), url("SourceHanSerifCN-Bold.otf") format("opentype"); }
+@font-face { font-family: "AE Song"; font-weight: 900; font-style: normal; font-display: swap;
+  src: local("Source Han Serif CN Heavy"), local("SourceHanSerifCN-Heavy"), url("SourceHanSerifCN-Heavy.otf") format("opentype"); }
+
+/* ---------- 母版：西文（Libre Bodoni，可变字重 400–700，正体与斜体） ----------
+   一个家族管型号名、编号、斜体短语、拉开字距的大写标签、身后大词。Libre Bodoni 是为正文字号画的 Bodoni：反差仍高，
+   发丝比展示用的 Bodoni 结实，视频 1080p 上 13–30px 的小字、大字号的竖发丝都看得见。
+   要 800、900 的地方按 700 出；小型大写用 font-variant-caps: all-small-caps */
+@font-face { font-family: "AE Didone"; font-weight: 400 700; font-style: normal; font-display: swap;
+  src: url("LibreBodoni-Variable.ttf") format("truetype"); }
+@font-face { font-family: "AE Didone"; font-weight: 400 700; font-style: italic; font-display: swap;
+  src: url("LibreBodoni-Italic-Variable.ttf") format("truetype"); }
+
+/* 手写的一笔（第三种声音）：一件锁定最多一处，只当点缀，不给要读的字。字面小，字号按别的手写体的 1.35 倍给 */
+@font-face { font-family: "AE Script"; font-weight: 400 700; font-style: normal; font-display: swap;
+  src: local("Tangerine Bold"), local("Tangerine-Bold"), url("Tangerine-Bold.ttf") format("truetype"); }
+
+/* ---------- 子风格的“戏服字”：只给英文题材字、水印、票面，不给要读的中文 ---------- */
+@font-face { font-family: "AE Stencil"; font-weight: 400; font-display: swap;      /* 机甲模板喷字、SVG 片头剪字 */
+  src: local("Anton Regular"), local("Anton-Regular"), url("Anton-Regular.ttf") format("truetype"); }
+@font-face { font-family: "AE Fatface"; font-weight: 400; font-display: swap;      /* 木活字、铅字海报 */
+  src: local("Abril Fatface"), local("AbrilFatface-Regular"), url("AbrilFatface-Regular.ttf") format("truetype"); }
+@font-face { font-family: "AE Serif Display"; font-weight: 400; font-display: swap; /* 度假海报大写 */
+  src: local("DM Serif Display Regular"), local("DMSerifDisplay-Regular"), url("DMSerifDisplay-Regular.ttf") format("truetype"); }
+@font-face { font-family: "AE Type"; font-weight: 400; font-display: swap;         /* 打字机：编目号、比例尺、打孔卡 */
+  src: local("Courier Prime"), local("CourierPrime"), url("CourierPrime-Regular.ttf") format("truetype"); }
+@font-face { font-family: "AE Type"; font-weight: 700; font-display: swap;
+  src: local("Courier Prime Bold"), local("CourierPrime-Bold"), url("CourierPrime-Bold.ttf") format("truetype"); }
+@font-face { font-family: "AE Pixel"; font-weight: 400; font-display: swap;        /* 游戏UI：像素字（含中文） */
+  src: local("Ark Pixel 12px M zh_cn Regular"), local("Ark-Pixel-12px-M-zh_cn-Regular"), url("ArkPixel-12px-M-zh_cn.ttf") format("truetype"); }
+@font-face { font-family: "AE Hand"; font-weight: 400 700; font-display: swap;     /* 马克笔批注、明信片随手字 */
+  src: local("Caveat Regular"), local("Caveat-Regular"), url("Caveat-Variable.ttf") format("truetype"); }

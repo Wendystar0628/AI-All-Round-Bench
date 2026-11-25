@@ -1,0 +1,68 @@
+/* =====================================================================
+   AI审美全能 · 纹理与质地（CSS）
+   用法：舞台元素加 .ae-stage，再往里放覆盖层 <i class="ae-grain"></i> 等。
+   覆盖层都不接收鼠标。叠放顺序（从下到上）：
+   底 → 画（场景、光、物件）→ 暗角 .ae-vignette → 颗粒 .ae-grain → 字与部件 → 宽银幕 .ae-letterbox
+   颗粒和暗角只盖在“画”上：作品窗口、立绘和要读的字都在它们上面。
+   ===================================================================== */
+
+.ae-stage { position: relative; overflow: hidden; isolation: isolate; width: 1920px; height: 1080px; background: var(--ae-night, #0D1420); }
+.ae-layer { position: absolute; inset: 0; pointer-events: none; }
+
+/* 颗粒瓦片：256px 高反差噪声，内联成 data URI（file:// 下也能用）。静止的一张，不逐帧换 */
+:root { --ae-noise-tile: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22256%22%20height=%22256%22%20viewBox=%220%200%20256%20256%22%3E%3Cfilter%20id=%22n%22%20x=%220%22%20y=%220%22%20width=%22100%25%22%20height=%22100%25%22%20color-interpolation-filters=%22sRGB%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%22.9%22%20numOctaves=%222%22%20seed=%227%22%20stitchTiles=%22stitch%22%20result=%22t%22/%3E%3CfeColorMatrix%20in=%22t%22%20type=%22matrix%22%20values=%221%200%200%200%200%20%201%200%200%200%200%20%201%200%200%200%200%20%200%200%200%200%201%22/%3E%3CfeComponentTransfer%3E%3CfeFuncR%20type=%22linear%22%20slope=%223.2%22%20intercept=%22-1.1%22/%3E%3CfeFuncG%20type=%22linear%22%20slope=%223.2%22%20intercept=%22-1.1%22/%3E%3CfeFuncB%20type=%22linear%22%20slope=%223.2%22%20intercept=%22-1.1%22/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect%20width=%22256%22%20height=%22256%22%20filter=%22url%28%23n%29%22/%3E%3C/svg%3E"); }
+
+/* 颗粒：.ae-grain 母版与界面（起伏约 3 级）· --film 平面画法的介绍页、片头（约 6 级）· --paper 纸面
+   三维画面、作品、立绘一律不加 */
+.ae-grain { position: absolute; inset: -2px; pointer-events: none;
+  background-image: var(--ae-noise-tile); background-size: 256px 256px;
+  mix-blend-mode: soft-light; opacity: var(--ae-grain, 0.16); }
+.ae-grain--film { opacity: var(--ae-grain, 0.28); }
+.ae-grain--paper { mix-blend-mode: multiply; opacity: var(--ae-grain, 0.045); }
+
+/* 暗角：四角约为画面中央同种底色亮度的一半 */
+.ae-vignette { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 92% at 50% 46%, transparent 44%, rgba(4, 5, 8, var(--ae-vig, 0.55)) 100%); }
+
+/* 字后的暗渍：几团化开的近黑，代替文字底板（字压在画上时用） */
+.ae-smudge { position: absolute; pointer-events: none;
+  background:
+    radial-gradient(closest-side at 36% 50%, rgba(6, 7, 10, var(--ae-sm, 0.55)), transparent),
+    radial-gradient(closest-side at 64% 42%, rgba(6, 7, 10, calc(var(--ae-sm, 0.55) * 0.75)), transparent),
+    radial-gradient(closest-side at 50% 72%, rgba(6, 7, 10, calc(var(--ae-sm, 0.55) * 0.6)), transparent);
+  filter: blur(10px); }
+
+/* 宽银幕：上下各 132px，只给片头（起手页、连续动画） */
+.ae-letterbox { position: absolute; left: 0; right: 0; height: 132px; background: var(--ae-void, #0B0D11); pointer-events: none; }
+.ae-letterbox.top { top: 0; }
+.ae-letterbox.bottom { bottom: 0; }
+
+/* 柔光晕：展示字与灯边缘向外渗一点暖光（只给展示字，不给正文） */
+.ae-halation { text-shadow: 0 0 0.16em rgba(255, 220, 180, 0.30), 0 0 0.6em rgba(255, 168, 110, 0.14); }
+
+/* 纸：奶油纸 + 一角渗桃 + 受光 + 纸颗粒 */
+.ae-paper { position: relative; isolation: isolate; color: var(--ae-ink, #2B2723);
+  background-color: var(--ae-paper-base, #EFE5D2);
+  background-image:
+    radial-gradient(36% 60% at 100% 100%, rgba(227, 167, 143, var(--ae-peach-a, 0.42)), transparent 70%),
+    radial-gradient(60% 80% at 16% 10%, rgba(255, 252, 246, 0.35), transparent 70%),
+    radial-gradient(40% 34% at 70% 30%, rgba(120, 100, 80, 0.05), transparent 70%); }
+.ae-paper::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background-image: var(--ae-noise-tile); background-size: 256px; mix-blend-mode: multiply; opacity: 0.05; }
+
+/* 线：三截断线（62 | 18 | 1021 | 18 | 74）与尾部断开的线，高 2px */
+.ae-hair3 { height: 2px; background: linear-gradient(90deg,
+  var(--ae-hair-c, rgba(233, 220, 205, 0.42)) 0 5.2%, transparent 5.2% 6.7%,
+  var(--ae-hair-c, rgba(233, 220, 205, 0.42)) 6.7% 92.3%, transparent 92.3% 93.8%,
+  var(--ae-hair-c, rgba(233, 220, 205, 0.42)) 93.8% 100%); }
+.ae-hair-tail { height: 2px; background: linear-gradient(90deg,
+  var(--ae-hair-c, rgba(233, 220, 205, 0.32)) 0 82%, transparent 82% 84.5%,
+  var(--ae-hair-c, rgba(233, 220, 205, 0.32)) 84.5% 91%, transparent 91% 93%,
+  var(--ae-hair-c, rgba(233, 220, 205, 0.32)) 93% 96%, transparent 96%); }
+.ae-hair-fade { height: 2px; background: linear-gradient(90deg, transparent, var(--ae-hair-c, rgba(233, 220, 205, 0.55)) 18%, var(--ae-hair-c, rgba(233, 220, 205, 0.55)) 82%, transparent); }
+/* 点线：只表示“未完成”和“云遮，未观测” */
+.ae-dotted { height: 4px; background: radial-gradient(circle, var(--ae-dot-c, rgba(233, 220, 205, 0.55)) 1.6px, transparent 2.2px) 0 50% / 10px 4px repeat-x; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ae-grain { animation: none !important; }
+}

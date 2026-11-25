@@ -1,0 +1,335 @@
+/* 页头与页脚。页头不是一条横栏：左上是「AI全能测评 ╱ AI审美全能」，右边四项像一本书的目录
+   （罗马数字 + 中文 + 小号英文），最右「中 / EN」。它浮在每页第一块的上面，每页第一块要让出 --head-h。
+   手机上四项收成一个「目录」按钮，点开是一整页的四项（<details>，没有脚本也能用）。 */
+
+.ae-skip {
+  position: absolute;
+  left: var(--margin);
+  top: 8px;
+  z-index: 60;
+  padding: 6px 12px;
+  background: var(--ae-paper);
+  color: var(--ae-ink);
+  font-size: 14px;
+  text-decoration: none;
+  transform: translateY(-160%);
+}
+.ae-skip:focus { transform: none; }
+
+/* 页头固定在顶上，往下滚也一直在。页首一屏里它是透明的、浮在画面上；往下滚了（shell.js 给 <html> 加 ae-scrolled），
+   身后淡出一层夜色的底（带一点模糊、底边一根细黄铜线），上下收窄一点，盖在什么内容上都读得清。 */
+.ae-head {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 2.6vw, 44px);
+  padding: 26px var(--margin) 0;
+  pointer-events: none;
+  transition: padding 0.28s ease;
+}
+.ae-head::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(9, 12, 19, 0.92), rgba(12, 16, 25, 0.86));
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
+  box-shadow: inset 0 -1px 0 rgba(201, 170, 104, 0.22), 0 10px 24px -18px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+}
+.ae-head > * { pointer-events: auto; }
+html.ae-scrolled .ae-head { padding-top: 12px; padding-bottom: 12px; pointer-events: auto; }
+html.ae-scrolled .ae-head::before { opacity: 1; }
+
+.ae-brand { display: flex; align-items: center; gap: 12px; margin-right: auto; min-width: 0; }
+.ae-hub {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  font: 400 14px/1 var(--f-song);
+  color: rgba(206, 196, 180, 0.66);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  transition: color var(--ae-t-hover);
+}
+.ae-hub:hover { color: var(--ae-text); }
+.ae-brand-slash { width: 1px; height: 18px; background: rgba(214, 196, 160, 0.42); transform: rotate(32deg); }
+.ae-home {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.08em;
+  min-height: 36px;
+  align-items: center;
+  color: rgba(236, 228, 214, 0.9);
+  font-size: 18px;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ae-home .ai { font: 700 1.04em/1 var(--f-didone); letter-spacing: 0.01em; }
+.ae-home .en { margin-left: 0.28em; font: 500 1em/1 var(--f-didone); }
+.ae-home:hover { color: var(--ae-star); }
+/* 中文页：字标的小字号形态（矢量，自带颜色）；悬停时整枚亮一点 */
+.ae-home .ae-wordmark { font-size: 19px; }
+.ae-home .ae-wordmark-svg { transition: filter var(--ae-t-hover); }
+.ae-home:hover .ae-wordmark-svg { filter: brightness(1.12); }
+
+/* 四项：罗马数字斜体 Didone（黄铜）、宋体 600 的中文、拉开字距的小号英文；当前项下面一根锈橙短线 */
+.ae-nav { display: flex; align-items: center; gap: clamp(22px, 2.8vw, 48px); }
+.ae-nav-item {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  min-height: 40px;
+  padding: 10px 0;
+  color: rgba(232, 224, 210, 0.86);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ae-nav-item .r { font: italic 500 14px/1 var(--f-didone); color: rgba(201, 170, 104, 0.88); }
+.ae-nav-item .cn { font: 600 17px/1 var(--f-song); letter-spacing: 0.12em; transition: color var(--ae-t-hover); }
+.ae-nav-item small { font: 500 9.5px/1 var(--f-didone); letter-spacing: 0.22em; color: rgba(196, 182, 160, 0.52); }
+html[lang="en"] .ae-nav-item .cn { font: 500 16px/1 var(--f-didone); letter-spacing: 0.02em; }
+.ae-nav-item::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  bottom: 3px;
+  width: 18px;
+  height: 1px;
+  background: var(--ae-rust-solid);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--ae-t-hover) var(--ae-ease-land);
+}
+.ae-nav-item:hover .cn { color: var(--ae-star); }
+.ae-nav-item:hover::after { transform: scaleX(0.5); }
+.ae-nav-item[aria-current]::after { transform: none; }
+.ae-nav-item[aria-current] .cn { color: var(--ae-star); }
+
+/* 「卷目」悬停或聚焦时展开的十卷目录：一张夜色的目录卡，顶边一根黄铜线；每行 编号（这一卷的点亮色）· 题名 · 方向简称。
+   卡片和导航项之间留一道透明的桥（padding-top），鼠标移过去不会断；收起时稍等一下再消失 */
+.ae-nav-vol { position: relative; display: inline-flex; }
+.ae-vd {
+  position: absolute;
+  top: 100%;
+  left: -26px;
+  padding-top: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.18s ease 0.12s, transform 0.22s var(--ae-ease-land) 0.12s, visibility 0s linear 0.34s;
+}
+.ae-nav-vol:hover .ae-vd,
+.ae-nav-vol:focus-within .ae-vd {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition: opacity 0.2s ease, transform 0.26s var(--ae-ease-land), visibility 0s;
+}
+.ae-vd-card {
+  min-width: 380px;
+  padding: 14px 8px 10px;
+  background: linear-gradient(180deg, rgba(14, 18, 28, 0.97), rgba(9, 12, 19, 0.97));
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(201, 170, 104, 0.55), inset 0 0 0 1px rgba(233, 220, 205, 0.06), 0 28px 56px -24px rgba(0, 0, 0, 0.95);
+}
+.ae-vd-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px 10px;
+  font: 600 12px/1 var(--f-song);
+  letter-spacing: 0.2em;
+  color: rgba(214, 196, 160, 0.72);
+}
+.ae-vd-head i { flex: 1; height: 1px; background: rgba(214, 196, 160, 0.2); }
+.ae-vd-head .en { font: 500 9.5px/1 var(--f-didone); letter-spacing: 0.26em; color: rgba(196, 182, 160, 0.5); }
+.ae-vd-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.1em 1fr auto;
+  align-items: baseline;
+  column-gap: 12px;
+  padding: 9px 14px 9px 16px;
+  color: rgba(236, 228, 214, 0.9);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--ae-t-hover), color var(--ae-t-hover);
+}
+.ae-vd-item .no { font: italic 500 16px/1 var(--f-didone); color: color-mix(in oklab, var(--lit) 76%, #F0EADF); }   /* 偏暗的点亮色掺一点星白，夜底上都读得清 */
+.ae-vd-item .t { font: 600 15.5px/1.25 var(--f-song); letter-spacing: 0.06em; }
+html[lang="en"] .ae-vd-item .t { font: 500 15.5px/1.25 var(--f-didone); letter-spacing: 0.01em; }
+.ae-vd-item .c { font: 400 12px/1 var(--f-song); letter-spacing: 0.04em; color: rgba(196, 182, 160, 0.62); }
+html[lang="en"] .ae-vd-item .c { font: italic 400 12.5px/1 var(--f-didone); }
+.ae-vd-item::before {                                   /* 悬停和当前那一卷：行首一颗点亮色的小菱形 */
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  background: var(--lit);
+  transform: rotate(45deg) scale(0);
+  transition: transform var(--ae-t-hover) var(--ae-ease-land);
+}
+.ae-vd-item:hover,
+.ae-vd-item:focus-visible { background: rgba(233, 220, 205, 0.06); color: var(--ae-star); outline: none; }
+.ae-vd-item:hover::before,
+.ae-vd-item:focus-visible::before,
+.ae-vd-item[aria-current]::before { transform: rotate(45deg) scale(1); }
+.ae-vd-item[aria-current] .t { color: var(--ae-star); }
+.ae-vd-item.is-clouded .t,
+.ae-vd-item.is-upcoming .t { color: rgba(236, 228, 214, 0.5); }
+.ae-vd-item.is-upcoming .no { opacity: 0.6; }
+
+.ae-lang { display: flex; align-items: center; gap: 4px; font: 500 12px/1 var(--f-didone); color: rgba(196, 182, 160, 0.4); }
+.ae-lang a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 5px;
+  color: rgba(196, 182, 160, 0.6);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+.ae-lang a[lang="zh-CN"] { font: 600 15px/1 var(--f-song); letter-spacing: 0; }
+.ae-lang a:hover { color: var(--ae-text); }
+.ae-lang a[aria-current] { color: rgba(240, 232, 216, 0.95); }
+.ae-lang a[aria-current]::after { content: ""; position: absolute; left: 5px; right: 5px; bottom: 6px; height: 1px; background: var(--ae-rust-solid); }
+
+/* 手机的目录 */
+.ae-menu { display: none; }
+.ae-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 2px;
+  font: 600 15px/1 var(--f-song);
+  letter-spacing: 0.18em;
+  color: rgba(240, 232, 216, 0.92);
+  list-style: none;
+  cursor: pointer;
+}
+.ae-menu-btn::-webkit-details-marker { display: none; }
+.ae-menu-btn::before { content: ""; width: 16px; height: 7px; border-top: 1px solid currentColor; border-bottom: 1px solid currentColor; }
+.ae-menu-btn .close,
+.ae-menu[open] .ae-menu-btn .open { display: none; }
+.ae-menu[open] .ae-menu-btn .close { display: inline; }
+.ae-menu-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+  padding: 96px 32px 48px;
+  background: radial-gradient(80% 50% at 50% 0%, rgba(110, 82, 58, 0.25), transparent 70%), var(--wall);
+}
+.ae-menu-nav { display: grid; gap: 6px; }
+.ae-menu-item {
+  display: grid;
+  grid-template-columns: 2.4em auto;
+  align-items: baseline;
+  column-gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(233, 220, 205, 0.12);
+  color: var(--ae-text);
+  text-decoration: none;
+}
+.ae-menu-item .r { font: italic 500 20px/1 var(--f-didone); color: var(--ae-brass); text-align: right; }
+.ae-menu-item .cn { font: 600 26px/1.2 var(--f-song); letter-spacing: 0.12em; }
+html[lang="en"] .ae-menu-item .cn { font: 500 26px/1.2 var(--f-didone); letter-spacing: 0.02em; }
+.ae-menu-item small { grid-column: 2; margin-top: 6px; font: 500 10px/1 var(--f-didone); letter-spacing: 0.3em; color: var(--ae-sand); }
+.ae-menu-item[aria-current] .cn { color: var(--ae-star); }
+.ae-menu-item[aria-current] .r { color: var(--ae-rust-solid); }
+.ae-menu-lang { justify-content: center; font-size: 15px; }
+
+/* 页头的 GitHub 链接：和语言切换同一级的小字，不抢导航 */
+.ae-repo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 600 13px/1 var(--f-song);
+  letter-spacing: 0.08em;
+  color: rgba(214, 196, 160, 0.62);
+  text-decoration: none;
+  transition: color var(--ae-t-hover);
+}
+html[lang="en"] .ae-repo { font: 500 12.5px/1 var(--f-didone); letter-spacing: 0.06em; }
+.ae-repo:hover,
+.ae-repo:focus-visible { color: var(--ae-text); outline: none; }
+.ae-menu-repo { justify-content: center; margin: 14px 0 4px; font-size: 15px; }
+
+@media (max-width: 960px) {
+  .ae-nav-item small { display: none; }
+}
+@media (max-width: 760px) {
+  .ae-head { padding-top: 16px; }
+  .ae-nav,
+  .ae-head > .ae-repo,
+  .ae-head > .ae-lang { display: none; }
+  .ae-menu { display: block; }
+  .ae-hub { font-size: 13px; }
+  .ae-home { font-size: 16px; }
+}
+
+/* ---------- 页脚：海报最底下的那几行 ---------- */
+.ae-foot {
+  position: relative;
+  margin-top: clamp(96px, 9vw, 152px);
+  padding: 64px var(--margin) 48px;
+  text-align: center;
+}
+.ae-foot::before {                                     /* 一根三截的发丝线 */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(520px, 64%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(214, 196, 160, 0.28) 12%, rgba(214, 196, 160, 0.28) 46%, transparent 46% 49%, rgba(214, 196, 160, 0.28) 49% 51%, transparent 51% 54%, rgba(214, 196, 160, 0.28) 54% 88%, transparent);
+}
+.ae-foot-mark { display: inline-flex; flex-direction: column; align-items: center; }
+.ae-foot-star { width: 84px; height: auto; overflow: visible; margin-bottom: 12px; }   /* 吊星和字标「审」上的星之间留开 */
+.ae-foot-mark .ae-wordmark { font-size: 24px; align-items: center; }
+.ae-foot-line { margin-top: 24px; color: var(--ae-text-2); font-size: 14px; letter-spacing: 0.04em; }
+.ae-foot-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 0 26px; margin-top: 16px; }
+.ae-foot-links a { display: inline-flex; align-items: center; min-height: 36px; font-size: 14px; color: var(--ae-text); text-decoration: none; letter-spacing: 0.06em; transition: color var(--ae-t-hover); }
+.ae-foot-links a:hover { color: var(--ae-brass-pale); }
+.ae-foot-lang { justify-content: center; margin-top: 2px; }
+.ae-foot-facts { margin-top: 18px; font-size: 12.5px; letter-spacing: 0.12em; color: var(--ae-sand); white-space: pre-wrap; }
+.ae-foot-note { margin-top: 8px; font-size: 12px; line-height: 1.8; color: var(--ink-weak); }
+.ae-foot-note a { color: inherit; text-decoration: none; }
+.ae-foot-note a:hover { color: var(--ae-text-2); }
+.ae-foot-icp { display: inline-flex; align-items: center; min-height: 32px; }
+
+/* 暂停公示：一条固定在底部的纸带；页脚多留出纸带的高度 */
+.has-notice .ae-foot { padding-bottom: 150px; }
+.ae-notice {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  z-index: 30;
+  width: min(92vw, 640px);
+  transform: translateX(-50%) rotate(-0.6deg);
+  padding: 12px 20px;
+  font-size: 15px;
+  text-align: center;
+  box-shadow: var(--contact);
+}

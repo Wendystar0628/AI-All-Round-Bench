@@ -1,0 +1,203 @@
+/* =====================================================================
+   re1999-design · 设计令牌（CSS 变量）
+   说明见 references/color.md、typography.md、motion-video.md。
+   变量前缀 --re-。尺寸默认按 1920×1080 视频画布给出；网页用 --re-web-*。
+   ===================================================================== */
+
+:root {
+  /* ---------- 地：暗色底（不用 #000） ---------- */
+  --re-void: #0C0D0C;          /* 黑场、宽银幕黑边、加载黑带：全片唯一的“黑” */
+  --re-night: #141514;         /* 深底：章节卡、信息面板 */
+  --re-char: #242423;          /* 炭灰：界面母版底 */
+  --re-char-2: #2E2C29;        /* 略抬一级的暖炭灰：横条、条目底 */
+  --re-veil: rgba(18, 14, 12, 0.64);   /* 半透明暖黑横条（压在画上） */
+
+  /* 带色相的近黑：场景与海报的暗部，按题材选一种 */
+  --re-night-ink: #0D1420;     /* 藏青黑：夜、海、雨 */
+  --re-night-moss: #0E1712;    /* 墨绿黑：林、湖、旧墙 */
+  --re-night-teal: #111819;    /* 墨青黑：品牌暗底 */
+  --re-night-umber: #1A130E;   /* 棕黑：木、皮革、灯下室内 */
+  --re-night-wine: #180D0F;    /* 酒红黑：剧场、哥特、血 */
+
+  /* 暖光晕：主体背后的一团径向光，底仍是炭灰 */
+  --re-glow-core: #8A664E;
+  --re-glow: #654838;
+  --re-glow-edge: #41322A;
+
+  /* ---------- 中性层 ---------- */
+  --re-ash: #5E5C56;
+  --re-stone: #8C8A84;
+  --re-fog: #B9B6AE;
+
+  /* ---------- 纸 ---------- */
+  --re-paper: #E8E2D8;         /* 主纸面：弹窗、纸卡、侧栏 */
+  --re-paper-cream: #EFE5D2;   /* 奶油纸：票根、海报底 */
+  --re-paper-rose: #F2E9E4;    /* 微粉纸：横贯全屏的提示纸带 */
+  --re-paper-news: #EAE8E1;    /* 杂志纸：长文阅读 */
+  --re-paper-aged: #D7CDB9;    /* 旧纸：档案、手账 */
+  --re-paper-kraft: #BFA27A;   /* 牛皮纸：子主题材质 */
+  --re-peach: #E3A78F;         /* 纸角渗色（只在纸面一角） */
+
+  /* ---------- 字：暗底上 ---------- */
+  --re-text: #E6E2DD;          /* 主文字（暖白，不用 #FFF） */
+  --re-text-2: #BDB3AA;        /* 人名、次文字 */
+  --re-text-3: #8F8A85;        /* 弱文字：说明、未选 */
+  --re-ivory: #E9DCCD;         /* 展示字、字标 */
+  --re-title-top: #F2ECE2;     /* 大标题竖向轻渐变：上 */
+  --re-title-bottom: #E2D3B8;  /* 大标题竖向轻渐变：下 */
+  --re-sand: #BBA893;          /* 中文下方的英文小字 */
+  --re-camel: #C9A07B;         /* 暗面板里的小节标题 */
+
+  /* ---------- 字：纸上 ---------- */
+  --re-ink: #2B2723;           /* 纸上正文与标题 */
+  --re-ink-2: #6E6860;         /* 纸上次文字 */
+  --re-ink-3: #8A847B;         /* 纸上装饰字（只用于大字或纹理） */
+
+  /* ---------- 强调：锈橙一族（一屏只用一种强调色） ---------- */
+  --re-rust: #B55829;          /* 品牌锈橙：标志点、圆盘、图标 */
+  --re-orange: #C25E30;        /* 功能橙：唯一的实心主按钮 */
+  --re-orange-web: #AE5228;    /* 网页按钮面：白字可达 5:1 */
+  --re-ember: #DE6B34;         /* 选中文字、悬停、当前项 */
+  --re-flare: #F08447;         /* 1–2px 亮线、星芒的芯（极小面积） */
+  --re-rust-deep: #8E492A;     /* 大面积的橙要降成这个：圆、色带、渐变终点 */
+
+  /* ---------- 红 ---------- */
+  --re-sun: #A63A39;           /* 主体身后的“日”：一盏打在墙上的光，圆心 */
+  --re-sun-edge: #8F3433;      /* 往边缘降到这里，再羽化到透明 */
+  --re-sun-orange: #B35D3B;    /* 橙色的“日”，边缘降到 --re-rust-deep */
+  --re-wine: #842A29;          /* 海报里的一口血红 */
+  --re-alert: #CB4438;         /* 语义：新内容的小红方块 */
+
+  /* ---------- 金：只上在细线、星、数字、首字母 ---------- */
+  --re-bronze: #90744E;        /* 哑光铜金：拉开字距的大词 */
+  --re-brass: #A67243;
+  --re-gold: #C9AA68;          /* 点亮的数字 */
+  --re-gold-pale: #E4D2A0;     /* 浅金标题 */
+  --re-star: #F0EADF;          /* 四角星的奶白 */
+
+  /* ---------- 冷补色：锈橙的互补，面积再小一半 ---------- */
+  --re-petrol: #2F4552;
+  --re-teal: #4B8487;
+  --re-verdigris: #3E7C74;
+
+  /* ---------- 语义 ---------- */
+  --re-timer: #96D084;         /* 限时：绿色描边椭圆里的斜体数字 */
+  --re-timer-line: #5A823E;
+
+  /* ---------- 分类色：压低明度的中饱和色，白图标压在上面 ---------- */
+  --re-cat-1: #2E486B;   /* 石板蓝 */
+  --re-cat-2: #6B4A2E;   /* 赭褐 */
+  --re-cat-3: #6B2E33;   /* 牛血 */
+  --re-cat-4: #2E6B42;   /* 松绿 */
+  --re-cat-5: #662E6B;   /* 李紫 */
+  --re-cat-6: #7F7339;   /* 橄榄金 */
+  --re-cat-7: #2E6B6B;   /* 深青 */
+  --re-cat-8: #6B362E;   /* 砖红 */
+  --re-cat-9: #567F39;   /* 苔绿 */
+  --re-cat-10: #382E6B;  /* 靛 */
+  --re-cat-11: #6B2E57;  /* 桑葚 */
+  --re-cat-12: #2E6B5C;  /* 海绿 */
+
+  /* ---------- 线 ---------- */
+  --re-hair: rgba(233, 220, 205, 0.16);        /* 暗底发丝线 */
+  --re-hair-strong: rgba(233, 220, 205, 0.32);
+  --re-hair-paper: rgba(43, 39, 35, 0.20);     /* 纸上发丝线 */
+  --re-hair-w: 1px;
+  --re-line-w: 2px;
+  --re-break-gap: 18px;        /* 断线的缺口宽（1080p） */
+
+  /* ---------- 字体（全部为本机已装；网页只用开源字体，见 typography.md） ---------- */
+  --re-font-display-cn: "ZCOOL XiaoWei", "Source Han Serif CN", "Noto Serif SC", serif;  /* 高反差宋：大标题，配竖笔加粗滤镜 */
+  --re-font-song: "Source Han Serif CN", "Source Han Serif SC", "Noto Serif SC", "Songti SC", serif;
+  --re-font-song-print: "ChillHuoSong_F", "Source Han Serif CN", "Noto Serif SC", serif;
+  --re-font-ming: "LXGW Neo ZhiSong", "Source Han Serif CN", serif;
+  --re-font-fangsong: "Zhuque Fangsong (technical preview)", "Zhuque Fangsong", "FangSong", serif;
+  --re-font-didone: "Playfair Display", "DM Serif Display", "Bodoni 72", serif;
+  --re-font-didone-heavy: "DM Serif Display", "Playfair Display", serif;
+  --re-font-roman: "Cormorant Garamond", "EB Garamond", serif;
+  --re-font-book: "Source Serif 4", "EB Garamond", "PT Serif", serif;
+  --re-font-italic: "Playfair Display", serif;      /* 斜体只用它：本机其他衬线体没有真斜体 */
+  --re-font-script: "Great Vibes", cursive;          /* 签名笔画 */
+  --re-font-hand: "Caveat", cursive;                 /* 批注、红笔 */
+  --re-font-micro: "Oswald", "Barlow Condensed", sans-serif;  /* 系统微型英文，字重 300 */
+  --re-font-type: "Courier Prime", "IBM Plex Mono", monospace;
+  --re-font-pixel: "Ark Pixel 12px M zh_cn", "Press Start 2P", monospace;
+
+  /* ---------- 字号（1920×1080 视频画布） ---------- */
+  --re-fs-micro: 14px;      /* 中文下挂的英文、演职员表、角落微字 */
+  --re-fs-caption: 22px;    /* 说明、次级 */
+  --re-fs-body: 30px;       /* 标签、正文、字幕 */
+  --re-fs-name: 44px;       /* 名字、小节 */
+  --re-fs-title: 68px;      /* 页面标题 */
+  --re-fs-display: 128px;   /* 展示大字、片名 */
+  --re-fs-poster: 176px;    /* 海报片名、巨号编号 */
+
+  /* ---------- 字号（网页，桌面 1440–1920） ---------- */
+  --re-web-micro: 11px;
+  --re-web-caption: 13px;
+  --re-web-body: 17px;
+  --re-web-name: 24px;
+  --re-web-title: clamp(36px, 3.2vw, 56px);
+  --re-web-display: clamp(64px, 7vw, 132px);
+
+  /* ---------- 字号比例 ---------- */
+  --re-k-en-under-button: 0.32;   /* 按钮：中文下的英文 */
+  --re-k-en-under-card: 0.55;     /* 纸卡：中文下的英文 */
+  --re-k-second-voice: 0.6;       /* 第二声部的大写关键词 / 中文字号（0.55–0.65，宽度 ≤ 中文行 60%） */
+  --re-k-second-phrase: 0.48;     /* 第二声部的斜体短语 / 中文字号（0.45–0.5，不透明度 35–50%） */
+  --re-k-sub: 0.37;               /* 主词 : 次级词 */
+  --re-k-micro: 0.12;             /* 主词 : 微型字 */
+  --re-k-lead-char: 1.6;          /* 中文首字或关键字放大 */
+  --re-k-drop-cap: 2.0;           /* 西文首字母 / 其余字母 */
+  --re-k-denominator: 0.55;       /* 分母、Lv.、上限 */
+
+  /* ---------- 字距与行距 ---------- */
+  --re-track-display: 0.32em;     /* 大写展示字 */
+  --re-track-word: 0.45em;        /* 横在主体身后的大词（0.4–0.5em，先定宽度再定字号） */
+  --re-track-micro: 0.26em;       /* 微型大写 */
+  --re-track-rail: 1.6em;         /* 当一条线用的字：R E V E R S E 式 */
+  --re-track-cn-label: 0.5em;     /* 短中文标签“提 示” */
+  --re-track-cn-title: 0;         /* 中文标题不加字距 */
+  --re-lh-cn-body: 1.85;
+  --re-lh-en-body: 1.55;
+  --re-lh-title: 1.04;
+  --re-lh-credits: 2.0;           /* 演职员表一行一个名字 */
+
+  /* ---------- 边距与槽位（1920×1080） ---------- */
+  --re-edge-icon: 44px;           /* 图标贴边 2.3%W */
+  --re-edge: 75px;                /* 正文与按钮离边 3.9%W */
+  --re-letterbox: 132px;          /* 2.35:1 宽银幕的上下黑边 */
+  --re-tilt-paper: -2deg;         /* 纸片倾斜 1–5° */
+  --re-tilt-plaque: -4deg;        /* 标题牌倾斜 */
+
+  /* ---------- 动效 ---------- */
+  --re-ease-land: cubic-bezier(0.16, 1, 0.3, 1);     /* 落定：指数减速，无回弹 */
+  --re-ease-sway: cubic-bezier(0.65, 0, 0.35, 1);    /* 两段式收缩、镜头起止 */
+  --re-ease-exit: cubic-bezier(0.4, 0, 1, 1);        /* 退场：短而干脆 */
+  --re-ease-web: ease;                               /* 网页淡入位移 */
+  --re-t-frame: 33ms;          /* 一帧（30fps）：色闪 */
+  --re-t-close: 80ms;          /* 弹窗关闭 */
+  --re-t-shut: 150ms;          /* 字卡退场 */
+  --re-t-paper: 220ms;         /* 纸面弹窗打开 */
+  --re-t-band: 230ms;          /* 提示纸带展开 */
+  --re-t-hover: 300ms;
+  --re-t-page: 450ms;          /* 页面切换（暗下 + 淡入） */
+  --re-t-web-in: 600ms;        /* 网页滚动入场 */
+  --re-t-land: 1100ms;         /* 大字从 4 倍缩回到落定 */
+  --re-t-star-step: 150ms;     /* 星逐颗点亮的间隔 */
+  --re-t-black: 1500ms;        /* 揭晓前的黑场静音 */
+  --re-shift-web: 40px;        /* 网页入场位移 32–48px */
+  --re-t-title-fade: 2400ms;   /* 片头标题卡：线性淡入 */
+
+  /* ---------- 颗粒（平整处明暗起伏：界面 2–4 级，平面段 4–8 级，三维与作品 0） ---------- */
+  --re-grain-ui: 0.16;         /* soft-light，暗底与界面 */
+  --re-grain-paper: 0.045;     /* multiply，纸面 */
+  --re-grain-film: 0.30;       /* soft-light，平面图形段、海报式意象、片头字卡 */
+
+  /* ---------- 竖笔加粗（高反差宋）：左右各加宽 ≈ 字号 × 0.018 ---------- */
+  --re-stem-ratio: 0.018;
+}
+
+/* 平均亮度目标（最终画面，HSV 明度的平均，不含黑边）：
+   黑场类 2–8% · 仪式暗场 8–15% · 有景的暗（界面、介绍页）15–30% · 满版画面 25–45% · 纸面 70–85%
+   色度：近中性（Lab C* < 15）像素 界面与暗场 ≥80%、主题画面 ≥50%；鲜艳（C* ≥ 35）界面 ≤5%、登场舞台 ≤12%、主题画面 ≤15% */

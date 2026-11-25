@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>接缝 · THE SEAM — NVIDIA B200 网页艺术（概念设计作品）</title>
+<meta name="description" content="以 NVIDIA B200 为题材的可滚动、可交互网页艺术。本页为概念设计作品，非 NVIDIA 官方页面。">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#nav">跳到章节导航</a>
+<canvas id="gl" aria-label="画面"></canvas>
+<div id="stage" aria-live="off"></div>
+
+<header id="hud">
+  <div class="mark"><span class="mark-b">B200</span><span class="mark-sep"></span><span class="mark-z">接缝</span></div>
+  <div class="hud-ch" aria-live="polite"><b>00</b><span>序章 · 接缝</span></div>
+  <div class="hud-note">本页为概念设计作品，非 NVIDIA 官方页面</div>
+</header>
+
+<div id="ruler" aria-hidden="true">
+  <svg class="ruler-svg" viewBox="0 0 140 20" preserveAspectRatio="none"><path d="M0 12 H140 M0 6 V18 M20 9 V15 M40 6 V18 M60 9 V15 M80 9 V15 M100 6 V18 M120 9 V15 M140 6 V18"/></svg>
+  <i class="ruler-mark"></i>
+  <div class="ruler-u"><span style="left:0">µm</span><span style="left:28.6%">mm</span><span style="left:71.4%">m</span></div>
+</div>
+
+<nav id="nav" aria-label="章节导航"></nav>
+<div id="boot" role="status">正在生成硅片、机柜与光…</div>
+
+<main id="scroll"></main>
+
+<noscript><p style="color:#eee;padding:2em">本作品需要启用 JavaScript 与 WebGL。</p></noscript>
+<script src="app.js"></script>
+</body>
+</html>

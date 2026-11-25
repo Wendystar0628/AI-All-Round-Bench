@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <style>
+    .c{fill:none;stroke:var(--re-orn-line,#E9DCCD);stroke-width:1.2}
+    .c2{fill:none;stroke:var(--re-orn-line,#E9DCCD);stroke-width:.7;opacity:.6}
+    .t{fill:var(--re-orn-line,#E9DCCD);font-family:"Cormorant Garamond","EB Garamond",serif;font-weight:600}
+    .it{fill:var(--re-orn-line,#E9DCCD);font-family:"Playfair Display",serif;font-style:italic}
+    .ring{fill:var(--re-orn-line,#E9DCCD);font-family:"Cormorant Garamond",serif;font-weight:600;letter-spacing:.32em}
+  </style>
+  <defs><path id="rp" d="M150 150 m-126 0 a126 126 0 1 1 252 0 a126 126 0 1 1 -252 0"/></defs>
+  <circle class="c" cx="150" cy="150" r="140"/>
+  <circle class="c2" cx="150" cy="150" r="112"/>
+  <text class="ring" font-size="13"><textPath href="#rp" startOffset="0">· TEMPUS EDAX RERUM · EX LIBRIS NOCTIS · TEMPUS EDAX RERUM ·</textPath></text>
+  <rect class="c2" x="92" y="92" width="116" height="116" transform="rotate(45 150 150)"/>
+  <rect class="c2" x="98" y="98" width="104" height="104" transform="rotate(12 150 150)"/>
+  <text class="t" x="150" y="134" font-size="26" text-anchor="middle" letter-spacing="4">EDITIO</text>
+  <text class="it" x="150" y="160" font-size="19" text-anchor="middle">prima</text>
+  <text class="t" x="150" y="188" font-size="20" text-anchor="middle" letter-spacing="5">MCMXXX</text>
+</svg>

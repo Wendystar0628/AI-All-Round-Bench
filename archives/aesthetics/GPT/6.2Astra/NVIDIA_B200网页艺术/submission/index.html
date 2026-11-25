@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f2e9" />
+    <title>硅的回声 · Silicon Echoes</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main id="exhibit">
+      <header>
+        <button class="brand" id="home" aria-label="回到开场">
+          <svg viewBox="0 0 36 36" aria-hidden="true">
+            <path
+              d="m18 2 15 8-15 8-15-8zm-15 14 15 8 15-8M3 22l15 8 15-8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.9"
+            /></svg
+          ><span>Silicon Atlas</span>
+        </button>
+        <div class="headActions">
+          <button id="indexButton" aria-haspopup="dialog">
+            <svg viewBox="0 0 20 18" aria-hidden="true">
+              <path d="M2 4h16M2 9h11M2 14h16" /></svg
+            >篇章索引</button
+          ><i></i
+          ><button id="full" aria-label="进入全屏" title="全屏">
+            <svg viewBox="0 0 20 20">
+              <path d="M2 7V2h5m6 0h5v5M2 13v5h5m6 0h5v-5" />
+            </svg>
+          </button>
+        </div>
+      </header>
+      <section id="stage" aria-label="互动艺术画面" tabindex="0">
+        <div id="surfaces"></div>
+        <canvas id="relay" aria-hidden="true"></canvas>
+        <div id="copy">
+          <div id="kicker"></div>
+          <h1 id="name"></h1>
+          <p id="verse"></p>
+          <button id="enter">
+            进入作品
+            <svg viewBox="0 0 18 18" aria-hidden="true">
+              <path d="M3 4l10 10m0-8v8H5" />
+            </svg>
+          </button>
+        </div>
+        <button id="gesture"></button>
+      </section>
+      <footer>
+        <div class="footTop">
+          <span class="scrollCue"
+            ><svg viewBox="0 0 16 20" aria-hidden="true">
+              <rect x="3" y="1" width="10" height="17" rx="5" />
+              <path d="M8 4v4" /></svg
+            >滚动观看</span
+          ><span class="legal">本页为概念设计作品，非 NVIDIA 官方页面</span>
+        </div>
+        <nav id="chapters" aria-label="篇章导航"></nav>
+      </footer>
+      <dialog id="directory" aria-labelledby="directoryTitle">
+        <div class="dialogHead">
+          <h2 id="directoryTitle">篇章索引</h2>
+          <button id="dismiss" aria-label="关闭索引">×</button>
+        </div>
+        <div id="links"></div>
+      </dialog>
+    </main>
+    <div class="runway" aria-hidden="true"></div>
+    <script src="model.js"></script>
+    <script src="prints.js"></script>
+    <script src="atlas.js"></script>
+  </body>
+</html>

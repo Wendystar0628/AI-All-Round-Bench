@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>进光立绘</title></head>
+<body>
+<!-- 预渲网站的进光立绘（build.mjs 打开它）：载入视频模板的进光部件，和片子里的立绘是同一套算法、同一盏灯 -->
+<script src="../../../../videos/topics/aesthetics/scenes/design/textures/textures.js"></script>
+<script src="../../../../videos/topics/aesthetics/scenes/design/tokens.js"></script>
+<script src="../../../../videos/topics/aesthetics/scenes/lib/core.js"></script>
+<script src="../../../../videos/topics/aesthetics/scenes/lib/parts/kit.js"></script>
+<script src="../../../../videos/topics/aesthetics/scenes/lib/parts/relight.js"></script>
+<script>
+  // 一张立绘在一盏灯下进光，返回 webp 的 data URL；src 是 file 地址，light 是 VX.ae.LIGHT 的名字，file 是立绘文件名（查附件区域）
+  window.renderPortrait = async (src, light, file) => {
+    const img = new Image();
+    img.src = src;
+    await img.decode();
+    const cv = VX.ae.relight(img, VX.ae.LIGHT[light], { height: img.naturalHeight, file });
+    return { w: cv.width, h: cv.height, data: cv.toDataURL('image/webp', 0.9) };
+  };
+</script>
+</body>
+</html>

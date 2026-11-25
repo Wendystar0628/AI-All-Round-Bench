@@ -302,6 +302,7 @@ function drawWindow(li, i) {
   if (!svg) return;
   const W = win.clientWidth;
   const H = win.clientHeight;
+  if (!W || !H) return; // 还没排版出宽高时不画：网格步长会是 0；尺寸一出来 ResizeObserver 会再画一次
   svg.replaceChildren();
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const soon = li.classList.contains('is-soon');

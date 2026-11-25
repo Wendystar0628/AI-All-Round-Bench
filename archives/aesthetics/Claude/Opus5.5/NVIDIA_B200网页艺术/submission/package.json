@@ -1,0 +1,14 @@
+{
+  "name": "b200-seam",
+  "private": true,
+  "version": "1.0.0",
+  "description": "接缝 · NVIDIA B200 网页艺术（概念设计作品）",
+  "scripts": {
+    "build": "node build.mjs --min",
+    "dev": "node build.mjs"
+  },
+  "dependencies": {
+    "esbuild": "^0.24.0",
+    "three": "^0.170.0"
+  }
+}

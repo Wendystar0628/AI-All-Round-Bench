@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>浮空群岛传说 · Legend of the Floating Isles — UI</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/title.css">
+<link rel="stylesheet" href="css/story.css">
+<link rel="stylesheet" href="css/quest.css">
+<link rel="stylesheet" href="css/party.css">
+<link rel="stylesheet" href="css/battle.css">
+<link rel="stylesheet" href="css/results.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <canvas id="bg"></canvas>
+    <div id="scenes"></div>
+    <div id="overlay"></div>
+    <div id="tcursor" aria-hidden="true">
+      <svg viewBox="0 0 40 44" width="40" height="44">
+        <defs>
+          <linearGradient id="curG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#fff3cf"/><stop offset="1" stop-color="#f2c45a"/>
+          </linearGradient>
+        </defs>
+        <path d="M4 3 L4 33 L11.5 26 L17 38.5 L22.6 36 L17.3 24 L28 24 Z" fill="url(#curG)" stroke="#0b1838" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M7.5 9 L7.5 25.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+        <path d="M30 4 Q30 9 35 9 Q30 9 30 14 Q30 9 25 9 Q30 9 30 4Z" fill="#ffe29a" stroke="#0b1838" stroke-width=".8"/>
+      </svg>
+    </div>
+  </div>
+</div>
+<nav id="toc" class="toc"></nav>
+<svg id="svgdefs" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"></svg>
+
+<script src="js/core.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/data.js"></script>
+<script src="js/bg.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/scene-title.js"></script>
+<script src="js/scene-story.js"></script>
+<script src="js/scene-quest.js"></script>
+<script src="js/scene-party.js"></script>
+<script src="js/scene-battle.js"></script>
+<script src="js/scene-results.js"></script>
+<script src="js/tour.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

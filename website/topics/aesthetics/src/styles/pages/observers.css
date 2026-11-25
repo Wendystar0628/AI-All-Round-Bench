@@ -1,0 +1,119 @@
+/* 受测模型：参测型号一人一扇拱窗。窗里是夜和那轮日，立绘站在日前、脚下化进雾、窗台以下裁掉；
+   窗框是一条暗木的身子，内沿一根受光的细黄铜边，亮边靠日的一段亮。名字是二等字。一屏放下三扇窗。 */
+
+.obs {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  max-width: calc(var(--max) + 2 * var(--margin));
+  margin: 0 auto;
+  padding: calc(var(--head-h) + clamp(20px, 4svh, 48px)) var(--margin) 48px;
+}
+.obs-pool {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 0;
+  width: min(1500px, 110vw);
+  aspect-ratio: 1.4;
+  transform: translateX(-50%);
+  background: url("../../assets/light/pool.webp") 50% 50% / 100% 100% no-repeat;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.obs-head { position: relative; display: grid; justify-items: center; text-align: center; }
+.obs-voice { position: absolute; top: 0.1em; z-index: -1; font: italic 400 clamp(40px, 4.6vw, 80px)/1 var(--f-didone); color: rgba(236, 224, 204, 0.06); white-space: nowrap; }
+.obs-title { font-size: clamp(44px, 4vw, 68px); line-height: 1.1; color: var(--ae-title-top); }
+html[lang="en"] .obs-title .ae-dcn { font: 500 1em/1.1 var(--f-didone); }
+.obs-hair { width: 150px; margin-top: 10px; }
+.obs-line { margin-top: 12px; font-size: 15px; letter-spacing: 0.08em; color: var(--ae-text-2); }
+
+.ob-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 360px));
+  justify-content: center;
+  gap: clamp(28px, 4vw, 80px);
+  margin: clamp(20px, 4svh, 48px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ob { display: flex; flex-direction: column; align-items: center; color: inherit; text-align: center; text-decoration: none; }
+.ob-win {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: clamp(300px, 49svh, 540px);
+  overflow: hidden;
+  border-radius: 50% 50% 0 0 / 34% 34% 0 0;
+  background:
+    radial-gradient(1px 1px at 20% 18%, rgba(240, 234, 223, 0.6), transparent),
+    radial-gradient(1px 1px at 76% 12%, rgba(240, 234, 223, 0.5), transparent),
+    radial-gradient(1px 1px at 84% 34%, rgba(240, 234, 223, 0.35), transparent),
+    radial-gradient(1.2px 1.2px at 12% 44%, rgba(240, 234, 223, 0.35), transparent),
+    linear-gradient(180deg, #07090E, #0E121A 70%, #12151C);
+}
+.ob-win::after {                                       /* 窗框：暗木的身子，内沿一根受光的细黄铜边（顶上亮、往下暗） */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 10px #120D0A, inset 0 0 0 11px rgba(214, 178, 118, 0.55), inset 0 0 0 12px rgba(0, 0, 0, 0.5), inset 0 -60px 50px -30px rgba(0, 0, 0, 0.6);
+  mask: linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.75));
+  pointer-events: none;
+}
+.ob-sun {                                              /* 那轮日：预渲的点画日面，下沿被窗台和暗角吃掉 */
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  width: 92%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  background: url("../../assets/light/sun.webp") 50% 50% / 100% 100% no-repeat;
+  opacity: 0.72;
+  mask: linear-gradient(180deg, #000 45%, transparent 92%);
+}
+.ob-fig {
+  --expo: 0.82;
+  --rim: rgba(238, 150, 92, 0.5);
+  --fog-at: 58%;
+  position: absolute;
+  left: 50%;
+  top: calc(13% - var(--hy, 0.05) * 108%);
+  z-index: 1;
+  width: auto;
+  height: 108%;
+  max-width: none;
+  transform: translateX(-50%);
+  transition: transform 0.5s var(--ae-ease-land);
+}
+img.ob-fig.is-raw { filter: brightness(var(--expo)) saturate(0.88) sepia(0.12) drop-shadow(-1.5px -1px 0 var(--rim)) drop-shadow(1.5px -1px 0 rgba(238, 150, 92, 0.3)); }
+.ob-fog { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; height: 34%; background: linear-gradient(180deg, transparent, rgba(16, 15, 18, 0.72) 60%, #0F0E10); }
+.ob:hover .ob-fig { transform: translateX(-50%) translateY(calc(-6px * var(--motion))); }
+
+.ob-name { margin-top: 18px; font-size: clamp(24px, 2vw, 30px); line-height: 1.2; color: var(--ae-text); }
+.ob:hover .ob-name .nm { color: var(--ae-star); }
+.ob-hair { width: 160px; margin-top: 12px; }
+.ob-vendor { display: inline-flex; align-items: center; gap: 10px; margin-top: 12px; font: 500 10.5px/1 var(--f-didone); letter-spacing: 0.36em; text-transform: uppercase; color: var(--ae-sand); }
+.ob-vendor .ae-logo { width: 14px; height: 14px; color: var(--ae-text-2); }
+.ob-judge { font: 600 12px/1 var(--f-song); letter-spacing: 0.2em; text-transform: none; color: var(--ae-brass-pale); }
+.ob-judge::before { content: "·"; margin-right: 10px; color: var(--ae-sand); }
+.ob-meta { margin-top: 10px; font-size: 13px; letter-spacing: 0.06em; color: rgba(190, 178, 160, 0.66); }
+.ob-none { margin-top: 48px; text-align: center; color: var(--ae-text-2); }
+
+@media (max-width: 600px) {
+  .ob-list {
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    grid-template-columns: none;
+    justify-content: start;
+    gap: 18px;
+    margin: 32px calc(-1 * var(--margin)) 0;
+    padding: 0 var(--margin) 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .ob-li { scroll-snap-align: center; }
+  .ob-win { height: 62svh; }
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 44" width="140" height="44">
+  <style>
+    .idle{fill:var(--re-orn-idle,#888179)}
+    .ring{fill:none;stroke:var(--re-orn-accent,#DE6B34);stroke-width:1.2}
+    .on{fill:var(--re-orn-accent,#DE6B34)}
+  </style>
+  <path class="idle" d="M22 15 L29 22 L22 29 L15 22 Z"/>
+  <path class="ring" d="M96 6 L112 22 L96 38 L80 22 Z" transform="rotate(9 96 22)"/>
+  <path class="on" d="M96 14 L104 22 L96 30 L88 22 Z"/>
+</svg>

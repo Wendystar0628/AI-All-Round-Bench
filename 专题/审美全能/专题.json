@@ -1,0 +1,267 @@
+{
+ "schema": 2,
+ "id": "aesthetics",
+ "name": "AI审美全能",
+ "name_en": "AI Aesthetics",
+ "website_status": "online",
+ "coming_soon": {
+  "zh": "AI 设计作品展：十个创作方向，各模型按同一份题面完成作品，并排陈列。",
+  "en": "A showcase of AI design: ten creative directions, every model building from the same brief, the works hung side by side."
+ },
+ "categories": [
+  {
+   "key": "creative-web",
+   "name": "创意网页设计"
+  },
+  {
+   "key": "toon",
+   "name": "卡通渲染（三渲二）"
+  },
+  {
+   "key": "promo-video",
+   "name": "PV设计"
+  },
+  {
+   "key": "hard-surface",
+   "name": "硬表面建模"
+  },
+  {
+   "key": "large-scene",
+   "name": "大型场景建模"
+  },
+  {
+   "key": "voxel",
+   "name": "体素建模"
+  },
+  {
+   "key": "svg-animation",
+   "name": "SVG动画"
+  },
+  {
+   "key": "clay-render",
+   "name": "白模渲染"
+  },
+  {
+   "key": "type-logo",
+   "name": "字体与Logo设计"
+  },
+  {
+   "key": "game-ui",
+   "name": "游戏UI设计"
+  }
+ ],
+ "groups": [
+  {
+   "key": "work",
+   "name": "作品题"
+  }
+ ],
+ "evaluation": {
+  "kind": "showcase"
+ },
+ "costs": {
+  "hours": "measured"
+ },
+ "tasks": [
+  {
+   "name": "秋庭观星画室",
+   "key": "autumn-observatory",
+   "category": "toon",
+   "group": "work",
+   "statement": "专题/审美全能/题面/卡通渲染/秋庭观星画室.md",
+   "minutes": 150,
+   "min_minutes": 90,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   }
+  },
+  {
+   "name": "NVIDIA_B200网页艺术",
+   "key": "nvidia-b200-web",
+   "category": "creative-web",
+   "group": "work",
+   "statement": "专题/审美全能/题面/创意网页设计/NVIDIA_B200网页艺术.md",
+   "minutes": 90,
+   "min_minutes": 60,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   }
+  },
+  {
+   "name": "鹈鹕的二十二种画法",
+   "key": "pelican-22-styles",
+   "category": "svg-animation",
+   "group": "work",
+   "statement": "专题/审美全能/题面/SVG动画/鹈鹕的二十二种画法.md",
+   "minutes": 150,
+   "min_minutes": 90,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   }
+  },
+  {
+   "name": "天穹圣城",
+   "key": "sky-citadel",
+   "category": "large-scene",
+   "group": "work",
+   "statement": "专题/审美全能/题面/大型场景建模/天穹圣城.md",
+   "minutes": 150,
+   "min_minutes": 90,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   }
+  },
+  {
+   "name": "晴空水上乐园",
+   "key": "water-park",
+   "category": "voxel",
+   "group": "work",
+   "statement": "专题/审美全能/题面/体素建模/晴空水上乐园.md",
+   "minutes": 150,
+   "min_minutes": 90,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   }
+  },
+  {
+   "name": "雨夜港口的巨型机甲",
+   "key": "harbor-mecha",
+   "category": "hard-surface",
+   "group": "work",
+   "statement": "专题/审美全能/题面/硬表面建模/雨夜港口的巨型机甲.md",
+   "minutes": 150,
+   "min_minutes": 90,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   },
+   "materials": {
+    "source": "专题/审美全能/题面/硬表面建模/参考图",
+    "destination": "参考图",
+    "skip_cache_scan": true
+   }
+  },
+  {
+   "name": "浮空群岛传说游戏UI",
+   "key": "floating-isles-game-ui",
+   "category": "game-ui",
+   "group": "work",
+   "statement": "专题/审美全能/题面/游戏UI设计/浮空群岛传说游戏UI.md",
+   "minutes": 90,
+   "min_minutes": 60,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   }
+  },
+  {
+   "name": "玻璃温室与花艺工作室",
+   "key": "greenhouse-render",
+   "category": "clay-render",
+   "group": "work",
+   "statement": "专题/审美全能/题面/白模渲染/玻璃温室与花艺工作室.md",
+   "minutes": 120,
+   "min_minutes": 60,
+   "deliverable": "Blender 场景与静帧（greenhouse_final.blend、stills、README.md）",
+   "materials": {
+    "source": "专题/审美全能/题面/白模渲染/玻璃温室与花艺工作室",
+    "destination": ".",
+    "skip_cache_scan": true
+   },
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 0,
+    "quiet_machine": false
+   }
+  },
+  {
+   "name": "壱雫空PV",
+   "key": "mygo-pv",
+   "category": "promo-video",
+   "group": "work",
+   "statement": "专题/审美全能/题面/PV设计/壱雫空PV.md",
+   "minutes": 180,
+   "min_minutes": 120,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   },
+   "materials": {
+    "source": "专题/审美全能/题面/PV设计/素材",
+    "destination": "素材",
+    "skip_cache_scan": true
+   }
+  },
+  {
+   "name": "二次元游戏Logo",
+   "key": "anime-game-logo",
+   "category": "type-logo",
+   "group": "work",
+   "statement": "专题/审美全能/题面/字体与Logo设计/二次元游戏Logo.md",
+   "minutes": 90,
+   "min_minutes": 60,
+   "deliverable": "网页项目（入口 index.html）",
+   "test_method": "timed_agent_workspace",
+   "answer_resources": {
+    "batch": "parallel",
+    "exclusive_machine": false,
+    "cpus": null,
+    "ports": 1,
+    "quiet_machine": false
+   },
+   "materials": {
+    "source": "专题/审美全能/题面/字体与Logo设计/素材",
+    "destination": "素材",
+    "skip_cache_scan": true
+   }
+  }
+ ]
+}

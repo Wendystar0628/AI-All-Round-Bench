@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<title>AI审美全能</title>
+<!-- 标签栏图标：夜色方牌、黄铜边，中间一颗切面四角星吊在细线上，一道倾斜的轨道绕过它（后半在星后、前半在星前），轨道上停一颗锈橙小珠，四周几点小星。16 px 下读得出的是：深底、亮星、黄铜环、一点锈橙。 -->
+<defs>
+  <radialGradient id="night" cx="50%" cy="40%" r="72%">
+    <stop offset="0" stop-color="#2A3552"/>
+    <stop offset="0.58" stop-color="#141A29"/>
+    <stop offset="1" stop-color="#0A0C12"/>
+  </radialGradient>
+  <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#F6DFA6" stop-opacity="0.5"/>
+    <stop offset="1" stop-color="#F6DFA6" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="bead" cx="38%" cy="34%" r="70%">
+    <stop offset="0" stop-color="#F29A5C"/>
+    <stop offset="0.55" stop-color="#D2602C"/>
+    <stop offset="1" stop-color="#8E3A17"/>
+  </radialGradient>
+</defs>
+<rect x="1" y="1" width="62" height="62" rx="14" fill="url(#night)"/>
+<rect x="2.75" y="2.75" width="58.5" height="58.5" rx="12.25" fill="none" stroke="#C9AA68" stroke-opacity="0.7" stroke-width="1.5"/>
+<!-- 远处的小星 -->
+<circle cx="12.5" cy="15" r="1.4" fill="#E9DCCD" fill-opacity="0.75"/>
+<circle cx="53" cy="50.5" r="1.2" fill="#E9DCCD" fill-opacity="0.6"/>
+<circle cx="47" cy="9.5" r="0.9" fill="#E9DCCD" fill-opacity="0.55"/>
+<path d="M50 12.2 L51 15.6 L54.4 16.6 L51 17.6 L50 21 L49 17.6 L45.6 16.6 L49 15.6 Z" fill="#F0EADF"/>
+<!-- 吊线 -->
+<line x1="32" y1="3.5" x2="32" y2="11.5" stroke="#E9DCCD" stroke-opacity="0.7" stroke-width="1.4"/>
+<!-- 轨道后半（在星后） -->
+<path d="M6 35 A26 8.5 0 0 1 58 35" transform="rotate(-16 32 35)" fill="none" stroke="#C9AA68" stroke-opacity="0.7" stroke-width="2.8"/>
+<!-- 星的光晕 -->
+<circle cx="32" cy="33" r="17" fill="url(#halo)"/>
+<!-- 切面四角星：中心 (32,33)，竖臂 22、横臂 15 -->
+<path d="M32 11 L28.7 28.16 L32 33 Z" fill="#FFF2CF"/>
+<path d="M32 11 L35.3 28.16 L32 33 Z" fill="#F5DCA0"/>
+<path d="M47 33 L35.3 28.16 L32 33 Z" fill="#D9AE62"/>
+<path d="M47 33 L35.3 37.84 L32 33 Z" fill="#A47A3C"/>
+<path d="M32 55 L35.3 37.84 L32 33 Z" fill="#C0904C"/>
+<path d="M32 55 L28.7 37.84 L32 33 Z" fill="#8F6A33"/>
+<path d="M17 33 L28.7 37.84 L32 33 Z" fill="#B98A47"/>
+<path d="M17 33 L28.7 28.16 L32 33 Z" fill="#EBCB86"/>
+<!-- 轨道前半（在星前） -->
+<path d="M58 35 A26 8.5 0 0 1 6 35" transform="rotate(-16 32 35)" fill="none" stroke="#DCC285" stroke-width="3.1"/>
+<!-- 轨道上的锈橙小珠 -->
+<circle cx="11.5" cy="45.3" r="4.6" fill="url(#bead)"/>
+<circle cx="10.1" cy="43.9" r="1.2" fill="#FFE2C4" fill-opacity="0.85"/>
+</svg>

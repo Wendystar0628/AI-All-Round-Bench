@@ -1,0 +1,177 @@
+/* =====================================================================
+   AI审美全能 · 设计令牌（CSS 变量，前缀 --ae-）
+   视频模板与网站共用。说明见同目录 设计系统.md；结构化的同一份数据在 tokens.json。
+   字体：中文思源宋体（Heavy / Bold / SemiBold / Medium / Regular），西文 Libre Bodoni，手写一笔 Tangerine。
+   尺寸默认按 1920×1080、60 帧的视频画布给；网站用 --ae-web-*。
+   对比度都按 WCAG 公式、对母版底 --ae-night 算。
+   ===================================================================== */
+@import url("fonts/fonts.css");
+
+:root {
+  /* ---------- 地：夜图蓝黑（母版页一律用这一片夜） ---------- */
+  --ae-void: #0B0D11;            /* 宽银幕黑边、落版最后淡到的黑：全片唯一的“黑” */
+  --ae-night-zenith: #080C13;    /* 天顶、最暗处 */
+  --ae-night: #0D1420;           /* 母版底：汇总、点评、登场、清口底景 */
+  --ae-night-low: #141D2B;       /* 近地平线、被灯照到的墙底 */
+  --ae-slate-1: #1B2532;         /* 中性：雾、远景、次要形体（与地同色相） */
+  --ae-slate-2: #2A3440;
+  --ae-slate-3: #4A5562;
+  --ae-dome: #10151E;            /* 天文台穹顶内壁（背光处） */
+  --ae-dome-rib: #1E2430;        /* 穹顶铁肋、栏杆暗部 */
+
+  /* ---------- 灯：吊星的暖光（冷的夜里只放一团暖） ---------- */
+  --ae-lamp-core: #8A664E;       /* 径向暖光三级：中心不透明度 30–45% */
+  --ae-lamp: #654838;
+  --ae-lamp-edge: #41322A;
+  --ae-lamp-light: #F3D6B0;      /* 光锥与光晕的染色，滤色叠加 5–10% */
+
+  /* ---------- 主题色：锈橙（天文台夜里只点红灯，护住暗适应） ----------
+     一屏只有一样东西用它；只属于这一夜本身，不进任何题目内部（每题自己的颜色见 tokens.json 的 directions）。 */
+  --ae-rust: #B55829;            /* 品牌：字标里那颗星、地平线 */
+  --ae-rust-solid: #C25E30;      /* 小块实心：书签带、炉心 */
+  --ae-ember: #DE6B34;           /* 当前项：进度定位环、看点行尾 ≫（图形，不写字） */
+  --ae-rust-deep: #8E492A;       /* 大面积的橙降成它 */
+  --ae-rust-stub: #74321E;       /* 票根实底：上面压奶油色字 8.0:1 */
+
+  /* ---------- 辅助色：黄铜与星白 ---------- */
+  --ae-brass: #C9AA68;           /* 星座连线、编号、列点星；对夜 8.3:1 */
+  --ae-brass-pale: #E4D2A0;      /* 要读的金字（书脊烫金）；对夜 12.3:1 */
+  --ae-brass-dim: #8F7A4E;       /* 只给线，不给字 */
+  --ae-star: #F0EADF;            /* 四角星、吊星受光面 */
+
+  /* ---------- 冷补色：面积再小一半 ---------- */
+  --ae-petrol: #2F4552;
+  --ae-nebula: #2E5F66;          /* 星云：不透明度 8–18% */
+
+  /* ---------- 字：暗底上（承载信息的字一律 ≥7:1） ---------- */
+  --ae-text: #E6E2DD;            /* 正文、题名、当前句：14.3:1 */
+  --ae-text-2: #BDB3AA;          /* 次文字、读完的句子、方向名单：9.0:1（只压在 L ≤ 夜+灯光晕 的底上） */
+  --ae-sand: #BBA893;            /* 英文眉标：8.0:1（被灯照亮的墙上改用 --ae-sand-lit） */
+  --ae-sand-lit: #D9CBB6;        /* 亮一档的沙色：灯下的墙上也 ≥9:1 */
+  --ae-label-warm: #D7B68E;      /* 点题短语、类别：9.7:1 */
+  --ae-paper-white: #EDE5D8;     /* 纸白：暗底上的展示字（字标、题名里的白字、名字）。平的、干净，不做渐变 */
+  --ae-paper-white-far: #C9C0B1; /* 纸白离灯远的一端：题名锁定里白字按离光源的远近退到这里 */
+  --ae-title-top: var(--ae-paper-white);
+
+  /* ---------- 纸与墨（观测卡、展签、书签） ---------- */
+  --ae-paper: #EFE5D2;           /* 奶油纸 */
+  --ae-paper-2: #E8E2D8;
+  --ae-peach: #E3A78F;           /* 纸角渗色，只一角 */
+  --ae-ink: #2B2723;             /* 纸上正文 11.9:1 */
+  --ae-ink-2: #4A443D;           /* 纸上次文字 7.7:1 */
+  --ae-ink-rust: #6E2E1C;        /* 纸上的锈色字（编号）9.4:1 */
+  --ae-cream-on-stub: #F3EBDD;   /* 票根实底上的字 */
+
+  /* ---------- 评委的灯色：点评页墙上那圈光、登场时她那扇窗里的天 ---------- */
+  --ae-judge-gpt: #4C5866;       --ae-judge-gpt-edge: #36404B;      /* 月银：冷静、远 */
+  --ae-judge-claude: #2E4B48;    --ae-judge-claude-edge: #203634;   /* 松烟青：书房里的绿罩台灯 */
+  --ae-judge-gemini: #6E5432;    --ae-judge-gemini-edge: #4F3B22;   /* 琥珀：晴天、热闹 */
+
+  /* ---------- 线：锁住全局的几何线 1px；会动的雨不细于 2px ---------- */
+  --ae-geo-w: 1px;
+  --ae-geo: rgba(214, 190, 140, 0.42);          /* 1px 几何线：比底亮一点 */
+  --ae-geo-lit: rgba(246, 222, 170, 0.9);       /* 几何线受光的那一段 */
+  --ae-line-w: 2px;                             /* 雨、要被看见的进度底线 */
+  --ae-hair: rgba(233, 220, 205, 0.42);         /* 要被看见的线：进度底线 3.3:1 */
+  --ae-hair-strong: rgba(233, 220, 205, 0.86);  /* 走过的进度、名字下的线 */
+  --ae-hair-dim: rgba(233, 220, 205, 0.22);     /* 只当装饰的断线 */
+  --ae-hair-paper: rgba(43, 39, 35, 0.28);      /* 纸上的线 */
+
+  /* ---------- 材质：箔、暖晕、接触阴影（画法在 textures/textures.js，见 设计系统.md 第七节） ---------- */
+  --ae-foil-deep: #3B2612;       /* 箔的五档：暗处 → 最亮处（最亮处是象牙，不是白） */
+  --ae-foil-low: #6B4820;
+  --ae-foil-mid: #A47838;
+  --ae-foil-high: #CDA15A;
+  --ae-foil-lit: #F7E6BA;
+  --ae-halo: #FFC890;            /* 暖晕：亮处向外渗的一圈窄光 */
+  --ae-contact: rgba(4, 5, 8, 0.62);   /* 接触阴影：短、实，落在光的对侧 */
+
+  /* ---------- 字体家族 ---------- */
+  --ae-font-display-cn: "AE Display CN", "AE Song", "Noto Serif SC", serif;   /* 思源宋体：片名与字标 900，题名与页面标题 700 */
+  --ae-font-song: "AE Song", "Noto Serif SC", "Songti SC", serif;              /* 中文主力：视频正文 500，网页正文 400，标签人名 600，书脊 700 */
+  --ae-font-didone: "AE Didone", "Bodoni 72", Didot, Georgia, serif;           /* Libre Bodoni：型号名、编号、斜体短语、拉开字距的大写标签、身后大词 */
+  --ae-font-stencil: "AE Stencil", "AE Didone", sans-serif;
+  --ae-font-fatface: "AE Fatface", "AE Didone", serif;
+  --ae-font-serif-display: "AE Serif Display", "AE Didone", serif;
+  --ae-font-type: "AE Type", "Courier New", monospace;
+  --ae-font-pixel: "AE Pixel", monospace;
+  --ae-font-script: "AE Script", cursive;   /* Tangerine：一件锁定最多一笔 */
+  --ae-font-hand: "AE Hand", cursive;
+
+  /* ---------- 视频字号阶梯（1920×1080；一屏最多四档） ---------- */
+  --ae-v-display: 128px;   /* 片名、落版字标 */
+  --ae-v-title: 120px;     /* 题名：6 字及以下；字多时按宽度降到 88px 为止（≤ 840px 宽） */
+  --ae-v-name: 60px;       /* 型号名、评委名（Didone） */
+  --ae-v-body: 44px;       /* 正文、评语、主要内容：下限 */
+  --ae-v-info: 40px;       /* 看点、书脊题名、点题短语 */
+  --ae-v-label: 36px;      /* 类别、进度条题名、展签、方向名单：承载信息的中文下限 */
+  --ae-v-eyebrow: 30px;    /* 英文眉标：下限 */
+  --ae-v-texture: 48px;    /* 只当纹理的英文（第二声部）：不小于它，对比 ≤3:1 */
+  --ae-v-watermark: 240px; /* 身后大词、题材水印：不透明度 6–14% */
+
+  --ae-lh-body: 1.72;      /* 中文正文 */
+  --ae-lh-list: 1.55;
+  --ae-lh-title: 1;
+  --ae-track-eyebrow: 0.32em;
+  --ae-track-rail: 0.62em; /* 字标下的 AI AESTHETICS、片名下的英文 */
+  --ae-track-word: 0.45em; /* 身后大词 */
+  --ae-track-cn-label: 0.08em;
+  --ae-track-caps: 0.36em; /* Didone 全大写的小标签（TOON RENDERING、ADMIT ONE）：0.3–0.5em */
+  --ae-track-cn-caps: 0.3em; /* 和小标签配的中文（宋体 600） */
+
+  /* ---------- 网页字号阶梯（桌面 1280–1920） ---------- */
+  --ae-web-micro: 12px;
+  --ae-web-caption: 14px;
+  --ae-web-body: 17px;
+  --ae-web-lead: 20px;
+  --ae-web-name: 24px;
+  --ae-web-title: clamp(36px, 3.2vw, 56px);
+  --ae-web-display: clamp(64px, 7vw, 132px);
+  --ae-web-lh-body: 1.85;
+
+  /* ---------- 栅格与安全区（视频） ---------- */
+  --ae-edge-brand: 56px;     /* 字标、右上型号名离边 */
+  --ae-edge-text: 96px;      /* 要读的字离左右边：5%W */
+  --ae-safe-top: 54px;       /* 5%H */
+  --ae-letterbox: 132px;     /* 2.35:1 宽银幕上下黑边（只给片头） */
+  --ae-col-text-x: 96px;     /* 介绍页文字栏：96–880px（≤ 44%W） */
+  --ae-col-text-w: 784px;
+  --ae-progress-y: 1032px;   /* 星线的中线 */
+  --ae-progress-x0: 96px;
+  --ae-progress-x1: 1824px;
+
+  /* ---------- 网页栅格 ---------- */
+  --ae-web-cols: 12;
+  --ae-web-gutter: 24px;
+  --ae-web-margin: max(32px, 3.9vw);
+  --ae-web-max: 1680px;
+
+  /* ---------- 动效 ---------- */
+  --ae-ease-land: cubic-bezier(0.16, 1, 0.3, 1);   /* 进来并停住：指数减速、不回弹 */
+  --ae-ease-sway: cubic-bezier(0.65, 0, 0.35, 1);  /* 两段式：镜头起止、字块让位 */
+  --ae-ease-exit: cubic-bezier(0.4, 0, 1, 1);      /* 退场 */
+  --ae-ease-drift: linear;                          /* 慢推、摆动、轨道 */
+  --ae-t-frame: 16.7ms;       /* 一帧（60fps） */
+  --ae-t-ignite: 100ms;       /* 星点亮：暖光团收成星 */
+  --ae-t-exit: 120ms;         /* 退场 */
+  --ae-t-punch: 200ms;        /* 观测卡打孔 / 撕下 */
+  --ae-t-sentence: 200ms;     /* 一句评语从虚到实 */
+  --ae-t-focus: 350ms;        /* 字“对焦”：模糊 12px → 0 */
+  --ae-t-iris: 500ms;         /* 打孔处的视场张开到满屏 */
+  --ae-t-enter: 500ms;        /* 画面推入停稳 */
+  --ae-t-line: 800ms;         /* 线画出 */
+  --ae-t-title-fade: 2400ms;  /* 片头字组线性淡入 */
+  --ae-t-star-step: 200ms;    /* 方向名单逐个点亮的间隔 */
+  --ae-t-breath: 5000ms;      /* 立绘呼吸周期 */
+  --ae-t-pendulum: 5600ms;    /* 吊星摆动周期（±0.5°） */
+  --ae-t-web-in: 600ms;       /* 网页滚动入场；位移 40px */
+  --ae-t-hover: 300ms;
+
+  /* ---------- 颗粒（静止瓦片、柔光；作品、立绘、三维画面和要读的字都不盖） ---------- */
+  --ae-grain-ui: 0.16;        /* soft-light */
+  --ae-grain-film: 0.28;      /* soft-light：平面画法的介绍页、片头 */
+  --ae-grain-paper: 0.045;    /* multiply：纸面 */
+}
+
+/* 平均亮度目标（画面层，不含黑边）：片头与落版的标题卡 2–8% · 登场舞台 8–15% · 母版页与暗底介绍页 15–30% ·
+   亮底介绍页 55–80%。近白像素 ≤2%。鲜艳像素（Lab C* ≥ 35）：界面 ≤5%，登场的“日” ≤12%。 */

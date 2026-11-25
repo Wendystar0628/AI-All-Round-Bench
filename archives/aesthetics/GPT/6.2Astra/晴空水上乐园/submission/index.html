@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#79d5ed">
+<title>晴空水上乐园 · Sky Bay Water Park</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="park" aria-label="晴空水上乐园三维场景"><canvas id="scene" aria-label="拖动环绕，滚轮缩放，右键拖动平移"></canvas></main>
+<nav id="views" aria-label="观景点切换" hidden>
+<div id="directory" hidden>
+  <div class="directory-head"><span class="mini-rule"></span><b>观景导览</b><span>PARK VIEWS</span><button id="close" title="收起导览" aria-label="收起导览">×</button></div>
+  <div id="places" role="listbox" aria-label="选择观景点"></div>
+</div>
+<div class="pass">
+<button id="pick" aria-haspopup="listbox" aria-expanded="false" title="选择观景点">
+  <span class="map-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><circle cx="31" cy="15" r="8" fill="#FFD453"/><path d="M7 31c5-1 8-8 12-13 3-4 9-5 12-3-5 0-8 5-7 9 2 6 10 7 17 3-3 6-9 9-16 7-5-1-8-4-11-4-3 0-5 2-7 1Z" fill="#168FB5"/><path d="M8 36c7-5 12 1 19 1 5 0 9-2 13-4" stroke="#168FB5" stroke-width="2.7" stroke-linecap="round"/></svg></span>
+  <span class="selection"><span class="code">VIEWPOINT <i></i><span id="index">01 / 19</span></span><span class="view-name"><span id="place-name">全园鸟瞰</span><svg width="10" height="7" viewBox="0 0 10 7" fill="none"><path d="m1 1.5 4 4 4-4" stroke="currentColor" stroke-width="1.5"/></svg></span></span>
+</button>
+<div class="paging"><button id="prev" title="上一观景点（←）" aria-label="上一观景点"><svg viewBox="0 0 20 20"><path d="m12 5-5 5 5 5"/></svg></button><button id="next" title="下一观景点（→）" aria-label="下一观景点"><svg viewBox="0 0 20 20"><path d="m8 5 5 5-5 5"/></svg></button></div>
+</div>
+</nav>
+<script src="lib/three.min.js"></script>
+<script src="scene/core.js"></script>
+<script src="scene/tracks.js"></script>
+<script src="lib/clouds.js"></script>
+<script src="scene/coast.js"></script>
+<script src="scene/landscape.js"></script>
+<script src="scene/rides.js"></script>
+<script src="scene/resort.js"></script>
+<script src="scene/gardens.js"></script>
+<script src="scene/finish.js"></script>
+<script src="scene/experience.js"></script>
+</body>
+</html>

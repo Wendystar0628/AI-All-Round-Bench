@@ -15,7 +15,7 @@
 | 用当前确认数据发布 | `python website/tools/publish.py` |
 | 用户确认一个型号后更新该专题快照并发布 | `python website/tools/publish.py --confirm <id> "厂商/型号"` |
 
-根目录的 `打开成绩网站.cmd` 依次构建并打开预览。已有开发启动项为 `site-preview`（5181，整站）、`decathlon-dev`（5188，十项全能）、`hub-dev`（5189，总站）。开发服务器优先读各自的 `data-local/`。在沙盒测试整站时可显式指定 `preview.py --port 28150`。
+根目录的 `打开成绩网站.cmd` 依次构建并打开预览。已有开发启动项为 `site-preview`（5181，整站）、`decathlon-dev`（5188，十项全能）、`hub-dev`（5189，总站）、`aesthetics-dev`（5195，审美全能）。开发服务器优先读各自的 `data-local/`。在沙盒测试整站时可显式指定 `preview.py --port 28150`。
 
 ## 数据去向
 
@@ -64,6 +64,8 @@
 | `publish/legacy-routes.json` | 冻结的旧网址清单、跳转页文案和 404 兜底声明 |
 
 该插件按清单顺序输出类别和题目。评分读取专题评法的题分、类别分与总分，按一位小数排同分名次。`scores.json` 保留逐题缺分原因、设计题评分员分数和匿名异常说明。`stems/` 依据题面标题摘录正文和材料中的分题，`search.json` 含型号、题目、类别、说明页的名称、别名、拼音全拼和首字母。详见 [题干规则](../topics/decathlon/docs/tasks.md) 和 [0 分原因](../topics/decathlon/docs/zeros.md)。
+
+审美全能的插件不打分，数据约定见 [审美全能数据](../topics/aesthetics/docs/data.md)，下载包见 [作品下载包](../topics/aesthetics/docs/downloads.md)，站点怎么开发、预览见 [审美全能网站](../topics/aesthetics/README.md)。作品图在导出时按素材自动挑（有缓存）；下载包在完整导出时先自动打好（有缓存，`--live` 不打包）。
 
 ## 拼站与托管
 

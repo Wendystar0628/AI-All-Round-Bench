@@ -1,0 +1,83 @@
+/* =====================================================================
+   AI审美全能 · 母版部件（视频 1920×1080）
+   需要 tokens.css、textures/textures.css。部件只取一件旧物的局部：
+   观测卡 = 票，展签 = 美术馆标签，进度 = 一串星，题名 = 图版扉页上的字。
+   承载信息的字：中文 ≥36px、正文 ≥44px、英文 ≥30px，对比 ≥7:1。
+   ===================================================================== */
+
+/* ---------- 字标（AE.wordmark）：字干净不磨不贴箔，「审」上一颗锈橙星；下面一根两端渐隐的短发丝线、拉开字距的 AI AESTHETICS ---------- */
+.ae-wordmark { position: absolute; left: var(--ae-edge-brand); top: 44px; display: flex; flex-direction: column; align-items: center; }
+.ae-wordmark .ae-title-svg { display: block; }
+.ae-wordmark .ae-hair-fade { display: block; height: 1px; margin-top: .3em; --ae-hair-c: rgba(233, 220, 205, .6); }
+.ae-wordmark.is-ink .ae-hair-fade { --ae-hair-c: rgba(43, 39, 35, .5); }
+.ae-wordmark .en { margin-top: 12px; font: 500 22px/1 var(--ae-font-didone); letter-spacing: .62em; margin-right: -.62em; color: var(--ae-sand); }
+.ae-wordmark.is-ink .en { color: #6E6860; }
+/* 字标下的英文只是字标的一部分（图形），不承载信息 */
+
+/* ---------- 题名锁定（AE.lockup，logo/lockups/）：图层叠放；编号小标是文字 ---------- */
+.ae-lockup { position: relative; }
+.ae-lockup img { display: block; max-width: none; }
+.ae-lk-tag { display: flex; align-items: baseline; gap: 12px; white-space: nowrap; }
+.ae-lk-tag .no { font: italic 500 30px/1 var(--ae-font-didone); color: rgba(226, 208, 176, .88); }
+.ae-lk-tag .hr { align-self: center; width: 28px; height: 1px; background: rgba(214, 190, 140, .55); }
+.ae-lk-tag .cn { font: 600 21px/1 var(--ae-font-song); letter-spacing: var(--ae-track-cn-caps); color: rgba(214, 202, 184, .8); }
+.ae-lk-tag .en { font: 500 14px/1 var(--ae-font-didone); letter-spacing: var(--ae-track-caps); color: rgba(196, 180, 152, .62); }
+.ae-lk-tag.is-ink .no { color: rgba(110, 46, 28, .9); }
+.ae-lk-tag.is-ink .hr { background: rgba(43, 39, 35, .5); }
+.ae-lk-tag.is-ink .cn { color: rgba(43, 39, 35, .82); }
+.ae-lk-tag.is-ink .en { color: rgba(74, 68, 61, .72); }
+.ae-lk-tagpos { position: absolute; }
+/* 点题短语（三等字）：中文在前、一道细斜线、斜体英文在后，共用一条基线 */
+.ae-lk-tagline { position: absolute; white-space: nowrap; font: 500 31px/1 var(--ae-font-song); letter-spacing: 2px; color: #D9CCB8; }
+.ae-lk-tagline .sl { display: inline-block; width: 1px; height: 26px; margin: 0 18px; vertical-align: -3px; transform: rotate(28deg); background: currentColor; opacity: .6; }
+.ae-lk-tagline .en { font: italic 400 23px/1 var(--ae-font-didone); letter-spacing: .3px; opacity: .62; }
+.ae-lk-tagline.is-ink { color: #3A332C; }
+
+/* ---------- 右上：这部片的型号名（母版页常驻） ---------- */
+.ae-modeltag { position: absolute; right: var(--ae-edge-brand); top: 58px; display: flex; align-items: center; gap: 14px;
+  font: 600 34px/1 var(--ae-font-didone); color: var(--ae-text); letter-spacing: .01em; }
+.ae-modeltag .ae-dm svg { display: block; }
+
+/* ---------- 观测卡（票）：票面奶油纸，打孔线，票根实底 + 奶油色动作字 ---------- */
+.ae-ticket { position: absolute; display: flex; width: 472px; height: 150px; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .45)); }
+.ae-ticket .face { position: relative; flex: 1; padding: 22px 26px 18px 34px; box-sizing: border-box; overflow: hidden;
+  -webkit-mask: radial-gradient(circle 13px at 100% 0, transparent 12px, #000 13px) top / 100% 51% no-repeat,
+                radial-gradient(circle 13px at 100% 100%, transparent 12px, #000 13px) bottom / 100% 51% no-repeat;
+          mask: radial-gradient(circle 13px at 100% 0, transparent 12px, #000 13px) top / 100% 51% no-repeat,
+                radial-gradient(circle 13px at 100% 100%, transparent 12px, #000 13px) bottom / 100% 51% no-repeat; }
+.ae-ticket .face::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; background: var(--tk-bar); }
+.ae-ticket .perf { width: 0; border-left: 2px dashed rgba(43, 39, 35, .35); margin: 16px 0; position: relative; left: -1px; }
+.ae-ticket .stub { position: relative; width: 132px; background: var(--tk-deep); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  -webkit-mask: radial-gradient(circle 13px at 0 0, transparent 12px, #000 13px) top / 100% 51% no-repeat,
+                radial-gradient(circle 13px at 0 100%, transparent 12px, #000 13px) bottom / 100% 51% no-repeat;
+          mask: radial-gradient(circle 13px at 0 0, transparent 12px, #000 13px) top / 100% 51% no-repeat,
+                radial-gradient(circle 13px at 0 100%, transparent 12px, #000 13px) bottom / 100% 51% no-repeat; }
+.ae-ticket .verb { font: 700 46px/1 var(--ae-font-song); color: var(--ae-cream-on-stub); letter-spacing: .08em; padding-left: .08em; }
+.ae-ticket .mark { width: 26px; height: 26px; border-radius: 50%; border: 2px dashed rgba(243, 235, 221, .55); box-sizing: border-box; }
+.ae-ticket .hole { border-radius: 50%; background: #05070A; box-shadow: inset 0 2px 4px rgba(0, 0, 0, .8); }
+.ae-ticket .face .en { font: italic 400 44px/1.1 var(--ae-font-didone); color: var(--ae-ink); white-space: nowrap; }
+.ae-ticket .face .rule { height: 2px; margin-top: 14px; background: var(--ae-hair-paper); }
+.ae-ticket .face .const { position: absolute; right: 18px; top: 16px; opacity: .8; }
+
+/* ---------- 进度条的字 ---------- */
+.ae-progress { position: absolute; left: 0; top: 0; overflow: visible; }
+.ae-pg-label { font: 600 36px var(--ae-font-song); fill: var(--ae-text); }
+.ae-pg-label .no { font: 600 38px var(--ae-font-didone); fill: var(--ae-brass-pale); }
+
+/* ---------- 名字（评委、型号） ---------- */
+.ae-name { position: absolute; display: flex; align-items: baseline; gap: 20px; white-space: nowrap; }
+.ae-name .nm { font: 600 60px/1 var(--ae-font-didone); color: var(--ae-text); letter-spacing: .005em; }
+.ae-name .role { font: 600 36px/1 var(--ae-font-song); color: var(--ae-text-2); letter-spacing: .08em; }
+
+/* ---------- 评语字幕：按句出现，读完的句子退一档 ---------- */
+.ae-sub { position: absolute; font: 400 44px/1.72 var(--ae-font-song); color: var(--ae-text);
+  text-align: justify; text-justify: inter-character; line-break: strict; word-break: normal; letter-spacing: .01em; }
+.ae-sub .s { transition: none; }
+.ae-sub .s.done { color: var(--ae-text-2); }
+.ae-sub .end { display: inline-block; width: 0; }
+
+/* 名单里的斜线、◆◆ */
+.ae-slash { display: inline-flex; align-items: center; margin: 0 14px; transform: translateY(2px); }
+.ae-slash svg { display: block; }
+.ae-dm { display: inline-flex; }
+.ae-st { display: inline-block; vertical-align: middle; }

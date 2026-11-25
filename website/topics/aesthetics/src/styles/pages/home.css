@@ -1,0 +1,167 @@
+/* 首页：一屏，不滚动（质感贯穿方案 4.2，样张四）。
+   整套构图画在一块「台」上：台高 = min(视口高, 视口宽 × 9/16)，贴着视口底边；台上所有竖向尺寸都按台高缩放
+   （--u 是台高的 1/900），横向按视口居中。窗口比 16:9 宽时台占满整个高度；比 16:9 窄时多出来的高度给上面的夜空。
+   手机竖屏和接近方形的窗口改成一列（文件末尾）。矮到放不下时先收掉演职员表那一行，再把星座的简称收成只有卷号。 */
+
+body[data-page="home"] { height: 100svh; overflow: hidden; }
+body[data-page="home"] main { height: 100%; }
+
+.hm {
+  --u: calc(min(100svh, 56.25vw) / 900);
+  --star-y: calc(150 * var(--u));                 /* 吊星的星心离台顶 */
+  position: relative;
+  isolation: isolate;
+  height: 100svh;
+  overflow: hidden;
+  background: #090B11;
+}
+/* 夜：预渲的天（天顶近黑、近地平线微微泛暖、聚集点画的银河、1–2px 的星） */
+.hm-sky { position: absolute; inset: 0; background: url("../../assets/light/sky.webp") 50% 100% / cover no-repeat; }
+.hm-sky::after {                                  /* 暗角：盖在天和光上，字和票在它上面 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70% 78% at 50% 46%, transparent 40%, rgba(3, 4, 7, 0.55) 100%);
+}
+
+.hm-stage { position: absolute; left: 0; right: 0; bottom: 0; height: calc(900 * var(--u)); }
+
+.hm-grain { opacity: 0.2; }
+
+/* 吊星：细线从页顶垂下（台上方多出来的那段夜空里也是这根线），挂环、切面星、一圈窄暖晕 */
+.hm-lamp { position: absolute; left: 50%; top: 0; bottom: 0; pointer-events: none; }
+.hm-thread {
+  position: absolute;
+  left: -0.5px;
+  top: -100svh;
+  height: calc(100svh + var(--star-y) - 46 * 1.4 * var(--u));
+  width: 1px;
+  background: linear-gradient(180deg, rgba(214, 196, 160, 0) 0, rgba(214, 196, 160, 0.42) 22%, rgba(214, 196, 160, 0.62));
+}
+.hm-hang {
+  position: absolute;
+  left: 0;
+  top: calc(var(--star-y) - 46 * var(--u) * 1.4);
+  width: calc(160 * var(--u) * 1.4);
+  transform: translateX(-50%);
+  transform-origin: 50% 0;
+  animation: hm-sway var(--ae-t-pendulum, 5.6s) ease-in-out infinite;
+}
+.hm-hang .ae-hang { display: block; width: 100%; height: auto; overflow: visible; }
+/* 点亮的那一下：一道细长的十字芒一闪即收（只在本次访问的第一页） */
+.hm-flare {
+  position: absolute;
+  left: 50%;
+  top: calc(46 * 1.4 * var(--u));
+  width: calc(520 * var(--u));
+  height: calc(300 * var(--u));
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 236, 200, 0.85) 50%, transparent) 50% 50% / 100% 1.5px no-repeat,
+    linear-gradient(180deg, transparent, rgba(255, 236, 200, 0.7) 50%, transparent) 50% 50% / 1.5px 100% no-repeat;
+}
+@keyframes hm-sway {
+  0%, 100% { transform: translateX(-50%) rotate(-0.5deg); }
+  50% { transform: translateX(-50%) rotate(0.5deg); }
+}
+
+/* 标题卡：字标、短发丝线、AI AESTHETICS、轨道里的一句话、开卷票 */
+.hm-card { position: absolute; left: 0; right: 0; top: calc(212 * var(--u)); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.hm-mark { font-size: calc(118 * var(--u)); line-height: 0; }
+.hm-hair { display: block; width: calc(140 * var(--u)); height: 1px; margin-top: calc(26 * var(--u)); background: linear-gradient(90deg, transparent, rgba(233, 220, 205, 0.6), transparent); }
+.hm-en { margin-top: calc(22 * var(--u)); font: 500 max(11px, calc(15 * var(--u)))/1 var(--f-didone); letter-spacing: 0.62em; padding-left: 0.62em; color: rgba(210, 196, 172, 0.72); }
+.hm-orbit { position: relative; display: grid; place-items: center; width: calc(680 * var(--u)); height: calc(88 * var(--u)); margin-top: calc(26 * var(--u)); }
+.hm-orbit-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.hm-orbit-ring .ring { fill: none; stroke: rgba(214, 190, 140, 0.42); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.hm-orbit-ring .bead { fill: rgba(236, 214, 168, 0.95); }
+.hm-about { position: relative; font: 500 max(14px, calc(20 * var(--u)))/1.5 var(--f-song); letter-spacing: 0.08em; color: #E2DCD2; white-space: nowrap; }
+html[lang="en"] .hm-about { font: italic 400 max(15px, calc(21 * var(--u)))/1.4 var(--f-didone); letter-spacing: 0.01em; }
+
+/* 开卷票：接触阴影落在下方 */
+.hm-cta { width: max(300px, calc(340 * var(--u))); min-height: max(78px, calc(86 * var(--u))); margin-top: calc(20 * var(--u)); }
+.hm-cta .t1 { font-size: max(16px, calc(19 * var(--u))); }
+.hm-cta .stub { width: max(74px, calc(84 * var(--u))); }
+
+/* 十卷星座：一道低低的弧悬在地平线上方 */
+.hm-chart { position: absolute; left: 50%; top: calc(724 * var(--u)); width: min(calc(1260 * var(--u)), 92vw); transform: translateX(-50%); }
+.hm-chart .ae-chart--arc { --arc: calc(68 * var(--u)); --pt: max(20px, calc(26 * var(--u))); }
+.hm-chart .ae-ch-item .nm { font-size: max(12px, calc(14.5 * var(--u))); }
+.hm-chart .ae-ch-item .no { font-size: max(11px, calc(13 * var(--u))); }
+
+/* 地平线、小天文台、演职员表 */
+.hm-ground { position: absolute; left: 0; right: 0; top: calc(832 * var(--u)); bottom: 0; background: linear-gradient(180deg, #0D0F15, #08090C); }
+.hm-horizon { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(200, 178, 140, 0.25) 20%, rgba(200, 178, 140, 0.45) 50%, rgba(200, 178, 140, 0.25) 80%, transparent); }
+.hm-dome { position: absolute; left: 50%; bottom: calc(100% - 1px); width: calc(120 * var(--u)); height: auto; transform: translateX(-50%); }
+.hm-facts {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(32 * var(--u));
+  font: 500 max(11px, calc(12.5 * var(--u)))/1 var(--f-song);
+  letter-spacing: 0.16em;
+  color: rgba(190, 178, 160, 0.58);
+  text-align: center;
+  white-space: pre;
+}
+html[lang="en"] .hm-facts { font: 500 max(10px, calc(11 * var(--u)))/1 var(--f-didone); letter-spacing: 0.22em; text-transform: uppercase; }
+.hm-icp { position: absolute; right: var(--margin); bottom: max(6px, calc(12 * var(--u))); font-size: 11px; color: rgba(143, 138, 133, 0.55); text-decoration: none; }
+.hm-icp:hover { color: var(--ae-text-2); }
+
+/* 开场：只在本次访问的第一页放。星沿线放下、点亮（一道长芒一闪即收）、字标对焦、轨道画出、星座的星从左到右依次点亮 */
+.is-first .hm-hang { animation: hm-drop 1s var(--ae-ease-land) 0.15s both, hm-sway var(--ae-t-pendulum, 5.6s) ease-in-out 1.15s infinite; }
+.is-first .hm-hang .ae-hang { animation: hm-ignite 0.7s ease-out 0.95s both; }
+.is-first .hm-flare { animation: hm-flare 0.9s ease-out 1s both; }
+.is-first .hm-mark { animation: hm-focus 0.8s var(--ae-ease-land) 1.35s both; }
+.is-first .hm-hair,
+.is-first .hm-en { animation: hm-fade 0.8s linear 1.7s both; }
+.is-first .hm-orbit-ring .ring { stroke-dasharray: 1; animation: hm-draw 1.2s var(--ae-ease-land) 1.9s both; }
+.is-first .hm-orbit-ring .bead,
+.is-first .hm-about,
+.is-first .hm-cta { animation: hm-fade 0.6s linear 2s both; }
+.is-first .hm-chart .ae-ch-line { animation: hm-fade 0.8s linear 2.3s both; }
+.is-first .hm-chart .ae-ch-item { animation: hm-fade 0.4s linear both; animation-delay: calc(2.4s + var(--i) * 90ms); }
+.is-first .hm-dome,
+.is-first .hm-facts { animation: hm-fade 0.6s linear 3.2s both; }
+@keyframes hm-drop { from { transform: translateX(-50%) translateY(calc(-260 * var(--u))); } }
+@keyframes hm-ignite { from { opacity: 0.3; filter: brightness(0.5); } }
+@keyframes hm-flare { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3, 0.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1, 1); } }
+@keyframes hm-fade { from { opacity: 0; } }
+@keyframes hm-focus { from { opacity: 0; filter: blur(8px); } }
+@keyframes hm-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+/* 矮窗口：先收掉演职员表，再把星座的简称收成只有卷号 */
+@media (max-height: 620px) and (min-width: 761px) and (min-aspect-ratio: 1/1) {
+  .hm-facts { display: none; }
+}
+@media (max-height: 520px) and (min-width: 761px) and (min-aspect-ratio: 1/1) {
+  .hm-chart .ae-ch-item .nm { display: none; }
+}
+/* 矮到连这些都放不下（横着的手机）：这时才允许往下滚，东西不被切掉 */
+@media (max-height: 420px) and (min-aspect-ratio: 1/1) {
+  body[data-page="home"] { height: auto; overflow: auto; }
+  .hm { height: 420px; --u: calc(420px / 900); }
+}
+
+/* ================= 手机竖屏、接近方形的窗口：一列 =================
+   吊星、字标、轨道里的一句话、开卷票（在星座上面）、星座改成两行五颗、地平线和演职员表。仍然一屏。 */
+@media (max-width: 760px), (max-aspect-ratio: 1/1) {
+  .hm { --u: calc(min(100svh, 160vw) / 900); }
+  .hm-stage { top: 0; height: auto; display: flex; flex-direction: column; align-items: center; padding: calc(var(--star-y) + 70 * var(--u)) 20px 0; }
+  .hm { --star-y: calc(170 * var(--u)); }
+  .hm-card { position: relative; top: auto; width: 100%; }
+  .hm-mark { font-size: min(13.5vw, calc(110 * var(--u))); }
+  .hm-orbit { width: min(100%, calc(680 * var(--u))); }
+  .hm-about { white-space: normal; font-size: max(14px, calc(20 * var(--u))); max-width: 15em; text-wrap: balance; }
+  .hm-cta { margin-top: calc(34 * var(--u)); width: min(100%, 330px); }
+  .hm-chart { position: relative; left: auto; top: auto; transform: none; width: 100%; margin-top: calc(56 * var(--u)); }
+  .hm-chart .ae-chart--arc { height: auto; }
+  .hm-chart .ae-ch-line { display: none; }
+  .hm-chart .ae-chart ol { display: grid; grid-template-columns: repeat(5, 1fr); row-gap: calc(26 * var(--u)); }
+  .hm-chart .ae-chart--arc .ae-ch-item { position: relative; left: auto; top: auto; display: flex; justify-content: center; }
+  .hm-chart .ae-chart--arc .ae-ch-item > a { transform: none; }
+  .hm-chart .ae-ch-tag { display: none; }
+  .hm-chart .ae-ch-item .nm { font-size: 12px; letter-spacing: 0.04em; }
+  .hm-ground { top: auto; height: calc(120 * var(--u)); }
+  .hm-dome { width: calc(100 * var(--u)); }
+  .hm-facts { top: calc(30 * var(--u)); white-space: normal; padding: 0 20px; line-height: 1.8; letter-spacing: 0.08em; }
+}

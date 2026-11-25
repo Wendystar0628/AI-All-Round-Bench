@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>晴空水上乐园</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe8fb; }
+  #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+  #loader { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column;
+    background: linear-gradient(#2f8cf0, #8fd3fa 60%, #dff5ff); transition: opacity .6s; z-index: 10; }
+  #loader .logo { font: 900 28px "MiSans", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif; color: #fff; letter-spacing: 4px;
+    text-shadow: 0 2px 0 rgba(20,100,200,.35); margin-bottom: 18px; }
+  #loader .bar { width: 220px; height: 10px; border-radius: 6px; background: rgba(255,255,255,.45); overflow: hidden; }
+  #loadbar { width: 0; height: 100%; background: #ffe04d; border-radius: 6px; transition: width .2s; }
+  #err { position: fixed; left: 8px; bottom: 8px; color: #c00; font: 12px monospace; white-space: pre; z-index: 20; }
+  #vbar { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 4px; padding: 5px 6px;
+    background: rgba(255,255,255,0.72); border-radius: 14px; box-shadow: 0 3px 12px rgba(20,90,160,.16); z-index: 5;
+    backdrop-filter: blur(4px); user-select: none; }
+  .vbtn { position: relative; width: 28px; height: 28px; border: none; padding: 0; border-radius: 8px; background: #fff; cursor: pointer;
+    box-shadow: inset 0 0 0 1.5px #cfe8f8; transition: transform .15s, box-shadow .15s; outline: none; }
+  .vbtn img { width: 22px; height: 22px; image-rendering: pixelated; display: block; margin: 3px auto 0; border-radius: 5px; }
+  .vbtn:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px #1e9be8; }
+  .vbtn.on { background: #1e9be8; box-shadow: inset 0 0 0 1.5px #1e9be8, 0 0 0 2px #ffd23a; }
+  .vnum { position: absolute; right: -4px; top: -5px; min-width: 13px; height: 13px; padding: 0 2px; box-sizing: border-box; border-radius: 7px;
+    background: #ffd23a; color: #23407e; font: 900 8.5px/13px "Nunito", "Segoe UI", sans-serif; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+  #vlabel { position: fixed; left: 50%; bottom: 54px; transform: translateX(-50%) translateY(6px); padding: 5px 13px 5px 6px; background: #fff;
+    border-radius: 11px; color: #23407e; font: 700 13.5px "MiSans", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif; z-index: 5;
+    box-shadow: 0 3px 10px rgba(20,90,160,.16); opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; }
+  #vlabel.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #vlabel b { display: inline-block; background: #1e9be8; color: #fff; border-radius: 7px; padding: 1px 6px; margin-right: 8px; font: 900 12px "Nunito", sans-serif; }
+</style>
+</head>
+<body>
+<canvas id="c" tabindex="0"></canvas>
+<div id="loader"><div class="logo">晴空水上乐园</div><div class="bar"><div id="loadbar"></div></div></div>
+<div id="err"></div>
+<script src="js/three.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/palette.js"></script>
+<script src="js/shaders.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/build_util.js"></script>
+<script src="js/build_front.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/build_mid.js"></script>
+<script src="js/build_back.js"></script>
+<script src="js/build_plants.js"></script>
+<script src="js/build.js"></script>
+<script src="js/env.js"></script>
+<script src="js/water.js"></script>
+<script src="js/render.js"></script>
+<script src="js/dyn_core.js"></script>
+<script src="js/dyn_park.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/views.js"></script>
+<script src="js/tour.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

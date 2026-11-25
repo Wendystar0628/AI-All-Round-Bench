@@ -1,0 +1,174 @@
+/* =====================================================================
+   re1999-design · 纹理与材质（CSS）
+   用法：容器加 .re-stage（相对定位、裁切），再往里放覆盖层 <i class="re-grain"></i> 等。
+   覆盖层全部 pointer-events:none，叠放顺序建议（从下到上）：
+   底色 → 光晕 .re-glow → 网点 .re-halftone → 内容 → 暗角 .re-vignette → 颗粒 .re-grain → 黑边 .re-letterbox
+   分寸见 references/ornament-texture.md 与 references/imagery.md。
+   ===================================================================== */
+
+.re-stage { position: relative; overflow: hidden; isolation: isolate; }
+
+/* 颗粒瓦片：内联成 data URI，复制这一个 CSS 文件就能用（与 noise.svg 同内容） */
+:root { --re-noise-tile: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22256%22%20height=%22256%22%20viewBox=%220%200%20256%20256%22%3E%3Cfilter%20id=%22n%22%20x=%220%22%20y=%220%22%20width=%22100%25%22%20height=%22100%25%22%20color-interpolation-filters=%22sRGB%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%22.9%22%20numOctaves=%222%22%20seed=%227%22%20stitchTiles=%22stitch%22%20result=%22t%22/%3E%3CfeColorMatrix%20in=%22t%22%20type=%22matrix%22%20values=%221%200%200%200%200%20%201%200%200%200%200%20%201%200%200%200%200%20%200%200%200%200%201%22/%3E%3CfeComponentTransfer%3E%3CfeFuncR%20type=%22linear%22%20slope=%223.2%22%20intercept=%22-1.1%22/%3E%3CfeFuncG%20type=%22linear%22%20slope=%223.2%22%20intercept=%22-1.1%22/%3E%3CfeFuncB%20type=%22linear%22%20slope=%223.2%22%20intercept=%22-1.1%22/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect%20width=%22256%22%20height=%22256%22%20filter=%22url%28%23n%29%22/%3E%3C/svg%3E"); }
+
+/* ---------- 颗粒 ----------
+   强度说的是“平整处相邻像素的明暗起伏”（0–255 级）：
+   .re-grain        暗底、界面、字卡：约 2–4 级（soft-light 16%）
+   .re-grain--paper 纸面：约 3–4 级（multiply 4.5%）
+   .re-grain--film  平面图形段、海报式意象、片头字卡：约 4–8 级（soft-light 30%）
+   三维渲染、绘画式画面、展示的作品不加。
+   为什么不用 overlay：overlay 的强度跟着底色亮度走，在近黑底上几乎看不见。 */
+.re-grain {
+  position: absolute; inset: -2px; pointer-events: none; z-index: 30;
+  background-image: var(--re-noise-tile);
+  background-size: 256px 256px;
+  mix-blend-mode: soft-light;
+  opacity: var(--re-grain, 0.16);
+}
+.re-grain--paper { mix-blend-mode: multiply; opacity: var(--re-grain, 0.045); }
+.re-grain--film  { opacity: var(--re-grain, 0.30); }
+
+/* ---------- 暗角：四角约为画面中央同一种底色处亮度的一半 ---------- */
+.re-vignette {
+  position: absolute; inset: 0; pointer-events: none; z-index: 25;
+  background: radial-gradient(125% 95% at 50% 46%, transparent 42%, rgba(4, 4, 3, var(--re-vig, 0.55)) 100%);
+}
+
+/* ---------- 暖光晕：主体背后、或屏幕一角的一团暖棕光 ---------- */
+.re-glow {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(var(--re-glow-r, 42%) calc(var(--re-glow-r, 42%) * 1.25) at var(--re-glow-x, 14%) var(--re-glow-y, 92%),
+      rgba(138, 102, 78, var(--re-glow-a, 0.42)) 0%,
+      rgba(101, 72, 56, calc(var(--re-glow-a, 0.42) * 0.6)) 38%,
+      transparent 72%);
+}
+.re-glow--ember {
+  background: radial-gradient(38% 52% at var(--re-glow-x, 10%) var(--re-glow-y, 96%),
+    rgba(194, 94, 48, var(--re-glow-a, 0.30)) 0%, rgba(142, 73, 42, 0.12) 45%, transparent 75%);
+}
+
+/* ---------- 顶光光锥：舞台上方斜下来的两道光，只比底亮 6–10% ---------- */
+.re-spot {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1; mix-blend-mode: screen;
+  background:
+    linear-gradient(calc(180deg - var(--re-spot-a, 16deg)), transparent 0 calc(50% - 6%), rgba(255, 226, 190, var(--re-spot-k, 0.07)) 50%, transparent calc(50% + 7%)),
+    linear-gradient(calc(180deg + var(--re-spot-a, 16deg)), transparent 0 calc(50% - 6%), rgba(255, 226, 190, var(--re-spot-k, 0.07)) 50%, transparent calc(50% + 7%));
+  -webkit-mask: linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 45%, transparent 80%);
+          mask: linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 45%, transparent 80%);
+  filter: blur(14px);
+}
+
+/* ---------- 网点：只比底色亮 10–20%，从一侧渐隐 ---------- */
+.re-halftone {
+  position: absolute; pointer-events: none;
+  background-image: radial-gradient(circle, var(--re-ht-color, rgba(233, 220, 205, 0.16)) var(--re-ht-dot, 1.3px), transparent calc(var(--re-ht-dot, 1.3px) + 0.5px));
+  background-size: var(--re-ht-step, 7px) var(--re-ht-step, 7px);
+  -webkit-mask-image: linear-gradient(var(--re-ht-dir, 90deg), #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%);
+          mask-image: linear-gradient(var(--re-ht-dir, 90deg), #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%);
+}
+
+/* ---------- 纸 ---------- */
+.re-paper {
+  position: relative; isolation: isolate;
+  color: var(--re-ink, #2B2723);
+  background-color: var(--re-paper-base, #E8E2D8);
+  background-image:
+    radial-gradient(34% 46% at 100% 100%, rgba(227, 167, 143, var(--re-peach-a, 0.55)), transparent 70%),   /* 一角渗桃色 */
+    radial-gradient(60% 80% at 18% 12%, rgba(255, 252, 246, 0.35), transparent 70%),                        /* 受光 */
+    radial-gradient(40% 30% at 70% 30%, rgba(120, 100, 80, 0.05), transparent 70%);                          /* 极淡的旧渍 */
+}
+.re-paper::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1;
+  background-image: var(--re-noise-tile); background-size: 256px;
+  mix-blend-mode: multiply; opacity: 0.045;
+}
+.re-paper--cream { --re-paper-base: #EFE5D2; }
+.re-paper--rose  { --re-paper-base: #F2E9E4; }
+.re-paper--news  { --re-paper-base: #EAE8E1; --re-peach-a: 0; }
+.re-paper--aged  { --re-paper-base: #D7CDB9; --re-peach-a: 0.25; }
+.re-paper--kraft { --re-paper-base: #BFA27A; --re-peach-a: 0; color: #2A2016; }
+
+/* 折痕：一条亮线贴一条暗线 */
+.re-crease { position: absolute; pointer-events: none; width: 2px; top: 0; bottom: 0; left: var(--re-crease-x, 62%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.55) 0 1px, rgba(90, 70, 50, 0.10) 1px 2px); }
+
+/* 撕边：把元素底边撕开（内联 data URI，file:// 下也能用） */
+.re-torn-bottom {
+  -webkit-mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0H400V10L392 13L384 9L377 14L368 11L360 15L351 10L344 13L336 8L327 12L318 9L310 14L301 11L293 15L285 10L276 12L268 8L259 13L250 10L242 14L233 9L225 12L216 15L208 10L199 13L190 9L182 12L173 15L165 11L156 13L148 8L139 12L130 10L122 14L113 11L105 15L96 10L88 12L79 9L70 13L62 11L53 15L45 10L36 12L28 9L19 13L10 11L0 14Z'/%3E%3C/svg%3E") bottom / 100% 16px no-repeat,
+    linear-gradient(#000 0 0) top / 100% calc(100% - 15px) no-repeat;
+          mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0H400V10L392 13L384 9L377 14L368 11L360 15L351 10L344 13L336 8L327 12L318 9L310 14L301 11L293 15L285 10L276 12L268 8L259 13L250 10L242 14L233 9L225 12L216 15L208 10L199 13L190 9L182 12L173 15L165 11L156 13L148 8L139 12L130 10L122 14L113 11L105 15L96 10L88 12L79 9L70 13L62 11L53 15L45 10L36 12L28 9L19 13L10 11L0 14Z'/%3E%3C/svg%3E") bottom / 100% 16px no-repeat,
+    linear-gradient(#000 0 0) top / 100% calc(100% - 15px) no-repeat;
+}
+
+/* ---------- 高反差宋：站酷小薇 + 竖笔加粗（滤镜由 ReTexture.injectFilters() 或页面里的 SVG 提供）
+   --re-stem 按字号选：80–120px 用 url(#re-stem-2)，120–180px 用 url(#re-stem-2-5) 或 url(#re-stem-3)。 */
+.re-cn-display {
+  font-family: var(--re-font-display-cn, "ZCOOL XiaoWei", "Source Han Serif CN", serif); font-weight: 400; letter-spacing: 0;
+  background: linear-gradient(180deg, var(--re-title-top, #F2ECE2), var(--re-title-bottom, #E2D3B8));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: var(--re-stem, url(#re-stem-2));
+}
+
+/* ---------- 印刷 ---------- */
+/* 套印错位：同一段字错开 1–3px 印第二色（元素需写 data-text="同内容"） */
+.re-misreg { position: relative; }
+.re-misreg::before {
+  content: attr(data-text); position: absolute; top: var(--re-misreg-y, 1px);
+  left: var(--re-misreg-x, 2px); right: calc(-1 * var(--re-misreg-x, 2px));   /* 与原字同宽，换行位置一致 */
+  color: var(--re-misreg-color, rgba(181, 88, 41, 0.55)); z-index: -1; white-space: inherit;
+}
+/* 色散：红青分离，只在闪白、特写、冲击的瞬间用 */
+.re-chroma { text-shadow: -1.5px 0 rgba(255, 70, 50, 0.55), 1.5px 0 rgba(40, 200, 220, 0.45); }
+/* 柔光晕：亮字和高光边缘向外渗一点暖光 */
+.re-halation { text-shadow: 0 0 0.18em rgba(255, 220, 180, 0.40), 0 0 0.7em rgba(255, 168, 110, 0.20); }
+
+/* ---------- 标题背后的暗底污渍（代替底板，让字压在画上也读得清） ---------- */
+.re-smudge { position: absolute; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(closest-side at 38% 52%, rgba(8, 8, 7, 0.62), transparent),
+    radial-gradient(closest-side at 66% 44%, rgba(8, 8, 7, 0.45), transparent),
+    radial-gradient(closest-side at 50% 70%, rgba(8, 8, 7, 0.35), transparent);
+  filter: blur(6px); }
+
+/* ---------- 胶片 ---------- */
+/* 宽银幕：16:9 画布上下各 12.2% 黑边 = 2.35:1；黑边用全片唯一的“黑” void */
+.re-letterbox::before, .re-letterbox::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 12.22%; background: var(--re-void, #0C0D0C); z-index: 40; pointer-events: none;
+}
+.re-letterbox::before { top: 0; }
+.re-letterbox::after { bottom: 0; }
+/* 漏光：画面一侧的橙红光，screen 叠加，一段只出现一次 */
+.re-leak { position: absolute; inset: 0; pointer-events: none; z-index: 26; mix-blend-mode: screen;
+  background:
+    radial-gradient(28% 60% at 0% 32%, rgba(222, 107, 52, 0.36), transparent 70%),
+    radial-gradient(18% 36% at 2% 78%, rgba(166, 58, 57, 0.28), transparent 70%); }
+/* 静态划痕：几根不等距的 1px 竖线（视频里用 texture-kit.js 的 scratches 逐帧生成） */
+.re-scratches { position: absolute; inset: 0; pointer-events: none; z-index: 27; mix-blend-mode: screen;
+  background-image: linear-gradient(90deg,
+    transparent 0 17.3%, rgba(255, 255, 255, 0.07) 17.3% 17.36%, transparent 17.36% 41.8%,
+    rgba(255, 255, 255, 0.05) 41.8% 41.85%, transparent 41.85% 73.1%,
+    rgba(255, 255, 255, 0.09) 73.1% 73.14%, transparent 73.14% 100%); }
+/* CRT 扫描线：只给电视、旧电脑这类子主题 */
+.re-scanline { position: absolute; inset: 0; pointer-events: none; z-index: 28;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.28) 0 1px, transparent 1px 3px); }
+
+/* ---------- 线 ---------- */
+/* 断成三截的发丝线：62 | 18 | 1021 | 18 | 74 的比例 */
+.re-hair3 { height: 1px; background: linear-gradient(90deg,
+  var(--re-hair-c, rgba(233, 220, 205, 0.32)) 0 5.2%, transparent 5.2% 6.7%,
+  var(--re-hair-c, rgba(233, 220, 205, 0.32)) 6.7% 92.3%, transparent 92.3% 93.8%,
+  var(--re-hair-c, rgba(233, 220, 205, 0.32)) 93.8% 100%); }
+/* 尾部断开的发丝线：长—短—短，用在小节标题后面 */
+.re-hair-tail { height: 1px; background: linear-gradient(90deg,
+  var(--re-hair-c, rgba(233, 220, 205, 0.22)) 0 82%, transparent 82% 84.5%,
+  var(--re-hair-c, rgba(233, 220, 205, 0.22)) 84.5% 91%, transparent 91% 93%,
+  var(--re-hair-c, rgba(233, 220, 205, 0.22)) 93% 96%, transparent 96%); }
+/* 点线：只表示“未完成”和“轨道” */
+.re-dotted { height: 3px; background: radial-gradient(circle, var(--re-dot-c, rgba(233, 220, 205, 0.30)) 1px, transparent 1.4px) 0 50% / 8px 3px repeat-x; }
+
+@media (prefers-reduced-motion: reduce) {
+  .re-grain, .re-scratches { animation: none !important; }
+}

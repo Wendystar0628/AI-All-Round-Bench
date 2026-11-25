@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0b151d" />
+    <title>破浪者德尔塔 · Breaker Delta</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #101a23;
+        color: #e4e9e8;
+        font-family: "Bahnschrift", "Microsoft YaHei UI", Arial, sans-serif;
+      }
+      #ocean-view {
+        display: block;
+        width: 100%;
+        height: 100%;
+        outline: 0;
+        cursor: grab;
+        touch-action: none;
+      }
+      #ocean-view.drag {
+        cursor: grabbing;
+      }
+      #viewfinder {
+        position: fixed;
+        left: clamp(20px, 2.5vw, 46px);
+        bottom: clamp(20px, 3.5vh, 42px);
+        z-index: 3;
+        user-select: none;
+        filter: drop-shadow(0 4px 16px #0005);
+      }
+      #viewfinder[hidden],
+      #view-list[hidden] {
+        display: none;
+      }
+      .dock {
+        display: flex;
+        align-items: stretch;
+        background: linear-gradient(110deg, #141d22ed, #0b1318e8);
+        border: 1px solid #89959460;
+        box-shadow: inset 0 1px #dee5d310;
+        backdrop-filter: blur(14px);
+        border-radius: 3px;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        background: none;
+        border: 0;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 2px solid #efca83;
+        outline-offset: -3px;
+      }
+      button:hover {
+        background: #d5e9ec0e;
+      }
+      #choose {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 11px 15px 11px 12px;
+        text-align: left;
+        min-width: 178px;
+      }
+      .reticle {
+        color: #ecd3a1;
+        display: grid;
+        place-items: center;
+        width: 29px;
+        height: 29px;
+        border: 1px solid #bcc5bc3a;
+        border-radius: 2px;
+      }
+      .reticle svg {
+        width: 20px;
+        height: 20px;
+      }
+      .tiny {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font:
+          600 9px/1 "Bahnschrift",
+          "Consolas",
+          monospace;
+        letter-spacing: 1.7px;
+        color: #b3bebc;
+      }
+      .tiny b {
+        color: #eddbb4;
+        font-weight: 500;
+        letter-spacing: 1px;
+      }
+      .name {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 1.4px;
+        margin-top: 6px;
+        line-height: 1.1;
+      }
+      #choose .chev {
+        margin-left: auto;
+        color: #abb4b2;
+        transition: transform 0.2s;
+      }
+      #choose[aria-expanded="true"] .chev {
+        transform: rotate(180deg);
+      }
+      .arrows {
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+        border-left: 1px solid #76848640;
+      }
+      .arrows button {
+        width: 29px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 1px;
+      }
+      svg {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        stroke-linecap: square;
+        stroke-linejoin: miter;
+      }
+      #view-list {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        width: 100%;
+        padding: 5px;
+        background: #101a20ed;
+        backdrop-filter: blur(16px);
+        border: 1px solid #87939263;
+        border-radius: 3px;
+        max-height: calc(100vh - 108px);
+        overflow: auto;
+      }
+      #view-list button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        width: 100%;
+        padding: 9px 9px;
+        color: #b7c4c9;
+        font-size: 12px;
+        letter-spacing: 1px;
+      }
+      .idx {
+        font:
+          10px Consolas,
+          monospace;
+        color: #80929b;
+      }
+      #view-list button[aria-current="true"] {
+        background: #aebbb314;
+        color: #f0e1bf;
+      }
+      #view-list button[aria-current="true"] .idx {
+        color: #e8c78a;
+      }
+      #view-list button[aria-current="true"]:after {
+        content: "";
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #dfc290;
+        margin-left: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="ocean-view"
+      aria-label="雨夜港口中的破浪者德尔塔三维场景。拖拽环绕，滚轮变焦，方向键切换视角。"
+      tabindex="0"
+    ></canvas>
+    <nav id="viewfinder" aria-label="观景点">
+      <div id="view-list" hidden role="group" aria-label="选择观景点"></div>
+      <div class="dock">
+        <button
+          id="choose"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="view-list"
+          title="选择观景点"
+        >
+          <span class="reticle"
+            ><svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 8V3h5m8 0h5v5m0 8v5h-5M8 21H3v-5" />
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 5v3m0 8v3m-7-7h3m8 0h3" /></svg></span
+          ><span
+            ><span class="tiny">OPTICS <b id="counter">01 / 11</b></span
+            ><span class="name" id="view-name" style="display: block">海面全景</span></span
+          >
+          <svg class="chev" width="9" height="6" viewBox="0 0 9 6" aria-hidden="true">
+            <path d="m1 4.5 3.5-3.5L8 4.5" />
+          </svg>
+        </button>
+        <div class="arrows">
+          <button id="prev" aria-label="上一个观景点" title="上一个观景点 (←)">
+            <svg width="9" height="14" viewBox="0 0 9 14"><path d="m7 2-5 5 5 5" /></svg></button
+          ><button id="next" aria-label="下一个观景点" title="下一个观景点 (→)">
+            <svg width="9" height="14" viewBox="0 0 9 14"><path d="m2 2 5 5-5 5" /></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <script src="vendor/three.min.js"></script>
+    <script src="scene/foundry.js"></script>
+    <script src="scene/forming.js"></script>
+    <script src="scene/torso.js"></script>
+    <script src="scene/castings.js"></script>
+    <script src="scene/service.js"></script>
+    <script src="scene/chassis.js"></script>
+    <script src="scene/dockworks.js"></script>
+    <script src="scene/terminal.js"></script>
+    <script src="scene/harbour.js"></script>
+    <script src="scene/lighting.js"></script>
+    <script src="scene/weather.js"></script>
+    <script src="scene/storm.js"></script>
+    <script src="scene/timbres.js"></script>
+    <script src="scene/pcm.js"></script>
+    <script src="scene/sound.js"></script>
+    <script src="scene/cinema.js"></script>
+  </body>
+</html>

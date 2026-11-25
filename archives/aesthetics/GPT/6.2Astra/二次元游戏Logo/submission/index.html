@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f4ee">
+  <meta name="description" content="形研所第一卷。从塔卫二的工业桁梁、星穹列车的航图与索拉里斯的声纹，重绘三款游戏的中文字标。">
+  <title>游戏字形档案 · 形研所 FORM LAB</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/catalog.js"></script>
+  <script defer src="assets/editions.js"></script>
+  <script defer src="assets/gallery.js"></script>
+  <script defer src="assets/film.js"></script>
+</head>
+<body>
+  <div id="website">
+    <header class="masthead">
+      <div class="shell masthead-inner">
+        <a class="brand" href="#index" aria-label="形研所，返回作品索引">
+          <img src="assets/mark.svg" alt="" width="36" height="36">
+          <b>形研所</b><span class="brand-en">FORM LAB</span>
+        </a>
+        <nav class="primary-nav" aria-label="主导航">
+          <a id="index-link" class="nav-item is-current" href="#index">作品索引</a>
+          <button type="button" class="nav-item" id="about-open">项目说明</button>
+        </nav>
+        <button class="film-trigger" id="play-film" type="button"><span class="play-icon" aria-hidden="true"></span>播放展示片<span class="film-duration">01:30</span></button>
+      </div>
+    </header>
+    <main id="app" class="shell"></main>
+    <footer class="site-foot shell">
+      <div><span class="calibration" aria-hidden="true"></span><span>FORM LAB</span><i>/</i><span>字形研究档案</span></div>
+      <span class="foot-edition">VISUAL IDENTITY STUDIES <i>·</i> VOL. 01</span>
+    </footer>
+  </div>
+  <dialog id="about" aria-labelledby="about-title">
+    <div class="dialog-head"><span class="micro">FORM LAB &nbsp; / &nbsp; COLOPHON</span><button type="button" class="icon-button" data-close aria-label="关闭项目说明">×</button></div>
+    <div class="dialog-body">
+      <p class="overline"><span class="ink-dot"></span> 项目说明</p>
+      <h2 id="about-title">从世界观，到一笔。</h2>
+      <p>《游戏字形档案》收录三组独立的游戏标识再设计。每组先选定一件物件，再把它的受力、刻痕或运动写进汉字。</p>
+      <div class="note-list" id="about-list"></div>
+      <p class="note-small">中文字面以矢量笔画绘制。展页可逐层查看构造，并下载宽 4480 像素的透明成品。</p>
+    </div>
+  </dialog>
+  <section id="cinema" hidden aria-label="字形研究展示片">
+    <div id="film-stage"></div>
+    <div id="film-controls" hidden>
+      <button id="film-toggle" type="button" aria-label="暂停播放"></button>
+      <span id="film-time">00:00</span>
+      <input id="film-scrub" type="range" min="0" max="90" step=".01" value="0" aria-label="影片进度">
+      <span class="end-time">01:30</span><button id="film-exit" type="button" aria-label="退出播放">退出 <kbd>Esc</kbd></button>
+    </div>
+  </section>
+</body>
+</html>

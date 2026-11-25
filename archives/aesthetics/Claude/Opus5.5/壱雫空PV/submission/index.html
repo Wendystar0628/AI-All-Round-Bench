@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>壱雫空 — MyGO!!!!! ｜ Web PV</title>
+<style>
+  :root { --ink: #1B2A47; --sky: #77BBDD; --paper: #F5F3EE; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #08090c; }
+  body { font-family: "Montserrat", "Yu Gothic", "Segoe UI", sans-serif; color: #fff; user-select: none; }
+  #pv { position: absolute; display: block; background: var(--paper); }
+  body.export #pv { cursor: none; }
+
+  /* ---------- start screen ---------- */
+  #start { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    background: radial-gradient(ellipse at 50% 52%, rgba(10, 18, 38, 0.62), rgba(10, 18, 38, 0.38) 55%, rgba(6, 9, 18, 0.7));
+    backdrop-filter: blur(7px) saturate(1.15); transition: opacity .45s ease; z-index: 5; }
+  #start.gone { opacity: 0; pointer-events: none; }
+  #start .card { text-align: center; color: #fff; }
+  #start .btn { width: 116px; height: 116px; border-radius: 50%; margin: 0 auto 26px; border: 2px solid rgba(255,255,255,.92);
+    display: flex; align-items: center; justify-content: center; background: rgba(119,187,221,.18); backdrop-filter: blur(6px);
+    transition: transform .25s cubic-bezier(.2,1.6,.4,1), background .25s; }
+  #start:hover .btn { transform: scale(1.07); background: rgba(119,187,221,.42); }
+  #start .btn svg { width: 40px; height: 40px; margin-left: 8px; }
+  #start .t1 { font: 600 13px "Montserrat", sans-serif; letter-spacing: .5em; opacity: .9; }
+  #start .t2 { font: 700 15px "Yu Gothic", sans-serif; letter-spacing: .35em; margin-top: 10px; opacity: .8; }
+  #start .t3 { font: 500 11px "Montserrat", sans-serif; letter-spacing: .3em; margin-top: 18px; opacity: .55; }
+  #start .t4 { display: none; font: 600 11px "Montserrat", sans-serif; letter-spacing: .4em; margin-top: 18px; opacity: .7; }
+  #start.loading { cursor: progress; background: #0d1730; }
+  #start.loading .t3 { display: none; }
+  #start.loading .t4 { display: block; }
+  #start.loading .btn { opacity: .35; }
+
+  /* ---------- control bar ---------- */
+  /* a floating capsule centred at the bottom: it leaves the PV's own corner read-outs (timecode, bar counter) uncovered */
+  #bar { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); width: min(1060px, calc(100vw - 460px)); min-width: 620px;
+    height: 52px; display: flex; align-items: center; gap: 14px; padding: 0 16px 0 8px; z-index: 6; border-radius: 26px;
+    background: rgba(10, 16, 32, .74); backdrop-filter: blur(10px) saturate(1.2); box-shadow: 0 8px 28px rgba(0, 0, 0, .28), inset 0 0 0 1px rgba(255,255,255,.08);
+    transition: opacity .35s ease, transform .35s ease; }
+  #bar.hide { opacity: 0; transform: translate(-50%, 14px); pointer-events: none; }
+  body.export #bar, body.export #start { display: none !important; }
+  #play { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.85); background: transparent;
+    color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex: none; }
+  #play:hover { background: rgba(119,187,221,.35); }
+  #play svg { width: 14px; height: 14px; }
+  #time { font: 500 12px "JetBrains Mono", Consolas, monospace; letter-spacing: .02em; opacity: .9; flex: none; min-width: 128px; }
+  #track { position: relative; flex: 1; height: 26px; cursor: pointer; }
+  #track .rail { position: absolute; left: 0; right: 0; top: 12px; height: 3px; background: rgba(255,255,255,.22); border-radius: 2px; }
+  #track .fill { position: absolute; left: 0; top: 12px; height: 3px; background: var(--sky); border-radius: 2px; }
+  #track .knob { position: absolute; top: 7px; width: 13px; height: 13px; margin-left: -6.5px; border-radius: 50%; background: #fff;
+    box-shadow: 0 0 0 3px rgba(119,187,221,.45); }
+  #track .ticks { position: absolute; left: 0; right: 0; top: 18px; height: 6px; }
+  #track .ticks i { position: absolute; top: 0; width: 1px; height: 5px; background: rgba(255,255,255,.35); }
+  #track .tip { position: absolute; bottom: 26px; transform: translateX(-50%); font: 600 11px "Montserrat", sans-serif; letter-spacing: .12em;
+    background: rgba(8,12,24,.85); padding: 4px 8px; border-radius: 3px; white-space: nowrap; opacity: 0; transition: opacity .15s; pointer-events: none; }
+  #track:hover .tip { opacity: 1; }
+  #shot { font: 600 11px "Montserrat", "Yu Gothic", sans-serif; letter-spacing: .12em; flex: none; min-width: 170px; max-width: 250px; text-align: right; opacity: .92;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #shot b { font-weight: 800; color: var(--sky); margin-right: 8px; }
+  #fs { width: 30px; height: 30px; border: none; background: transparent; color: #fff; cursor: pointer; opacity: .8; flex: none; }
+  #fs:hover { opacity: 1; }
+</style>
+</head>
+<body>
+<canvas id="pv"></canvas>
+
+<div id="start" class="loading">
+  <div class="card">
+    <div class="btn"><svg viewBox="0 0 24 24"><path d="M5 3l15 9-15 9z" fill="#fff"/></svg></div>
+    <div class="t1">HITOSHIZUKU — MyGO!!!!!</div>
+    <div class="t2">壱雫空 ｜ クリックで再生</div>
+    <div class="t3">CLICK TO PLAY · 点击播放</div>
+    <div class="t4">LOADING…</div>
+  </div>
+</div>
+
+<div id="bar" class="hide">
+  <button id="play" title="再生 / 一時停止 (Space)"><svg viewBox="0 0 24 24" id="pico"><path d="M6 3l15 9-15 9z" fill="#fff"/></svg></button>
+  <div id="time">00:00.00 / 01:21.40</div>
+  <div id="track"><div class="rail"></div><div class="ticks"></div><div class="fill"></div><div class="knob"></div><div class="tip"></div></div>
+  <div id="shot"><b>SHOT 01</b>/ 36</div>
+  <button id="fs" title="Fullscreen"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="#fff" stroke-width="2" fill="none"/></svg></button>
+</div>
+
+<audio id="au" src="assets/hitoshizuku.mp3" preload="auto"></audio>
+
+<script src="assets/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/lyrics.js"></script>
+<script src="js/gl3d.js"></script>
+<script src="js/umbrella.js"></script>
+<script src="js/overlay.js"></script>
+<script src="js/shots1.js"></script>
+<script src="js/shots2.js"></script>
+<script src="js/shots3.js"></script>
+<script src="js/shots4.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

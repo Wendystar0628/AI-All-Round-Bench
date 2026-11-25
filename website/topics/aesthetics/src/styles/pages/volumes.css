@@ -1,0 +1,202 @@
+/* 卷目：十卷星图，一摞书（质感贯穿方案 3.3；特质与配色增补，样张六）。
+   十本书各是自己那个世界的布色（--cloth），亮暗交替摞起来，靠同一盏灯的远近统一明暗：灯在书摞右上，
+   离灯近的书亮、远的沉进夜里（--glow）。书脊是圆的：上下两边暗一点；经纬布纹近看才出来；没有圆角，书角有一点毛。
+   题名是锁定的迷你形态（铅印的纸白或墨，主角字用这一卷的材质）。悬停或聚焦的那一卷抽出来、更亮，
+   垂下它自己点亮色的书签带——这一屏唯一饱和的颜色。 */
+
+.vl {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 37fr) minmax(0, 63fr);
+  column-gap: clamp(32px, 4vw, 80px);
+  max-width: calc(var(--max) + 2 * var(--margin));
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: calc(var(--head-h) + clamp(8px, 2svh, 28px)) var(--margin) 40px;
+}
+/* 灯落在墙上的那一片：书摞右上方 */
+.vl-pool {
+  position: absolute;
+  z-index: -1;
+  right: -14%;
+  top: -18%;
+  width: min(1400px, 92vw);
+  aspect-ratio: 1.4;
+  background: url("../../assets/light/pool.webp") 50% 50% / 100% 100% no-repeat;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* ---------- 左墙 ---------- */
+.vl-side { position: relative; z-index: 1; display: flex; flex-direction: column; }
+.vl-head { position: relative; }
+.vl-voice {
+  position: absolute;
+  left: -0.04em;
+  top: 0.7em;
+  z-index: -1;
+  font: italic 400 clamp(44px, 4.6vw, 86px)/1 var(--f-didone);
+  color: rgba(216, 198, 166, 0.08);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.vl-title { position: relative; display: inline-block; font-size: clamp(60px, 5.4vw, 100px); line-height: 1; }
+.vl-title .ae-display { color: #EEE6D8; }
+.vl-title .is-hero { font-size: 1.36em; }
+.vl-title-en { font: 500 0.8em/1.05 var(--f-didone); color: var(--ae-title-top); }
+.vl-glint { position: absolute; left: calc(2.48em); top: 0.06em; width: 0.5em; pointer-events: none; }
+.vl-glint .ae-glint { width: 100%; height: auto; }
+html[lang="en"] .vl-glint { display: none; }
+.vl-lead { margin-top: clamp(12px, 2svh, 22px); font-size: 18px; line-height: 1.6; letter-spacing: 0.1em; color: rgba(226, 216, 200, 0.86); }
+.vl-note { max-width: 30em; margin-top: 6px; font-size: 14px; line-height: 1.85; color: rgba(190, 180, 166, 0.66); }
+
+.vl-preview { width: min(100%, 500px); margin-top: clamp(20px, 3.4svh, 40px); }
+.vp[hidden] { display: none; }
+.vp.is-swap { animation: vp-in 0.35s var(--ae-ease-land); }
+@keyframes vp-in { from { opacity: 0; transform: translateY(5px); } }
+.vp-plates { display: grid; gap: 14px; }
+.vp-lead .ae-plate-paper { padding: 10px; transform: rotate(-1deg); }
+.vp-rest { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 14px; }
+.vp-rest .ae-plate-paper { padding: 5px; }
+.vp-rest .ae-plate:nth-child(odd) .ae-plate-paper { transform: rotate(0.5deg); }
+.vp-rest .ae-plate:nth-child(even) .ae-plate-paper { transform: rotate(-0.4deg); }
+.vp-cap { display: grid; gap: 8px; margin-top: 20px; }
+.vp-title { font-size: 26px; line-height: 0; }
+.vp-title img.ae-mini { height: 2.6em; width: auto; }
+.vp-title .ae-mini.is-text { font-size: 1em; line-height: 1.3; }
+.vp-title a { display: inline-block; color: var(--ae-text); text-decoration: none; transition: filter var(--ae-t-hover); }
+.vp-title a:hover { filter: brightness(1.12); }
+.vp-meta { font-size: 13.5px; letter-spacing: 0.12em; color: rgba(206, 196, 180, 0.76); }
+.vp-meta .no { font: italic 500 16px/1 var(--f-didone); letter-spacing: 0; color: var(--lit); }
+.vp-tag { font-size: 14px; letter-spacing: 0.08em; color: rgba(190, 180, 166, 0.66); }
+.vp-cloud,
+.vp-blank { width: 100%; }
+
+/* ---------- 书摞 ---------- */
+.vl-stack { position: relative; z-index: 1; align-self: start; padding: clamp(36px, 6svh, 64px) 0 34px; }
+.vl-lamp {                                          /* 吊星：线从页顶垂下，星停在书摞右上方 */
+  position: absolute;
+  right: 7%;
+  top: calc(-1 * (var(--head-h) + clamp(8px, 2svh, 28px)));
+  width: 96px;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  animation: vl-sway var(--ae-t-pendulum, 5.6s) ease-in-out infinite;
+}
+.vl-lamp .ae-hang { display: block; width: 100%; height: auto; overflow: visible; }
+@keyframes vl-sway { 0%, 100% { transform: rotate(-0.5deg); } 50% { transform: rotate(0.5deg); } }
+
+.vl-list { position: relative; display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.sp-li { position: relative; margin-left: var(--dx); margin-right: var(--cut); }
+.sp-li:has(.is-active) { z-index: 2; }
+.sp {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3em 6.8em minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  height: var(--th);
+  padding: 0 40px 0 34px;
+  color: var(--ink);
+  text-decoration: none;
+  /* 布：灯在右上——靠灯的一端亮、远的一端沉；书脊是圆的，上下两边暗；上缘一线受光；近看是经纬布纹 */
+  background:
+    linear-gradient(270deg, rgba(255, 238, 210, calc(var(--glow) * 0.16)), transparent 64%),
+    linear-gradient(90deg, rgba(4, 5, 8, calc(0.34 - var(--glow) * 0.22)), transparent 58%),
+    linear-gradient(180deg, rgba(255, 240, 214, calc(0.1 + var(--glow) * 0.2)) 0 1px, rgba(0, 0, 0, 0.16) 1px, transparent 26%, transparent 70%, rgba(0, 0, 0, 0.26)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h2v1H0zM2 2h2v1H2z' fill='%23fff' fill-opacity='.05'/%3E%3Cpath d='M1 1h1v2H1zM3 3h1v1H3z' fill='%23000' fill-opacity='.08'/%3E%3C/svg%3E"),
+    var(--cloth);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 4px 7px -2px rgba(0, 0, 0, 0.5);
+  filter: brightness(calc(0.84 + var(--glow) * 0.18));
+  transition: transform var(--ae-t-hover) var(--ae-ease-land), filter var(--ae-t-hover);
+}
+.sp::before,
+.sp::after {                                        /* 头尾两道烫线：用这一卷的字色压出来 */
+  content: "";
+  position: absolute;
+  top: 6px; bottom: 6px;
+  width: 7px;
+  border-left: 1.2px solid var(--line);
+  border-right: 1.2px solid var(--line);
+  pointer-events: none;
+}
+.sp::before { left: 16px; }
+.sp::after { right: 18px; }
+.is-dark .sp { --line: rgba(232, 214, 176, 0.38); }
+.is-light .sp { --line: rgba(43, 39, 35, 0.28); }
+.sp-no { font: italic 500 25px/1 var(--f-didone); }
+.is-dark .sp-no { color: rgba(236, 214, 170, 0.9); }
+.is-light .sp-no { color: var(--ink); }   /* 亮布用这一卷的墨：中间调的布（如水上乐园的青）上，最深的布色压不出来 */
+.sp-cat { font: 600 14px/1.2 var(--f-song); letter-spacing: 0.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.62; }
+.is-light .sp-cat { opacity: 0.8; }
+html[lang="en"] .sp-cat { font: 500 11px/1.2 var(--f-didone); letter-spacing: 0.22em; text-transform: uppercase; }
+.sp-title { display: flex; align-items: center; min-width: 0; font-size: 22px; white-space: nowrap; overflow: hidden; }
+.sp-title img.ae-mini { height: 1.95em; width: auto; }
+.sp-title .ae-mini.is-text { color: var(--ink); }
+.sp-n { font: italic 400 16px/1 var(--f-didone); opacity: 0.62; white-space: nowrap; }
+html[lang="zh-CN"] .sp-n { font: 400 13.5px/1 var(--f-song); letter-spacing: 0.1em; }
+/* 主角卷：抽出来一点、更亮，垂下自己颜色的书签带 */
+.sp:hover,
+.sp.is-active { transform: translateX(calc(-34px * var(--motion))); filter: brightness(calc(0.98 + var(--glow) * 0.18)); }
+.sp-ribbon {
+  position: absolute;
+  left: -13px;
+  top: 55%;
+  width: 13px;
+  height: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--lit) 80%, #000) , var(--lit) 30%, color-mix(in srgb, var(--lit) 86%, #000));
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 10px), 0 100%);
+  box-shadow: inset 1.5px 0 0 rgba(255, 220, 190, 0.4);
+  transition: height 0.45s var(--ae-ease-land);
+}
+.sp.is-active .sp-ribbon { height: 160px; }
+.sp:focus-visible { outline-offset: 3px; }
+/* 没有作品的卷：题名退后一档、去掉一半颜色，仍要一眼读得出；旁边盖一枚网点的云遮印 */
+.is-clouded .sp-title { opacity: 0.85; filter: grayscale(0.3); }
+.sp-stamp { font-size: 11px; margin: -8px 0; }
+.is-dark .sp-stamp { --c: rgba(236, 226, 206, 0.5); }
+.is-light .sp-stamp { --c: rgba(43, 39, 35, 0.48); }
+.is-light .sp-stamp .t { color: rgba(43, 39, 35, 0.78); text-shadow: none; }
+
+.vl-table {                                         /* 桌沿：几乎是剪影的暗木，顶上一根受光的细亮边 */
+  position: absolute;
+  left: -14%;
+  right: -10%;
+  bottom: 6px;
+  height: 24px;
+  z-index: -1;
+  background:
+    linear-gradient(270deg, rgba(236, 206, 160, 0.4), rgba(236, 206, 160, 0.1) 60%, rgba(236, 206, 160, 0.03)) 0 0 / 100% 1px no-repeat,
+    linear-gradient(180deg, #19120D, #0C0806);
+  mask: linear-gradient(90deg, transparent, #000 10%, #000 92%, transparent);
+}
+
+/* ---------- 平板与手机：书脊一列排下 ---------- */
+@media (max-width: 1180px) {
+  .sp { grid-template-columns: 2.4em 5.4em minmax(0, 1fr) auto; padding: 0 30px 0 28px; }
+  .sp-title { font-size: 19px; }
+}
+@media (max-width: 960px) {
+  .vl { grid-template-columns: minmax(0, 1fr); padding-top: calc(var(--head-h) + 24px); }
+  .vl-preview,
+  .vl-lamp { display: none; }
+  .vl-stack { padding-top: 32px; }
+  .vl-pool { right: -40%; width: 140vw; }
+  .sp-ribbon { display: none; }
+}
+@media (max-width: 600px) {
+  .sp-li { margin-left: calc(var(--dx) * 0.3); margin-right: calc(var(--cut) * 0.3); }
+  .sp { grid-template-columns: 2em minmax(0, 1fr) auto; grid-template-rows: auto auto; height: auto; min-height: 64px; padding: 9px 24px 9px 26px; row-gap: 2px; }
+  .sp::before { left: 8px; width: 5px; }
+  .sp::after { right: 8px; width: 5px; }
+  .sp-no { grid-row: 1 / 3; font-size: 19px; }
+  .sp-cat { grid-column: 2; font-size: 11.5px; }
+  .sp-title { grid-column: 2; font-size: 16px; }
+  .sp-n,
+  .sp-stamp { grid-column: 3; grid-row: 1 / 3; }
+  .sp:hover,
+  .sp.is-active { transform: none; }
+}

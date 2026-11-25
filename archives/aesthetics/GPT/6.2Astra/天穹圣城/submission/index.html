@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#273e40">
+  <title>天穹圣城 · The Celestial Citadel</title>
+  <link rel="stylesheet" href="scene/wayfinder.css">
+</head>
+<body>
+  <main id="world" aria-label="天穹圣城三维场景，按住鼠标拖动以环绕，滚轮缩放"></main>
+  <nav id="wayfinder" aria-label="观景点切换" hidden>
+    <section id="index-panel" aria-label="观景点目录" hidden>
+      <header><span class="header-line"></span><span>观景点</span><span class="header-line"></span></header>
+      <div id="stops"></div>
+    </section>
+    <div class="instrument">
+      <div class="instrument-inside">
+        <button class="arrow" id="prev" title="上一个观景点（←）" aria-label="上一个观景点"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5.5 5.5 5.5 5.5"/></svg></button>
+        <button id="current" aria-controls="index-panel" aria-expanded="false" title="展开观景点目录">
+          <svg class="seal" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="15.1"/><circle cx="22" cy="22" r="12.5" stroke-dasharray="1 3.1"/><path d="M22 2.8 24.3 16.3 33.6 10.4 27.7 19.7 41.2 22 27.7 24.3 33.6 33.6 24.3 27.7 22 41.2 19.7 27.7 10.4 33.6 16.3 24.3 2.8 22 16.3 19.7 10.4 10.4 19.7 16.3Z" class="seal-star"/><path d="m22 12 3.2 10-3.2 10-3.2-10Z" class="needle"/><circle cx="22" cy="22" r="1.6" class="pin"/></svg>
+          <span class="inscription"><span id="stop-name">天穹圣城 · 全景</span><span id="stop-en" lang="en">CITADEL PANORAMA</span></span>
+          <svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 9.8 3.5-3.6 3.5 3.6"/></svg>
+        </button>
+        <button class="arrow" id="next" title="下一个观景点（→）" aria-label="下一个观景点"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg></button>
+      </div>
+    </div>
+  </nav>
+  <script src="lib/three.min.js"></script>
+  <script src="lib/material-plates.js"></script>
+  <script src="scene/workshop.js"></script>
+  <script src="scene/air.js"></script>
+  <script src="scene/earth.js"></script>
+  <script src="scene/masonry.js"></script>
+  <script src="scene/citadel.js"></script>
+  <script src="scene/basilica.js"></script>
+  <script src="scene/isles.js"></script>
+  <script src="scene/causeways.js"></script>
+  <script src="scene/ornaments.js"></script>
+  <script src="scene/finish.js"></script>
+  <script src="scene/journey.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+/* 基础：一片带色相的夜、灰泥一样极淡的斑驳、一层固定的颗粒、宋体正文。
+   网页的令牌（字号、栅格、缓动）在设计系统 tokens.css 的 --ae-web-* 与 --ae-ease-*；这里只补网站自己的几样：
+   字体家族的收口（拉开字距的大写和小号标签都用 Bodoni，不再用 Cormorant、Oswald）、纸纹和夜墙的预渲贴图、接触阴影。 */
+:root {
+  --margin: var(--ae-web-margin);                 /* 页边 max(32px, 3.9vw) */
+  --max: var(--ae-web-max);                       /* 内容最宽 1680px */
+  --gutter: var(--ae-web-gutter);                 /* 栏距 24px */
+  --sec-gap: clamp(104px, 10vw, 168px);           /* 区块之间 */
+  --head-h: 104px;                                /* 页头占的高度：每页第一块要让出它（首页、满版页首除外） */
+  --motion: 1;                                    /* 悬停时的位移都乘它：系统要求减少动态效果时为 0 */
+
+  /* 字体收口（字体方案）：中文宋体、西文 Bodoni Moda、手写 Tangerine。旧令牌里的 Roman、Micro 都落到 Bodoni 上 */
+  --ae-font-roman: var(--ae-font-didone);
+  --ae-font-micro: var(--ae-font-didone);
+  --f-song: var(--ae-font-song);
+  --f-display: var(--ae-font-display-cn);
+  --f-didone: var(--ae-font-didone);
+  --f-script: var(--ae-font-script);
+
+  /* 颜色：暖白正在读、暖灰读过或次要；一屏最多四档字号 */
+  --ink-weak: #8F8A85;                            /* 只给非必读的说明，对夜 5.3:1 */
+  --wall: #0E1118;                                /* 母版的夜墙：带一点藏青的近黑 */
+  --foil-1: #F6E2AE;                              /* 箔：亮面、中间、沉下去的一面 */
+  --foil-2: #CFA35A;
+  --foil-3: #8E6A34;
+
+  /* 预渲的贴图（tools/textures.py）：纸的纤维和夜墙的斑驳 */
+  --tex-paper: url("../assets/light/paper.webp");
+  --tex-mottle: url("../assets/light/mottle.webp");
+
+  /* 接触阴影：短、实、落在光的对侧（灯在上方，影子落在下沿），不是 UI 投影 */
+  --contact: 0 1px 0 rgba(0, 0, 0, 0.55), 0 2px 2px rgba(0, 0, 0, 0.42), 0 5px 6px -3px rgba(0, 0, 0, 0.5);
+}
+@media (max-width: 760px) {
+  :root { --margin: 20px; --head-h: 76px; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  background: var(--ae-void);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 88px;   /* 固定页头收窄后约 64px 高，锚点跳转让开它 */
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: clip;
+  background: var(--wall);
+  color: var(--ae-text);
+  font: 400 var(--ae-web-body)/var(--ae-web-lh-body) var(--f-song);
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
+}
+/* 夜墙的斑驳和颗粒：两张静止的瓦片固定在视口上，压在底色上、字和图下面（要读的字和作品永远干净） */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+body::before { background: var(--tex-mottle) 0 0 / 512px 512px; mix-blend-mode: soft-light; opacity: 0.28; }
+body::after { background: var(--ae-noise-tile) 0 0 / 256px 256px; mix-blend-mode: soft-light; opacity: var(--ae-grain-ui, 0.14); }
+
+h1, h2, h3, h4, p, figure, blockquote, dl, dd { margin: 0; }
+.nw { white-space: nowrap; }
+a { color: inherit; }
+img, svg { max-width: 100%; }
+button { font: inherit; color: inherit; }
+::selection { background: rgba(194, 94, 48, 0.42); color: var(--ae-star); }
+
+:focus-visible { outline: 2px solid var(--ae-ember); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 展示字（AE Display CN = Noto Serif SC 900）：字靠字，不拉字距 */
+.ae-dcn { font-family: var(--f-display); font-weight: 900; letter-spacing: 0; }
+
+/* 纸：奶油纸和一张纤维贴图正片叠底；边上一圈极淡的吃色（磨损），短而实的接触阴影由各物件自己加 */
+.ae-sheet {
+  background-color: var(--ae-paper);
+  background-image: radial-gradient(120% 90% at 30% 20%, rgba(255, 252, 244, 0.32), transparent 60%), var(--tex-paper);
+  background-size: 100% 100%, 256px 256px;
+  background-blend-mode: normal, multiply;
+  color: var(--ae-ink);
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 238, 0.35), inset 0 0 7px rgba(110, 84, 52, 0.22);
+}
+
+/* 箔（字上的箔色，锁定交出以前的迷你形态用）：柔和的大块明暗 + 越离光越沉；不是两色线性渐变 */
+.ae-foil {
+  font-weight: inherit;
+  background:
+    radial-gradient(70% 90% at 30% 18%, var(--foil-1), transparent 62%),
+    linear-gradient(172deg, var(--foil-2) 20%, var(--foil-3) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 滚动入场：淡入上移 28px、0.6s，同一组的先后由 --i 定；只在第一次进入视口时播。
+   html.ae-reveal 由 src/client/shell.js 加上：脚本没跑起来时这些内容照常显示 */
+.ae-reveal [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity var(--ae-t-web-in, 0.6s) var(--ae-ease-land), transform var(--ae-t-web-in, 0.6s) var(--ae-ease-land);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.ae-reveal [data-reveal].is-in { opacity: 1; transform: none; }
+
+/* 系统要求减少动态效果：入场、循环和悬停时的位移全部关掉，只留 0.15s 的透明度、亮度变化 */
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion: 0; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.15s !important;
+    transition-delay: 0s !important;
+  }
+  .ae-reveal [data-reveal] { transform: none; transition: opacity 0.15s linear; }
+}

@@ -1,0 +1,71 @@
+{
+  "title": "Notes for Visitors",
+  "description": "Notes for visitors to AI Aesthetics: what this showcase of AI design work is, how to open the downloaded works, and where the typefaces and graphics come from.",
+  "voice": "notes from the observatory",
+  "lead": "Read this before you go in: what happened tonight, how to open the works you take home, and where the type and graphics come from.",
+  "index": {
+    "label": "On this page",
+    "night": "What this night is",
+    "downloads": "Opening the downloads",
+    "credits": "Credits"
+  },
+  "and": " and ",
+  "sep": ", ",
+  "night": {
+    "title": "What This Night Is",
+    "en": "THE NIGHT",
+    "p1": "AI Aesthetics is an exhibition of AI design work. Each creative direction has one brief. Every model under test, working through its own agent, gets the same brief, starts a fresh session and builds the work on its own in an isolated workspace. Nobody answers questions along the way; whatever is left in the folder when the lamp goes out is the work.",
+    "p2": "The models enter in order of registration. One judge writes a short review for each direction, noting what she saw in the work.",
+    "p3": "Only stills hang here; the works themselves do not run in the browser. Plates of web-based works come from films and fixed-angle screenshots that the works export themselves, picked for frames that are sharp, steady and different from one another. Whitebox Rendering uses the six camera positions set in its brief. Every plate hangs as it is: no filters, no color grading.",
+    "p4": "Except for {off}, every work comes with a ticket, one file per work: most web works are a single HTML file you can double-click, and the rest are ZIP archives. Each model’s night is also recorded on film.",
+    "p4All": "Every work comes with a ticket, one file per work: most web works are a single HTML file you can double-click, and the rest are ZIP archives. Each model’s night is also recorded on film.",
+    "facts": {
+      "label": "Credits for tonight",
+      "volumes": "Volumes",
+      "volumesValue": "{n}",
+      "volumesUpcoming": " ({n} with the brief to come)",
+      "observers": "Designers",
+      "works": "Works",
+      "worksValue": "{n}",
+      "judges": "Judges",
+      "updated": "Updated"
+    },
+    "judgesLink": "Meet the three judges"
+  },
+  "downloads": {
+    "title": "Opening the Downloads",
+    "en": "DOWNLOADS",
+    "line": "Every work has a ticket beside it; one click and that work is yours to take. There is no taking everything at once.",
+    "html": {
+      "tag": ".html",
+      "title": "A single web page",
+      "text": "Open it in Chrome; double-clicking usually does it. Allow a few seconds before the show begins, and since some works have sound, you may want to turn the volume down first."
+    },
+    "webzip": {
+      "tag": ".zip",
+      "title": "A web work as a ZIP",
+      "text": "When a web work can't be packed into a single file, you get a ZIP. Unzip it and follow 打开说明-How-to-open.txt inside: run {cmd} in the unzipped folder, then open the address it prints in your browser."
+    },
+    "off": "{names}: stills only, no ticket."
+  },
+  "credits": {
+    "title": "Credits",
+    "en": "CREDITS",
+    "fonts": {
+      "role": "Typefaces",
+      "text": "{list}. All are open-source fonts under the SIL Open Font License 1.1; the titles and the wordmark are lettered on top of their glyphs for this showcase."
+    },
+    "icons": {
+      "role": "Vendor icons",
+      "text": "LobeHub Icons. Trademarks belong to their owners and are used only to show where each model comes from."
+    },
+    "works": {
+      "role": "Works",
+      "text": "Made by the models under test during this benchmark. The stills on this site are taken from the works themselves and hang as they are."
+    },
+    "graphics": {
+      "role": "Graphics",
+      "text": "The wordmark, constellation badges, hanging star and the other decorative graphics on these pages were drawn for this project."
+    }
+  }
+}
