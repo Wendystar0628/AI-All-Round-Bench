@@ -1,0 +1,115 @@
+{
+  "updated": "2026-11-27",
+  "topics": [
+    {
+      "id": "decathlon",
+      "name": "AI十项全能",
+      "name_en": "AI Decathlon",
+      "status": "online",
+      "url": "/decathlon/",
+      "accent": "#7a3cf0",
+      "updated": "2026-11-23",
+      "stats": [
+        {
+          "label": {
+            "zh": "题目",
+            "en": "Tasks"
+          },
+          "value": 13
+        },
+        {
+          "label": {
+            "zh": "类别",
+            "en": "Categories"
+          },
+          "value": 10
+        },
+        {
+          "label": {
+            "zh": "上榜型号",
+            "en": "Ranked models"
+          },
+          "value": 27
+        }
+      ],
+      "feature": {
+        "kind": "ranking",
+        "title": {
+          "zh": "前 3 名",
+          "en": "Top 3"
+        },
+        "items": [
+          {
+            "model": {
+              "id": "gpt-6-2-astra",
+              "name": "GPT 6.2 Astra",
+              "vendor": "OpenAI",
+              "logo": "openai",
+              "effort": "xhigh"
+            },
+            "value": 84.0,
+            "max": 100
+          },
+          {
+            "model": {
+              "id": "gpt-6-2-sol",
+              "name": "GPT 6.2 Sol",
+              "vendor": "OpenAI",
+              "logo": "openai",
+              "effort": "xhigh"
+            },
+            "value": 74.3,
+            "max": 100
+          },
+          {
+            "model": {
+              "id": "gemini-4-neon",
+              "name": "Gemini 4 Neon",
+              "vendor": "Google",
+              "logo": "gemini",
+              "effort": "xhigh"
+            },
+            "value": 70.6,
+            "max": 100
+          }
+        ]
+      }
+    },
+    {
+      "id": "aesthetics",
+      "name": "AI审美全能",
+      "name_en": "AI Aesthetics",
+      "status": "online",
+      "url": "/aesthetics/",
+      "accent": "#b55829",
+      "updated": "2026-11-27",
+      "about": {
+        "zh": "AI 设计作品展：十个创作方向，各模型按同一份题面完成作品，并排陈列。",
+        "en": "A showcase of AI design: ten creative directions, every model building from the same brief, the works hung side by side."
+      },
+      "stats": [
+        {
+          "label": {
+            "zh": "题目",
+            "en": "Tasks"
+          },
+          "value": 10
+        },
+        {
+          "label": {
+            "zh": "型号",
+            "en": "Models"
+          },
+          "value": 3
+        },
+        {
+          "label": {
+            "zh": "作品",
+            "en": "Works"
+          },
+          "value": 30
+        }
+      ]
+    }
+  ]
+}

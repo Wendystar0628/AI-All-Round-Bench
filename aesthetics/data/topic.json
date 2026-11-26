@@ -1,0 +1,605 @@
+{
+  "id": "aesthetics",
+  "name": "AI审美全能",
+  "name_en": "AI Aesthetics",
+  "about": {
+    "zh": "AI 设计作品展：十个创作方向，各模型按同一份题面完成作品，并排陈列。",
+    "en": "A showcase of AI design: ten creative directions, every model building from the same brief, the works hung side by side."
+  },
+  "updated": "2026-11-27",
+  "notice": null,
+  "categories": [
+    {
+      "key": "motion-design",
+      "no": 1,
+      "name": "动效设计",
+      "name_en": "Motion Design",
+      "short": "动效",
+      "short_en": "Motion",
+      "judge": "claude",
+      "download": false,
+      "tasks": [
+        {
+          "key": "agent-pv",
+          "no": 1,
+          "name": "现代Agent概念PV",
+          "name_en": "Modern Agent Concept PV",
+          "category": "motion-design",
+          "judge": "claude",
+          "download": false,
+          "tagline": {
+            "zh": "现代 Agent 与协作的概念 PV",
+            "en": "A concept PV of modern agents working together"
+          },
+          "summary": {
+            "zh": "一行指令点亮一个 Agent：词元、注意力、规划、工具调用一一化作动画，五位 AI 各展所长、协作到交付。全片按一首歌来编排，配乐由程序合成。",
+            "en": "One line of instruction wakes an agent: tokens, attention, planning and tool calls each become an animation, and five AIs bring their strengths together until the work is delivered. The film is cut like a song, to a score synthesized in code."
+          },
+          "highlights": [
+            {
+              "zh": "专业概念化成一眼能懂的动画",
+              "en": "Technical ideas turned into animation you grasp at a glance"
+            },
+            {
+              "zh": "五位 AI 各自的能力演绎",
+              "en": "Each of the five AIs and her own strengths"
+            },
+            {
+              "zh": "副歌复现与形状接力的编排",
+              "en": "Returning choruses and shapes handed from shot to shot"
+            },
+            {
+              "zh": "跟着画面谱写的歌",
+              "en": "A song written to the picture"
+            }
+          ],
+          "statement": "topics/审美全能/题面/动效设计/现代Agent概念PV.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "toon",
+      "no": 2,
+      "name": "卡通渲染",
+      "name_en": "Toon Rendering",
+      "short": "卡通渲染",
+      "short_en": "Toon",
+      "judge": "claude",
+      "download": true,
+      "tasks": [
+        {
+          "key": "autumn-observatory",
+          "no": 2,
+          "name": "秋庭观星画室",
+          "name_en": "Stargazing Studio in an Autumn Garden",
+          "category": "toon",
+          "judge": "claude",
+          "download": true,
+          "tagline": {
+            "zh": "一帧能转着看的动画背景",
+            "en": "An anime backdrop you can turn in your hands"
+          },
+          "summary": {
+            "zh": "在网页里搭一座三维微缩场景，画成日本动画背景的样子。深秋午后，小神社的庭院边有一间剖开的和风画室，屋里立着发光的观星球，庭院的水池做成了一只水果塔。",
+            "en": "A 3D miniature for the browser, rendered to look like a hand-painted anime background. On an autumn afternoon beside a small shrine stands a cutaway Japanese studio with a glowing stargazing globe inside, and the garden pond is a giant fruit tart."
+          },
+          "highlights": [
+            {
+              "zh": "铜环对齐时，观星球散开一圈光点",
+              "en": "The brass rings align, and the globe sends out a ring of light"
+            },
+            {
+              "zh": "水果塔做的水池，在底座边缘被切开",
+              "en": "A fruit-tart pond, sliced open at the edge of the base"
+            },
+            {
+              "zh": "冒热气的茶、没画完的画，主人刚走开",
+              "en": "Steaming tea, an unfinished painting: the owner has just stepped out"
+            },
+            {
+              "zh": "一阵风从鸟居吹进来，一路吹进画室",
+              "en": "A gust blows in through the torii and carries all the way into the studio"
+            }
+          ],
+          "statement": "topics/审美全能/题面/卡通渲染/秋庭观星画室.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "clay-render",
+      "no": 3,
+      "name": "白模渲染",
+      "name_en": "Whitebox Rendering",
+      "short": "白模渲染",
+      "short_en": "Whitebox",
+      "judge": "gpt",
+      "download": false,
+      "tasks": [
+        {
+          "key": "greenhouse-render",
+          "no": 3,
+          "name": "玻璃温室与花艺工作室",
+          "name_en": "Glass Greenhouse and Florist's Workshop",
+          "category": "clay-render",
+          "judge": "gpt",
+          "download": false,
+          "tagline": {
+            "zh": "把白模渲染成夏日黄昏",
+            "en": "From bare geometry to golden hour"
+          },
+          "summary": {
+            "zh": "一座只有形体和镜头、没有颜色的白模：维多利亚式玻璃温室，连着花艺工作室。在 Blender 里补上材质、灯光和调色，渲染成夏日黄昏的静帧和 60 秒视频。",
+            "en": "A whitebox with only shapes and cameras, no color: a Victorian glass greenhouse joined to a florist's workshop. Materials, lighting and color grading are added in Blender to render a summer dusk, as stills and a 60-second fly-through."
+          },
+          "highlights": [
+            {
+              "zh": "夕阳穿过玻璃穹顶，斜斜落下几道光柱",
+              "en": "Low sun through the glass dome, falling in slanted shafts"
+            },
+            {
+              "zh": "琥珀与浅青的彩色玻璃，在地上投下光斑",
+              "en": "Amber and pale-cyan panes casting colored light on the floor"
+            },
+            {
+              "zh": "暗角里亮着的灯笼、蜡烛和炉火",
+              "en": "Lanterns, candles and stove fire glowing in the dim corners"
+            },
+            {
+              "zh": "铜绿斑驳的喷泉，透亮的玻璃钟罩",
+              "en": "A verdigris-mottled fountain, a gleaming glass cloche"
+            }
+          ],
+          "statement": "topics/审美全能/题面/白模渲染/玻璃温室与花艺工作室.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "creative-web",
+      "no": 4,
+      "name": "创意网页设计",
+      "name_en": "Creative Web Design",
+      "short": "网页设计",
+      "short_en": "Web",
+      "judge": "claude",
+      "download": true,
+      "tasks": [
+        {
+          "key": "nvidia-b200-web",
+          "no": 4,
+          "name": "NVIDIA B200 网页艺术",
+          "name_en": "NVIDIA B200 Web Art",
+          "category": "creative-web",
+          "judge": "claude",
+          "download": true,
+          "tagline": {
+            "zh": "所有画面都从一颗芯片长出",
+            "en": "Every image grows from a single chip"
+          },
+          "summary": {
+            "zh": "以 NVIDIA B200 GPU 为题材的滚动网页艺术：从一颗芯片封装开场，钻进计算单元，拉远到整座数据中心，再回到这颗芯片。不放图表和参数，用画面说话。",
+            "en": "Scrolling, interactive web art about the NVIDIA B200 GPU. It opens on a single chip package, dives into the compute units, pulls back to an entire data center and returns to the same chip. No charts or specs: the visuals do the telling."
+          },
+          "highlights": [
+            {
+              "zh": "数据化作光，沿走线从显存流进芯片",
+              "en": "Data as light, running along the traces from memory into the chip"
+            },
+            {
+              "zh": "精度一级级降低，画面变粗，又重新变清晰",
+              "en": "As precision drops step by step, the picture coarsens, then sharpens again"
+            },
+            {
+              "zh": "从一颗 GPU 拉远到整座数据中心",
+              "en": "Pulling back from a single GPU to an entire data center"
+            },
+            {
+              "zh": "每一章都接着上一章的画面长出来",
+              "en": "Each chapter grows out of the image before it"
+            }
+          ],
+          "statement": "topics/审美全能/题面/创意网页设计/NVIDIA_B200网页艺术.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "large-scene",
+      "no": 5,
+      "name": "大型场景建模",
+      "name_en": "Large-Scale Scene Modeling",
+      "short": "大型建模",
+      "short_en": "Scene",
+      "judge": "gpt",
+      "download": true,
+      "tasks": [
+        {
+          "key": "sky-citadel",
+          "no": 5,
+          "name": "天穹圣城",
+          "name_en": "Holy City in the Sky",
+          "category": "large-scene",
+          "judge": "gpt",
+          "download": true,
+          "tagline": {
+            "zh": "云海之上，一座货真价实的城",
+            "en": "A real, working city above a sea of clouds"
+          },
+          "summary": {
+            "zh": "在网页里搭一座悬在云海上的天空之城。主岛上的城市层层升到穹顶主殿，六座卫星岛环绕四周，由各不相同的桥和渡槽相连；水从城顶一路跌落，泻进云海。",
+            "en": "A city floating above a sea of clouds, built in 3D for the browser. Streets climb the main island in tiers to a domed cathedral; six satellite islands circle it, joined by bridges and an aqueduct, no two alike; water tumbles from the top of the city into the clouds."
+          },
+          "highlights": [
+            {
+              "zh": "塔顶的水晶球，和交错旋转的金色链环",
+              "en": "A crystal orb atop the spire, circled by turning golden chains"
+            },
+            {
+              "zh": "岛底的晶簇、锚链和拄杖的守护神像",
+              "en": "Crystals, anchor chains and a staff-bearing guardian beneath the island"
+            },
+            {
+              "zh": "水车提水，渡槽送上城顶，层层跌进云海",
+              "en": "From waterwheel to aqueduct to falls tumbling into the clouds"
+            },
+            {
+              "zh": "停着飞艇的港口、敲钟的钟塔、断开的旧桥",
+              "en": "An airship dock, a ringing bell tower, a broken old bridge"
+            }
+          ],
+          "statement": "topics/审美全能/题面/大型场景建模/天穹圣城.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "svg-animation",
+      "no": 6,
+      "name": "SVG动画",
+      "name_en": "SVG Animation",
+      "short": "SVG动画",
+      "short_en": "SVG",
+      "judge": "claude",
+      "download": true,
+      "tasks": [
+        {
+          "key": "pelican-22-styles",
+          "no": 6,
+          "name": "鹈鹕的二十二种画法",
+          "name_en": "Twenty-Two Ways to Draw a Pelican",
+          "category": "svg-animation",
+          "judge": "claude",
+          "download": true,
+          "tagline": {
+            "zh": "一路骑过二十二种画风",
+            "en": "One ride through twenty-two art styles"
+          },
+          "summary": {
+            "zh": "用 SVG 画一支约两分半、带配乐的动画短片。一只骑自行车的鹈鹕从红黑拼贴、水墨、浮世绘骑到像素和故障艺术，每换一种画风，它都被重新画一遍。",
+            "en": "An animated short of about two and a half minutes, drawn in SVG with its own score. A pelican on a bicycle rides from red-and-black collage through ink painting and ukiyo-e to pixel art and glitch art, redrawn from scratch in every style."
+          },
+          "highlights": [
+            {
+              "zh": "画风在强拍上围着鹈鹕变换，骑行不停",
+              "en": "Styles change around the pelican on the downbeat; it never stops pedaling"
+            },
+            {
+              "zh": "画面本身也在变：报纸、漫画格、游戏界面",
+              "en": "The medium changes too: newspaper, comic panels, a game screen"
+            },
+            {
+              "zh": "同一段主旋律，用二十二种曲风重新演奏",
+              "en": "One melody, replayed in twenty-two musical styles"
+            },
+            {
+              "zh": "片尾，二十二只鹈鹕并排冲线",
+              "en": "A finale with twenty-two pelicans racing for the line"
+            }
+          ],
+          "statement": "topics/审美全能/题面/SVG动画/鹈鹕的二十二种画法.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "voxel",
+      "no": 7,
+      "name": "体素建模",
+      "name_en": "Voxel Modeling",
+      "short": "体素建模",
+      "short_en": "Voxel",
+      "judge": "gemini",
+      "download": true,
+      "tasks": [
+        {
+          "key": "water-park",
+          "no": 7,
+          "name": "晴空水上乐园",
+          "name_en": "Clear Sky Water Park",
+          "category": "voxel",
+          "judge": "gemini",
+          "download": true,
+          "tagline": {
+            "zh": "一格一格搭出的盛夏",
+            "en": "Midsummer, built one block at a time"
+          },
+          "summary": {
+            "zh": "用体素（小方块）搭一座海湾边的大型水上乐园：造浪池、漂流河、45 米高的滑道塔和十几条滑道一应俱全。园里没有人，所有设施都在运转。",
+            "en": "A large bayside water park built entirely from voxels, tiny cubes: a wave pool, a lazy river, a 45-meter slide tower and more than a dozen slides. Not a single visitor, yet every ride is running."
+          },
+          "highlights": [
+            {
+              "zh": "十几条彩色滑道，从山上和塔上盘旋而下",
+              "en": "More than a dozen colored slides spiraling down from the hill and towers"
+            },
+            {
+              "zh": "空泳圈冲进水池，溅起一颗颗方块水花",
+              "en": "Empty tubes splashing into pools in sprays of tiny cubes"
+            },
+            {
+              "zh": "造浪池一阵阵推出浪，涌上沙滩",
+              "en": "Set after set of waves rolling out of the wave pool onto the beach"
+            },
+            {
+              "zh": "戏水城堡顶的大水桶，装满就翻倒",
+              "en": "A giant bucket atop the splash castle, tipping over each time it fills"
+            }
+          ],
+          "statement": "topics/审美全能/题面/体素建模/晴空水上乐园.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "hard-surface",
+      "no": 8,
+      "name": "硬表面建模",
+      "name_en": "Hard-Surface Modeling",
+      "short": "硬表面",
+      "short_en": "Hard Surface",
+      "judge": "gpt",
+      "download": true,
+      "tasks": [
+        {
+          "key": "harbor-mecha",
+          "no": 8,
+          "name": "雨夜港口的巨型机甲",
+          "name_en": "Giant Mecha in a Rain-Swept Harbor",
+          "category": "hard-surface",
+          "judge": "gpt",
+          "download": true,
+          "tagline": {
+            "zh": "远看剪影厚重，近看装甲分层",
+            "en": "A massive silhouette from afar, layered armor up close"
+          },
+          "summary": {
+            "zh": "在网页里造一台 70 米高的人形机甲「破浪者德尔塔」，让它在暴雨夜站在集装箱港口前的海浪里。重点是装甲与机械细节，以及被雨打湿的金属。",
+            "en": "A 70-meter humanoid mecha, Breaker Delta, built in 3D for the browser and standing in the surf before a container port on a stormy night. The focus is its armor and machinery, and metal soaked with rain."
+          },
+          "highlights": [
+            {
+              "zh": "粗壮的关节、液压杆和清晰的面板接缝",
+              "en": "Heavy joints, hydraulic rams and crisp panel seams"
+            },
+            {
+              "zh": "雨水顺着甲缘流下，指尖和剑尖不断滴水",
+              "en": "Rain running off the plate edges, dripping from fingertips and blade"
+            },
+            {
+              "zh": "胸口旋转发光的核动力炉",
+              "en": "The reactor turning and glowing in its chest"
+            },
+            {
+              "zh": "雨声、浪声和雷声，全由程序合成",
+              "en": "Rain, surf and thunder, all synthesized in code"
+            }
+          ],
+          "statement": "topics/审美全能/题面/硬表面建模/雨夜港口的巨型机甲.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "game-ui",
+      "no": 9,
+      "name": "游戏UI设计",
+      "name_en": "Game UI Design",
+      "short": "游戏UI",
+      "short_en": "Game UI",
+      "judge": "gemini",
+      "download": true,
+      "tasks": [
+        {
+          "key": "floating-isles-game-ui",
+          "no": 9,
+          "name": "浮空群岛传说游戏UI",
+          "name_en": "Legend of the Floating Isles: Game UI",
+          "category": "game-ui",
+          "judge": "gemini",
+          "download": true,
+          "tagline": {
+            "zh": "还没有游戏，先有了界面",
+            "en": "A full interface for a game that doesn't exist"
+          },
+          "summary": {
+            "zh": "为虚构的动作角色扮演游戏《浮空群岛传说》设计核心界面和动效：标题、剧情、任务、编队、战斗、奥义演出和结算。七个界面都能操作，按游戏流程连成一条完整的体验。",
+            "en": "Core screens and motion design for an imaginary action RPG, Legend of the Floating Isles: title, story, quests, party, battle, ultimate cinematics and results. All seven screens respond to input and link into one play-through."
+          },
+          "highlights": [
+            {
+              "zh": "信息很多却不乱的战斗画面",
+              "en": "A battle screen packed with information, yet uncluttered"
+            },
+            {
+              "zh": "四人接连放奥义，连成全员连锁",
+              "en": "Four ultimates in a row, chaining into a full-party finisher"
+            },
+            {
+              "zh": "首领超载的警示，和破防的一刻",
+              "en": "The boss's overload warning, and the moment it breaks"
+            },
+            {
+              "zh": "铜、银、金宝箱依次打开，金箱最隆重",
+              "en": "Bronze, silver and gold chests opening in turn, gold the grandest"
+            }
+          ],
+          "statement": "topics/审美全能/题面/游戏UI设计/浮空群岛传说游戏UI.md"
+        }
+      ],
+      "upcoming": null
+    },
+    {
+      "key": "type-logo",
+      "no": 10,
+      "name": "字体与Logo设计",
+      "name_en": "Type & Logo Design",
+      "short": "Logo设计",
+      "short_en": "Logo",
+      "judge": "gemini",
+      "download": true,
+      "tasks": [
+        {
+          "key": "anime-game-logo",
+          "no": 10,
+          "name": "二次元游戏Logo",
+          "name_en": "Anime Game Logo",
+          "category": "type-logo",
+          "judge": "gemini",
+          "download": true,
+          "tagline": {
+            "zh": "游戏名，重新写一遍",
+            "en": "Each game's name, lettered anew"
+          },
+          "summary": {
+            "zh": "为《明日方舟：终末地》《崩坏：星穹铁道》《鸣潮》各重新设计一枚 Logo：从游戏的世界观推出字形，中文游戏名是主体，英文名作辅助，再配上主体元素、装饰和配色。",
+            "en": "New logos for Arknights: Endfield, Honkai: Star Rail and Wuthering Waves: letterforms derived from each world, the Chinese title leading and the English name in support, locked up with an emblem, ornament and color."
+          },
+          "highlights": [
+            {
+              "zh": "从世界观推出的一整套笔画规则",
+              "en": "A full set of stroke rules drawn from each world"
+            },
+            {
+              "zh": "落在同构笔画上的主题意象",
+              "en": "Motifs set on strokes that already share their shape"
+            },
+            {
+              "zh": "中英文、主体元素和底板锁成一块",
+              "en": "Chinese, English, emblem and plate locked into one mark"
+            },
+            {
+              "zh": "三枚各有鲜明的气质与配色",
+              "en": "Three marks, each with its own character and palette"
+            }
+          ],
+          "statement": "topics/审美全能/题面/字体与Logo设计/二次元游戏Logo.md"
+        }
+      ],
+      "upcoming": null
+    }
+  ],
+  "judges": [
+    {
+      "id": "gpt",
+      "name": "GPT 6.2 Sol",
+      "model": {
+        "key": "GPT/6.2Sol",
+        "id": "gpt-6-2-sol",
+        "vendor": "OpenAI",
+        "logo": "openai"
+      },
+      "persona": {
+        "zh": "理性、严谨、卓识远见的形象。",
+        "en": "Rational, rigorous and far-sighted."
+      },
+      "categories": [
+        "clay-render",
+        "large-scene",
+        "hard-surface"
+      ],
+      "portrait": {
+        "src": "media/judges/gpt/portrait.webp",
+        "width": 1024,
+        "height": 1536,
+        "thumb": "media/judges/gpt/portrait.thumb.webp",
+        "thumb_width": 533,
+        "thumb_height": 800,
+        "head": {
+          "x": 0.3906,
+          "y": 0.043,
+          "w": 0.1611,
+          "h": 0.1406
+        }
+      }
+    },
+    {
+      "id": "claude",
+      "name": "Claude Opus 5.5",
+      "model": {
+        "key": "Claude/Opus5.5",
+        "id": "claude-opus-5-5",
+        "vendor": "Anthropic",
+        "logo": "claude"
+      },
+      "persona": {
+        "zh": "沉稳、安静、博识、温暖的形象。",
+        "en": "Calm, quiet, well-read and warm."
+      },
+      "categories": [
+        "motion-design",
+        "toon",
+        "creative-web",
+        "svg-animation"
+      ],
+      "portrait": {
+        "src": "media/judges/claude/portrait.webp",
+        "width": 1024,
+        "height": 1536,
+        "thumb": "media/judges/claude/portrait.thumb.webp",
+        "thumb_width": 533,
+        "thumb_height": 800,
+        "head": {
+          "x": 0.3711,
+          "y": 0.0091,
+          "w": 0.1611,
+          "h": 0.1374
+        }
+      }
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini 4 Neon",
+      "model": {
+        "key": "Gemini/4Neon",
+        "id": "gemini-4-neon",
+        "vendor": "Google",
+        "logo": "gemini"
+      },
+      "persona": {
+        "zh": "元气、活泼、具有活人感的猫娘形象。",
+        "en": "A lively, cheerful catgirl who talks like a real person."
+      },
+      "categories": [
+        "voxel",
+        "game-ui",
+        "type-logo"
+      ],
+      "portrait": {
+        "src": "media/judges/gemini/portrait.webp",
+        "width": 937,
+        "height": 1678,
+        "thumb": "media/judges/gemini/portrait.thumb.webp",
+        "thumb_width": 447,
+        "thumb_height": 800,
+        "head": {
+          "x": 0.4269,
+          "y": 0.0524,
+          "w": 0.2188,
+          "h": 0.149
+        }
+      }
+    }
+  ]
+}

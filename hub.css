@@ -1,0 +1,1426 @@
+/* 总站首页：星图册摊开的几页。页头是宽体字标（实心墨字一行、紫色空心一行），下面一把刻度尺，尺下挂着一块图版；
+   每个专题是图版上的一页：左边一栏文字，右边一扇带坐标框和均匀网格的星空窗，星座只画在窗里，带着该专题的主色
+   （卡片数据的 accent），窗外是白纸。已开放的专题：窗下一把与窗同宽的 0–100 读数尺列出前三名，星座最亮的星
+   正对第 1 名、一根细线连下来；筹备中的专题：虚线窗框，星位只描了空心，青色作图线画到一半，窗角一把量角弧。
+   颜色：纸、板、墨为主；紫 #9859FF 做结构（字标空心行、// 记号、刻度尺、链接下划线），荧光绿 #D1FF57 做能量
+   （进入专题的主按钮、第 1 名的分数和星），星光青 #62D4F5 只做参考和作图线。深色是另一套完整主题。
+   动效：一段连续的入场（尺扫过、字标推入 → 图版展开 → 窗框画出 → 网格扫入 → 星座连线 → 读数尺伸出 → 星点亮），之后静止。 */
+
+@font-face {
+  font-family: 'Saira';
+  src: url('fonts/Saira.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 50% 125%;
+  font-display: swap;
+}
+
+:root {
+  --paper: #f2f1f6;
+  --panel: #ffffff;
+  --ink: #1a1726;
+  --ink-2: #5d5970;
+  --ink-3: #9a96ab; /* ruler ticks, dotted tracks */
+  --rule: #dcdae4;
+  --chip: #e7e5ee;
+  --wash: #f1e8ff;
+  --orbit: #9859ff; /* brand and structure */
+  --flare: #d1ff57; /* energy and highlight */
+  --cyan: #62d4f5; /* reference marks */
+  --survey: #2aa7d4; /* construction lines of a topic still being charted */
+  --on-flare: #1a1726;
+  --grid: color-mix(in srgb, var(--ink) 8%, transparent);
+  --frame: color-mix(in srgb, var(--ink) 70%, transparent);
+  --bound: color-mix(in srgb, var(--ink) 26%, transparent);
+  --field-star: color-mix(in srgb, var(--ink) 62%, transparent);
+  --corner-line: color-mix(in srgb, var(--orbit) 30%, transparent);
+  --corner-star: color-mix(in srgb, var(--ink) 20%, transparent);
+  --lead-star: var(--ink);
+  --best-edge: var(--ink);
+  --hatch: repeating-linear-gradient(-45deg, transparent 0 5px, color-mix(in srgb, var(--ink) 22%, transparent) 5px 6.5px);
+  --topic: #6e6a80; /* a topic's accent when its card gives none */
+  --snap: cubic-bezier(0.16, 1, 0.3, 1);
+  --mech: cubic-bezier(0.7, 0, 0.2, 1);
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --font: 'Saira', 'Microsoft YaHei UI', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', 'Hiragino Sans GB', sans-serif;
+  --page: 85rem;
+  --gutter: clamp(16px, 3vw, 40px);
+  --cut: 8px;
+  --frame-cut: 52px;
+  color-scheme: light;
+}
+
+/* the dark theme: a night sky with lifted panels, not an inversion */
+:root[data-theme='dark'] {
+  --paper: #121019;
+  --panel: #1b1824;
+  --ink: #eceaf3;
+  --ink-2: #a39fb4;
+  --ink-3: #6f6a82;
+  --rule: #2f2b3c;
+  --chip: #272333;
+  --wash: #3c295d;
+  --survey: #62d4f5;
+  --grid: color-mix(in srgb, var(--ink) 8%, transparent);
+  --bound: color-mix(in srgb, var(--ink) 30%, transparent);
+  --field-star: color-mix(in srgb, var(--ink) 70%, transparent);
+  --corner-line: color-mix(in srgb, var(--orbit) 44%, transparent);
+  --corner-star: color-mix(in srgb, var(--flare) 30%, transparent);
+  --lead-star: var(--flare);
+  --best-edge: transparent;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #121019;
+    --panel: #1b1824;
+    --ink: #eceaf3;
+    --ink-2: #a39fb4;
+    --ink-3: #6f6a82;
+    --rule: #2f2b3c;
+    --chip: #272333;
+    --wash: #3c295d;
+    --survey: #62d4f5;
+    --grid: color-mix(in srgb, var(--ink) 8%, transparent);
+    --bound: color-mix(in srgb, var(--ink) 30%, transparent);
+    --field-star: color-mix(in srgb, var(--ink) 70%, transparent);
+    --corner-line: color-mix(in srgb, var(--orbit) 44%, transparent);
+    --corner-star: color-mix(in srgb, var(--flare) 30%, transparent);
+    --lead-star: var(--flare);
+    --best-edge: transparent;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1rem/1.6 var(--font);
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--flare) 60%, transparent);
+  color: var(--on-flare);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: var(--gutter);
+  top: -4rem;
+  z-index: 5;
+  padding: 0.5rem 0.9rem;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.skip:focus {
+  top: 0.75rem;
+}
+
+/* wide upper-case labels and figures */
+.wide {
+  font-family: var(--font);
+  font-stretch: 125%;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---------- the page's start: a strip in the three theme colours ---------- */
+
+.strip {
+  display: flex;
+  height: 3px;
+}
+
+.strip i {
+  flex: 1;
+  background: var(--orbit);
+}
+
+.strip i:nth-child(2) {
+  background: var(--cyan);
+}
+
+.strip i:nth-child(3) {
+  background: var(--flare);
+}
+
+/* a faint patch of star chart in two corners of the page (drawn once, never moves) */
+.corner {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.corner-tr {
+  top: 3px;
+  right: 0;
+  width: min(44rem, 60vw);
+  height: 30rem;
+  -webkit-mask: radial-gradient(120% 100% at 100% 0, #000 30%, transparent 78%);
+  mask: radial-gradient(120% 100% at 100% 0, #000 30%, transparent 78%);
+}
+
+.corner-bl {
+  left: 0;
+  bottom: 0;
+  width: min(30rem, 50vw);
+  height: 20rem;
+  -webkit-mask: radial-gradient(120% 100% at 0 100%, #000 30%, transparent 78%);
+  mask: radial-gradient(120% 100% at 0 100%, #000 30%, transparent 78%);
+}
+
+.corner .c-line {
+  fill: none;
+  stroke: var(--corner-line);
+  stroke-width: 1;
+}
+
+.corner .c-arc {
+  fill: none;
+  stroke: var(--corner-line);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
+.corner .c-star {
+  fill: var(--corner-star);
+}
+
+.mast,
+main,
+.foot {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--page);
+  margin: 0 auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+/* ---------- top bar: mark, real figures, theme and language ---------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-height: 4.25rem;
+}
+
+.brand {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.brand svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.brand-block {
+  fill: var(--orbit);
+}
+
+.brand-star {
+  fill: var(--flare);
+}
+
+.fields {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-stretch: 112%;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.fields span + span::before {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 0.8em;
+  margin: 0 0.85rem;
+  background: var(--rule);
+  vertical-align: -0.05em;
+}
+
+.fields b {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lang {
+  display: flex;
+  gap: 0.375rem;
+}
+
+/* small pressable chips: one corner cut */
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  padding: 0.3rem calc(0.7rem + var(--cut) * 0.6) 0.3rem 0.7rem;
+  border: 0;
+  background: var(--chip);
+  color: var(--ink);
+  font: 600 0.8125rem/1 var(--font);
+  font-stretch: 112%;
+  text-decoration: none;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+  transition: background-color 200ms var(--mech);
+}
+
+.chip:hover {
+  background: color-mix(in srgb, var(--chip) 60%, var(--rule));
+}
+
+.chip:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.chip[aria-current] {
+  background: var(--wash);
+  font-weight: 800;
+  box-shadow: inset 3px 0 0 var(--orbit);
+}
+
+.chip[aria-current]:focus-visible {
+  box-shadow: inset 3px 0 0 var(--orbit), inset 0 0 0 2px var(--ink);
+}
+
+.theme-toggle svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.theme-toggle svg path {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* ---------- hero: the wordmark ---------- */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 23rem);
+  align-items: end;
+  column-gap: clamp(2rem, 5vw, 5rem);
+  padding: clamp(2.5rem, 6vw, 5.25rem) 0 clamp(2rem, 3.5vw, 3rem);
+}
+
+.wm-block {
+  min-width: 0;
+}
+
+.wm {
+  margin: 0;
+  font-weight: 800;
+  line-height: 0.98;
+}
+
+.wm-solid {
+  display: block;
+  font-size: clamp(3.5rem, 1.2rem + 7.4vw, 8.5rem);
+  font-stretch: 118%;
+  letter-spacing: -0.01em;
+}
+
+.wm-hollow {
+  display: block;
+  margin: 0.55rem 0 0;
+  font-size: clamp(1.5rem, 0.45rem + 3.2vw, 3.65rem);
+  font-weight: 800;
+  font-stretch: 125%;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--orbit);
+}
+
+/* English: two lines of the same size, the second one outlined */
+:root[data-lang='en'] .wm-solid,
+:root[data-lang='en'] .wm-hollow {
+  font-size: clamp(2.75rem, 0.9rem + 5.6vw, 6.75rem);
+  font-stretch: 125%;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+:root[data-lang='en'] .wm-hollow {
+  margin-top: 0.06em;
+  -webkit-text-stroke-width: 2px;
+}
+
+.wm-other {
+  margin: 1rem 0 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.hero-intro {
+  margin: 0;
+  padding-bottom: 0.3rem;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+/* ---------- the ruler the plate hangs from ---------- */
+
+main {
+  flex: 1;
+  padding-bottom: clamp(3rem, 7vw, 5rem);
+}
+
+main:focus {
+  outline: none;
+}
+
+.ruler {
+  position: relative;
+  height: 14px;
+  margin-right: 14px;
+  border-bottom: 1px solid var(--ink);
+  background:
+    repeating-linear-gradient(to right, var(--orbit) 0 1px, transparent 1px 40px) left bottom / 100% 11px no-repeat,
+    repeating-linear-gradient(to right, var(--ink-3) 0 1px, transparent 1px 8px) left bottom / 100% 5px no-repeat;
+}
+
+.ruler-star {
+  position: absolute;
+  right: -7px;
+  bottom: -7.5px;
+  width: 14px;
+  height: 14px;
+  fill: var(--lead-star);
+}
+
+/* ---------- the plate: facing pages of a star atlas, one page per topic ---------- */
+
+.atlas {
+  position: relative;
+  padding: 0 14px 14px 0;
+}
+
+/* one hatched shadow, at the bottom right only */
+.atlas-shadow {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 42%;
+  height: calc(var(--frame-cut) + 14px);
+  background: var(--hatch);
+  clip-path: polygon(calc(100% - 14px) 0, 100% 0, 100% 14px, calc(100% - var(--frame-cut)) 100%, 0 100%, 0 calc(100% - 14px), calc(100% - 14px - var(--frame-cut)) calc(100% - 14px));
+}
+
+.plate {
+  position: relative;
+  min-height: 12rem;
+  background: var(--panel);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--frame-cut)), calc(100% - var(--frame-cut)) 100%, 0 100%);
+}
+
+.plate-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.plate-sky .edge {
+  fill: none;
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+/* the binding line between neighbouring pages */
+.plate-sky .bind path {
+  fill: none;
+  stroke: var(--bound);
+  stroke-width: 1;
+}
+
+.topics {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.topics-note {
+  flex: 1;
+  padding: 3rem 2.5rem;
+  color: var(--ink-2);
+}
+
+/* ---------- one page: a text column and a window of sky ---------- */
+
+.topic {
+  --line: var(--topic);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto auto;
+  grid-template-areas:
+    'id win'
+    'stats win'
+    'feature feature'
+    'foot foot';
+  column-gap: clamp(1.75rem, 2.6vw, 2.5rem);
+  flex: 1.2 1 39rem;
+  min-width: 0;
+  /* the right padding leaves room for the window's declination labels */
+  padding: 2.75rem clamp(2.75rem, 4vw, 3.5rem) 2.25rem clamp(1.5rem, 2.8vw, 2.5rem);
+}
+
+:root[data-theme='dark'] .topic {
+  --line: color-mix(in oklab, var(--topic) 72%, white);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .topic {
+    --line: color-mix(in oklab, var(--topic) 72%, white);
+  }
+}
+
+/* the topic's own colour: a tab on the page's top edge, which extends when pointed at */
+.topic.is-open::before {
+  content: '';
+  position: absolute;
+  left: clamp(1.5rem, 2.8vw, 2.5rem);
+  top: 0;
+  width: 7rem;
+  height: 5px;
+  background: var(--line);
+  transform-origin: left center;
+  transition: transform 400ms var(--mech);
+}
+
+.topic-id {
+  grid-area: id;
+  min-width: 0;
+}
+
+.topic-tag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.9rem;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+.topic-no {
+  font-stretch: 125%;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.topic-eyebrow i,
+.feature-head i {
+  font-style: normal;
+  color: var(--orbit);
+  margin-right: 0.35em;
+}
+
+.topic-eyebrow[lang='en'] {
+  font-stretch: 125%;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.topic-name {
+  margin: 0.55rem 0 0;
+  font-size: clamp(2rem, 1.3rem + 1.3vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.1;
+  font-stretch: 112%;
+}
+
+:root[data-lang='en'] .topic-name {
+  font-size: clamp(1.875rem, 1.2rem + 1.2vw, 2.5rem);
+  font-stretch: 100%;
+}
+
+.topic-link {
+  text-decoration: none;
+}
+
+.topic-link:focus-visible {
+  outline: none;
+}
+
+/* the whole page opens the topic */
+.topic-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+/* keyboard focus locks onto the page: four corner brackets */
+.topic-link:focus-visible::after {
+  --k: linear-gradient(var(--ink), var(--ink));
+  background:
+    var(--k) left 10px top 10px / 24px 2px,
+    var(--k) left 10px top 10px / 2px 24px,
+    var(--k) right 10px top 10px / 24px 2px,
+    var(--k) right 10px top 10px / 2px 24px,
+    var(--k) left 10px bottom 10px / 24px 2px,
+    var(--k) left 10px bottom 10px / 2px 24px,
+    var(--k) right 10px bottom 10px / 24px 2px,
+    var(--k) right 10px bottom 10px / 2px 24px;
+  background-repeat: no-repeat;
+}
+
+.topic-about {
+  margin: 0.9rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.topic-mark {
+  display: inline-flex;
+  margin: 0.9rem 0 0;
+  padding: 0.3rem 0.7rem;
+  border: 1px dashed var(--ink-2);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* catalogue figures */
+.topic-stats {
+  grid-area: stats;
+  align-self: start;
+  display: flex;
+  gap: 1rem 0;
+  margin: 1.75rem 0 0;
+}
+
+.topic-stats div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end; /* figures on one line even when a label wraps */
+  padding: 0 1.1rem;
+  border-left: 1px solid var(--rule);
+}
+
+.topic-stats div:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.topic-stats dt {
+  margin-top: 0.45rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
+.topic-stats dd {
+  margin: 0;
+  font-size: clamp(1.875rem, 1.4rem + 0.8vw, 2.375rem);
+  font-weight: 700;
+  font-stretch: 112%;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the window: a framed patch of sky with an even grid ---------- */
+
+.topic-window {
+  grid-area: win;
+  position: relative;
+  align-self: start;
+  height: 15rem;
+  margin-top: 1.5rem;
+}
+
+.win {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.win .frame {
+  fill: none;
+  stroke: var(--frame);
+  stroke-width: 1;
+}
+
+.win .frame.is-dashed {
+  stroke: var(--ink-2);
+  stroke-dasharray: 5 4;
+}
+
+.win .grid path {
+  fill: none;
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+
+.win .ticks path {
+  stroke: var(--ink-3);
+  stroke-width: 1;
+}
+
+.win .coord {
+  font: 600 10px var(--font);
+  font-stretch: 125%;
+  letter-spacing: 0.06em;
+  fill: var(--ink-2);
+}
+
+.win .ln {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  opacity: 0.7;
+  transition: opacity 280ms var(--mech);
+}
+
+.win .ln.lead {
+  opacity: 0.5;
+}
+
+.topic.is-open:hover .win .ln,
+.topic.is-open:has(.topic-link:focus-visible) .win .ln {
+  opacity: 1;
+}
+
+.win .st {
+  fill: var(--field-star);
+}
+
+.win .st.m1 {
+  fill: var(--line);
+}
+
+.win .faint {
+  opacity: 0.5;
+}
+
+/* a topic still being surveyed: hollow stars, construction lines in starlight cyan, some stopped half way */
+.win .cs {
+  fill: var(--panel);
+  stroke: var(--ink-2);
+  stroke-width: 1;
+}
+
+.win .cl {
+  fill: none;
+  stroke: var(--survey);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.win .ce {
+  fill: none;
+  stroke: var(--survey);
+  stroke-width: 1.2;
+}
+
+.win .arc,
+.win .arc-ticks path {
+  fill: none;
+  stroke: var(--survey);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
+/* ---------- feature: ranking, read off a scale under the window ---------- */
+
+/* the feature shares the page's two columns: names on the left, the scale under the window on the right */
+.topic-feature {
+  grid-area: feature;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  min-width: 0;
+  margin-top: 1.5rem;
+}
+
+.feature-head {
+  grid-column: 1;
+  margin: 0 0 0.2rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.feature-none {
+  grid-column: 1 / -1;
+  margin: 0.5rem 0 0;
+  color: var(--ink-2);
+}
+
+.rank-list {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rank-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  padding: 0.45rem 0;
+}
+
+.rank-who {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.rank-g {
+  flex: none;
+  width: 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.rank-row.is-best .rank-g {
+  color: var(--ink);
+}
+
+.logo {
+  display: block;
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.logo.is-color {
+  background: var(--icon) center / contain no-repeat;
+  -webkit-mask: none;
+  mask: none;
+}
+
+.mname {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+  min-width: 0;
+  white-space: nowrap;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.mname-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mname-effort {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.rank-value {
+  flex: none;
+  margin-left: auto;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  font-stretch: 112%;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-row.is-best .rank-value {
+  padding: 0.2rem 0.35rem 0.15rem;
+  margin-right: -0.35rem;
+  background: var(--flare);
+  color: var(--on-flare);
+}
+
+/* the scale from 0 to max (the window's width): a dotted track, the leader = the score, a star at its end */
+.rank-track {
+  position: relative;
+  height: 1.25rem;
+  background: radial-gradient(circle, var(--ink-3) 0.6px, transparent 0.9px) left center / 5px 3px repeat-x;
+}
+
+/* full marks, the scale's reference */
+.rank-track::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 1px;
+  height: 0.7rem;
+  margin-top: -0.35rem;
+  background: var(--cyan);
+}
+
+.rank-lead {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--line);
+  transform-origin: left center;
+  transform: scaleX(var(--v));
+}
+
+.rank-star {
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--v) * 100%);
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  translate: -50% -50%;
+  fill: var(--line);
+  overflow: visible;
+}
+
+.rank-row.is-best .rank-star {
+  width: 22px;
+  height: 22px;
+  fill: var(--flare);
+  stroke: var(--best-edge);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+
+/* the axis under the rows: a tick every tenth, the same as the window's grid above */
+.rank-axis {
+  grid-column: 2;
+  position: relative;
+  height: 1.4rem;
+  margin-top: 0.3rem;
+  border-top: 1px solid var(--rule);
+  background: linear-gradient(to right, var(--ink-3) 1px, transparent 1px) left top / 10% 4px repeat-x;
+  font-size: 0.6875rem;
+  font-stretch: 125%;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-axis::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1px;
+  height: 4px;
+  background: var(--ink-3);
+}
+
+.rank-axis span {
+  position: absolute;
+  top: 0.4rem;
+  left: calc(var(--at) * 100%);
+  translate: calc(var(--at) * -100%) 0;
+  line-height: 1;
+}
+
+/* ---------- foot of a page: date and the way in ---------- */
+
+.topic-foot {
+  grid-area: foot;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin: 1.75rem 0 0;
+}
+
+.topic-date {
+  font-size: 0.8125rem;
+  font-stretch: 112%;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.topic-draft {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.9rem 0 0;
+  padding: 0.2rem 0.6rem;
+  border: 1px dashed var(--ink-2);
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.topic-draft b {
+  color: var(--ink);
+}
+
+/* the main action: flare at rest, ink wipes in from the left when the page is pointed at */
+.topic-go {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.6rem calc(1.15rem + var(--cut)) 0.6rem 1.15rem;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--flare);
+  color: var(--on-flare);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-stretch: 112%;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+  transition: color 280ms var(--mech);
+}
+
+.topic-go::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 280ms var(--mech);
+}
+
+.topic-go svg {
+  width: 1.1rem;
+  height: 0.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transition: transform 280ms var(--mech);
+}
+
+.topic.is-open:hover .topic-go,
+.topic.is-open:has(.topic-link:focus-visible) .topic-go {
+  color: var(--paper);
+}
+
+.topic.is-open:hover .topic-go::before,
+.topic.is-open:has(.topic-link:focus-visible) .topic-go::before {
+  transform: scaleX(1);
+}
+
+.topic.is-open:hover .topic-go svg,
+.topic.is-open:has(.topic-link:focus-visible) .topic-go svg {
+  transform: translateX(4px);
+}
+
+.topic.is-open:hover::before,
+.topic.is-open:has(.topic-link:focus-visible)::before {
+  transform: scaleX(1.9);
+}
+
+/* a page not open yet: name, the mark and a line beside a window still being surveyed (the same height as the
+   open topic's window, so the two windows face each other) */
+.topic.is-soon {
+  grid-template-columns: minmax(11rem, 12.5rem) minmax(0, 1fr);
+  grid-template-rows: auto;
+  grid-template-areas: 'id win';
+  flex: 1 1 30rem;
+}
+
+.topic.is-soon .topic-name {
+  font-size: clamp(1.75rem, 1.2rem + 0.8vw, 2.25rem);
+}
+
+:root[data-lang='en'] .topic.is-soon .topic-name {
+  font-size: clamp(1.625rem, 1.1rem + 0.7vw, 2rem);
+}
+
+/* an open topic without a feature block */
+.topic.is-open:not(.has-feature) {
+  grid-template-areas:
+    'id win'
+    'stats win'
+    'foot foot';
+  grid-template-rows: auto 1fr auto;
+}
+
+/* ---------- footer ---------- */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 2.5rem;
+  background: linear-gradient(var(--rule), var(--rule)) center top / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.foot p {
+  margin: 0;
+}
+
+.foot-name {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.foot-date {
+  margin-left: 1rem;
+  font-weight: 400;
+  font-stretch: 112%;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.foot-links a {
+  color: var(--ink-2);
+  text-decoration-color: var(--orbit);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+.foot-links a:hover {
+  color: var(--ink);
+}
+
+/* ---------- the entrance: one sequence on opening, then stillness ---------- */
+
+@keyframes sweep {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes drive {
+  from {
+    clip-path: inset(-0.2em 100% -0.2em 0);
+    transform: translateX(-0.08em);
+  }
+  to {
+    clip-path: inset(-0.2em 0 -0.2em 0);
+    transform: none;
+  }
+}
+
+@keyframes wipe {
+  from {
+    clip-path: inset(-0.3em 100% -0.3em 0);
+  }
+  to {
+    clip-path: inset(-0.3em 0 -0.3em 0);
+  }
+}
+
+@keyframes come {
+  from {
+    clip-path: inset(-0.4em 100% -0.4em 0);
+    transform: translateX(-10px);
+  }
+  to {
+    clip-path: inset(-0.4em -2rem -0.4em 0);
+    transform: none;
+  }
+}
+
+@keyframes power {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes light {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes extend {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes tab {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .is-entering .strip i {
+    transform-origin: left center;
+    animation: sweep 600ms var(--ease) both;
+  }
+
+  .is-entering .ruler {
+    animation: wipe 560ms var(--mech) both;
+  }
+
+  .is-entering .ruler-star {
+    animation: light 160ms var(--ease) 520ms both;
+  }
+
+  .is-entering .wm-solid {
+    animation: drive 620ms var(--mech) 80ms both;
+  }
+
+  .is-entering .wm-hollow {
+    animation: drive 620ms var(--mech) 200ms both;
+  }
+
+  .is-entering .fields {
+    animation: wipe 360ms var(--mech) 160ms both;
+  }
+
+  .is-entering .wm-other,
+  .is-entering .hero-intro {
+    animation: wipe 420ms var(--mech) 340ms both;
+  }
+
+  .is-entering .topic::before {
+    animation: tab 400ms var(--mech) both;
+    animation-delay: var(--dl-tab, 0ms);
+  }
+
+  /* the plate waits for its content, then opens down from the ruler */
+  .is-entering .atlas:not(.is-on) {
+    visibility: hidden;
+  }
+
+  .is-entering .atlas.is-on {
+    animation: power 520ms var(--mech) both;
+    animation-delay: var(--dl, 0ms);
+  }
+
+  .is-entering [data-in] {
+    animation-duration: var(--du, 320ms);
+    animation-timing-function: var(--snap);
+    animation-delay: var(--dl, 0ms);
+    animation-fill-mode: both;
+  }
+
+  .is-entering [data-in='wipe'] {
+    animation-name: wipe;
+    animation-timing-function: var(--mech);
+  }
+
+  .is-entering [data-in='come'] {
+    animation-name: come;
+  }
+
+  .is-entering [data-in='tab'] {
+    animation-name: tab;
+    animation-timing-function: var(--mech);
+  }
+
+  .is-entering [data-in='extend'] {
+    animation-name: extend;
+    animation-timing-function: var(--mech);
+  }
+
+  .is-entering [data-in='light'] {
+    animation-name: light;
+    animation-timing-function: var(--ease);
+  }
+
+  .is-entering [data-in='draw'] {
+    stroke-dasharray: 1;
+    animation-name: draw;
+    animation-timing-function: var(--mech);
+  }
+
+  .is-entering [data-in='draw'].soft {
+    animation-timing-function: var(--ease);
+  }
+}
+
+/* ---------- narrower windows ---------- */
+
+@media (max-width: 1100px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1.5rem;
+  }
+
+  .hero-intro {
+    max-width: 34em;
+  }
+}
+
+@media (max-width: 720px) {
+  .bar {
+    flex-wrap: wrap;
+    padding: 0.75rem 0;
+  }
+
+  .fields {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .tools {
+    margin-left: auto;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+
+  .topic,
+  .topic.is-soon {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      'id'
+      'stats'
+      'win'
+      'feature'
+      'foot';
+    flex-basis: 100%;
+  }
+
+  .topic.is-open:not(.has-feature) {
+    grid-template-areas:
+      'id'
+      'stats'
+      'win'
+      'foot';
+  }
+
+  .topic-window {
+    height: 12rem;
+    margin-left: 2.25rem;
+  }
+
+  .rank-track,
+  .rank-axis {
+    margin-left: 2.25rem;
+  }
+
+  .rank-axis {
+    grid-column: 1;
+  }
+
+  .topic-stats div {
+    padding: 0 1rem;
+  }
+
+  .foot {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
