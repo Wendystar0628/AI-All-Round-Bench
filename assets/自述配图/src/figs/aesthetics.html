@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="960x520">
+<meta name="size-en" content="960x626">
+<title>AI审美全能</title>
+<link rel="stylesheet" href="../../../../topics/十项全能/assets/readme/src/tokens.css">
+<link rel="stylesheet" href="../platform.css">
+<style>
+  .desc { margin-top: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); column-gap: 10px; row-gap: 10px; margin-top: 18px;
+          padding-top: 14px; border-top: 1px solid var(--ink); }
+  /* One board per creative direction, in showcase order: number, direction, work, tagline, answering time. */
+  .work { background: var(--panel); padding: 0 12px 12px; display: flex; flex-direction: column; }
+  .strip { height: 4px; margin: 0 -12px 10px; }
+  .top { display: flex; align-items: baseline; column-gap: 8px; }
+  .top .fig { font-size: 22px; }
+  .dir { font-size: 13.5px; font-weight: 700; line-height: 18px; }
+  html[lang="en"] .dir { font-size: 12.5px; line-height: 16px; }
+  .name { font-family: var(--font-text); font-size: 12.5px; line-height: 17px; color: var(--ink); margin-top: 8px; text-wrap: balance; }
+  html[lang="en"] .name { font-family: var(--font-ui); font-size: 12px; font-weight: 600; line-height: 16px; }
+  .tag { font-family: var(--font-text); font-size: 12px; line-height: 17px; color: var(--ink-2); margin-top: 4px; flex: 1; text-wrap: balance; }
+  html[lang="en"] .tag { font-size: 11.5px; line-height: 16px; }
+  /* Answering time on a 150-minute scale: dark up to the minimum, light from the minimum to the maximum. */
+  .time { margin-top: 10px; }
+  .time .v { font-size: 12px; font-weight: 700; line-height: 14px; }
+  .time small { font-size: 11px; color: var(--ink-2); margin-left: 3px; }
+  .bar { display: flex; margin-top: 5px; height: 6px; }
+  .bar i { display: block; height: 6px; }
+  .bar i + i { margin-left: 2px; }
+  .legend { margin-top: 0; }
+  .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--ink); }
+  .foot .desc { margin: 0; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="head">
+    <div class="pair"><span class="eyebrow slash">AI Aesthetics</span><h2 class="title"><span class="zh">AI审美全能</span><span class="en">AI Aesthetics</span></h2></div>
+    <i class="lead"></i>
+  </header>
+  <p class="desc"><span class="zh">AI 设计作品展：十个创作方向，各受测模型按同一份题面完成作品，并排陈列。按展示顺序排列。</span><span class="en">A showcase of AI design: ten creative directions, every tested model building from the same brief, the works hung side by side. In showcase order.</span></p>
+  <div class="grid" id="grid"></div>
+  <div class="foot">
+    <span class="legend" id="legend"></span>
+    <span class="field">octathlon.wendystars.com/aesthetics</span>
+  </div>
+</div>
+<script>
+const EN = document.documentElement.lang === 'en';
+const T = (zh, en) => EN ? en : zh;
+// Order, names and taglines from topics/审美全能/展示文案.json; minimum and maximum minutes from topics/审美全能/专题.json.
+const WORKS = [
+  [T('动效设计', 'Motion Design'), T('二十四个动效镜头', 'Twenty-Four Motion Shots'), T('六章二十四镜，自谱配乐', 'Six chapters, 24 shots, its own score'), 90, 120],
+  [T('卡通渲染', 'Toon Rendering'), T('秋庭观星画室', 'Stargazing Studio in an Autumn Garden'), T('一帧能转着看的动画背景', 'An anime backdrop you can turn in your hands'), 90, 150],
+  [T('白模渲染', 'Whitebox Rendering'), T('玻璃温室与花艺工作室', "Glass Greenhouse and Florist's Workshop"), T('把白模渲染成夏日黄昏', 'From bare geometry to golden hour'), 60, 120],
+  [T('创意网页设计', 'Creative Web Design'), T('NVIDIA B200 网页艺术', 'NVIDIA B200 Web Art'), T('所有画面都从一颗芯片长出', 'Every image grows from a single chip'), 60, 90],
+  [T('大型场景建模', 'Large-Scale Scene Modeling'), T('天穹圣城', 'Holy City in the Sky'), T('云海之上，一座货真价实的城', 'A real, working city above a sea of clouds'), 90, 150],
+  [T('SVG动画', 'SVG Animation'), T('鹈鹕的二十二种画法', 'Twenty-Two Ways to Draw a Pelican'), T('一路骑过二十二种画风', 'One ride through twenty-two art styles'), 90, 150],
+  [T('体素建模', 'Voxel Modeling'), T('晴空水上乐园', 'Clear Sky Water Park'), T('一格一格搭出的盛夏', 'Midsummer, built one block at a time'), 90, 150],
+  [T('硬表面建模', 'Hard-Surface Modeling'), T('雨夜港口的巨型机甲', 'Giant Mecha in a Rain-Swept Harbor'), T('远看剪影厚重，近看装甲分层', 'A massive silhouette from afar, layered armor up close'), 90, 150],
+  [T('游戏UI设计', 'Game UI Design'), T('浮空群岛传说游戏UI', 'Legend of the Floating Isles: Game UI'), T('还没有游戏，先有了界面', "A full interface for a game that doesn't exist"), 60, 90],
+  [T('字体与Logo设计', 'Type & Logo Design'), T('二次元游戏Logo', 'Anime Game Logo'), T('游戏名，重新写一遍', "Each game's name, lettered anew"), 60, 90],
+];
+const S = 0.9;   // px per minute; the longest maximum, 150, fills the bar column
+const unit = T('分钟', 'min');
+// Tabs alternate violet steps so neighbours differ; the bars carry the minimum (violet 600) and the stretch to the maximum (violet 300).
+const TABS = ['--violet-800', '--violet-400', '--violet-600', '--violet-300', '--violet'];
+document.getElementById('grid').innerHTML = WORKS.map(([dir, name, tag, lo, hi], i) => `
+  <div class="work">
+    <div class="strip" style="background:var(${TABS[i % 5]})"></div>
+    <div class="top"><span class="fig hollow">${String(i + 1).padStart(2, '0')}</span><span class="dir">${dir}</span></div>
+    <div class="name">${name}</div>
+    <div class="tag">${tag}</div>
+    <div class="time"><span class="v num">${lo}–${hi}</span><small>${unit}</small>
+      <div class="bar"><i style="width:${lo * S}px;background:var(--violet-600)"></i><i style="width:${(hi - lo) * S - 2}px;background:var(--violet-300)"></i></div>
+    </div>
+  </div>`).join('');
+document.getElementById('legend').innerHTML =
+  `<span><i style="background:var(--violet-600)"></i>${T('最短作答时长', 'Minimum time')}</span>` +
+  `<span><i style="background:var(--violet-300)"></i>${T('延到最长作答时长', 'Up to the maximum time')}</span>`;
+</script>
+</body>
+</html>

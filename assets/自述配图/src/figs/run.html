@@ -65,14 +65,15 @@
 const EN = document.documentElement.lang === 'en';
 const T = (zh, en) => EN ? en : zh;
 // A schematic on a 60-minute scale. Rules: test.json host defaults (call back while more than 60 s are left, stop after
-// 3 idle calls), halfway reminders at half the full limit, min_minutes submission, resume with the time left rounded up.
+// 3 idle calls; before min_minutes at most host.wake_before_min_limit = 5), halfway reminders at half the full limit,
+// min_minutes submission, resume with the time left rounded up.
 const LANES = [
   { name: T('只设最长时长', 'Maximum time only'), sub: [T('以 60 分钟为例', 'e.g. 60 minutes')], end: 60,
     turns: [[0, 21], [21, 38], [38, 59.4]], idle: [59.4, 60],
     below: [[0, T('开场提示', 'Opening prompt')], [21, T('叫回', 'Call back')], [38, T('叫回', 'Call back')]],
     above: [[30, T('半程提醒（专题可设）', 'Halfway reminder (if set)')]], note: [57.2, T('不再叫回', 'No call back')],
     endText: T('到时中止', 'Stopped') },
-  { name: T('另设最短时长', 'With a minimum time'), sub: [T('最长 60、最短 40 分钟为例', 'e.g. max 60, min 40')], end: 47, min: 40,
+  { name: T('另设最短时长', 'With a minimum time'), sub: [T('最长 60、最短 40 分钟为例', 'e.g. max 60, min 40'), T('未满最短时长最多叫回 5 次', 'at most 5 call backs before it')], end: 47, min: 40,
     turns: [[0, 24], [24, 47]],
     below: [[0, T('开场提示', 'Opening prompt')], [24, T('叫回', 'Call back')]],
     above: [], endText: T('一轮正常结束即交卷', 'Round ends: submitted') },

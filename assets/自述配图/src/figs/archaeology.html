@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="960x418">
+<meta name="size-en" content="960x440">
+<title>AI模型考古</title>
+<link rel="stylesheet" href="../../../../topics/十项全能/assets/readme/src/tokens.css">
+<link rel="stylesheet" href="../platform.css">
+<style>
+  .desc { margin-top: 10px; }
+  .soon { display: inline-block; margin-left: 12px; font-size: 13px; line-height: 22px; padding: 0 .5em; font-weight: 600;
+          background: var(--chip); color: var(--ink-2); vertical-align: 4px; }
+  /* Years over the periods: a bracket per year, then one board per period. */
+  .years { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: 8px; margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--ink); }
+  .yr { font-size: 13px; font-weight: 700; font-stretch: 112%; line-height: 16px; }
+  .yr i { display: block; height: 6px; margin-top: 5px; border: 1px solid var(--ink); border-bottom: none; }
+  .periods { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: 8px; margin-top: 8px; }
+  .p { background: var(--panel); padding: 10px 10px 11px; }
+  .p .fig { font-size: 24px; }
+  .p h3 { font-size: 13.5px; line-height: 18px; margin-top: 6px; white-space: nowrap; }
+  .p .field { display: block; font-size: 11.5px; margin-top: 2px; }
+  .p .st { display: inline-block; margin-top: 10px; font-size: 12px; line-height: 18px; padding: 0 .4em; }
+  .p .st.wait { color: var(--ink-2); padding: 0; }
+  .p .cnt { display: block; font-size: 12px; line-height: 17px; margin-top: 3px; color: var(--ink-2); }
+  .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--ink); }
+  .foot .desc { margin: 0; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="head">
+    <div class="pair"><span class="eyebrow slash">AI Model Archaeology</span><h2 class="title"><span class="zh">AI模型考古</span><span class="en">AI Model Archaeology</span><span class="soon"><span class="zh">筹备中</span><span class="en">Coming</span></span></h2></div>
+    <i class="lead"></i>
+  </header>
+  <p class="desc"><span class="zh">把已被新一代取代的旗舰模型请回考场，看 AI 编程智能体的能力怎样随时间变化。按发布时间分期，每期是一个独立专题：按这一批模型的水平单独出题，成绩只在一期之内比较。</span><span class="en">Flagships since replaced by newer generations come back to the exam room, to show how AI coding agents have changed over time. Periods follow release dates, and each period is a topic of its own, with tasks set for that generation; scores are compared only within a period.</span></p>
+  <div class="years" id="years"></div>
+  <div class="periods" id="periods"></div>
+  <div class="foot">
+    <span class="desc"><span class="zh">各期共用视频模板、设计系统和网站栏目；每期有自己的题目、参测名单、标识和成绩</span><span class="en">The periods share a film template, design system and site section; each has its own tasks, roster, id and scores</span></span>
+    <span class="field">archaeology1–7</span>
+  </div>
+</div>
+<script>
+const EN = document.documentElement.lang === 'en';
+const T = (zh, en) => EN ? en : zh;
+// From topics/模型考古/README.md and each period's README.md: time span, id, whether the roster is set and its size.
+// The year sits on the bracket above, so each board names only its part of the year.
+const PERIODS = [
+  [T('全年', 'Full year'), 6],
+  [T('上半年', 'H1'), 0],
+  [T('下半年', 'H2'), 0],
+  [T('第一季度', 'Q1'), 10],
+  [T('第二季度', 'Q2'), 0],
+  [T('第三季度', 'Q3'), 0],
+  [T('第四季度', 'Q4'), 0],
+];
+const YEARS = [['2024', 1], ['2025', 2], ['2026', 4]];
+document.getElementById('years').innerHTML = YEARS.map(([y, n]) =>
+  `<div class="yr" style="grid-column:span ${n}">${y}<i></i></div>`).join('');
+document.getElementById('periods').innerHTML = PERIODS.map(([span, roster], i) => `
+  <div class="p">
+    <span class="fig hollow">${String(i + 1).padStart(2, '0')}</span>
+    <h3>${span}</h3>
+    <span class="field">archaeology${i + 1}</span>
+    ${roster ? `<span class="marker st">${T('名单已定', 'Roster set')}</span><span class="cnt">${T(`${roster} 个模型`, `${roster} models`)}</span>`
+             : `<span class="st wait">${T('名单待定', 'Roster to come')}</span><span class="cnt">&nbsp;</span>`}
+  </div>`).join('');
+</script>
+</body>
+</html>

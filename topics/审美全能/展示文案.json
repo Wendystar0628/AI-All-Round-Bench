@@ -2,7 +2,7 @@
   "schema": 1,
   "format": [
     "AI审美全能 10 个创作方向的展示文案。视频里每题作品前的介绍页、网站上每道题的页面都用这一份。",
-    "directions 按展示顺序排列（PV设计 → 字体与Logo设计）。视频逐题展示和网站列题都照这个顺序。",
+    "directions 按展示顺序排列（动效设计 → 字体与Logo设计）。视频逐题展示和网站列题都照这个顺序。",
     "category.key、task.key 对应 专题.json 的 categories[].key、tasks[].key。name 是展示用的写法，可能和登记名略有不同，例如卡通渲染登记为「卡通渲染（三渲二）」，NVIDIA B200 网页艺术登记为「NVIDIA_B200网页艺术」。两边按 key 对应。",
     "provisional 为 true：题面还没写，题目还没登记，也还没有作品。task.key、题名和文案都按已定的主题暂写，题面定稿后照题面改写。",
     "category.short 是方向的简称，放在视频底部的进度条上（用户 11-24 定）。",
@@ -13,44 +13,48 @@
   "directions": [
     {
       "category": {
-        "key": "promo-video",
+        "key": "motion-design",
         "name": {
-          "zh": "PV设计",
-          "en": "PV Design"
+          "zh": "动效设计",
+          "en": "Motion Design"
         },
         "short": {
-          "zh": "PV",
-          "en": "PV"
+          "zh": "动效",
+          "en": "Motion"
         }
       },
       "task": {
-        "key": "mygo-pv",
+        "key": "motion-reel",
         "name": {
-          "zh": "《壱雫空》PV",
-          "en": "“壱雫空” PV"
+          "zh": "二十四个动效镜头",
+          "en": "Twenty-Four Motion Shots"
         }
       },
       "provisional": false,
       "tagline": {
-        "zh": "一分二十一秒，为歌配上画面",
-        "en": "Eighty-one seconds of song, in pictures"
+        "zh": "六章二十四镜，自谱配乐",
+        "en": "Six chapters, 24 shots, its own score"
       },
       "summary": {
-        "zh": "给乐队 MyGO!!!!! 的歌曲《壱雫空》做一支 PV，用其中半首，长 1 分 21 秒。",
-        "en": "A promotional video for “壱雫空” by the band MyGO!!!!!, set to half of the song: 1 minute 21 seconds."
+        "zh": "以五位 AI 角色的立绘为主角，做一卷六章、二十四个镜头的动效作品集：每章由章节镜头开场，镜头名做在画面里，镜头之间设计转场，配乐由程序合成。",
+        "en": "A motion reel starring five AI characters: six chapters and twenty-four shots, each chapter opened by its own title shot and each shot named within the frame, joined by designed transitions, with its own score synthesized in code."
       },
       "highlights": [
         {
-          "zh": "画面怎样踩着节拍切换",
-          "en": "How the images land on the beat"
+          "zh": "缓动、节奏与动势的分寸",
+          "en": "Easing, rhythm and the weight of motion"
         },
         {
-          "zh": "歌里的情绪起伏，怎样落到画面上",
-          "en": "How the song's swells and lulls show up on screen"
+          "zh": "立绘的裁切、景别与构图",
+          "en": "How the portraits are cropped, framed and composed"
         },
         {
-          "zh": "从头到尾统一的画风与色调",
-          "en": "One look and palette from start to finish"
+          "zh": "镜头之间转场的巧思",
+          "en": "The wit in every transition between shots"
+        },
+        {
+          "zh": "跟着画面谱写的配乐",
+          "en": "A score written to the picture"
         }
       ],
       "judge": "claude"

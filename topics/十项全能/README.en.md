@@ -473,7 +473,7 @@ The messages are actually sent in Chinese; the texts quoted below are English tr
 
 | Message | Sent to | When | Text |
 |---|---|---|---|
-| Immediate continuation | Both kinds | When a round ends normally with more than 1 minute left, the next round starts within seconds | Open design tasks: "Check against the full design content item by item and improve the quality of the work."<br>Standard-judged tasks: "Keep solving according to the statement." |
+| Immediate continuation | Both kinds | When a round ends normally with more than 1 minute left, the next round starts within seconds | Open design tasks: "Check against the full design content item by item and improve the quality of the work."<br>Standard-judged tasks, one line each (quoted in translation): Formal Proofs "Keep proving the theorems not yet done."; Olympiad problems "Keep working on the problems not yet solved or not fully proved."; Ray tracing "Optimize first what raises the speedup most."; Circuit "Optimize first the circuits that raise the score most."; Siege & Conquest "Keep raising the bot's win rate."; Luban locks "Keep working out the locks not yet taken apart."; Mechanical reconstruction "Keep improving the problems not yet reconstructed accurately." |
 | Overall-progress hint | Physics, AE, tower defense, nested OS | Halfway through the full time limit: minute 30 for physics and AE, minute 45 for tower defense and nested OS; not sent for the harbor or the battle fleet | One dedicated hint per task. Tower defense, physics and nested OS begin with "[Reminder] Prioritize overall progress and the content that can earn points, while covering every direction of the statement's scoring criteria", then ask for the whole work to run end to end first and for details to be deepened afterwards (nested OS also asks that the child systems' kernels, window management and apps really run as programs from the child systems' files); AE begins with "[Reminder] Prioritize the overall completeness and quality of the work, while covering every scoring direction", then asks for every feature to have real behavior as the statement describes, and notes that the 「锻字」 showcase is judged on theme and viewing quality, not on the number of features it uses |
 
 ### The Two Test Batches
@@ -658,7 +658,7 @@ Each task's guide has 4–8 directions and 19–30 items, giving only the points
 
 ## Topic Folder
 
-- Statements are kept under `题面/` in folders by category, one `.md` per task; the official schedule has 10 categories. When a test starts, only that one task's statement is copied into its work folder. Original Math Olympiad Problems also brings a folder of the 24 problems (named `题目` in the work folder); Luban Lock Disassembly also brings the eight locks' data and two tools (the folder keeps its original name `鲁班锁拆解`); Mechanical Structure Reconstruction also brings the 25 sets of drawings, 《建模描述》 (the model description spec) and the preview tool (the folder keeps its original name `机械结构重建`); ray tracing also brings the evaluation program, headers, baseline source and build script (in the root of the work folder) plus a `数据` folder (checking tool, compiled baseline, inputs and reference answers); the circuit task also brings a `数据` folder (evaluation program, checking tool, inputs and reference answers); and Siege & Conquest also brings a `数据` folder (resolution engine, main program, map generator, local match tool and sample program; still being made).
+- Statements are kept under `题面/` in folders by category, one `.md` per task; the official schedule has 10 categories. When a test starts, only that one task's statement is copied into its work folder. Original Math Olympiad Problems also brings a folder of the 24 problems (named `题目` in the work folder); Luban Lock Disassembly also brings the eight locks' data and two tools (the folder keeps its original name `鲁班锁拆解`); Mechanical Structure Reconstruction also brings the 25 sets of drawings, 《建模描述》 (the model description spec) and the preview tool (the folder keeps its original name `机械结构重建`); ray tracing also brings the evaluation program, headers, baseline source and build script (in the root of the work folder) plus a `数据` folder (checking tool, compiled baseline, inputs and reference answers); the circuit task also brings a `数据` folder (evaluation program, checking tool, inputs and reference answers); and Siege & Conquest also brings a `数据` folder (resolution engine, main program, map generator, local match tool, sample program and two sparring programs).
 - `评分/` holds the grading materials: grading guides, blank grading sheets, reference answers, hidden test data and evaluation scripts.
 
 ```text
@@ -678,7 +678,8 @@ topics/十项全能/
 │  │     ├─ 数字电路仿真器加速.md
 │  │     └─ 数字电路仿真器加速/      evaluation program grader.cpp, checking tool check.py, compiled baseline reference.exe (inputs and reference answers are in the grading folder)
 │  ├─ 算法对抗/
-│  │  └─ 攻城略地.md
+│  │  ├─ 攻城略地.md
+│  │  └─ 攻城略地/          resolution engine, main program, map generator, local match tool arena.py, sample program and two sparring programs
 │  ├─ 空间推理/
 │  │  ├─ 鲁班锁拆解.md
 │  │  └─ 鲁班锁拆解/        layered drawings and voxel data for the eight locks; 工具/ holds the route checker check.py and the position bookkeeping tool positions.py

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="size" content="960x262">
+<meta name="size" content="960x316">
 <title>AI全能测评</title>
 <link rel="stylesheet" href="../../../../topics/十项全能/assets/readme/src/tokens.css">
 <link rel="stylesheet" href="../platform.css">
@@ -14,29 +14,31 @@
   .glints { position: absolute; left: 0; top: 0; overflow: visible; }
 
   /* Wordmark: solid ink name, hollow violet Latin line, one marker. */
-  .mark { left: 40px; top: 34px; }
+  .mark { left: 40px; top: 62px; }
   .mark h1 { font-size: 62px; font-weight: 800; line-height: 1; letter-spacing: .01em; margin-top: 10px; font-stretch: 112%; }
   .mark .latin { font-size: 40px; font-weight: 800; font-stretch: 125%; line-height: 1; letter-spacing: .02em; margin-top: 10px; }
   .mark .line { display: flex; align-items: center; column-gap: 14px; margin-top: 20px; }
   .mark .marker { font-size: 18px; line-height: 28px; }
   .mark .desc { font-size: 14px; color: var(--ink-2); }
 
-  /* Topic board: one row per topic online. */
-  .board { right: 40px; top: 44px; width: 340px; padding: 18px 20px 16px; }
+  /* Topic board: one row per topic, its status at the right. */
+  .board { right: 40px; top: 30px; width: 352px; padding: 16px 18px 12px; }
   .board .eyebrow { display: block; }
-  .row { display: grid; grid-template-columns: 56px 1fr; column-gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
-  .row .fig { font-size: 40px; }
-  .row .name { font-size: 20px; font-weight: 700; line-height: 1.2; }
-  .row .sub { font-size: 11px; font-weight: 600; font-stretch: 125%; letter-spacing: .14em; color: var(--violet-800); margin-top: 3px; }
-  .row .field { grid-column: 1 / -1; margin-top: 10px; font-size: 12.5px; }
-  .on { position: absolute; right: 20px; top: 16px; font-size: 13px; }
-  .url { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 12.5px; }
+  .row { display: grid; grid-template-columns: 44px 1fr auto; column-gap: 6px; align-items: start;
+         margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--rule); }
+  .row .fig { grid-row: span 2; font-size: 30px; line-height: 34px; }
+  .row .name { font-size: 16px; font-weight: 700; line-height: 20px; }
+  .row .sub { font-size: 10px; font-weight: 600; font-stretch: 125%; letter-spacing: .14em; color: var(--violet-800); margin-left: 8px; }
+  .row .field { grid-column: 2 / -1; margin-top: 3px; font-size: 11.5px; line-height: 17px; white-space: nowrap; }
+  .st { font-size: 12px; line-height: 20px; padding: 0 .45em; font-weight: 700; }
+  .st.soon { background: var(--chip); color: var(--ink-2); font-weight: 600; }
+  .url { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--rule); font-size: 12.5px; }
 </style>
 </head>
 <body>
 <div class="frame">
   <img class="sky" src="../../../../topics/十项全能/assets/readme/src/decor/starfield-corner-tr-light.svg" alt="">
-  <svg class="glints" id="glints" width="960" height="262"></svg>
+  <svg class="glints" id="glints" width="960" height="316"></svg>
   <div class="tri"><i></i><i></i><i></i></div>
 
   <div class="abs mark">
@@ -51,16 +53,25 @@
 
   <div class="abs panel tab board">
     <span class="eyebrow slash">Topics<span class="zh" style="letter-spacing:0;font-stretch:100%;margin-left:10px;color:var(--ink);font-weight:700">专题</span></span>
-    <span class="marker on"><span class="zh">已上线</span><span class="en">Online</span></span>
     <div class="row">
       <span class="fig hollow">01</span>
-      <div>
-        <div class="name"><span class="zh">AI十项全能</span><span class="en">AI Decathlon</span></div>
-        <div class="sub">DECATHLON</div>
-      </div>
-      <div class="field"><span class="zh facts"><span>13 题</span><span>10 类</span><span>每题 60–100 分钟</span></span><span class="en facts"><span>13 tasks</span><span>10 categories</span><span>60–100 min each</span></span></div>
+      <div class="name"><span class="zh">AI十项全能</span><span class="en">AI Decathlon</span><span class="sub zh">DECATHLON</span></div>
+      <span class="marker st"><span class="zh">已上线</span><span class="en">Online</span></span>
+      <span class="field"><span class="zh facts"><span>13 题</span><span>10 类</span><span>每题 60–100 分钟</span></span><span class="en facts"><span>13 tasks</span><span>10 categories</span><span>60–100 min</span></span></span>
     </div>
-    <div class="field url">octathlon.wendystars.com/decathlon</div>
+    <div class="row">
+      <span class="fig hollow">02</span>
+      <div class="name"><span class="zh">AI审美全能</span><span class="en">AI Aesthetics</span><span class="sub zh">AESTHETICS</span></div>
+      <span class="marker st"><span class="zh">已上线</span><span class="en">Online</span></span>
+      <span class="field"><span class="zh facts"><span>AI 设计作品展</span><span>10 个方向</span><span>每题 60–150 分钟</span></span><span class="en facts"><span>Showcase</span><span>10 directions</span><span>60–150 min</span></span></span>
+    </div>
+    <div class="row">
+      <span class="fig hollow">03</span>
+      <div class="name"><span class="zh">AI模型考古</span><span class="en">AI Model Archaeology</span><span class="sub zh">ARCHAEOLOGY</span></div>
+      <span class="st soon"><span class="zh">筹备中</span><span class="en">Coming</span></span>
+      <span class="field"><span class="zh facts"><span>7 期</span><span>请回 2024–2026 年的旗舰模型</span></span><span class="en facts"><span>7 periods</span><span>flagships from 2024–2026</span></span></span>
+    </div>
+    <div class="field url">octathlon.wendystars.com</div>
   </div>
 </div>
 <script>
@@ -75,10 +86,10 @@ function glint(x, y, r, fill = 'var(--lime)') {
   sky.appendChild(p);
 }
 const en = document.documentElement.lang === 'en';
-glint(en ? 476 : 396, 84, 12); glint(en ? 493 : 413, 66, 3.5, 'var(--ink)');   // a sparkle off the wordmark
-glint(540, 150, 6);
-glint(470, 24, 4.5);
-glint(930, 244, 5);
+glint(en ? 476 : 396, 112, 12); glint(en ? 493 : 413, 94, 3.5, 'var(--ink)');   // a sparkle off the wordmark
+glint(520, 186, 6);
+glint(470, 26, 4.5);
+glint(930, 300, 5);
 </script>
 </body>
 </html>
