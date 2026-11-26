@@ -144,6 +144,7 @@ img.md-who.is-raw { filter: brightness(var(--expo)) saturate(0.9) sepia(0.1) dro
 .md-w-tag { font-size: 16px; letter-spacing: 0.08em; color: var(--ae-label-warm); }
 .md-busy { margin-top: 4px; }
 .md-w-foot { display: grid; justify-items: start; gap: 24px; margin-top: 18px; }
+.md-get { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 28px; }   /* 取件票，旁边一行小字「观测者 N 票」 */
 .md-packing { font-size: 14px; color: var(--ae-text-2); }
 .md-open { font-size: 14px; }
 .md-w-art { display: grid; gap: 18px; }

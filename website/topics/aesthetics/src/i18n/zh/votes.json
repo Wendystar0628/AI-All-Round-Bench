@@ -1,0 +1,104 @@
+{
+  "title": "观测者票选",
+  "titleHero": "票",
+  "voice": "the observers, under one lamp",
+  "description": "AI审美全能的观测者票选：观测者为十卷作品投下的票，每位设计师在各卷的得票与总得票。这里的名次只来自观测者。",
+  "lead": "每一卷，每位观测者有两票，投给两件不同的作品，随时可以撤回改投。这一页的名次，只来自观测者的票。",
+  "facts": {
+    "label": "票数",
+    "votes": "共 {n} 票",
+    "voters": "{n} 位观测者",
+    "asOf": "截至 {time}",
+    "asOfPublish": "截至发布时",
+    "asOfPublishAt": "截至发布时 · {time}"
+  },
+  "state": {
+    "none": "还没有观测者投票。",
+    "closed": "票箱暂时关着。",
+    "snapshot": "票箱暂时关着，这里是发布时的票数。",
+    "static": "这里是发布时的票数。"
+  },
+  "totals": {
+    "title": "总得票",
+    "en": "TOTALS",
+    "line": "一行一位设计师，按总票数排列。横条按卷分段，每一段是那一卷的布色。",
+    "label": "{name} 的得票，按卷分段",
+    "segment": "{no} {name} · {n} 票",
+    "votes": "{n} 票"
+  },
+  "matrix": {
+    "title": "星表",
+    "en": "CATALOGUE",
+    "line": "十卷为列，设计师为行。星点的大小，是这一格在本卷所占的票数；每一卷票最多的那一颗，点亮。",
+    "caption": "星表：各位设计师在十卷里的得票",
+    "corner": "设计师",
+    "cornerEn": "DESIGNER",
+    "total": "总票",
+    "sum": "合计",
+    "none": "没有交卷",
+    "answering": "作答中",
+    "share": "占本卷 {pct}"
+  },
+  "ballot": {
+    "label": "本卷观测票",
+    "head": "OBSERVER · BALLOT",
+    "rule": "TWO PUNCHES PER VOLUME",
+    "stub": "投票",
+    "stubEn": "VOTE",
+    "undo": "撤回",
+    "retract": "撤回给 {name} 的一票",
+    "sr0": "本卷观测票：还没有投，两票都在手里",
+    "sr1": "本卷观测票：已投 {names}，还剩一票",
+    "sr2": "本卷观测票：已投 {names}，两票都已投出",
+    "srClosed": "本卷观测票：票箱暂时关着",
+    "and": " 和 ",
+    "closed": "票箱暂时关着"
+  },
+  "punch": {
+    "who": "{name}：",
+    "markSr": "（已投）",
+    "vote": "投这一件",
+    "voted": "已投 · 撤回",
+    "spent": "两孔已用",
+    "spentHint": "撤回一票就能改投",
+    "closed": "票箱暂时关着"
+  },
+  "rank": {
+    "title": "本卷票选",
+    "en": "VOTES · THIS VOLUME",
+    "folded": "投下一票后揭晓本卷排名",
+    "voters": "已有 {n} 位观测者投票",
+    "votersNone": "还没有观测者投这一卷",
+    "closed": "票箱暂时关着",
+    "snapshot": "票箱暂时关着，这里是发布时的票数",
+    "colRank": "名次",
+    "colName": "设计师",
+    "colVotes": "票数",
+    "colShare": "占比",
+    "row": "第 {rank} 名，{name}，{n} 票，占 {pct}"
+  },
+  "live": {
+    "voted": "已为 {name} 投票，{left}。",
+    "retracted": "已撤回给 {name} 的一票，{left}。",
+    "left0": "本卷两票都已投出",
+    "left1": "本卷还剩一票",
+    "left2": "本卷两票都在手里",
+    "failedVote": "给 {name} 的一票没有投出：{reason}。",
+    "failedRetract": "给 {name} 的一票没有撤回：{reason}。"
+  },
+  "error": {
+    "bad_request": "这一票没有写对，刷新页面再试",
+    "not_votable": "这件作品现在不能投",
+    "limit_reached": "这一卷的两票已经用完",
+    "already_voted": "这件作品已经投过了",
+    "rate_limited": "投得太快了，稍等一下再试",
+    "pow_required": "浏览器还在做投票前的验算，稍等一下再试",
+    "closed": "票箱暂时关着",
+    "network": "票箱暂时连不上",
+    "unknown": "票箱出了点问题，稍后再试"
+  },
+  "model": {
+    "count": "观测者 {n} 票",
+    "total": "观测票 {n}"
+  }
+}

@@ -44,7 +44,7 @@ PACKAGES = CACHE / 'packages'
 WORK = CACHE / 'package-work'
 TOOLS = ('package.py', 'verify.mjs', 'bundle.mjs')          # 改了这些就全部重做
 
-NO_DOWNLOAD = {'clay-render', 'promo-video'}                 # 白模渲染和 PV设计不提供下载
+NO_DOWNLOAD = {'clay-render', 'motion-design'}               # 白模渲染和动效设计不提供下载（动效作答里有第三方的角色立绘）
 MUST_SINGLE = {'creative-web'}                               # 创意网页设计必须是单个 html
 MAX_BYTES = 100 * 1024 * 1024                                # GitHub Pages 单个文件的上限
 ZIP_TIME = (1980, 1, 1, 0, 0, 0)

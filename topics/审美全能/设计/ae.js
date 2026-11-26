@@ -61,7 +61,7 @@
      short：进度星座和卷目里的简称；accent：这一题的点亮色；deep：这一题世界色最深的一档（票根实底）；verb：观测卡票根上的动作。
      整套配色（特质词、世界色、点亮色、墨色、光色、主角材质、笔画处理）在 tokens.json 的 directions[]。 */
   AE.DIRS = [
-    { no: '01', key: 'mygo-pv', cat: 'PV设计', short: 'PV', catEn: 'PV DESIGN', title: '《壱雫空》PV', accent: '#F6C66A', deep: '#2F6E99', verb: '放映', judge: 'claude', provisional: true },
+    { no: '01', key: 'agent-pv', cat: '动效设计', short: '动效', catEn: 'MOTION DESIGN', title: '现代Agent概念PV', accent: '#1F5CFF', deep: '#1B3260', verb: '回车', judge: 'claude' },
     { no: '02', key: 'autumn-observatory', cat: '卡通渲染', short: '卡通渲染', catEn: 'TOON RENDERING', title: '秋庭观星画室', accent: '#C8402A', deep: '#1C1828', verb: '入画', judge: 'claude' },
     { no: '03', key: 'greenhouse-render', cat: '白模渲染', short: '白模渲染', catEn: 'WHITEBOX RENDER', title: '玻璃温室与花艺工作室', accent: '#B65E3A', deep: '#6A5238', verb: '掌灯', judge: 'gpt' },
     { no: '04', key: 'nvidia-b200-web', cat: '创意网页设计', short: '网页设计', catEn: 'CREATIVE WEB', title: 'NVIDIA B200 网页艺术', accent: '#F2A73A', deep: '#0A1C16', verb: '通电', judge: 'claude' },
@@ -76,7 +76,7 @@
 
   AE.JUDGES = {
     gpt: { name: 'GPT 6.2 Sol', portrait: 'gpt.png', lamp: '#4C5866', edge: '#36404B', role: '白模渲染 · 大型场景建模 · 硬表面建模' },
-    claude: { name: 'Claude Opus 5.5', portrait: 'claude.png', lamp: '#2E4B48', edge: '#203634', role: 'PV设计 · SVG动画 · 创意网页设计 · 卡通渲染' },
+    claude: { name: 'Claude Opus 5.5', portrait: 'claude.png', lamp: '#2E4B48', edge: '#203634', role: '动效设计 · SVG动画 · 创意网页设计 · 卡通渲染' },
     gemini: { name: 'Gemini 4 Neon', portrait: 'gemini.png', lamp: '#6E5432', edge: '#4F3B22', role: '体素建模 · 游戏UI设计 · 字体与Logo设计' }
   };
 
@@ -397,58 +397,75 @@
     }
   });
 
-  /* ---- 01 PV · pv-glare：太阳从一团晃眼的光里收出来 ----
-     亮、虚、略大 → 落定成清楚的日轮。from 收拢的中心（锁定坐标）、glare 起始多亮（亮度多出的倍数）、blur、s */
-  AE.lockupKind('pv-glare', {
-    pose: function (o, k) {
-      o.a = Math.min(1, k.E * 1.8); o.bright = 1 + k.q * k.dv(k.e.glare, 0.6); o.blur = k.q * k.dv(k.e.blur, 8);
-      o.s = 1 + k.q * k.dv(k.e.s, 0.12); o.at = k.e.from || null;
-    }
-  });
-
-  /* ---- 01 PV · pv-rain：雨从上往下落 ----
-     擦出的前沿和雨丝一起往下走，越落越快（重力，不减速），落到位就停。dy 雨丝跟着落下的距离、soft 前沿的软边 */
-  AE.lockupKind('pv-rain', {
-    ease: function (p) { return p * p; },
-    pose: function (o, k) {
-      o.a = Math.min(1, k.p * 4); o.dy = -k.q * k.dv(k.e.dy, 14);
-      o.clip = k.p < 1 ? { type: 'wipe', dir: 'down', e: k.E, soft: k.dv(k.e.soft, 0.3) } : null;
-    }
-  });
-
-  /* ---- 01 PV · pv-fall：一滴水顺着雨向落进原位 ----
-     越落越快，路上顺着落的方向拉长一点，身后拖一道淡的雨痕；落到原位就停，不弹（落定后照常画，扫光照算）。
-     c 水滴腹心（锁定坐标）、fall 落下的距离（锁定像素）、dir 落的方向（默认雨向，偏竖直 16°）、stretch 路上拉长多少 */
-  AE.lockupKind('pv-fall', {
-    ease: 'lin',
+  /* ---- 01 现代Agent概念PV：回车落下的那一刻（全片开头那一镜的缩写）——暗里先有一块光标在闪（片头飞来的星正落在它右上角）；
+     输入框的下沿从光标两侧画出去；人敲字：「现代」两个字快慢不匀地落进来；回车键按下去、背光亮起，整行一沉再弹回来；
+     光标的光推进 Agent，荧光从 A 往右一个字母一个字母地着起来；「概念PV」由 Agent 又快又匀地敲完（一块小光标跑在字前头）；
+     六章章名一章一章跟着出来；最后那根线从 Agent 的 t 往画面里接着写。
+     时刻：cols、moves、sink 里的时刻都是整段进度 u（几层对得上同一下回车），at、dur 照常 ---- */
+  // 回车那一下：sink = { at, dur, dy }（整段进度、锁定像素）——先往下一沉，再弹回来、略过一点、落定
+  function agentSink(e, u) {
+    var s = e.sink;
+    if (!s) return 0;
+    var r = AE.clamp((u - s.at) / s.dur);
+    if (r <= 0 || r >= 1) return 0;
+    return r < 0.3 ? s.dy * AE.ease.sway(r / 0.3) : s.dy * Math.cos((r - 0.3) / 0.7 * Math.PI * 1.5) * Math.pow(1 - (r - 0.3) / 0.7, 2);
+  }
+  // agent-blink 光标：pattern = [[进度, 亮/灭], …] 一格一格地闪（定格那种，不渐变），每亮一下先过亮再回到本色；跟着回车一沉
+  AE.lockupKind('agent-blink', { ease: 'lin', pose: function (o, k) {
+    var pt = k.e.pattern || [[0, 1]], on = 0, t0 = 0;
+    for (var i = 0; i < pt.length; i++) if (k.p >= pt[i][0]) { if (pt[i][1] && !on) t0 = pt[i][0]; on = pt[i][1]; }
+    o.a = k.p > 0 ? on : 0;
+    o.bright = 1 + 0.7 * Math.exp(-(k.p - t0) * 14) * on;
+    o.dy = agentSink(k.e, k.u);
+  } });
+  // agent-type 敲字：cols = [[右边界 x（锁定坐标）, 整段进度 u], …]——到了那一刻，那个字整个落进来（一格一格，不擦不淡）；
+  // caret = { w, h, y, rgb, gap }（锁定像素）给了就在刚敲出的字后面跑一块小光标，敲完就收走；跟着回车一沉（sink）
+  AE.lockupKind('agent-type', { ease: 'lin',
+    pose: function (o, k) { o.a = 1; o.dy = agentSink(k.e, k.u); },
     draw: function (c, D, o, env) {
-      var e = D.e, p = o.p;
-      if (p >= 1) { AE.lockupPaint(c, D, o, env); return; }
-      var d = e.dir || [0.2756, 0.9613], n = Math.hypot(d[0], d[1]), ax = d[0] / n, ay = d[1] / n, ang = Math.atan2(ay, ax);
-      var Lf = (e.fall || 140) * env.k, ctr = env.at(e.c), st0 = e.stretch == null ? 0.16 : e.stretch, a = Math.min(1, p * 2.2);   // 起落那段慢，水滴在「雨」里慢慢聚出来
-      var one = function (pp, alpha) {
-        if (pp <= 0 || alpha <= 0.002) return;
-        var off = -(1 - pp * pp) * Lf, st = 1 + st0 * 4 * pp * (1 - pp);
-        c.save(); c.globalAlpha = alpha;
-        c.translate(ctr[0] + ax * off, ctr[1] + ay * off); c.rotate(ang); c.scale(st, 1 / Math.sqrt(st)); c.rotate(-ang); c.translate(-ctr[0], -ctr[1]);
-        c.drawImage(D.cv, 0, 0, D.w, D.h, D.x, D.y, D.w, D.h);
-        c.restore();
-      };
-      for (var i = 3; i >= 1; i--) one(p - i * 0.06, a * 0.14 / i);   // 身后的雨痕
-      one(p, a);
-    }
-  });
-
-  /* ---- 01 PV · pv-ripple：水面上的涟漪 ----
-     从中心一圈圈扩到原位（减速落定）；外面再多走一圈，越走越淡、散掉。from 涟漪中心（锁定坐标）、echo 外圈多走出去的比例 */
-  AE.lockupKind('pv-ripple', {
+      var e = D.e, cols = e.cols || [], x = null, last = -1;
+      for (var i = 0; i < cols.length; i++) if (o.u >= cols[i][1]) { x = cols[i][0]; last = i; }
+      if (last < 0) return;
+      if (last === cols.length - 1 && !(e.caret && o.p < 1)) { env.paint(c, D, o); return; }
+      var X = env.at([x, 0])[0];
+      c.save(); c.beginPath(); c.rect(D.x - 60, D.y - 60, Math.max(0, X - D.x + 60), D.h + 120); c.clip();
+      env.paint(c, D, o); c.restore();
+      if (e.caret && last < cols.length - 1) {
+        var cr = e.caret, k = env.k, q = env.at([x + (cr.gap || 6), cr.y]);
+        c.save(); c.globalAlpha = 0.95; c.shadowColor = 'rgba(' + cr.rgb + ',0.9)'; c.shadowBlur = 10 * k;
+        c.fillStyle = 'rgb(' + cr.rgb + ')'; c.fillRect(q[0], q[1] + o.dy * k, cr.w * k, cr.h * k); c.restore();
+      }
+    } });
+  // agent-press 回车键：从高 drop 处落下、按到底（press）、停一下、松开弹回（略过一点再落定）；按到底那一下亮一下（锁定像素）
+  AE.lockupKind('agent-press', { ease: 'lin', pose: function (o, k) {
+    var e = k.e, hit = k.dv(e.hit, 0.4), rel = k.dv(e.release, 0.6), drop = k.dv(e.drop, 10), pr = k.dv(e.press, 4), p = k.p;
+    o.a = AE.clamp(p / (hit * 0.6));
+    if (p < hit) o.dy = AE.lerp(-drop, pr, Math.pow(p / hit, 2.2));
+    else if (p < rel) o.dy = pr;
+    else if (p < 1) { var r = (p - rel) / (1 - rel); o.dy = pr * Math.exp(-4 * r) * Math.cos(r * Math.PI * 2.4); }
+    else o.dy = 0;
+    if (p >= hit && p < 1) o.bright = 1 + 0.22 * Math.exp(-(p - hit) * 12);
+  } });
+  // agent-phosphor 荧光着起来：前沿从 from 推到 to（锁定坐标的 x，光标那里起），前沿以内是着好的荧光，前沿上一道过亮的光带（band 宽），
+  // 以外还没着；着的时候整层一顿一顿地闪（flicker），着完就稳
+  AE.lockupKind('agent-phosphor', { ease: 'lin',
+    pose: function (o, k) { o.a = k.p > 0 ? 1 : 0; if (k.p > 0 && k.p < 1) { var st = Math.floor(k.p * 9); o.bright = 1 + k.dv(k.e.flicker, 0.18) * (((st * 7919) % 13) / 13 - 0.5); } },
     draw: function (c, D, o, env) {
-      var e = D.e, p = o.p;
-      AE.lockupPaint(c, D, Object.assign({}, o, { at: e.from, s: 0.3 + 0.7 * o.E, a: Math.min(1, p * 3) }), env);
-      var p2 = AE.clamp((p - 0.1) / 0.9);
-      if (p2 > 0 && p2 < 1) AE.lockupPaint(c, D, Object.assign({}, o, { at: e.from, s: 1 + (e.echo == null ? 0.7 : e.echo) * AE.ease.land(p2), a: 0.5 * (1 - p2) * Math.min(1, p2 * 8) }), env);
-    }
-  });
+      if (o.p >= 1) { env.paint(c, D, o); return; }
+      var e = D.e, m = D.memo.ph || (D.memo.ph = { a: env.canvas(D.w, D.h), b: env.canvas(D.w, D.h) });
+      var f = AE.lerp(env.at([e.from, 0])[0], env.at([e.to, 0])[0], AE.ease.sway(o.p)) - D.x, band = (e.band || 46) * env.k, soft = 10 * env.k;
+      var xa = m.a.getContext('2d'), xb = m.b.getContext('2d'), g;
+      xa.globalCompositeOperation = 'copy'; xa.drawImage(D.cv, 0, 0);
+      g = xa.createLinearGradient(Math.max(0, f - soft), 0, Math.max(0.5, f), 0); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      xa.globalCompositeOperation = 'destination-in'; xa.fillStyle = g; xa.fillRect(0, 0, D.w, D.h); xa.globalCompositeOperation = 'source-over';
+      env.paint(c, D, o, m.a);
+      xb.globalCompositeOperation = 'copy'; xb.drawImage(D.cv, 0, 0);
+      g = xb.createLinearGradient(f - band, 0, f + 0.5, 0); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.8, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      xb.globalCompositeOperation = 'destination-in'; xb.fillStyle = g; xb.fillRect(0, 0, D.w, D.h); xb.globalCompositeOperation = 'source-over';
+      c.save(); c.globalCompositeOperation = 'lighter';
+      env.paint(c, D, Object.assign({}, o, { a: 0.9, bright: 1.6 }), m.b);
+      c.restore();
+    } });
 
   /* ---- 08 雨夜港口的巨型机甲：先装配——蓝图的中线、刻度圈先画出，炉心的装甲板和涡轮叶反向一拧锁死，两段钢字推到位
      （第一段带着钢杆插进刻字环，第二段被液压杆顶上来），这时都是没通电的冷钢；空一拍，炉芯打火（一下没着、再着），

@@ -38,7 +38,7 @@ website/
 
 每个专题站是 `website/topics/<id>/` 下的一个 npm 项目，挂在 `/<id>/`。用什么框架、页面怎么设计由该专题自己定，只须守下面几条：
 
-1. **构建**：`npm run build` 从环境变量 `ONESHOT_SITE_DATA_DIR` 读数据目录，从 `ONESHOT_SITE_BASE`（`/<id>/`）读站内根路径；配置里不写死根路径。产出 `dist/index.html`（中文首页）和 `dist/en/index.html`（英文首页），数据文件随构建拷进 `dist/`。`publish.py` 构建时两个变量都会给。
+1. **构建**：`npm run build` 从环境变量 `ONESHOT_SITE_DATA_DIR` 读数据目录，从 `ONESHOT_SITE_BASE`（`/<id>/`）读站内根路径；配置里不写死根路径。产出 `dist/index.html`（中文首页）和 `dist/en/index.html`（英文首页），数据文件随构建拷进 `dist/`。`publish.py` 构建时两个变量都会给，另给一个 `ONESHOT_VOTES_API`（观测者票选的接口所在的源，取自 `tools/publish.json` 的 `votes_api`；用不到的站点不管它）。
 2. **开发**：`npm run dev` 优先读本项目的 `data-local/`（可含本机私有型号，不进 git），没有再读 `data/`。
 3. **回总站**：每页页头必须有回总站的入口，中文页链到 `/`，英文页链到 `/en/`（不加站内根路径）。
 4. **语言**：中文在根路径，英文在 `en/`。选择记在 `localStorage` 的 `octa.lang`（`zh` / `en`），总站和各专题站共用这个键；第一次访问按浏览器语言，地址带 `?stay` 时不跳。

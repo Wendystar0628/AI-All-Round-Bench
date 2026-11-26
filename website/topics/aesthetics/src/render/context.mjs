@@ -3,11 +3,13 @@
 //   ctx.lang                 'zh' | 'en'
 //   ctx.t('home.hero.cta', {n})   界面文案，src/i18n/<lang>/<命名空间>.json；英文缺的退回中文。
 //                            值可以写成 {one, other}，按 vars.n（或 vars.count）选单复数
+//   ctx.raw('votes')         原样的文案子树（英文缺的退回中文），写进页面给浏览器脚本用
 //   ctx.L({zh, en})          数据里的双语字段；ctx.nameOf(x) 取 name / name_en；ctx.shortOf(cat) 取方向的简称
 //   ctx.href('tasks/x/')     站内链接（自动加站内根路径和 en/）；ctx.alt 是本页另一种语言的地址
 //   ctx.media('media/…')     数据目录里文件的地址：<根>data/<路径>?v=<版本>
 //   ctx.logo('openai')       厂商图标：返回 <svg><use>，图形本身由页面骨架在页尾放一份
 //   ctx.uid('t')             本页唯一的 id（SVG 渐变、题名字形用）
+//   ctx.votesApi             票箱接口：<源>/api/votes/v1/<专题>/，源是构建时的 ONESHOT_VOTES_API（开发服务器为空，即同源）
 //   ctx.data                 data.mjs 派生的数据
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -33,14 +35,14 @@ export function fmtBytes(n) {
 function loadStrings(lang) {
   const out = {};
   const dir = join(i18nDir, lang);
-  for (const ns of ['common', 'home', 'volumes', 'observers', 'judges', 'about', 'task', 'model']) {
+  for (const ns of ['common', 'home', 'volumes', 'observers', 'judges', 'votes', 'about', 'task', 'model']) {
     const file = join(dir, `${ns}.json`);
     out[ns] = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : {};
   }
   return out;
 }
 
-export function makeContext({ data, lang, base, route }) {
+export function makeContext({ data, lang, base, route, votesOrigin = '' }) {
   const strings = { zh: loadStrings('zh'), en: lang === 'en' ? loadStrings('en') : null };
   const rules = new Intl.PluralRules(lang === 'en' ? 'en' : 'zh-CN');
   const get = (obj, path) => path.split('.').reduce((o, p) => (o == null ? undefined : o[p]), obj);
@@ -53,6 +55,16 @@ export function makeContext({ data, lang, base, route }) {
     if (typeof v !== 'string') throw new Error(`界面文案里没有 ${key}（src/i18n/zh/${key.split('.')[0]}.json）`);
     return v.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
   };
+  // 原样的文案（一个字符串、{one, other}，或一整个子树），英文缺的那几条退回中文：给浏览器脚本用（parts.mjs votesConfig）
+  const isPlural = (v) => v && typeof v === 'object' && typeof v.other === 'string';
+  const merge = (zh, en) => {
+    if (en === undefined) return zh;
+    if (!zh || typeof zh !== 'object' || isPlural(zh) || !en || typeof en !== 'object' || isPlural(en)) return en;
+    const out = { ...zh };
+    for (const [k, v] of Object.entries(en)) out[k] = merge(zh[k], v);
+    return out;
+  };
+  const raw = (key) => merge(get(strings.zh, key), lang === 'en' ? get(strings.en, key) : undefined);
   const L = (o) => (o == null ? '' : typeof o === 'string' ? o : (lang === 'en' ? o.en || o.zh : o.zh || o.en) ?? '');
   const nameOf = (x) => (x ? (lang === 'en' ? x.name_en || x.name : x.name) : '');
   const shortOf = (c) => (c ? (lang === 'en' ? c.short_en || c.name_en || c.name : c.short || c.name) : '');
@@ -69,7 +81,8 @@ export function makeContext({ data, lang, base, route }) {
   const uid = (p = 'u') => `${p}${++n}`;
 
   return {
-    lang, base, route, data, t, L, nameOf, shortOf, href, hrefIn, media, logo, logos, uid, esc,
+    lang, base, route, data, t, raw, L, nameOf, shortOf, href, hrefIn, media, logo, logos, uid, esc,
+    votesApi: votesOrigin + data.votes.path,
     alt: hrefIn(lang === 'en' ? 'zh' : 'en', route.path),
     hub: lang === 'en' ? '/en/' : '/',
   };

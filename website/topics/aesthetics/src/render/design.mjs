@@ -91,7 +91,7 @@ export const hasConstellation = (key) => Boolean(key && AEOrn.CONST[key]);
  * 锁定同步进来以后（lockupItem 找得到这一题），一律用锁定本身。
  */
 export const HERO = {
-  'autumn-observatory': '星', 'mygo-pv': '雫', 'greenhouse-render': '室', 'nvidia-b200-web': 'B200', 'sky-citadel': '穹',
+  'agent-pv': 'Agent', 'autumn-observatory': '星', 'greenhouse-render': '室', 'nvidia-b200-web': 'B200', 'sky-citadel': '穹',
   'pelican-22-styles': '二十二', 'water-park': '晴', 'harbor-mecha': '甲', 'floating-isles-game-ui': '岛', 'anime-game-logo': 'Logo',
 };
 
@@ -122,7 +122,7 @@ export function litPortrait(kind, key) {
  * 没有这个文件时用丁交回的落点表（质感返工/丁-落点.md）。代表画面按配色重导以后，以 links.json 为准。
  */
 const LINKS_FALLBACK = {
-  'autumn-observatory': [1452, 462], 'mygo-pv': [1180, 770], 'greenhouse-render': [1099, 416], 'nvidia-b200-web': [1206, 525],
+  'agent-pv': [1089, 710], 'autumn-observatory': [1452, 462], 'greenhouse-render': [1099, 416], 'nvidia-b200-web': [1206, 525],
   'sky-citadel': [1266, 544], 'pelican-22-styles': [854, 980], 'water-park': [1848, 366], 'harbor-mecha': [1060, 800],
   'floating-isles-game-ui': [1290, 590], 'anime-game-logo': [1438, 416],
 };

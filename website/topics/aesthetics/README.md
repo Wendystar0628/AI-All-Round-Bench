@@ -13,6 +13,7 @@ npm run dev        # http://localhost:5195/ ，挂在 /，英文在 /en/
 ```
 
 - 每次请求现画页面：改了 `src/render/`、`src/i18n/` 或数据，浏览器自动刷新；改样式和浏览器脚本由 Vite 热更新。
+- 观测者票选：开发服务器在自己的域名根下挂一个同源的本地票箱 `/api/votes/`（`website/services/votes/` 的同一份处理函数，配内存票箱），本地就能投票、撤回、看票选；重启开发服务器票就清零。线上的票箱在 `https://api.wendystars.com`，正式发布时 `publish.py` 经 `ONESHOT_VOTES_API` 告诉构建；自己构建、`vite preview` 看成品时不给这个变量，页面找同源的票箱，看到的是「票箱暂时关着」的样子。
 - 也可以用仓库 `.claude/launch.json` 里的 `aesthetics-dev`（端口 5195）。
 - 数据：`ONESHOT_SITE_DATA_DIR` 给了就读它，否则先读 `data-local/`，没有再读 `data/`。
 - 看手机排法用浏览器的设备模拟（390 宽）；无头 Chrome 直接给 `--window-size=390,…` 排不到 390 宽。
@@ -30,7 +31,7 @@ $env:ONESHOT_SITE_BASE="/aesthetics/"; npm run preview                          
 
 ## 数据从哪来
 
-页面只读数据目录里的 `topic.json`、`models.json`、`works.json` 和 `media/`、`downloads/`，不读平台登记和素材目录。它们由导出插件 `export.py` 写出，在仓库根目录运行：
+页面只读数据目录里的 `topic.json`、`models.json`、`works.json`、`votable.json`（能投的名单）、`votes.json`（正式发布时才有的计票快照）和 `media/`、`downloads/`，不读平台登记和素材目录。它们由导出插件 `export.py` 写出，在仓库根目录运行：
 
 | 做什么 | 命令 |
 |---|---|
@@ -39,7 +40,7 @@ $env:ONESHOT_SITE_BASE="/aesthetics/"; npm run preview                          
 
 - 草稿阶段只导出到 `data-local/`（不进 git）；上线后 `data/` 进 git，其中的 `media/`、`downloads/` 不进，随时可以从 `website/.build-cache/aesthetics/` 重新拷出。
 - 题目、方向的顺序和展示文案来自 `topics/审美全能/展示文案.json`，评委来自 `videos/topics/aesthetics/judges/judges.json`，型号来自参测登记；作品图由 `tools/shots.py` 挑，下载包由 `tools/package.py` 打。细节见 `docs/data.md`、`docs/downloads.md`。
-- 评语、PV设计和字体与Logo设计的题面现在都还没有；数据里有了，页面自己会显示，不用改代码（空状态见 `docs/design.md` 4.2）。
+- 评语和字体与Logo设计的题面现在都还没有；数据里有了，页面自己会显示，不用改代码（空状态见 `docs/design.md` 4.2）。
 
 ## 设计素材怎么同步
 

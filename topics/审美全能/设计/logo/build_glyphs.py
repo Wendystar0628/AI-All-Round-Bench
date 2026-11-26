@@ -12,7 +12,7 @@ AI审美全能 · 标题字形生成器
 字体：中文 思源宋体 Heavy（900）；题名里的拉丁字母 Libre Bodoni（可变字重，在这里切成 wght 600 的静态实例）。全部是 ../fonts 里的 OFL 字体。
 
 用法（项目根目录）：python topics/审美全能/设计/logo/build_glyphs.py
-题名改了（PV、Logo 两题题面定稿后），改下面 TITLES 再跑一遍；题名锁定另用 lockups/build/ 重新生成。
+题名改了（如 Logo 题题面定稿后），改下面 TITLES 再跑一遍；题名锁定另用 lockups/build/ 重新生成。
 """
 import json
 import os
@@ -43,7 +43,7 @@ WORD_SPACE = 260    # 拉丁词之间的空格
 TITLES = [
     {'key': 'ten-volumes', 'text': '十卷星图'},
     {'key': 'autumn-observatory', 'text': '秋庭观星画室'},
-    {'key': 'mygo-pv', 'text': '《壱雫空》PV'},
+    {'key': 'agent-pv', 'text': '现代Agent概念PV'},
     {'key': 'greenhouse-render', 'text': '玻璃温室与花艺工作室'},
     {'key': 'nvidia-b200-web', 'text': 'NVIDIA B200 网页艺术'},
     {'key': 'sky-citadel', 'text': '天穹圣城'},

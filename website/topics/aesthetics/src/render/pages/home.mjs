@@ -8,7 +8,9 @@
 // 原来往下滚才看到的书摞、受测模型、评委都分到了子页（卷目、受测模型、评委），页头的四项导航直达。设计见 docs/design.md「首页」。
 import { dateDots, esc } from '../context.mjs';
 import { ICP, factsLine } from '../shell.mjs';
-import { hangingStar, obsCard, starChart, wordmark } from '../parts.mjs';
+import { hangingStar, obsCard, starChart, voterCount, votesConfig, wordmark } from '../parts.mjs';
+
+const SEP = '<span aria-hidden="true">  ·  </span>';
 
 /** 地平线上的小天文台：一座暗的圆顶剪影，观测缝亮着，一道很淡的光朝上指着吊星 */
 function observatory() {
@@ -34,8 +36,9 @@ function orbit() {
 }
 
 export function render(ctx) {
-  const facts = factsLine(ctx, 'home.facts');
-  if (ctx.data.updated) facts.push(ctx.t('home.facts.updated', { date: dateDots(ctx.data.updated) }));
+  // 演职员表：几卷 · 几位设计师 · 几位评委 · 几件作品 · 几位观测者（多于 0 才写；发布时的快照，脚本取到计票后跟着变）· 末次观测
+  const facts = factsLine(ctx, 'home.facts').map(esc).join(SEP) + voterCount(ctx, SEP)
+    + (ctx.data.updated ? SEP + esc(ctx.t('home.facts.updated', { date: dateDots(ctx.data.updated) })) : '');
   const card = obsCard(ctx, {
     href: ctx.href('volumes/'), title: ctx.t('home.cta'), sub: ctx.t('home.ctaSub'), stub: ctx.t('home.ctaStub'),
     stubEn: ctx.lang === 'zh' ? 'OPEN' : '', cls: 'hm-cta',
@@ -57,10 +60,13 @@ export function render(ctx) {
       <div class="hm-ground">
         <i class="hm-horizon" aria-hidden="true"></i>
         ${observatory()}
-        <p class="hm-facts">${facts.map(esc).join('<span aria-hidden="true">  ·  </span>')}</p>
+        <p class="hm-facts">${facts}</p>
         <a class="hm-icp" href="${ICP.url}" rel="noopener">${ICP.text}</a>
       </div>
     </div>
-  </section>`;
-  return { title: '', description: ctx.t('home.description'), body, styles: ['/src/styles/pages/home.css'], bare: true };
+  </section>${votesConfig(ctx)}`;
+  return {
+    title: '', description: ctx.t('home.description'), body, styles: ['/src/styles/pages/home.css'], bare: true,
+    script: ctx.data.notice ? undefined : '/src/client/votes.js',
+  };
 }

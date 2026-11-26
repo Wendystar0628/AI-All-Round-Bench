@@ -1,0 +1,18 @@
+{
+  "name": "octathlon-votes",
+  "private": true,
+  "version": "1.0.0",
+  "description": "观众票选的函数：路由、规则、签名、限频、存储接口（Tablestore 与内存两种实现）",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "node src/server.js",
+    "deploy": "node tools/deploy.mjs"
+  },
+  "dependencies": {
+    "tablestore": "5.6.6"
+  }
+}

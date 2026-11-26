@@ -70,6 +70,10 @@ body::after {
 body::before { background: var(--tex-mottle) 0 0 / 512px 512px; mix-blend-mode: soft-light; opacity: 0.28; }
 body::after { background: var(--ae-noise-tile) 0 0 / 256px 256px; mix-blend-mode: soft-light; opacity: var(--ae-grain-ui, 0.14); }
 
+/* 墙上的光（卷目、票选、观测须知页的灯光贴图）伸出视口右边时在这里裁掉：body 的 overflow 会挪给视口，
+   手机上挡不住布局视口被撑宽（整页能横着拖、开页时被缩小），所以在 main 上 clip（不建滚动容器，sticky 照常） */
+main { overflow-x: clip; }
+
 h1, h2, h3, h4, p, figure, blockquote, dl, dd { margin: 0; }
 .nw { white-space: nowrap; }
 a { color: inherit; }

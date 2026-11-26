@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -60,7 +61,9 @@ def build_project(project, data, work, base):
     if dist.exists():
         dist.rename(previous)
     try:
-        env = os.environ | {'ONESHOT_SITE_DATA_DIR': str(data.resolve()), 'ONESHOT_SITE_BASE': base}
+        # ONESHOT_VOTES_API: origin of the audience ballot box (publish.json votes_api); sites without votes ignore it
+        env = os.environ | {'ONESHOT_SITE_DATA_DIR': str(data.resolve()), 'ONESHOT_SITE_BASE': base,
+                            'ONESHOT_VOTES_API': config().get('votes_api', '')}
         run([npm, 'run', 'build'], cwd=project, env=env)
         for entry in ('index.html', 'en/index.html'):
             if not (dist / entry).is_file():
@@ -94,12 +97,39 @@ def replace_tree(source, destination):
         shutil.rmtree(previous)
 
 
+def snapshot_votes(topic, data):
+    """Topics that export votable.json get the ballot box's tally at publish time as data/votes.json (the
+    fallback and archive in website/topics/aesthetics/docs/votes.md 9.3), from publish.json votes_api. An
+    unreachable box never fails the publish: the last published snapshot is kept when there is one,
+    otherwise the site ships without it."""
+    if not (data / 'votable.json').is_file():
+        return
+    url = f'{config().get("votes_api", "").rstrip("/")}/api/votes/v1/{topic}/tally'
+    try:
+        if not url.startswith('http'):
+            raise ValueError('publish.json 没有 votes_api')
+        request = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'octathlon-publish'})
+        with urllib.request.urlopen(request, timeout=10) as response:
+            tally = json.loads(response.read().decode('utf-8'))
+        if not isinstance(tally, dict) or not isinstance(tally.get('tasks'), dict):
+            raise ValueError('返回的不是计票')
+    except Exception as exc:
+        previous = CACHE / 'topics' / topic / 'site' / 'data' / 'votes.json'
+        if previous.is_file():
+            shutil.copy2(previous, data / 'votes.json')
+        print(f'[{topic}] 票数接口取不到（{exc}），{"沿用上次发布的票数快照" if previous.is_file() else "这次不带票数快照"}', flush=True)
+        return
+    (data / 'votes.json').write_text(json.dumps(tally, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    print(f'[{topic}] 票数快照取自 {url}', flush=True)
+
+
 def build_topic(topic, work):
     data = work / 'data'
     site = exporter()
     ctx = site.context(topic)
     plugin = site.plugin(ctx)
     card = plugin.export(ctx, data, formal=True)
+    snapshot_votes(topic, data)
     base = f'/{topic}/'
     if card['id'] != topic or card['url'] != base:
         raise ValueError(f'专题 {topic} 的卡片与挂载路径 {base} 不一致')

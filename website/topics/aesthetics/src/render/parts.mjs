@@ -348,7 +348,7 @@ export function obsCard(ctx, { href, cat = null, title, sub, stub, stubEn = '', 
 
 /**
  * 取件票（下载）：票面写「下载作品」、格式和大小、一句说明，票根写动作；整张票是一个 <a download>。
- * 方向不提供下载（白模渲染、PV设计）时是一张压暗的「仅展映」票，不是链接；方向提供下载但包还没打好时返回空串。
+ * 方向不提供下载（白模渲染、动效设计）时是一张压暗的「仅展映」票，不是链接；方向提供下载但包还没打好时返回空串。
  */
 export function ticket(ctx, w) {
   const cat = w.task.category;
@@ -452,4 +452,247 @@ export function notice(ctx) {
 export function volumesTitle(ctx) {
   const text = ctx.t('volumes.title');
   return ctx.lang === 'zh' ? displayText(text, '星') : `<span class="vl-title-en">${esc(text)}</span>`;
+}
+
+/* ---------- 观测者票选（docs/votes.md）----------
+   构建时画好骨架，src/client/votes.js 只填票数、切状态。名次只出现在本卷票选（rankTable）和票选页（voteTotals、voteMatrix），
+   别处最多一句票数（voteCount、voteTotal）。要靠脚本才有意义的部件（观测票、打孔钮、页签上的小孔、本卷票选）
+   带 data-vote-ui 和 hidden：脚本接上票箱以后才露出来，没有脚本时不出现。暂停公示时一律不画。
+   文案都在 src/i18n/<语言>/votes.json，浏览器脚本要用的那一份由 votesConfig 写进页面。 */
+
+const vt = (ctx, key, vars) => ctx.t(`votes.${key}`, vars);
+const pctOf = (n, total) => (total ? `${Math.round((n / total) * 100)}%` : '0%');
+const votesOff = (ctx) => Boolean(ctx.data.notice);
+
+/** 名次：票多的在前；票数相同的名次相同，按登记顺序排在一起。values[i] 是登记顺序第 i 位的票数，返回 [{ i, v, rank }] */
+export function rankOrder(values) {
+  const order = values.map((v, i) => ({ i, v })).sort((a, b) => b.v - a.v || a.i - b.i);
+  let rank = 0;
+  return order.map((o, k) => ({ ...o, rank: k && o.v === order[k - 1].v ? rank : (rank = k + 1) }));
+}
+
+/**
+ * 页面上给浏览器脚本的一份票选设定（#ae-votes）：票箱接口（ctx.votesApi：线上在 api 子域，开发服务器同源）、能投的名单、发布时的快照、型号的名字和简称、文案；
+ * 再加一块读屏播报的 aria-live。有票选部件的页面放一份。
+ */
+export function votesConfig(ctx) {
+  if (votesOff(ctx)) return '';
+  const v = ctx.data.votes;
+  const models = Object.fromEntries(ctx.data.models.map((m) => [m.id, { name: m.display_name ?? m.name, short: m.short ?? m.name }]));
+  const json = JSON.stringify({ api: ctx.votesApi, lang: ctx.lang, votable: v.votable, snapshot: v.snapshot, models, t: { ...ctx.raw('votes'), observers: ctx.raw('home.facts.observers') } });
+  return `<script type="application/json" id="ae-votes">${json.replace(/</g, '\\u003c')}</script><p class="sr-only" data-vote-live aria-live="polite"></p>`;
+}
+
+/** 观测票上打穿的孔：孔里是后面的夜墙，孔壁靠下一线受光，孔边一圈黄铜环（受光一侧一根细亮边），环下一点接触阴影 */
+const HOLE = `<svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><path class="shade" d="M24.4 13.1 A10.5 10.5 0 0 1 9.9 23.7"/><circle class="pit" cx="14" cy="14" r="8.3"/><path class="wall" d="M21.1 16.6 A7.6 7.6 0 0 1 6.9 16.6"/><circle class="ring" cx="14" cy="14" r="9.4" pathLength="1"/><path class="lit" d="M5.2 10.8 A9.4 9.4 0 0 1 10.8 5.2"/></svg>`;
+
+/**
+ * 观测票（本卷的一张纸票，停在页签那一排的右端）：和观测卡、取件票同一家——纸纹、接触阴影、一列打孔，
+ * 票面微型印刷 OBSERVER · BALLOT、No. 01/10、TWO PUNCHES PER VOLUME；票根是这一卷世界色最深的一档，写「投票」。
+ * 票面两个孔位（细印的虚圆）：投出一票就打穿一个，孔下盖印那位设计师的简称（亮底的题用这一题的墨，暗底的用世界色最深的一档）。
+ * 打穿的孔是按钮，点了撤回那一票。这一卷没有能投的作品时不画。
+ */
+export function ballot(ctx, entry) {
+  if (votesOff(ctx) || !entry.votable?.length) return '';
+  const cat = entry.category, s = cat.skin;
+  const light = s.tone === 'light';
+  const id = ctx.uid('bt');
+  const slot = (i) => `<span class="ae-bt-slot" data-slot="${i}">
+        <svg class="ae-bt-mark" viewBox="0 0 28 28" aria-hidden="true" focusable="false"><circle cx="14" cy="14" r="9.6"/></svg>
+        <button type="button" class="ae-bt-hole" hidden>${HOLE}<span class="sr-only" data-hole-sr></span></button>
+        <i class="ae-bt-chad" aria-hidden="true"></i><i class="ae-bt-patch" aria-hidden="true"></i>
+        <span class="ae-bt-who" aria-hidden="true"><span class="nm" data-hole-who></span><span class="un">${esc(vt(ctx, 'ballot.undo'))}</span></span>
+      </span>`;
+  return `<div class="ae-ballot" data-ballot="${esc(entry.key)}" data-vote-ui hidden role="group" aria-labelledby="${id}" tabindex="-1" style="--stub:${s.worldDeep};--stamp:${light ? s.ink : s.worldDeep}${light ? `;--card-ink:${s.ink}` : ''}">
+    <span class="face ae-sheet">
+      <span class="ae-card-top" aria-hidden="true"><span>${esc(vt(ctx, 'ballot.head'))}</span></span>
+      <span class="ae-bt-body">
+        <span class="ae-card-no" aria-hidden="true"><i>No.</i><b>${pad2(cat.no)}</b><small>/${pad2(ctx.data.categories.length)}</small></span>
+        <span class="ae-bt-slots">${slot(0)}${slot(1)}</span>
+      </span>
+      <span class="ae-card-foot" aria-hidden="true"><span class="ae-bt-rule">${esc(vt(ctx, 'ballot.rule'))}</span><span class="ae-bt-closed">${esc(vt(ctx, 'ballot.closed'))}</span>${dots32}</span>
+    </span>
+    <span class="perf" aria-hidden="true"></span>
+    <span class="stub" aria-hidden="true"><b>${esc(vt(ctx, 'ballot.stub'))}</b>${ctx.lang === 'zh' ? `<small>${esc(vt(ctx, 'ballot.stubEn'))}</small>` : ''}</span>
+    <span class="sr-only" id="${id}" data-ballot-sr>${esc(vt(ctx, 'ballot.sr0'))}</span>
+  </div>`;
+}
+
+/** 打孔钮上的那枚黄铜打孔器：圆的冲头、两根钳柄、一颗销钉；暗的身子，受光一侧一根细亮边 */
+const PUNCH = `<svg viewBox="0 0 46 26" focusable="false"><g class="jaw"><path class="body" d="M14.4 8.6 42.2 3.2Q44.6 2.8 44.4 4.8L44.1 5.7Q43.8 6.7 42.6 7L15.9 12.4Z"/><path class="edge" d="M15 8.5 42.2 3.3"/></g><path class="body" d="M14.4 17.4 42.2 22.8Q44.6 23.2 44.4 21.2L44.1 20.3Q43.8 19.3 42.6 19L15.9 13.6Z"/><circle class="body" cx="9" cy="13" r="7.4"/><path class="edge" d="M2.1 10.3A7.4 7.4 0 0 1 6.4 6.1"/><circle class="die" cx="9" cy="13" r="2.6"/><circle class="bolt" cx="16" cy="13" r="1.5"/></svg>`;
+
+/**
+ * 打孔钮（每位设计师的作品区里，取件票旁边）：一枚黄铜打孔器和一句「投这一件」，是真的 <button aria-pressed>。
+ * 已投：打孔器旁边一个打穿的小孔，字改成「已投 · 撤回」；这一卷两孔都用掉、这件又不是你投的：压暗，「两孔已用」，
+ * 悬停或聚焦时浮出纸签「撤回一票就能改投」；票箱连不上：压暗，「票箱暂时关着」。不能投的作品不画。
+ */
+export function punch(ctx, w) {
+  if (votesOff(ctx) || !w.votable) return '';
+  const hint = ctx.uid('ph');
+  return `<span class="ae-punch" data-vote-ui hidden>
+    <button type="button" class="ae-punch-btn" data-punch="${esc(w.task.key)}/${esc(w.model.id)}" data-hint="${hint}" aria-pressed="false">
+      <span class="ae-punch-tool" aria-hidden="true">${PUNCH}<i class="ae-punch-hole"></i></span>
+      <span class="ae-punch-label"><span class="sr-only">${esc(vt(ctx, 'punch.who', { name: w.model.display_name }))}</span><span data-punch-text>${esc(vt(ctx, 'punch.vote'))}</span></span>
+    </button>
+    <span class="ae-punch-hint ae-sheet" id="${hint}" role="tooltip">${esc(vt(ctx, 'punch.spentHint'))}</span>
+    <span class="ae-punch-note" data-punch-note></span>
+  </span>`;
+}
+
+/** 页签小图版右上角打穿的小孔：你投过这位设计师（读屏读作「（已投）」，跟在页签的名字后面） */
+export function voteMark(ctx, w) {
+  if (votesOff(ctx) || !w.votable) return '';
+  return `<i class="ae-tabhole" data-vote-mark="${esc(w.task.key)}/${esc(w.model.id)}" hidden><span class="sr-only">${esc(vt(ctx, 'punch.markSr'))}</span></i>`;
+}
+
+/**
+ * 本卷票选（题目页页签那一排上方）：投票之前是一张折起来的纸签「投下一票后揭晓本卷排名」和「已有 N 位观测者投票」；
+ * 投出第一票后展开成一页印出来的天文星表：名次（Didone 斜体）、设计师名、一根 1px 黄铜细线上的实心段（按本卷最高票的比例）、
+ * 票数和占比。只有第一名那一段用这一卷的点亮色。票数相同名次相同、按登记顺序排；没有票的作品也列出。
+ * 点一行选中那位设计师的页签（data-goto，题目页脚本接）。这一卷没有能投的作品时不画。
+ */
+export function rankTable(ctx, entry) {
+  if (votesOff(ctx) || !entry.votable?.length) return '';
+  const v = ctx.data.votes, list = entry.votable, id = ctx.uid('rk');
+  const counts = list.map((w) => v.count(entry.key, w.model.id));
+  const total = counts.reduce((a, b) => a + b, 0), max = Math.max(0, ...counts);
+  const rows = rankOrder(counts).map(({ i, v: n, rank }) => {
+    const m = list[i].model, pct = pctOf(n, total);
+    return `<li class="ae-rank-row${rank === 1 && n ? ' is-top' : ''}" data-model="${esc(m.id)}" data-i="${i}">
+        <a class="ae-rank-a" href="#m-${esc(m.id)}" data-goto="${esc(m.id)}">
+          <span class="no" data-rank-no aria-hidden="true">${rank}</span>
+          <span class="nm" aria-hidden="true">${modelName(ctx, m)}</span>
+          <span class="bar" aria-hidden="true"><i data-rank-bar style="--w:${max ? f2(n / max) : 0}"></i></span>
+          <span class="n" data-rank-n aria-hidden="true">${n}</span>
+          <span class="pct" data-rank-pct aria-hidden="true">${pct}</span>
+          <span class="sr-only" data-rank-sr>${esc(vt(ctx, 'rank.row', { rank, name: m.display_name, n, pct }))}</span>
+        </a>
+      </li>`;
+  }).join('');
+  const en = ctx.lang === 'zh' ? `<span class="en" aria-hidden="true">${esc(vt(ctx, 'rank.en'))}</span>` : '';
+  const cols = ['colRank', 'colName', 'colVotes', 'colShare'].map((k) => `<span>${esc(vt(ctx, `rank.${k}`))}</span>`).join('');
+  return `<div class="ae-rank" data-rank="${esc(entry.key)}" data-vote-ui hidden style="--lit:${entry.category.skin.lit}">
+    <p class="ae-rank-fold ae-sheet" data-rank-fold><span class="t">${esc(vt(ctx, 'rank.folded'))}</span><span class="s" data-rank-voters></span></p>
+    <section class="ae-rank-sheet ae-sheet" data-rank-sheet aria-labelledby="${id}" hidden>
+      <header class="ae-rank-head"><h3 class="ae-rank-title" id="${id}"><span class="cn">${esc(vt(ctx, 'rank.title'))}</span>${en}</h3><span class="ae-rank-asof" data-vote-asof></span></header>
+      <p class="ae-rank-note" data-rank-note hidden></p>
+      <p class="ae-rank-cols" aria-hidden="true">${cols}</p>
+      <ol class="ae-rank-rows">${rows}</ol>
+    </section>
+  </div>`;
+}
+
+/** 型号页每一卷那一段：一行小字「观测者 N 票」，链到票选页。不写名次；能投的作品才有，发布时没有快照的先不露，等脚本取到票数 */
+export function voteCount(ctx, w) {
+  if (votesOff(ctx) || !w.votable) return '';
+  const v = ctx.data.votes;
+  return `<a class="ae-vcount" href="${esc(ctx.href('votes/'))}#vt-${esc(w.model.id)}" data-vote-count="${esc(w.task.key)}/${esc(w.model.id)}" data-tpl="model.count"${v.snapshot ? '' : ' hidden'}>${esc(vt(ctx, 'model.count', { n: v.count(w.task.key, w.model.id) }))}</a>`;
+}
+
+/** 型号页页首演职员表里的一项「观测票 N」：sep 是它前面的分隔（连同它一起藏起来） */
+export function voteTotal(ctx, m, sep = '') {
+  if (votesOff(ctx) || !m.works.some((w) => w.votable)) return '';
+  const v = ctx.data.votes;
+  return `<span data-vote-total="${esc(m.id)}" data-tpl="model.total"${v.snapshot ? '' : ' hidden'}>${sep}${esc(vt(ctx, 'model.total', { n: v.total(m.id) }))}</span>`;
+}
+
+/** 首页演职员表里的一项「N 位观测者」：只在多于 0 时出现（发布时的快照，脚本取到计票后跟着变） */
+export function voterCount(ctx, sep = '') {
+  if (votesOff(ctx)) return '';
+  const n = ctx.data.votes.snapshot?.voters ?? 0;
+  return `<span data-vote-voters data-tpl="observers"${n > 0 ? '' : ' hidden'}>${sep}${esc(ctx.t('home.facts.observers', { n }))}</span>`;
+}
+
+/** 票选页的行序：总票数从高到低，票数相同按登记顺序；没有快照时就是登记顺序。返回 [{ m, i, total, rank }] */
+function totalsOrder(ctx) {
+  const models = ctx.data.models;
+  return rankOrder(models.map((m) => ctx.data.votes.total(m.id))).map(({ i, v, rank }) => ({ m: models[i], i, total: v, rank }));
+}
+
+/** 有作品页面的题（已登记的题），按展示顺序 */
+const votingTasks = (ctx) => ctx.data.categories.flatMap((c) => c.tasks);
+
+/**
+ * 总得票（票选页）：一行一位设计师，按总票数从高到低。名次（Didone 斜体）、二等的名字（推理强度坐在帽线上）、
+ * 一根按卷分段的横条（每一段是那一卷的布色，段长是那一卷的得票），后面跟总票数。悬停或聚焦一段，浮出一张小纸签：
+ * 卷号、迷你锁定、这一卷的票数；一段就是一个链接，进那一卷、选定这位设计师。点名字进型号页。
+ */
+export function voteTotals(ctx) {
+  const v = ctx.data.votes, tasks = votingTasks(ctx), order = totalsOrder(ctx);
+  const max = Math.max(1, ...order.map((o) => o.total));
+  const rows = order.map(({ m, i, total, rank }) => {
+    const mine = tasks.filter((t) => t.votable.some((w) => w.model === m));
+    const shown = mine.filter((t) => v.count(t.key, m.id) > 0);
+    const segs = mine.map((t) => {
+      const n = v.count(t.key, m.id), cat = t.category;
+      const end = shown.indexOf(t) >= shown.length - 2 && n > 0;      // 末尾两段的纸签往左展开，不伸出页面
+      return `<a class="ae-tot-seg${end ? ' is-end' : ''}" href="${esc(ctx.href(t.path))}?m=${encodeURIComponent(m.id)}" data-seg="${esc(t.key)}" data-no="${pad2(cat.no)}" data-name="${esc(ctx.nameOf(t))}" style="--cloth:${cat.skin.world};--g:${n}" aria-label="${esc(vt(ctx, 'totals.segment', { no: pad2(cat.no), name: ctx.nameOf(t), n }))}"${n ? '' : ' hidden'}>
+          <span class="ae-tot-tag ae-sheet" aria-hidden="true"><span class="k">${pad2(cat.no)} · ${esc(ctx.shortOf(cat))}</span>${miniLockup(ctx, t, { form: 'mini-ink' })}<span class="n" data-seg-n>${esc(vt(ctx, 'totals.votes', { n }))}</span></span>
+        </a>`;
+    }).join('');
+    return `<li class="ae-tot" id="vt-${esc(m.id)}" data-model="${esc(m.id)}" data-i="${i}">
+      <span class="no" data-tot-no aria-hidden="true">${rank}</span>
+      <a class="who" href="${esc(ctx.href(m.path))}">${modelName(ctx, m)}</a>
+      <span class="ae-tot-track"><span class="ae-tot-bar" data-tot-bar role="group" aria-label="${esc(vt(ctx, 'totals.label', { name: m.display_name }))}" style="--w:${f2(total / max)}">${segs}</span></span>
+      <span class="n" data-tot-n>${total}</span>
+    </li>`;
+  }).join('');
+  return `<ol class="ae-totals" data-vote-totals${order.some((o) => o.total) ? '' : ' hidden'}>${rows}</ol>`;
+}
+
+/**
+ * 星表（票选页总得票下面）：一张纸面的总表。列头十卷（卷号、简称、迷你锁定的墨色形态，点了进那一卷的本卷票选），
+ * 行头设计师（顺序同总得票，点了进型号页），最右一列总票，最下一行每卷合计。每格写票数，旁边一个星点：
+ * 大小按这一格在本卷的得票占比，每一卷票最多的那一颗换成这一卷的点亮色，其余黄铜。没做的那一卷盖一枚很小的网点云遮印，
+ * 正在作答的写一道短横，做了没票的写 0。窄屏（<760）换成一位设计师一张纸卡，卡上一卷一根小横条。
+ */
+export function voteMatrix(ctx) {
+  const v = ctx.data.votes, tasks = votingTasks(ctx), order = totalsOrder(ctx);
+  const sums = tasks.map((t) => t.votable.reduce((s, w) => s + v.count(t.key, w.model.id), 0));
+  const leads = tasks.map((t) => Math.max(0, ...t.votable.map((w) => v.count(t.key, w.model.id))));
+  const grand = sums.reduce((a, b) => a + b, 0);
+  const has = grand > 0;
+  const kindOf = (t, m) => (t.votable.some((w) => w.model === m) ? 'on' : t.works.some((w) => w.model === m) ? 'off' : 'none');
+  const tiny = (title) => `<span class="ae-stamp is-dot" title="${esc(title)}" aria-hidden="true"></span><span class="sr-only">${esc(title)}</span>`;
+  const cell = (t, k, m) => {
+    const kind = kindOf(t, m);
+    if (kind === 'none') return `<td class="is-none">${tiny(vt(ctx, 'matrix.none'))}</td>`;
+    if (kind === 'off') return `<td class="is-off"><span class="n" aria-hidden="true">–</span><span class="sr-only">${esc(vt(ctx, 'matrix.answering'))}</span></td>`;
+    const n = v.count(t.key, m.id), share = sums[k] ? n / sums[k] : 0;
+    const cls = [n && n === leads[k] ? 'is-lead' : '', n ? '' : 'is-zero'].filter(Boolean).join(' ');
+    return `<td data-cell="${esc(t.key)}/${esc(m.id)}"${cls ? ` class="${cls}"` : ''} style="--lit:${t.category.skin.lit}"><span class="n" data-n>${n}</span><i class="dot" data-dot style="--s:${f2(share)}" aria-hidden="true"></i></td>`;
+  };
+  const head = tasks.map((t) => {
+    const cat = t.category;
+    return `<th scope="col" style="--lit:${cat.skin.lit}"><a href="${esc(ctx.href(t.path))}#rank"><span class="no">${pad2(cat.no)}</span><span class="sh">${esc(ctx.shortOf(cat))}</span>${miniLockup(ctx, t, { form: 'mini-ink' })}</a></th>`;
+  }).join('');
+  const corner = `<span class="cn">${esc(vt(ctx, 'matrix.corner'))}</span>${ctx.lang === 'zh' ? `<span class="en">${esc(vt(ctx, 'matrix.cornerEn'))}</span>` : ''}`;
+  const rows = order.map(({ m, i, total }) => `<tr data-model="${esc(m.id)}" data-i="${i}">
+        <th scope="row"><a href="${esc(ctx.href(m.path))}">${modelName(ctx, m)}</a></th>
+        ${tasks.map((t, k) => cell(t, k, m)).join('')}
+        <td class="tot" data-row-total>${total}</td>
+      </tr>`).join('');
+  const foot = `<tr><th scope="row">${esc(vt(ctx, 'matrix.sum'))}</th>${tasks.map((t, k) => `<td data-col-total="${esc(t.key)}">${sums[k]}</td>`).join('')}<td class="tot" data-grand-total>${grand}</td></tr>`;
+  const cards = order.map(({ m, i, total, rank }) => `<li class="ae-mcard ae-sheet" data-model="${esc(m.id)}" data-i="${i}">
+      <p class="ae-mcard-head"><span class="no" data-card-no aria-hidden="true">${rank}</span><a href="${esc(ctx.href(m.path))}">${modelName(ctx, m)}</a><span class="n" data-card-n>${esc(vt(ctx, 'totals.votes', { n: total }))}</span></p>
+      <ul class="ae-mcard-bars">${tasks.map((t, k) => {
+    const kind = kindOf(t, m), cat = t.category;
+    const label = `<span class="k"><i>${pad2(cat.no)}</i>${esc(ctx.shortOf(cat))}</span>`;
+    if (kind === 'none') return `<li class="is-none">${label}<span class="bar"></span>${tiny(vt(ctx, 'matrix.none'))}</li>`;
+    if (kind === 'off') return `<li class="is-off">${label}<span class="bar"></span><span class="n" aria-hidden="true">–</span><span class="sr-only">${esc(vt(ctx, 'matrix.answering'))}</span></li>`;
+    const n = v.count(t.key, m.id);
+    return `<li data-cell="${esc(t.key)}/${esc(m.id)}" style="--lit:${cat.skin.lit}"${n && n === leads[k] ? ' class="is-lead"' : ''}>${label}<span class="bar" aria-hidden="true"><i data-bar style="--w:${f2(sums[k] ? n / sums[k] : 0)}"></i></span><span class="n" data-n>${n}</span></li>`;
+  }).join('')}</ul>
+    </li>`).join('');
+  return `<div class="ae-matrix ae-sheet" data-vote-matrix>
+      <div class="ae-matrix-frame">
+        <table>
+          <caption class="sr-only">${esc(vt(ctx, 'matrix.caption'))}</caption>
+          <thead><tr><th scope="col" class="corner">${corner}</th>${head}<th scope="col" class="tot">${esc(vt(ctx, 'matrix.total'))}</th></tr></thead>
+          <tbody data-matrix-rows${has ? '' : ' hidden'}>${rows}</tbody>
+          <tfoot data-matrix-foot${has ? '' : ' hidden'}>${foot}</tfoot>
+        </table>
+      </div>
+    </div>
+    <ol class="ae-mcards" data-vote-cards${has ? '' : ' hidden'}>${cards}</ol>`;
 }

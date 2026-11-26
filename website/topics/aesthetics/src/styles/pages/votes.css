@@ -1,0 +1,79 @@
+/* 观测者票选（docs/votes.md 第四节）。母版的夜，一盏吊星：灯挂在右上，光落在墙上的那一片照着总得票的横条。
+   页首是二等的标题（展示字 900，主角字放大，一颗星芒）和身后一行只比墙亮一点的斜体幽灵字；
+   下面是总得票（parts.css .ae-totals）和一张纸面的星表（.ae-matrix，窄屏换成 .ae-mcards）。 */
+
+.vt {
+  position: relative;
+  isolation: isolate;
+  max-width: calc(var(--max) + 2 * var(--margin));
+  margin: 0 auto;
+  padding: calc(var(--head-h) + clamp(24px, 6svh, 72px)) var(--margin) 0;
+}
+/* 灯落在墙上的那一片：右上，吊星底下 */
+.vt-pool {
+  position: absolute;
+  z-index: -1;
+  right: -14%;
+  top: -10%;
+  width: min(1400px, 96vw);
+  aspect-ratio: 1.4;
+  background: url("../../assets/light/pool.webp") 50% 50% / 100% 100% no-repeat;
+  opacity: 0.7;
+  pointer-events: none;
+}
+/* 吊星：线从页顶垂下，星停在右上方 */
+.vt-lamp {
+  position: absolute;
+  right: 27%;
+  top: 0;
+  width: 96px;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  mask: linear-gradient(180deg, transparent 0, transparent calc(var(--head-h) - 10px), #000 calc(var(--head-h) + 50px));   /* 线在页头后面看不见，从页头下面才显出来 */
+  animation: vt-sway var(--ae-t-pendulum, 5.6s) ease-in-out infinite;
+}
+.vt-lamp .ae-hang { display: block; width: 100%; height: auto; overflow: visible; }
+@keyframes vt-sway { 0%, 100% { transform: rotate(-0.5deg); } 50% { transform: rotate(0.5deg); } }
+
+/* ---------- 页首 ---------- */
+.vt-head { position: relative; max-width: 860px; }
+.vt-voice {
+  position: absolute;
+  left: -0.04em;
+  top: 0.66em;
+  z-index: -1;
+  font: italic 400 clamp(44px, 4.6vw, 86px)/1 var(--f-didone);
+  color: rgba(216, 198, 166, 0.08);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.vt-title { position: relative; display: inline-block; font-size: clamp(64px, 5.8vw, 108px); line-height: 1; }
+.vt-title .ae-display { color: #EEE6D8; }
+.vt-title .is-hero { position: relative; font-size: 1.36em; }
+.vt-title-en { font: 500 0.8em/1.05 var(--f-didone); color: var(--ae-title-top); }
+.vt-glint { position: absolute; right: -0.2em; top: -0.24em; width: 0.38em; pointer-events: none; }   /* 主角字的右上角 */
+.vt-glint .ae-glint { width: 100%; height: auto; }
+.vt-hair { width: 160px; margin-top: 20px; }
+.vt-lead { max-width: 34em; margin-top: 18px; font-size: 18px; line-height: 1.85; letter-spacing: 0.06em; color: rgba(226, 216, 200, 0.86); }
+html[lang="en"] .vt-lead { letter-spacing: 0.01em; }
+/* 演职员表式的一行：总票数 · 投票的观测者数 · 截至几点几分 */
+.vt-facts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 20px; font: 500 12.5px/1.6 var(--f-song); letter-spacing: 0.16em; color: var(--ae-sand); }
+.vt-facts[hidden] { display: none; }
+.vt-facts i { font-style: normal; color: rgba(201, 170, 104, 0.5); }
+html[lang="en"] .vt-facts { font: 500 11px/1.6 var(--f-didone); letter-spacing: 0.22em; text-transform: uppercase; }
+.vt-state { margin-top: 6px; font-size: 14px; line-height: 1.7; letter-spacing: 0.06em; color: var(--ae-text-2); }
+.vt-state:empty { display: none; }
+.vt-notice { margin-top: 40px; max-width: 34em; font-size: 18px; line-height: 1.85; color: var(--ae-text-2); }
+
+.vt-sec { margin-top: clamp(72px, 8vw, 120px); }
+
+@media (max-width: 960px) {
+  .vt-lamp { right: 8%; }
+}
+@media (max-width: 760px) {
+  .vt-lamp { display: none; }
+  .vt-pool { right: -50%; width: 150vw; }
+  .vt-title { font-size: 56px; }
+  .vt-voice { font-size: 38px; }
+  .vt-lead { font-size: 16.5px; }
+}

@@ -73,7 +73,7 @@ A showcase of AI design: ten creative directions, one task each. Every tested mo
 
 | Work | Direction | Time (min–max) | In one line |
 |---|---|:---:|---|
-| [Twenty-Four Motion Shots](topics/审美全能/题面/动效设计/二十四个动效镜头.md) | Motion Design | 90–120 min | Six chapters, 24 shots, its own score |
+| [Modern Agent Concept PV](topics/审美全能/题面/动效设计/现代Agent概念PV.md) | Motion Design | 90–120 min | A concept PV of modern agents working together, its own score |
 | [Stargazing Studio in an Autumn Garden](topics/审美全能/题面/卡通渲染/秋庭观星画室.md) | Toon Rendering | 90–150 min | An anime backdrop you can turn in your hands |
 | [Glass Greenhouse and Florist's Workshop](topics/审美全能/题面/白模渲染/玻璃温室与花艺工作室.md) | Whitebox Rendering | 60–120 min | From bare geometry to golden hour |
 | [NVIDIA B200 Web Art](topics/审美全能/题面/创意网页设计/NVIDIA_B200网页艺术.md) | Creative Web Design | 60–90 min | Every image grows from a single chip |

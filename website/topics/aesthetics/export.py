@@ -1,4 +1,4 @@
-"""审美全能网站的数据：方向与题目、评委、型号、作品图与下载包，以及公开确认快照。字段见 docs/data.md。
+"""审美全能网站的数据：方向与题目、评委、型号、作品图与下载包、观测者票选能投的名单，以及公开确认快照。字段见 docs/data.md。
 
 图片由 tools/shots.py 做好放在 website/.build-cache/aesthetics/media/，下载包由 tools/package.py 放在同级的
 packages/；这里按本次导出的型号和作品把用到的文件拷进数据目录的 media/ 和 downloads/。完整导出先把下载包
@@ -235,6 +235,12 @@ def build_works(ctx, entries, categories, packages, media, downloads):
     return works, stamps
 
 
+def votable(works: dict) -> dict:
+    """能投的名单（docs/votes.md 9.2）：{题key: [型号id]}，作答已结束（state 为 done）且网站上挂出了图的作品。works 只含这次导出的型号：
+    正式发布时就是确认快照里公开的那些，本地预览照同样的规则列；暂停公示时各题都是空的。票箱的函数按网址读这份名单。"""
+    return {key: [mid for mid, w in row.items() if w['state'] == 'done' and w['images']] for key, row in works.items()}
+
+
 def mirror(source: Path, target: Path, files: set):
     """把 files（相对路径）从 source 拷到 target：大小和修改时间都一样的不重拷，target 里多出来的删掉。"""
     for rel in sorted(files):
@@ -297,6 +303,7 @@ def export(ctx, out: Path, formal: bool) -> dict:
     })
     write_json(out / 'models.json', model_list)
     write_json(out / 'works.json', works)
+    write_json(out / 'votable.json', {'updated': updated, 'tasks': votable(works)})
     return {
         'id': topic.id, 'name': topic.name, 'name_en': topic.name_en, 'status': topic.website_status,
         'url': f'/{topic.id}/', 'accent': read_json(ctx.project / 'meta' / 'card.json')['accent'],

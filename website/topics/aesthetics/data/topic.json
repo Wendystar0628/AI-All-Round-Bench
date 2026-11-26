@@ -6,50 +6,54 @@
     "zh": "AI 设计作品展：十个创作方向，各模型按同一份题面完成作品，并排陈列。",
     "en": "A showcase of AI design: ten creative directions, every model building from the same brief, the works hung side by side."
   },
-  "updated": "2026-11-25",
+  "updated": "2026-11-27",
   "notice": null,
   "categories": [
     {
-      "key": "promo-video",
+      "key": "motion-design",
       "no": 1,
-      "name": "PV设计",
-      "name_en": "PV Design",
-      "short": "PV",
-      "short_en": "PV",
+      "name": "动效设计",
+      "name_en": "Motion Design",
+      "short": "动效",
+      "short_en": "Motion",
       "judge": "claude",
       "download": false,
       "tasks": [
         {
-          "key": "mygo-pv",
+          "key": "agent-pv",
           "no": 1,
-          "name": "《壱雫空》PV",
-          "name_en": "“壱雫空” PV",
-          "category": "promo-video",
+          "name": "现代Agent概念PV",
+          "name_en": "Modern Agent Concept PV",
+          "category": "motion-design",
           "judge": "claude",
           "download": false,
           "tagline": {
-            "zh": "一分二十一秒，为歌配上画面",
-            "en": "Eighty-one seconds of song, in pictures"
+            "zh": "现代 Agent 与协作的概念 PV",
+            "en": "A concept PV of modern agents working together"
           },
           "summary": {
-            "zh": "给乐队 MyGO!!!!! 的歌曲《壱雫空》做一支 PV，用其中半首，长 1 分 21 秒。",
-            "en": "A promotional video for “壱雫空” by the band MyGO!!!!!, set to half of the song: 1 minute 21 seconds."
+            "zh": "一行指令点亮一个 Agent：词元、注意力、规划、工具调用一一化作动画，五位 AI 各展所长、协作到交付。全片按一首歌来编排，配乐由程序合成。",
+            "en": "One line of instruction wakes an agent: tokens, attention, planning and tool calls each become an animation, and five AIs bring their strengths together until the work is delivered. The film is cut like a song, to a score synthesized in code."
           },
           "highlights": [
             {
-              "zh": "画面怎样踩着节拍切换",
-              "en": "How the images land on the beat"
+              "zh": "专业概念化成一眼能懂的动画",
+              "en": "Technical ideas turned into animation you grasp at a glance"
             },
             {
-              "zh": "歌里的情绪起伏，怎样落到画面上",
-              "en": "How the song's swells and lulls show up on screen"
+              "zh": "五位 AI 各自的能力演绎",
+              "en": "Each of the five AIs and her own strengths"
             },
             {
-              "zh": "从头到尾统一的画风与色调",
-              "en": "One look and palette from start to finish"
+              "zh": "副歌复现与形状接力的编排",
+              "en": "Returning choruses and shapes handed from shot to shot"
+            },
+            {
+              "zh": "跟着画面谱写的歌",
+              "en": "A song written to the picture"
             }
           ],
-          "statement": "topics/审美全能/题面/PV设计/壱雫空PV.md"
+          "statement": "topics/审美全能/题面/动效设计/现代Agent概念PV.md"
         }
       ],
       "upcoming": null
@@ -544,7 +548,7 @@
         "en": "Calm, quiet, well-read and warm."
       },
       "categories": [
-        "promo-video",
+        "motion-design",
         "toon",
         "creative-web",
         "svg-animation"

@@ -5,13 +5,15 @@
 //   一张观测卡躺在画面的光里，票根是这一题世界色最深的一档。页首是这一题自己的颜色（世界色），往下慢慢沉回夜（.tk-sink）。
 //   亮底的题（ink 是墨）字和页头换墨色。代表画面的静图还没有时，画缺省画面：这一卷的星座在夜空里，上方吊着那颗星。
 //   英文页、或这一题还没有锁定时，不按台摆：卷的小标和题名写在左上，字照常排。
-//   作品：受测模型页签（?m=<型号id> 选定一位，没有脚本时依次排开），每个型号一块：取件票、图墙（纸边、接触阴影）、评语。
+//   作品：受测模型页签（?m=<型号id> 选定一位，没有脚本时依次排开），每个型号一块：打孔钮和取件票、图墙（纸边、接触阴影）、评语。
+//         观测者票选（docs/votes.md 第三节）也嵌在这块作品区里：页签那一排上方是本卷票选，右端停着这一卷的观测票，
+//         投过的设计师页签上有一个打穿的小孔；这些都靠脚本（src/client/votes.js），没有脚本时不出现。
 //   页尾：上一卷 / 下一卷的书脊卡（和卷目页同一本书），一条横着的十卷星座。
 import { esc, pad2 } from '../context.mjs';
 import { AEOrn, hasConstellation, lockupItem, stillOf } from '../design.mjs';
 import {
-  cloudStamp, cloudedWindow, comment, coverPlate, hangingStar, judgeName, lockup, miniLockup, modelBadge, modelName, obsCard,
-  sectionHead, slip, starChart, ticket, volumeLabel, wall,
+  ballot, cloudStamp, cloudedWindow, comment, coverPlate, hangingStar, judgeName, lockup, miniLockup, modelBadge, modelName, obsCard,
+  punch, rankTable, sectionHead, slip, starChart, ticket, volumeLabel, voteMark, votesConfig, wall,
 } from '../parts.mjs';
 
 /* ---------- 页首：这一卷的介绍页 ---------- */
@@ -88,6 +90,7 @@ function tab(ctx, w) {
   return `<a class="tk-tab" href="#m-${esc(m.id)}" id="tk-tab-${esc(m.id)}" data-tab="${esc(m.id)}">
     ${coverPlate(ctx, w, { label: false, alt: '' })}
     ${modelBadge(ctx, m, { href: false, size: 's' })}
+    ${voteMark(ctx, w)}
   </a>`;
 }
 
@@ -106,7 +109,7 @@ function panel(ctx, w, next) {
         <p class="tk-meta"><span>${esc(t('task.panel.agent', { agent: m.agent }))}</span>${stills}</p>
         ${live}
       </div>
-      <div class="tk-get">${ticket(ctx, w) || `<p class="tk-packing">${esc(t('task.panel.packing'))}</p>`}</div>
+      <div class="tk-get">${punch(ctx, w)}${ticket(ctx, w) || `<p class="tk-packing">${esc(t('task.panel.packing'))}</p>`}</div>
     </header>
     ${wall(ctx, w, { lead: true, eager: false })}
     <footer class="tk-panel-foot">
@@ -129,10 +132,17 @@ function works(ctx, entry, cat) {
       <div class="tk-none">${cloudedWindow(ctx, cat, { sub: t(entry.upcoming ? 'task.works.upcoming' : 'task.works.none') })}</div>
     </section>`;
   }
+  // 左栏是小节标题和页签那一排；右栏上面是本卷票选，下面是停在页签那一排右端的观测票（两栏等高，星表展开时不推动页签）
   return `<section class="tk-works" id="works" aria-labelledby="works-title" data-tabs>
-    ${headHTML}
-    <nav class="tk-tabs" aria-label="${esc(t('task.works.tabs'))}">${list.map((w) => tab(ctx, w)).join('')}</nav>
+    <div class="tk-works-top" id="rank">
+      <div class="tk-works-main">
+        ${headHTML}
+        <nav class="tk-tabs" aria-label="${esc(t('task.works.tabs'))}">${list.map((w) => tab(ctx, w)).join('')}</nav>
+      </div>
+      <div class="tk-works-side">${rankTable(ctx, entry)}${ballot(ctx, entry)}</div>
+    </div>
     <div class="tk-panels">${list.map((w, i) => panel(ctx, w, list[i + 1])).join('')}</div>
+    ${entry.votable.length ? votesConfig(ctx) : ''}
   </section>`;
 }
 

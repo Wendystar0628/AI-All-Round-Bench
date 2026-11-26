@@ -11,12 +11,13 @@ const logoDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'vendor', 'l
 export const REPO = 'https://github.com/Wendystar0628/AI-All-Round-Bench';
 export const ICP = { text: '蜀ICP备2025171371号-1', url: 'https://beian.miit.gov.cn/' };
 
-/** 页头导航：像一本书的目录，罗马数字 + 中文 + 小号英文。题目页属于「卷目」，型号页属于「受测模型」 */
+/** 页头导航：像一本书的目录，罗马数字 + 中文 + 小号英文。题目页属于「卷目」，型号页属于「设计师」 */
 export const NAV = [
   { key: 'volumes', no: 'I', path: 'volumes/', pages: ['volumes', 'task'] },
   { key: 'observers', no: 'II', path: 'models/', pages: ['observers', 'model'] },
   { key: 'judges', no: 'III', path: 'judges/', pages: ['judges'] },
-  { key: 'about', no: 'IV', path: 'about/', pages: ['about'] },
+  { key: 'votes', no: 'IV', path: 'votes/', pages: ['votes'] },
+  { key: 'about', no: 'V', path: 'about/', pages: ['about'] },
 ];
 
 /** 语言：中文在根路径、英文在 en/；选择记在 localStorage 的 octa.lang（总站和各专题共用）。

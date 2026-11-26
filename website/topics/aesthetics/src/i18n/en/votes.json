@@ -1,0 +1,128 @@
+{
+  "title": "Observers’ Votes",
+  "titleHero": "",
+  "voice": "the observers, under one lamp",
+  "description": "Observers’ votes at AI Aesthetics: the votes cast across the ten volumes, for each designer and in total. Every rank here comes from observers.",
+  "lead": "In every volume, each observer holds two votes for two different works and can take either back at any time. The ranks on this page come from observers’ votes alone.",
+  "facts": {
+    "label": "Counts",
+    "votes": {
+      "one": "{n} vote",
+      "other": "{n} votes"
+    },
+    "voters": {
+      "one": "{n} observer",
+      "other": "{n} observers"
+    },
+    "asOf": "as of {time}",
+    "asOfPublish": "as of publication",
+    "asOfPublishAt": "as of publication · {time}"
+  },
+  "state": {
+    "none": "No observer has voted yet.",
+    "closed": "The ballot box is closed for now.",
+    "snapshot": "The ballot box is closed for now; these are the counts at publication.",
+    "static": "These are the counts at publication."
+  },
+  "totals": {
+    "title": "Totals",
+    "en": "",
+    "line": "One row per designer, ordered by total votes. Each bar is cut by volume, in that volume's cloth.",
+    "label": "Votes for {name}, by volume",
+    "segment": {
+      "one": "{no} {name} · {n} vote",
+      "other": "{no} {name} · {n} votes"
+    },
+    "votes": {
+      "one": "{n} vote",
+      "other": "{n} votes"
+    }
+  },
+  "matrix": {
+    "title": "The Catalogue",
+    "en": "",
+    "line": "Volumes across, designers down. Each star is sized by its share of the volume's votes; the leader of each volume is lit.",
+    "caption": "Catalogue: each designer's votes in the ten volumes",
+    "corner": "Designer",
+    "cornerEn": "",
+    "total": "Total",
+    "sum": "Sum",
+    "none": "No entry",
+    "answering": "In progress",
+    "share": "{pct} of the volume"
+  },
+  "ballot": {
+    "label": "Your ballot for this volume",
+    "head": "OBSERVER · BALLOT",
+    "rule": "TWO PUNCHES PER VOLUME",
+    "stub": "VOTE",
+    "stubEn": "",
+    "undo": "UNDO",
+    "retract": "Take back the vote for {name}",
+    "sr0": "Your ballot for this volume: no votes cast, two left",
+    "sr1": "Your ballot for this volume: voted for {names}, one left",
+    "sr2": "Your ballot for this volume: voted for {names}, none left",
+    "srClosed": "Your ballot for this volume: the ballot box is closed for now",
+    "and": " and ",
+    "closed": "Ballot box closed for now"
+  },
+  "punch": {
+    "who": "{name}: ",
+    "markSr": "(voted)",
+    "vote": "Vote for this",
+    "voted": "Voted · undo",
+    "spent": "Both punches used",
+    "spentHint": "Take back a vote to choose again",
+    "closed": "Ballot box closed"
+  },
+  "rank": {
+    "title": "Votes · This Volume",
+    "en": "",
+    "folded": "Cast a vote to reveal this volume's ranking",
+    "voters": {
+      "one": "{n} observer has voted here",
+      "other": "{n} observers have voted here"
+    },
+    "votersNone": "No one has voted in this volume yet",
+    "closed": "The ballot box is closed for now",
+    "snapshot": "Ballot box closed; these are the counts at publication",
+    "colRank": "Rank",
+    "colName": "Designer",
+    "colVotes": "Votes",
+    "colShare": "Share",
+    "row": {
+      "one": "Rank {rank}, {name}, {n} vote, {pct}",
+      "other": "Rank {rank}, {name}, {n} votes, {pct}"
+    }
+  },
+  "live": {
+    "voted": "Voted for {name}; {left}.",
+    "retracted": "Took back the vote for {name}; {left}.",
+    "left0": "both votes in this volume are cast",
+    "left1": "one vote left in this volume",
+    "left2": "both votes in this volume are still yours",
+    "failedVote": "The vote for {name} didn't go through: {reason}.",
+    "failedRetract": "The vote for {name} wasn't taken back: {reason}."
+  },
+  "error": {
+    "bad_request": "the vote was malformed; reload and try again",
+    "not_votable": "this work isn't open for votes now",
+    "limit_reached": "both votes in this volume are used",
+    "already_voted": "you've already voted for this work",
+    "rate_limited": "too fast; wait a moment and try again",
+    "pow_required": "your browser is still running a quick check; try again in a moment",
+    "closed": "the ballot box is closed for now",
+    "network": "the ballot box can't be reached right now",
+    "unknown": "something went wrong at the ballot box; try again later"
+  },
+  "model": {
+    "count": {
+      "one": "{n} vote from observers",
+      "other": "{n} votes from observers"
+    },
+    "total": {
+      "one": "{n} observer vote",
+      "other": "{n} observer votes"
+    }
+  }
+}

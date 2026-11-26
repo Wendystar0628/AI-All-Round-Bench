@@ -11,10 +11,11 @@ import { dateDots, esc, pad2 } from '../context.mjs';
 import { seriesWord } from '../design.mjs';
 import {
   blankPlate, cloudStamp, comment, coverPlate, figure, glint, miniLockup, modelName, sectionHead, shot, slip, star, starChart, ticket,
-  volumeLabel,
+  volumeLabel, voteCount, voteTotal, votesConfig,
 } from '../parts.mjs';
 
 const anchor = (cat) => `v${pad2(cat.no)}`;
+const SEP = '<span aria-hidden="true">  ·  </span>';
 const taskHref = (ctx, w) => `${ctx.href(w.task.path)}?m=${encodeURIComponent(w.model.id)}`;
 
 /** 封面图版的显示宽度（model.css：桌面占右边约 3/5 栏，960 以下占满一栏），浏览器按它在缩略图和大图之间挑 */
@@ -77,7 +78,7 @@ function stage(ctx, m) {
       <h1 class="md-name" id="md-name">${modelName(ctx, m)}</h1>
       <i class="md-hair ae-hair3" aria-hidden="true"></i>
       <p class="md-vendor">${ctx.logo(m.logo)}<span>${esc(m.vendor)}</span></p>
-      <p class="md-facts">${facts.map(esc).join('<span aria-hidden="true">  ·  </span>')}</p>
+      <p class="md-facts">${facts.map(esc).join(SEP)}${voteTotal(ctx, m, SEP)}</p>
       ${judge}
     </div>
   </section>`;
@@ -110,7 +111,7 @@ function work(ctx, w, first) {
       ${busy}
       <div class="md-w-foot">
         ${comment(ctx, w)}
-        ${ticket(ctx, w) || `<p class="md-packing">${esc(ctx.t('model.work.packing'))}</p>`}
+        <div class="md-get">${ticket(ctx, w) || `<p class="md-packing">${esc(ctx.t('model.work.packing'))}</p>`}${voteCount(ctx, w)}</div>
         <a class="ae-more md-open" href="${esc(href)}">${esc(ctx.t('model.work.open'))}</a>
       </div>
     </header>
@@ -163,8 +164,9 @@ export function render(ctx, route) {
   return {
     title: m.display_name,
     description: ctx.t('model.description', { name: m.display_name, n: m.works.length }),
-    body: stage(ctx, m) + toc(ctx, m) + programme(ctx, m) + others(ctx, m),
+    body: stage(ctx, m) + toc(ctx, m) + programme(ctx, m) + others(ctx, m) + (m.works.some((w) => w.votable) ? votesConfig(ctx) : ''),
     styles: ['/src/styles/pages/model.css'],
+    script: m.works.some((w) => w.votable) && !ctx.data.notice ? '/src/client/votes.js' : undefined,
     gallery: m.works.some((w) => w.images.length > 1),
   };
 }

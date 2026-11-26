@@ -24,7 +24,7 @@
   z-index: 40;
   display: flex;
   align-items: center;
-  gap: clamp(20px, 2.6vw, 44px);
+  gap: clamp(16px, 2vw, 44px);
   padding: 26px var(--margin) 0;
   pointer-events: none;
   transition: padding 0.28s ease;
@@ -80,8 +80,8 @@ html.ae-scrolled .ae-head::before { opacity: 1; }
 .ae-home .ae-wordmark-svg { transition: filter var(--ae-t-hover); }
 .ae-home:hover .ae-wordmark-svg { filter: brightness(1.12); }
 
-/* 四项：罗马数字斜体 Didone（黄铜）、宋体 600 的中文、拉开字距的小号英文；当前项下面一根锈橙短线 */
-.ae-nav { display: flex; align-items: center; gap: clamp(22px, 2.8vw, 48px); }
+/* 五项：罗马数字斜体 Didone（黄铜）、宋体 600 的中文、拉开字距的小号英文；当前项下面一根锈橙短线 */
+.ae-nav { display: flex; align-items: center; gap: clamp(16px, 2.1vw, 48px); }
 .ae-nav-item {
   position: relative;
   display: inline-flex;
@@ -235,7 +235,8 @@ html[lang="en"] .ae-vd-item .c { font: italic 400 12.5px/1 var(--f-didone); }
   z-index: -1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: safe center;                         /* 五项在矮屏上放不下时从顶上排起、能往下滚，不切掉第一项 */
+  overflow-y: auto;
   gap: 40px;
   padding: 96px 32px 48px;
   background: radial-gradient(80% 50% at 50% 0%, rgba(110, 82, 58, 0.25), transparent 70%), var(--wall);
@@ -268,6 +269,7 @@ html[lang="en"] .ae-menu-item .cn { font: 500 26px/1.2 var(--f-didone); letter-s
   letter-spacing: 0.08em;
   color: rgba(214, 196, 160, 0.62);
   text-decoration: none;
+  white-space: nowrap;
   transition: color var(--ae-t-hover);
 }
 html[lang="en"] .ae-repo { font: 500 12.5px/1 var(--f-didone); letter-spacing: 0.06em; }
@@ -275,7 +277,12 @@ html[lang="en"] .ae-repo { font: 500 12.5px/1 var(--f-didone); letter-spacing: 0
 .ae-repo:focus-visible { color: var(--ae-text); outline: none; }
 .ae-menu-repo { justify-content: center; margin: 14px 0 4px; font-size: 15px; }
 
-@media (max-width: 960px) {
+/* 五项放不下的宽度：先把页头的 GitHub 收成只剩图标（读屏照读「GitHub 仓库」），再收起导航的小号英文 */
+@media (max-width: 1499px) {
+  .ae-head > .ae-repo { min-height: 36px; }
+  .ae-head > .ae-repo span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (max-width: 1279px) {
   .ae-nav-item small { display: none; }
 }
 @media (max-width: 760px) {

@@ -1,0 +1,68 @@
+# 观测者票选的函数（函数计算 3.0，杭州）。部署用 tools/deploy.mjs，不直接跑 s deploy：
+# 签名密钥、对账口令和测试名单由它从本地 .secret 算好、作为环境变量交给 s，输出里的密钥会被遮掉。
+edition: 3.0.0
+name: octathlon-votes
+access: octathlon
+
+resources:
+  votes:
+    component: fc3
+    props:
+      region: cn-hangzhou
+      functionName: octathlon-votes
+      description: AI审美全能 观测者票选（website/services/votes）
+      runtime: custom.debian10
+      code: ./
+      handler: index.handler   # 自定义运行时不用它，但接口要求填
+      customRuntimeConfig:
+        command:
+          - /var/fc/lang/nodejs20/bin/node
+          - src/server.js
+        port: 9000
+      memorySize: 256
+      cpu: 0.2
+      diskSize: 512
+      timeout: 60
+      instanceConcurrency: 20
+      concurrencyConfig:
+        reservedConcurrency: 5   # 最多同时 5 个实例，给费用设个顶
+      internetAccess: true
+      role: acs:ram::${config('AccountID')}:role/octathlon-votes-fc
+      # 不配日志：logConfig: auto 建好了日志库，但 CreateFunction 回 403「No permission to access the logstore」，
+      # 部署账号没有日志服务的权限。要日志时由账号主人给部署账号加日志权限后，在这里写 logConfig（见 README）。
+      environmentVariables:
+        VOTES_TOPIC: aesthetics
+        VOTES_SECRET: ${env('VOTES_SECRET')}
+        VOTABLE_URL: https://octathlon.wendystars.com/aesthetics/data/votable.json
+        VOTABLE_OVERRIDE: ${env('VOTABLE_OVERRIDE', '')}   # 只在测试时由 deploy.mjs --votable-override 给
+        VOTABLE_CACHE_SECONDS: '180'
+        OTS_ENDPOINT: https://octathlon-votes.cn-hangzhou.ots.aliyuncs.com
+        OTS_INSTANCE: octathlon-votes
+        # 防刷（votes.md 第八节）：数值写在这里，不写死在代码里
+        RATE_IP_PER_MINUTE: '60'
+        RATE_VOTER_PER_MINUTE: '20'
+        NEW_IDS_PER_IP: '20'
+        NEW_ID_WINDOW_SECONDS: '3600'
+        POW_DIFFICULTY: '0'      # 无感校验，0 为关；发现刷票时改成 16 左右再部署
+        VOTES_CLOSED: '0'        # 1 = 票箱关闭（维护），投票和撤回回 503
+        CLIENT_IP_HEADER: ''     # 空 = 取 x-forwarded-for 最右一项（接口域名前面没有 CDN）
+        CORS_ORIGINS: https://octathlon.wendystars.com   # 允许带凭证跨源调用的来源，逗号分隔
+      triggers:
+        - triggerName: http
+          triggerType: http
+          description: 接口域名 api.wendystars.com（自定义域名，tools/domain.mjs 管理）路由到这里
+          triggerConfig:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - DELETE
+              - OPTIONS
+            disableURLInternet: false
+        - triggerName: reconcile-daily
+          triggerType: timer
+          description: 每天从 ballots 重算 tallies
+          triggerConfig:
+            cronExpression: CRON_TZ=Asia/Shanghai 0 30 4 * * *
+            enable: true
+            payload: ${env('VOTES_RECONCILE_PAYLOAD')}

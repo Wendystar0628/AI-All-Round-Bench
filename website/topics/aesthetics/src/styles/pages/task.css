@@ -174,7 +174,14 @@ html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-nav-item:ho
 
 /* ================= 作品 ================= */
 .tk-works { max-width: calc(var(--max) + 2 * var(--margin)); margin: 0 auto; padding: clamp(8px, 2vw, 40px) var(--margin) 0; scroll-margin-top: 0; }
-.tk-tabs { display: flex; flex-wrap: wrap; gap: 22px clamp(20px, 2.6vw, 40px); margin-top: 40px; }
+/* 左栏：小节标题、一排页签；右栏：上面是本卷票选（折起来的纸签，投过票后展开成星表），下面是停在页签那一排右端的观测票。
+   两栏等高、各自上下撑开：星表展开时只占右栏里本来空着的地方，页签不跟着跳 */
+.tk-works-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: clamp(32px, 4vw, 72px); }
+.tk-works-top:not(:has(.tk-works-side > :not([hidden]))) { grid-template-columns: minmax(0, 1fr); }
+.tk-works-main { display: flex; flex-direction: column; justify-content: space-between; gap: 44px; min-width: 0; }
+.tk-works-side { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; gap: 14px; }
+.tk-works-side > .ae-ballot { margin: 0 6px 10px 0; }
+.tk-tabs { display: flex; flex-wrap: wrap; gap: 22px clamp(20px, 2.6vw, 40px); min-width: 0; }
 .tk-tab { position: relative; display: grid; gap: 12px; width: 220px; padding-bottom: 12px; color: inherit; text-decoration: none; opacity: 0.62; transition: opacity var(--ae-t-hover); }
 .tk-tab .ae-plate-paper { padding: 5px; }
 .tk-tab .ae-plate-paper img { object-fit: cover; object-position: 50% 12%; }
@@ -193,6 +200,8 @@ html:not(.ae-scrolled) body:has(.tk[data-tone="light"]) .ae-head .ae-nav-item:ho
 .tk-panel.is-swap { animation: tk-in 0.4s var(--ae-ease-land); }
 @keyframes tk-in { from { opacity: 0; transform: translateY(6px); } }
 .tk-panel-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 24px 40px; margin-bottom: 40px; }
+.tk-get { display: flex; align-items: center; flex-wrap: wrap; gap: 16px clamp(24px, 3vw, 48px); }   /* 打孔钮在取件票左边 */
+.tk-get > .ae-ticket { flex: none; width: 380px; max-width: 100%; }   /* 票宽写定：不然百分比宽度会让打孔钮和票折成两行 */
 .tk-who { display: grid; gap: 8px; justify-items: start; }
 .tk-who .ae-model--l { font-size: 30px; }
 .tk-meta { display: flex; flex-wrap: wrap; gap: 2px 18px; font-size: 13.5px; letter-spacing: 0.04em; color: var(--ae-text-2); }
@@ -257,9 +266,17 @@ html[lang="en"] .tk-vol-dir { font: 500 11px/1 var(--f-didone); letter-spacing: 
   .tk-head::after { top: calc(var(--shift) + 1080 * var(--px) - 18%); bottom: auto; height: 18%; }
   .tk-panel-foot { grid-template-columns: 1fr; }
   .tk-links { justify-items: start; }
+  /* 一栏：小节标题、本卷票选、页签、观测票 */
+  .tk-works-top { grid-template-columns: minmax(0, 1fr); row-gap: 28px; }
+  .tk-works-main,
+  .tk-works-side { display: contents; }
+  .tk-works-top .ae-sec { order: 1; }
+  .tk-works-top .ae-rank { order: 2; justify-items: start; }
+  .tk-works-top .tk-tabs { order: 3; margin-top: 12px; }
+  .tk-works-top .ae-ballot { order: 4; justify-self: start; margin: 0 0 4px 6px; }
 }
 @media (max-width: 760px) {
-  .tk-tabs { flex-wrap: nowrap; overflow-x: auto; margin: 32px calc(-1 * var(--margin)) 0; padding: 0 var(--margin) 8px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .tk-tabs { flex-wrap: nowrap; overflow-x: auto; margin: 0 calc(-1 * var(--margin)); padding: 0 var(--margin) 8px; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .tk-tab { flex: none; width: 168px; scroll-snap-align: start; }
   .tk-vols { grid-template-columns: 1fr; }
   .tk-vol--next { justify-items: start; text-align: left; }

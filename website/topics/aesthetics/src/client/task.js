@@ -7,8 +7,10 @@
 // 这里把它们变成 WAI-ARIA 页签：只露选中的一块；← → / Home / End 在页签间移动并选中；
 // 点选写进地址 ?m=<型号id>（history.replaceState，可分享）；没带 ?m= 时选第一位。
 // 看图器换图时（ae:lightbox，也包括打开带 #shot= 的网址）切到那张图所在的型号。
-// 每块末尾「下一位」切到下一个型号，并回到页签那一行。
+// 每块末尾「下一位」切到下一个型号，并回到页签那一行；本卷票选的一行（也带 data-goto）同样切过去，页签那一行已经在眼前时不滚。
+// 观测者票选（观测票、打孔钮、页签上的小孔、本卷票选）由 votes.js 接。
 import './site.js';
+import './votes.js';
 
 const head = document.querySelector('.tk-head');
 if (head) initHead(head);
@@ -123,13 +125,13 @@ function initTabs(root) {
     }
   });
 
-  // 每块末尾的「下一位」：切过去，回到页签那一行
+  // 每块末尾的「下一位」、本卷票选的一行：切过去，回到页签那一行（已经看得见时不动）
   root.addEventListener('click', (e) => {
     const a = e.target.closest('[data-goto]');
     if (!a) return;
     e.preventDefault();
     select(indexOf(a.dataset.goto), { write: true });
-    list.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
+    list.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'nearest' });
     tabs[current].focus({ preventScroll: true });
   });
 

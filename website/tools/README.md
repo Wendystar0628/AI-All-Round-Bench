@@ -69,7 +69,7 @@
 
 ## 拼站与托管
 
-1. `publish.py` 向每个上线专题的 `npm run build` 提供 `ONESHOT_SITE_DATA_DIR` 和 `ONESHOT_SITE_BASE=/<id>/`，将带中英文首页的成品、卡片和发布摘要一同缓存。某个专题构建失败时使用上次成功的整包；首次失败且缺少缓存时跳过该专题。所有上线专题均无可用成品时中止发布。
+1. `publish.py` 向每个上线专题的 `npm run build` 提供 `ONESHOT_SITE_DATA_DIR` 和 `ONESHOT_SITE_BASE=/<id>/`，另给 `ONESHOT_VOTES_API`（`publish.json` 的 `votes_api`，观测者票选的接口所在的源，用不到的站点不管它），将带中英文首页的成品、卡片和发布摘要一同缓存。某个专题构建失败时使用上次成功的整包；首次失败且缺少缓存时跳过该专题。所有上线专题均无可用成品时中止发布。导出了 `votable.json` 的专题（审美全能的观测者票选），构建前从 `<votes_api>/api/votes/v1/<id>/tally` 取一份计票写进数据目录的 `votes.json`；取不到时沿用上次发布的快照，都没有就这次不带，只打印提示，不让发布失败。
 2. 总站从 `ONESHOT_SITE_DATA_DIR` 读本次实际采用的专题卡片。拼好的整站在 `website/dist/`，总站挂在 `/`，专题挂在 `/<id>/`。专题可声明根下需要保留的旧网址，跳转保留查询参数和锚点。至多一个专题承接未知网址的 404 兜底。
 3. `website/tools/site.json` 中 `"hold": true` 暂停推送，仍可构建。在 `--confirm` 后追加 `--no-upload` 也可单次只构建。公示提示须重新正式发布后才对访客生效。
 4. 远端 Pages 的目标分支和域名在 `publish.json`。推送会将整站连同 `CNAME` 和 `.nojekyll` 发布到该分支。托管使用 GitHub Pages 分支根目录，并由阿里云 DCDN 代理自定义域名。源站为 `wendystar0628.github.io`，回源 HOST 设为加速域名；HTML/JSON 缓存 5 分钟，静态 assets 缓存 365 天。域名 CNAME 到 DCDN，HTTPS 和用量封顶在 DCDN 配置。
